@@ -1,0 +1,90 @@
+@import models._
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@(correspondenceAddressForm: Form[Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import utils.AuthUtils._
+
+@implicitFormInstance = @{ Some(correspondenceAddressForm) }
+
+@pageScripts = {
+
+  <script>
+    $(document).ready(function() {
+      countryCodeAutoComplete()
+    });
+  </script>
+}
+
+@atedMain(title = if(isAgent) { Messages("ated.correspondence-address.agent.title") } else { Messages("ated.correspondence-address.title") }, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.correspondence-address.agent.subheader")} else {Messages("ated.correspondence-address.subheader")},
+    Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address-error.general")))
+
+  <h1 class="heading-xlarge" id="correspondence-address-header">
+    @if(isAgent) {
+      @Messages("ated.correspondence-address.agent.header")
+    } else {
+      @Messages("ated.correspondence-address.header")
+    }
+  </h1>
+
+
+
+  <div class="form-group">
+    <span class="paragraph" id="correspondence-address-lede">
+    @if(isAgent) {
+      @Messages("ated.correspondence-address.agent.lede")
+    } else {
+      @Messages("ated.correspondence-address.lede")
+    }
+    </span>
+  </div>
+
+  @form(action = controllers.routes.CorrespondenceAddressController.submit(mode)) {
+
+    <div class="form-group">
+
+      <div id="correspondence-address-form">
+
+        @atedInput(correspondenceAddressForm("line_1"),
+        '_label ->  Html(Messages("ated.address.address")),
+          '_labelClass -> "form-label-bold",
+        '_showConstraints -> false)
+
+        @atedInput(correspondenceAddressForm("line_2"),
+        '_label ->  Html(Messages("ated.address.line-2")),
+        '_labelClass ->  "visuallyhidden",
+        '_showConstraints -> false)
+
+        @atedInput(correspondenceAddressForm("line_3"),
+        '_label ->  Html(Messages("ated.address.line-3")),
+        '_labelClass ->  "visuallyhidden",
+        '_showConstraints -> false)
+
+        @atedInput(correspondenceAddressForm("line_4"),
+        '_label ->  Html(Messages("ated.address.line-4")),
+        '_labelClass ->  "visuallyhidden",
+        '_showConstraints -> false)
+
+        @atedInput(correspondenceAddressForm("postcode"),
+        '_label ->  Html(Messages("ated.address.postcode")),
+        '_size ->  "10",
+        '_inputClass -> "field-1-4",
+        '_showConstraints -> false)
+
+        @atedDropdown(correspondenceAddressForm("country"),
+        elementOptions = isoCodeList,
+        displayEmptyValue = true,
+        '_emptyValueText -> Messages("ated.address.country.select"),
+        '_label -> Html(Messages("ated.address.country")),
+        '_labelClass -> ("form-label-bold"))
+
+      </div>
+
+    </div>
+
+      <button class="button" id="submit" type="submit">@Messages("ated.correspondence-address.continue")</button>
+
+  }
+}

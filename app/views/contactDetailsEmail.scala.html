@@ -1,0 +1,71 @@
+@import models._
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import utils.AuthUtils._
+
+@implicitFormInstance = @{ Some(contactDetailsEmailForm) }
+
+@pageScripts = {
+<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/contact-email.js")'></script>
+}
+
+@atedMain(title = Messages("ated.contact-details-email-title"), pageScripts = Some(pageScripts)) {
+    @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")},
+        Some(atedErrorSummary(contactDetailsEmailForm, "ated.contact-details-error.general")))
+
+<h1 class="heading-xlarge" id="contact-details-email.header" aria-level="1" role="heading">@Messages("ated.contact-details-email-header")</h1>
+
+
+<span id="lede" class="paragraph">
+@Messages("ated.contact-details-email-lede")
+</span>
+
+<div id = "email-consent-risk">
+
+    <details role="group">
+        <summary role="button" aria-controls="details-content-0" tabindex="0">
+            <span class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">@Messages("ated.contact-details.email.risk.help.text")</span>
+        </summary>
+        <div id="details-content-0" class="panel-indent font-xsmall">
+            <p id="email-risk-ans">@Html(Messages("ated.contact-details.email.risk.help.answer"))</p>
+        </div>
+    </details>
+
+</div>
+
+@form(action = controllers.routes.ContactDetailsEmailController.submit(mode)) {
+
+<div class="form-group" id="emailConsent">
+
+        @atedInputRadioGroupNew(contactDetailsEmailForm("emailConsent"),
+        Seq("true" -> Messages("ated.radio.yes.label"),
+        "false" -> Messages("ated.radio.no.label")),
+        '_legend -> Messages("ated.contact-details.email.legend"),
+        '_legendClass -> "screen-reader-text",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true)
+
+</div>
+
+<div id="email-contact-hidden" class="form-group">
+    <div class="panel-indent">
+                @atedInput(contactDetailsEmailForm("email"),
+                '_label ->  Html(Messages("ated.contact-details.email")),
+                '_labelClass -> "form-label-bold",
+                '_inputClass -> "form-control-indent",
+                '_type -> "text",
+                '_showConstraints -> false)
+    </div>
+</div>
+
+<div class="form-group">
+    <button class="button" id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
+</div>
+
+}
+}

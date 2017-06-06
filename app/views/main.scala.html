@@ -1,0 +1,120 @@
+@(applicationConfig: config.ApplicationConfig = config.ApplicationConfig,
+    supportLinkEnabled: Boolean = false,
+    title: String,
+    sidebarLinks: Option[Html] = None,
+    sidebarClass: Option[String] = None,
+    serviceInfoContent: Option[Html] = None,
+    contentHeader: Option[Html] = None,
+    userLoggedIn: Boolean = false,
+    pageScripts: Option[Html] = None,
+    linkElement : Option[Html] = None
+    )(mainContent: Html = HtmlFormat.empty)(implicit request : Request[_], messages: Messages)
+
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
+
+@head = {
+  @uiLayouts.head(
+    linkElem = linkElement,
+    headScripts = None)
+  <meta name="format-detection" content="telephone=no"/>
+  @views.html.helpers.ga(applicationConfig.analyticsToken.getOrElse("UA-123456"))
+}
+
+@headerNavLinks = {
+  @if(userLoggedIn){
+    <li><a id="logOutNavHref" href="@routes.ApplicationController.logout">Sign out</a></li>
+  }
+}
+
+@scriptElement = {
+  <script src='@controllers.routes.AssetsController.at("jquery/jquery-1.11.3.min.js")'></script>
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.js")'></script>
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("jquery/jquery-ui-1.12.1.min.js")'></script>
+  <script src='@controllers.routes.AssetsController.at("javascript/ated.js")'></script>
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/timeout-dialog.js")'></script>
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/details.polyfill.js")'></script>
+  @pageScripts
+  <script type="text/javascript" charset="utf-8">
+    @if(userLoggedIn) {
+        $.timeoutDialog({timeout: @config.ApplicationConfig.defaultTimeoutSeconds, countdown: @config.ApplicationConfig.timeoutCountdown, keep_alive_url: '@controllers.routes.ApplicationController.keepAlive', logout_url: '@controllers.routes.ApplicationController.logout', logout_redirect_url: '@controllers.routes.ApplicationController.logout', restart_on_yes: true, background_no_scroll: true});
+        var dialogOpen;
+    }
+  </script>
+}
+
+@article = {
+  @uiLayouts.article(content = mainContent, includeGridWrapper = false, articleClasses = None)
+}
+
+@sidebar = {
+  @uiLayouts.sidebar(sidebarLinks = sidebarLinks.fold(HtmlFormat.empty)(x=>x), sidebarClass = sidebarClass)
+}
+
+@insideHeader = {
+  @uiLayouts.header_nav(
+    navTitle = Some(Messages("ated.navTitle")),
+    navTitleLink = None,
+    showBetaLink = false,
+    navLinks = Some(headerNavLinks))
+}
+
+@afterHeader = {}
+
+@bodyEnd = {
+  @uiLayouts.footer(
+    analyticsToken = applicationConfig.analyticsToken,
+    analyticsHost = applicationConfig.analyticsHost,
+    ssoUrl = None,
+    scriptElem = Some(scriptElement),
+    gaCalls = None)
+}
+
+@footerTop = {}
+@footerLinks = {}
+
+@betaBanner = {
+  @uiLayouts.betaBanner(
+    userLoggedIn = userLoggedIn,
+    betaFeedbackUrl = applicationConfig.betaFeedbackUrl(request.uri),
+    betaFeedbackUnauthenticatedUrl = applicationConfig.betaFeedbackUnauthenticatedUrl,
+    showFeedbackLinkInBetaBanner = true)
+}
+
+@serviceInfo = {
+  @uiLayouts.serviceInfo(
+    betaBanner = betaBanner,
+    includeGridWrapper = false,
+    serviceInfoContent = serviceInfoContent,
+    includeHMRCBranding = false)
+}
+
+@getHelpForm = {
+  @if(supportLinkEnabled) {
+    @{uiHelpers.reportAProblemLink(config.ApplicationConfig.reportAProblemPartialUrl, config.ApplicationConfig.reportAProblemNonJSUrl)}
+  }
+}
+
+@mainContentHeader = {
+  @contentHeader.map { contentHeaderVal =>
+    @uiLayouts.main_content_header(contentHeader = contentHeaderVal)
+  }
+}
+
+@content = {
+  @uiLayouts.main_content(
+    article = article,
+    sidebar = sidebar,
+    serviceInfo = serviceInfo,
+    mainContentHeader = mainContentHeader,
+    getHelpForm = getHelpForm)
+}
+
+@hmrcGovUkTemplate(title = Some(title), bodyClasses = None)(head = head,
+    bodyEnd = bodyEnd,
+    insideHeader = insideHeader,
+    afterHeader = afterHeader,
+    footerTop = footerTop,
+    footerLinks = Some(uiLayouts.footer_links()),
+    nav = true)(content = content)

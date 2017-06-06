@@ -1,0 +1,56 @@
+@import models._
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@(contactDetailsForm: Form[ContactDetails], mode: Option[String], backLink: Option[String] = None)(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import utils.AuthUtils._
+
+@implicitFormInstance = @{ Some(contactDetailsForm) }
+
+@atedMain(title = Messages("ated.contact-details.title")) {
+  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")},
+    Some(atedErrorSummary(contactDetailsForm, "ated.contact-details-error.general")))
+
+  <h1 class="heading-xlarge" id="contact-details.header" aria-level="1" role="heading">@Html(Messages("ated.contact-details.header"))</h1>
+
+
+  <div class="form-group">
+    <span class="paragraph" id="text">
+      @if(isAgent) {
+        @Messages("ated.contact-details.agent.lede")
+      } else {
+        @Messages("ated.contact-details.lede")
+      }
+    </span>
+  </div>
+
+  @form(action = controllers.routes.ContactDetailsController.submit(mode)) {
+
+    <div class="form-group">
+
+      <div id="contact-details-form">
+
+        @atedInput(contactDetailsForm("firstName"),
+        '_label ->  Html(Messages("ated.contact-details.firstName")),
+        '_labelClass -> "form-label-bold",
+        '_showConstraints -> false)
+
+        @atedInput(contactDetailsForm("lastName"),
+        '_label ->  Html(Messages("ated.contact-details.lastName")),
+        '_labelClass -> "form-label-bold",
+        '_showConstraints -> false)
+
+        @atedInput(contactDetailsForm("telephone"),
+        '_label ->  Html(Messages("ated.contact-details.telephone")),
+        '_labelClass -> "form-label-bold",
+        '_showConstraints -> false)
+      </div>
+
+    </div>
+
+      <button class="button" id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
+
+  }
+
+}

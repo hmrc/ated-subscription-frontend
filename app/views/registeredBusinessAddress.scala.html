@@ -1,0 +1,67 @@
+@import models._
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import utils._
+@import utils.AuthUtils._
+@import controllers.auth._
+
+@implicitFormInstance = @{ Some(businessAddressForm) }
+
+@atedMain(title = if(isAgent) { Messages("ated.registered-business-address.agent.title") } else { Messages("ated.registered-business-address.title") }) {
+  @pageHeadersAndError(backLink, "business-registered-text", if(isAgent) {Messages("ated.registered-business-address.agent.sub-header")} else {Messages("ated.registered-business-address.sub-header")},
+    Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
+
+  <h1 class="heading-xlarge" id="registered-business-address-header">
+    @if(isAgent) {
+      @Messages("ated.registered-business-address.agent.header")
+    } else {
+      @Messages("ated.registered-business-address.header")
+    }
+  </h1>
+
+
+
+  <div class="form-group">
+  <span class="paragraph" id="lede-agent-text">@if(isAgent) { @Messages("ated.registered-business-address.agent.lede-text") }</span>
+  </div>
+
+  <div class="form-group">
+    <div id="registered-address-line-1">@businessAddress.line_1</div>
+    <div id="registered-address-line-2">@businessAddress.line_2</div>
+    @businessAddress.line_3.map {line_3 =>
+      <div id="registered-address-line-3">@line_3</div>
+    }
+    @businessAddress.line_4.map {line_4 =>
+      <div id="registered-address-line-4">@line_4</div>
+    }
+    @businessAddress.postcode.map {postcode =>
+      <div id="registered-postcode">@postcode</div>
+    }
+    <div id="registered-country">@AtedSubscriptionUtils.getSelectedCountry(businessAddress.country)</div>
+  </div>
+
+  @form(action = controllers.routes.RegisteredBusinessController.continue) {
+
+    <div class="form-group form-group-compound inline" id="isCorrespondenceAddress">
+
+      @atedInputRadioGroup(
+      businessAddressForm("isCorrespondenceAddress"),
+      Seq("true" -> Messages("ated.registered-business-address.correspondence-address.yes"),
+      "false" -> Messages("ated.registered-business-address.correspondence-address.no")),
+      '_labelClass -> "block-label",
+      '_legend -> Messages("ated.registered-business-address.header"),
+      '_legendClass -> "screen-reader-text",
+      '_labelAfter -> true,
+      '_trackGA -> true
+      )
+
+    </div>
+
+    <button class="button" id="submit" type="submit">@Messages("ated.registered-business-address.continue")</button>
+
+  }
+
+}

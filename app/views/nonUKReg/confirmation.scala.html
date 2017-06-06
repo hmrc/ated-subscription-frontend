@@ -1,0 +1,31 @@
+@(clientName: String, date: String)(implicit request: Request[_], authContext: uk.gov.hmrc.play.frontend.auth.AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+
+
+@atedMain(title = Messages("ated.nonUKReg.confirmation.title", clientName)) {
+
+  <div id="banner" class="greenBanner form-group">
+    <h1 id="confirmation-message">
+      @Messages("ated.nonUKReg.confirmation.header", clientName)
+    </h1>
+    <h2 class="heading-medium banner-text" id="message">@Messages("ated.nonUKReg.confirmation.date.header", date)</h2>
+  </div>
+
+  <div class="form-group">
+    <h2 class="heading-medium" id="what-happens-next">@Messages("ated.nonUKReg.confirmation.what-next")</h2>
+  </div>
+
+  <div class="form-group">
+    <p id="happens-next-message">@Messages("ated.nonUKReg.confirmation.what-next.text")</p>
+  </div>
+
+    @form(action = controllers.nonUKReg.routes.ConfirmationController.continue) {
+      <button class="button" id="submit" type="submit">
+        @Messages("ated.nonUKReg.confirmation.view-client.button")
+      </button>
+    }
+
+
+}

@@ -1,0 +1,65 @@
+@(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, args: (Symbol,Any)*)(implicit messages: Messages)
+
+@import uk.gov.hmrc.play.validators._
+@import play.api.i18n._
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.mappers.DateFormatSymbols._
+@import uk.gov.hmrc.play.mappers.DateFields._
+@import views.html.helper._
+
+@elements = @{ new FieldElements(formItem(fieldName).id, formItem(fieldName), null, args.toMap, messages) }
+
+@if(elements.hasErrors) {
+<div class="form-group">
+    }
+    <fieldset id="@elements.args.get('_idName)" class="validate touch @elements.args.get('_groupClass) @if(elements.hasErrors) { @if(isNested) { form-field--error } else { form-field error} }" data-validation-name="dateOfBirthDate" data-validation-type="fieldset" data-validation-rules="allNonEmpty" data-validation-children="day month year">
+        <legend>@label</legend>
+
+        @if(elements.args.get('_hintText).isDefined) {
+        <div class="form-hint">@elements.args.get('_hintText)</div>
+        }
+        <div>
+            @isOptional = {@if(elements.args.contains('_isRequired)) @{ if(elements.args.get('_isRequired).get == true) {true} else {false}} else {false}}
+
+            @dayElem = @{fieldName + "." + day}
+
+            @dateInput(
+            formItem(dayElem),
+            '_label -> Messages("date.fields.day"),
+            '_inputClass -> "text day validate",
+            '_divClass -> "form-group day inline-fields",
+            '_emptyValueText -> " ",
+            '_type -> "number",
+            '_validationName -> "day",
+            '_dataAttributes -> "min=1 max=31 pattern=[0-9]*"
+            )
+
+            @monthElem = @{fieldName + "." + month}
+            @dateInput(
+            formItem(monthElem),
+            '_label -> Messages("date.fields.month"),
+            '_inputClass -> "text month validate",
+            '_divClass -> "form-group month inline-fields",
+            '_emptyValueText -> " ",
+            '_type -> "number",
+            '_validationName -> "month",
+            '_dataAttributes -> "min=1 max=12 pattern=[0-9]*"
+            )
+
+            @yearElem = @{fieldName + "." + year}
+            @dateInput(
+            formItem(yearElem),
+            '_label -> Messages("date.fields.year"),
+            '_inputClass -> "text year validate",
+            '_divClass -> "form-group year form-group-year inline-fields",
+            '_emptyValueText -> " ",
+            '_type -> "number",
+            '_validationName -> "year",
+            '_dataAttributes -> "min=1997 pattern=[0-9]*"
+            )
+            <div class="clearfix"></div>
+        </div>
+    </fieldset>
+    @if(elements.hasErrors) {
+</div>
+}

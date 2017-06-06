@@ -1,0 +1,30 @@
+@()(implicit request: Request[_], authContext: uk.gov.hmrc.play.frontend.auth.AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import utils._
+
+@atedNoAuthMain(title = Messages("ated.agent-startpage-title"), userLoggedIn = true) {
+
+  @pageHeadersAndError(None, "subtitle", Messages("ated.agent-startpage-subheader"))
+
+  <h1 class="heading-xlarge" id="agent-startpage-header">@Messages("ated.agent-startpage-header")</h1>
+
+  <div class="form-group">
+    <span id="lede-paragraph" class="paragraph">@Messages("ated.agent-startpage-lede")</span>
+  </div>
+
+
+  <div class="form-field">
+    <h2 id="agent-startpage-text1a" class="heading-small">@Messages("ated.agent-startpage-text1a")</h2>
+    <ul class="list-number" type="1">
+      <li id="agent-startpage-text1">@Messages("ated.agent-startpage-text1")</li>
+      <li id="agent-startpage-text2">@Messages("ated.agent-startpage-text2")</li>
+    </ul>
+  </div>
+
+  @form(action = controllers.routes.SubscriptionController.continue) {
+    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Agent - registration - start', 'button clicked')">@Messages("ated.agent-startpage-continue")</button>
+  }
+
+}

@@ -1,0 +1,71 @@
+@(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: uk.gov.hmrc.play.frontend.auth.AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import utils._
+
+@implicitFormInstance = @{ Some(appointAgentForm) }
+
+@pageScripts = {
+  <script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/subscription.js")'></script>
+  <script>
+    $(document).ready(function() {
+      showHideIsAnAgentSection();
+      showHideAppointAgent();
+    });
+  </script>
+}
+
+@atedNoAuthMain(title = Messages("ated.client-startpage-appoint-title"),
+                userLoggedIn = true,
+                pageScripts = Some(pageScripts)) {
+
+  @pageHeadersAndError(backLink, "client-appoint-subheader", Messages("ated.registration-subheader"),
+    Some(atedErrorSummary(appointAgentForm, "ated.appoint-agent-error.general")))
+  <h1 class="heading-xlarge" id="client-startpage-header">
+    @Messages("ated.client-startpage-appoint-header")
+  </h1>
+
+
+  
+  @form(action = controllers.routes.SubscriptionController.register) {
+
+    <div class="form-group" id="appointAgent">
+      @atedInputRadioGroupNew(appointAgentForm("appointAgent"),
+      Seq("true" -> Messages("ated.radio.yes.label"),
+      "false" -> Messages("ated.radio.no.label")),
+      '_legend -> Messages("ated.client-startpage-appoint-header"),
+      '_legendClass -> "screen-reader-text",
+      '_groupClass -> "inline",
+      '_labelClass -> "block-label",
+      '_labelAfter -> true,
+      '_trackGA -> true)
+    </div>
+
+    <div class="form-group">
+
+      <div class="panel-indent" id="hidden-appointAgent-true">
+        <h2 id="appoint-agent-title" class="heading-small">@Messages("ated.appoint-agent.question.true.info-title")</h2>
+        <ol>
+        <li id="appoint-agent-text1">@Messages("ated.appoint-agent.question.true.info1")</li>
+        <li id="appoint-agent-text2">@Messages("ated.appoint-agent.question.true.info2")</li>
+        <li id="appoint-agent-text3">@Messages("ated.appoint-agent.question.true.info3")</li>
+        </ol>
+      </div>
+
+      <div class="form-group panel-indent" id="hidden-appointAgent-false">
+        <h2 id="appoint-agent-title2" class="heading-small">@Messages("ated.appoint-agent.question.false.info-title")</h2>
+        <ol>
+        <li id="appoint-agent-text5">@Messages("ated.appoint-agent.question.false.info1")</li>
+        <li id="appoint-agent-text6">@Messages("ated.appoint-agent.question.false.info2")</li>
+        <li id="appoint-agent-text7">@Messages("ated.appoint-agent.question.false.info3")</li>
+        </ol>
+      </div>
+
+    </div>
+
+      <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-register")</button>
+
+  }
+
+}

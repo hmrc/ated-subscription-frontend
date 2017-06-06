@@ -1,0 +1,13 @@
+@()(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html._
+
+@atedNoAuthMain(title = Messages("unauthorised.assistant.title"), userLoggedIn = true) {
+
+  <h1 id="unauthorised-agent-header">@Messages("unauthorised.assistant.header")</h1>
+
+  <p class="paragraph" id="unauthorised-agent-message">@Messages("unauthorised.assistant.lede-paragraph")</p>
+
+  <a href="@controllers.routes.ApplicationController.redirectToLogout" id="submit" class="button">@Messages("ated.sign-out")</a>
+
+}

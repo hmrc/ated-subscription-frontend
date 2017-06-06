@@ -1,0 +1,27 @@
+@(title: String,
+    userLoggedIn: Boolean = true,
+    supportLinkEnabled: Boolean = true,
+    pageScripts: Option[Html] = None,
+    sidebarLinks: Option[Html] = None,
+    sidebarClass: Option[String] = None
+)(mainContent: Html)(implicit request: Request[_], authContext: uk.gov.hmrc.play.frontend.auth.AuthContext, messages: Messages)
+
+@linkElement = {
+  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/ated-subscription.css")'/>
+  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.css")'/>
+  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.structure.min.css")'/>
+}
+
+@main(
+    applicationConfig = config.ApplicationConfig,
+    supportLinkEnabled = supportLinkEnabled,
+    title = title,
+    sidebarLinks = sidebarLinks,
+    sidebarClass = sidebarClass,
+    serviceInfoContent = None,
+    userLoggedIn = userLoggedIn,
+    pageScripts = pageScripts,
+    linkElement = Some(linkElement)) {
+            @mainContent
+    }
+

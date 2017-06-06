@@ -1,0 +1,29 @@
+@(businessName: String, date: String)(implicit request: Request[_], authContext: uk.gov.hmrc.play.frontend.auth.AuthContext, messages: Messages)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+
+
+@atedMain(title = Messages("ated.business-agent.confirmation.title")) {
+
+  <div id="banner" class="greenBanner form-group">
+
+    <h1 id="agent-reference">@Messages("ated.business-agent.confirmation.reference", businessName)</h1>
+
+    <h2 class="heading-medium banner-text" id="message">@Messages("ated.business-agent.confirmation.message", date)</h2>
+
+  </div>
+
+  <div class="form-group">
+    <h2 class="heading-medium" id="what-happens-next">@Messages("ated.business-agent.confirmation.what-happens-next")</h2>
+  </div>
+
+  <div class="form-group">
+    <p id="happens-next-message5">@Messages("ated.business-agent.happens-next")</p>
+  </div>
+
+    @form(action = controllers.routes.AgentConfirmationController.continue) {
+    <button class="button" id="submit" type="submit">@Messages("ated.business-agent.confirmation.finish")</button>
+    }
+
+}

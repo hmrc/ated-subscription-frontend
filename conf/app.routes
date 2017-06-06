@@ -1,0 +1,49 @@
+GET                 /assets/*file                               controllers.AssetsController.at(path="/public", file)
+
+->                  /template                                   template.Routes
+
+GET                 /unauthorised                               controllers.ApplicationController.unauthorised
+GET                 /unauthorised-assistant                     controllers.ApplicationController.unauthorisedAssistant
+GET                 /cancel                                     controllers.ApplicationController.cancel
+GET                 /keep-alive                                 controllers.ApplicationController.keepAlive
+GET                 /logout                                     controllers.ApplicationController.logout
+GET                 /redirect-to-logout                         controllers.ApplicationController.redirectToLogout
+
+GET                 /registered-business-address                controllers.RegisteredBusinessController.registeredBusinessAddress
+POST                /registered-business-address                controllers.RegisteredBusinessController.continue
+
+GET                 /correspondence-address                     controllers.CorrespondenceAddressController.editAddress(mode: Option[String] ?= None)
+POST                /correspondence-address                     controllers.CorrespondenceAddressController.submit(mode: Option[String] ?= None)
+
+
+GET                 /contact-details                            controllers.ContactDetailsController.editDetails(mode: Option[String] ?= None)
+POST                /submit                                     controllers.ContactDetailsController.submit(mode: Option[String] ?= None)
+
+GET                 /contact-details-email                      controllers.ContactDetailsEmailController.view
+GET                 /contact-details-email-edit                 controllers.ContactDetailsEmailController.editDetailsEmail
+POST                /email-submit                               controllers.ContactDetailsEmailController.submit(mode: Option[String] ?= None)
+
+GET                 /review-business-details                    controllers.ReviewBusinessDetailsController.reviewDetails
+
+POST                /register-user                              controllers.RegisterUserController.registerUser
+GET                 /user-confirmation                          controllers.RegisterUserController.confirmation
+POST                /redirect-to-ated                           controllers.RegisterUserController.redirectToAted
+
+GET                 /redirectToAtedStart                        controllers.ApplicationController.redirectToAtedStart
+
+GET                 /start-subscription                         controllers.SubscriptionController.subscribe
+GET                 /start-agent-subscription                   controllers.SubscriptionController.subscribeAgent
+GET                 /appoint-agent                              controllers.SubscriptionController.appoint
+POST                /continue                                   controllers.SubscriptionController.continue
+POST                /register                                   controllers.SubscriptionController.register
+
+GET                 /agent/declaration                          controllers.nonUKReg.DeclarationController.view
+POST                /agent/declaration                          controllers.nonUKReg.DeclarationController.submit
+
+GET                 /agent/confirmation                         controllers.nonUKReg.ConfirmationController.view
+POST                /agent/confirmation                         controllers.nonUKReg.ConfirmationController.continue
+
+GET                 /agent-confirmation                         controllers.AgentConfirmationController.view
+GET                 /agent-confirmation/continue/summary        controllers.AgentConfirmationController.continue
+
+GET                 /clear-cache                                controllers.ApplicationController.clearCache
