@@ -47,7 +47,7 @@ trait ApplicationController extends FrontendController with RunMode with Actions
 
   def cancel() = UnauthorisedAction { implicit request =>
 
-    val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"govuk-tax.$env.cancelRedirectUrl")
+    val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"cancelRedirectUrl")
     Redirect(serviceRedirectUrl.getOrElse("https://www.gov.uk/"))
   }
 

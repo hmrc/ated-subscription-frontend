@@ -59,7 +59,7 @@ trait SubscriptionController extends FrontendController with AtedSubscriptionAut
     implicit user => implicit request =>
       appointAgentForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.appointAgent(formWithErrors)),
-        appointAgent => redirectToSubscription(s"govuk-tax.$env.services.business-customer.serviceRedirectUrl")
+        appointAgent => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
       )
   }
 

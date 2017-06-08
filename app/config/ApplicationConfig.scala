@@ -37,19 +37,19 @@ object ApplicationConfig extends ApplicationConfig with ServicesConfig {
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing key: $key"))
 
   private val contactFrontendService = baseUrl("contact-frontend")
-  private val contactHost = configuration.getString(s"govuk-tax.$env.contact-frontend.host").getOrElse("")
+  private val contactHost = configuration.getString("contact-frontend.host").getOrElse("")
 
   val contactFormServiceIdentifier = "ATED"
 
 
   override lazy val defaultBetaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   override def betaFeedbackUrl(returnUri: String) = {
-    configuration.getString(s"govuk-tax.$env.beta-feedback-url").getOrElse(defaultBetaFeedbackUrl) + "?return=" + returnUri
+    configuration.getString("beta-feedback-url").getOrElse(defaultBetaFeedbackUrl) + "?return=" + returnUri
   }
 
   override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  override lazy val analyticsToken: Option[String] = configuration.getString(s"govuk-tax.$env.google-analytics.token")
-  override lazy val analyticsHost: String = configuration.getString(s"govuk-tax.$env.google-analytics.host").getOrElse("auto")
+  override lazy val analyticsToken: Option[String] = configuration.getString("google-analytics.token")
+  override lazy val analyticsHost: String = configuration.getString("google-analytics.host").getOrElse("auto")
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
