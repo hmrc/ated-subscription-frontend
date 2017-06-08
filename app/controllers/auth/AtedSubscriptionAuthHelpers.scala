@@ -44,7 +44,7 @@ trait AtedSubscriptionAuthHelpers extends Actions with RunMode {
 
     AuthorisedFor(taxRegime = taxRegime, pageVisibility = pageVisibility) {
       implicit authContext => implicit request =>
-        if (isAgentAdmin) redirectToSubscription(s"govuk-tax.$env.services.business-customer.agentServiceRedirectUrl")
+        if (isAgentAdmin) redirectToSubscription("microservice.services.business-customer.agentServiceRedirectUrl")
         else if (isAgentAssistant) Redirect(controllers.routes.ApplicationController.unauthorisedAssistant())
         else f(authContext)(request)
     }

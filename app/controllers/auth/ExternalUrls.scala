@@ -22,32 +22,32 @@ import uk.gov.hmrc.play.config.RunMode
 
 object ExternalUrls extends RunMode {
 
-  val companyAuthHost = s"${Play.configuration.getString(s"govuk-tax.$env.services.auth.company-auth.host").getOrElse("")}"
-  val loginCallback = Play.configuration.getString(s"govuk-tax.$env.services.auth.login-callback.url").getOrElse("/ated-subscription/start")
-  val loginPath = s"${Play.configuration.getString(s"govuk-tax.$env.services.auth.login-path").getOrElse("")}"
+  val companyAuthHost = s"${Play.configuration.getString("microservice.services.auth.company-auth.host").getOrElse("")}"
+  val loginCallback = Play.configuration.getString("microservice.services.auth.login-callback.url").getOrElse("/ated-subscription/start")
+  val loginPath = s"${Play.configuration.getString("microservice.services.auth.login-path").getOrElse("")}"
   val signIn = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
   val loginURL = s"$companyAuthHost/gg/$loginPath"
   val signOut = s"$companyAuthHost/gg/sign-out"
 
-  val logoutPath = Play.configuration.getString(s"govuk-tax.$env.services.ated-frontend.logoutUrl").getOrElse("/ated/logout")
-  val atedStartPath = Play.configuration.getString(s"govuk-tax.$env.services.ated-frontend.atedStartRedirectUrl").getOrElse("/ated/welcome")
-  val clientSummaryPath = Play.configuration.getString(s"govuk-tax.$env.services.ated-frontend.clientSummaryUrl").getOrElse("/ated/summary")
+  val logoutPath = Play.configuration.getString("microservice.services.ated-frontend.logoutUrl").getOrElse("/ated/logout")
+  val atedStartPath = Play.configuration.getString("microservice.services.ated-frontend.atedStartRedirectUrl").getOrElse("/ated/welcome")
+  val clientSummaryPath = Play.configuration.getString("microservice.services.ated-frontend.clientSummaryUrl").getOrElse("/ated/summary")
 
-  val reviewDetailsPath = Play.configuration.getString(s"govuk-tax.$env.services.business-customer.reviewDetailsUrl")
+  val reviewDetailsPath = Play.configuration.getString("microservice.services.business-customer.reviewDetailsUrl")
     .getOrElse("/business-customer/review-details/ATED")
 
-  val agentAtedSummaryPath = Play.configuration.getString(s"govuk-tax.$env.services.agent-client-mandate-frontend.agentAtedSummaryUrl").getOrElse("/mandate/agent/summary/ated")
-  val clientDisplayNameEditPath = Play.configuration.getString(s"govuk-tax.$env.services.agent-client-mandate-frontend.clientDisplayNameEditUrl")
+  val agentAtedSummaryPath = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.agentAtedSummaryUrl").getOrElse("/mandate/agent/summary/ated")
+  val clientDisplayNameEditPath = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.clientDisplayNameEditUrl")
     .getOrElse("/mandate/agent/client-display-name/ated/edit")
-  val agentEmailEditPath = Play.configuration.getString(s"govuk-tax.$env.services.agent-client-mandate-frontend.agentEmailEditUrl")
+  val agentEmailEditPath = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.agentEmailEditUrl")
     .getOrElse("/mandate/agent/email/ated/edit")
 
-  val businessNameAndAddressEditUrl = Play.configuration.getString(s"govuk-tax.$env.services.business-customer.businessNameAndAddressEditUrl")
+  val businessNameAndAddressEditUrl = Play.configuration.getString("microservice.services.business-customer.businessNameAndAddressEditUrl")
     .getOrElse("/business-customer/non-uk-client/ATED/edit?redirectUrl=/ated-subscription/review-business-details")
 
-  val overseasTaxReferenceEditUrl = Play.configuration.getString(s"govuk-tax.$env.services.business-customer.overseasTaxReferenceEditUrl")
+  val overseasTaxReferenceEditUrl = Play.configuration.getString("microservice.services.business-customer.overseasTaxReferenceEditUrl")
     .getOrElse("/business-customer/register/non-uk-client/edit-overseas-company/ATED/true?redirectUrl=/ated-subscription/review-business-details")
 
-  val backToBusinessCustomerUrl = Play.configuration.getString(s"govuk-tax.$env.services.business-customer.backLinkUrl")
+  val backToBusinessCustomerUrl = Play.configuration.getString("microservice.services.business-customer.backLinkUrl")
     .getOrElse("/business-customer/back-link/ATED")
 }
