@@ -45,7 +45,14 @@
 
     <div class="form-group">
 
-      <div id="correspondence-address-form">
+      <fieldset id="correspondence-address-form">
+        <legend class="visuallyhidden">
+          @if(isAgent) {
+          @Messages("ated.correspondence-address.agent.header")
+          } else {
+          @Messages("ated.correspondence-address.header")
+          }
+        </legend>
 
         @atedInput(correspondenceAddressForm("line_1"),
         '_label ->  Html(Messages("ated.address.address")),
@@ -80,7 +87,7 @@
         '_label -> Html(Messages("ated.address.country")),
         '_labelClass -> ("form-label-bold"))
 
-      </div>
+      </fieldset>
 
     </div>
 
