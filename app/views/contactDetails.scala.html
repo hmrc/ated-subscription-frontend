@@ -14,15 +14,14 @@
 
   <h1 class="heading-xlarge" id="contact-details.header" aria-level="1" role="heading">@Html(Messages("ated.contact-details.header"))</h1>
 
-
   <div class="form-group">
-    <span class="paragraph" id="text">
+    <p id="text">
       @if(isAgent) {
         @Messages("ated.contact-details.agent.lede")
       } else {
         @Messages("ated.contact-details.lede")
       }
-    </span>
+    </p>
   </div>
 
   @form(action = controllers.routes.ContactDetailsController.submit(mode)) {

@@ -6,18 +6,15 @@
 
 @atedMain(title = Messages("ated.nonUKReg.confirmation.title", clientName)) {
 
-  <div id="banner" class="greenBanner form-group">
+  <div id="banner" class="transaction-banner--complete">
     <h1 id="confirmation-message">
       @Messages("ated.nonUKReg.confirmation.header", clientName)
     </h1>
-    <h2 class="heading-medium banner-text" id="message">@Messages("ated.nonUKReg.confirmation.date.header", date)</h2>
+    <p><span class="heading-medium banner-text" id="message">@Messages("ated.nonUKReg.confirmation.date.header", date)</span></p>
   </div>
 
   <div class="form-group">
-    <h2 class="heading-medium" id="what-happens-next">@Messages("ated.nonUKReg.confirmation.what-next")</h2>
-  </div>
-
-  <div class="form-group">
+    <p><span class="heading-medium" id="what-happens-next">@Messages("ated.nonUKReg.confirmation.what-next")</span></p>
     <p id="happens-next-message">@Messages("ated.nonUKReg.confirmation.what-next.text")</p>
   </div>
 

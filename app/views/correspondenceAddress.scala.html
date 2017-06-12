@@ -32,13 +32,13 @@
 
 
   <div class="form-group">
-    <span class="paragraph" id="correspondence-address-lede">
+    <p id="correspondence-address-lede">
     @if(isAgent) {
       @Messages("ated.correspondence-address.agent.lede")
     } else {
       @Messages("ated.correspondence-address.lede")
     }
-    </span>
+    </p>
   </div>
 
   @form(action = controllers.routes.CorrespondenceAddressController.submit(mode)) {
