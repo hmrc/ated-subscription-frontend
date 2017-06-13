@@ -5,28 +5,32 @@
 
 @atedMain(title = Messages("ated.registered-user.title"), userLoggedIn = true) {
 
-  <div id="banner" class="greenBanner form-field text">
+  <div id="banner" class="transaction-banner--complete">
 
     <h1 id="header">
       @Messages("ated.registered-user.confirmation.message")
     </h1>
 
-    <h2 class="heading-medium banner-text">
-      @Messages("ated.registered-user.confirmation.date", date)
-    </h2>
+    <p/>
+      <span class="heading-medium banner-text">
+        @Messages("ated.registered-user.confirmation.date", date)
+      </span>
+    </p>
 
   </div>
 
   <div class="form-group">
-    <br/>
-    <h2 class="heading-medium" id="happens-next">@Messages("ated.registered-user.confirmation.what-happens-next")</h2>
-  </div>
+    <p>
+      <span class="heading-medium" id="happens-next">
+        @Messages("ated.registered-user.confirmation.what-happens-next")
+      </span>
+    </p>
 
-  <div class="form-group">
     <ul class="list-bullet">
       <li id="instruction-1">@Messages("ated.registered-user.confirmation.what-happens-next.instruction1")</li>
       <li id="instruction-2">@Messages("ated.registered-user.confirmation.what-happens-next.instruction2")</li>
     </ul>
+
   </div>
 
     @form(action = controllers.routes.RegisterUserController.redirectToAted) {
