@@ -98,7 +98,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with OneServerPerSuite 
           document.getElementById("subtitle").text() must be("Add a client")
           document.getElementById("lede").text() must be("If we can use email rather than letter there will be less delays in dealing with enquiries.")
           document.getElementById("email-risk-question").text() must be("What are the risks of email and why we need your consent")
-          document.getElementById("details-content-0").text() must include("HMRC may need to send information to you by email.")
+          document.getElementById("details-content-0").text() must include("HMRC may need to send emails to you about your ATED account")
           document.getElementById("email-contact-hidden").text() must be("Email address")
           document.getElementById("submit").text must be("Continue")
         }

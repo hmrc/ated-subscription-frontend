@@ -43,12 +43,13 @@
 
   @form(action = controllers.routes.RegisteredBusinessController.continue) {
 
-    <div class="form-group form-group-compound inline" id="isCorrespondenceAddress">
+    <div id="isCorrespondenceAddress">
 
       @atedInputRadioGroup(
       businessAddressForm("isCorrespondenceAddress"),
       Seq("true" -> Messages("ated.registered-business-address.correspondence-address.yes"),
       "false" -> Messages("ated.registered-business-address.correspondence-address.no")),
+      '_groupClass -> "form-group form-group-compound inline",
       '_labelClass -> "block-label",
       '_legend -> Messages("ated.registered-business-address.header"),
       '_legendClass -> "visuallyhidden",
