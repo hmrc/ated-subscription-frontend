@@ -16,17 +16,10 @@
   </script>
 }
 
-@atedNoAuthMain(title = Messages("ated.client-startpage-title"),
-                userLoggedIn = true,
-                pageScripts = Some(pageScripts)) {
+@atedNoAuthMain(title = Messages("ated.client-startpage-title"), userLoggedIn = true, pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(None, "client-startpage-subheader", Messages("ated.registration-subheader"),
-    Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general")))
-  <h1 class="heading-xlarge" id="client-startpage-header">
-    @Messages("ated.client-startpage-header")
-  </h1>
-
-
+  @pageHeadersAndError(None, "client-startpage-subheader", Messages("ated.registration-subheader"), "client-startpage-header", Messages("ated.client-startpage-header"),
+Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general")))
 
   @form(action = controllers.routes.SubscriptionController.continue) {
 

@@ -12,15 +12,8 @@
 
 @atedMain(title = if(isAgent) { Messages("ated.registered-business-address.agent.title") } else { Messages("ated.registered-business-address.title") }) {
   @pageHeadersAndError(backLink, "business-registered-text", if(isAgent) {Messages("ated.registered-business-address.agent.sub-header")} else {Messages("ated.registered-business-address.sub-header")},
+    "registered-business-address-header", if(isAgent) {Messages("ated.registered-business-address.agent.header")} else {Messages("ated.registered-business-address.header")},
     Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
-
-  <h1 class="heading-xlarge" id="registered-business-address-header">
-    @if(isAgent) {
-      @Messages("ated.registered-business-address.agent.header")
-    } else {
-      @Messages("ated.registered-business-address.header")
-    }
-  </h1>
 
   <div class="form-group">
     <p id="lede-agent-text">@if(isAgent) { @Messages("ated.registered-business-address.agent.lede-text") }</p>

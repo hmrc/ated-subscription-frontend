@@ -95,7 +95,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with OneServerPerSuite 
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details")
 
           document.getElementById("contact-details-email.header").text() must be("Can we use an email address as a point of contact?")
-          document.getElementById("subtitle").text() must be("Add a client")
+          document.getElementById("subtitle").text() must be("This section is: Add a client")
           document.getElementById("lede").text() must be("If we can use email rather than letter there will be less delays in dealing with enquiries.")
           document.getElementById("email-risk-question").text() must be("What are the risks of email and why we need your consent")
           document.getElementById("details-content-0").text() must include("HMRC may need to send emails to you about your ATED account")

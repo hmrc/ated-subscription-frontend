@@ -20,13 +20,8 @@
                 userLoggedIn = true,
                 pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(backLink, "client-appoint-subheader", Messages("ated.registration-subheader"),
+  @pageHeadersAndError(backLink, "client-appoint-subheader", Messages("ated.registration-subheader"), "client-startpage-header", Messages("ated.client-startpage-appoint-header"),
     Some(atedErrorSummary(appointAgentForm, "ated.appoint-agent-error.general")))
-  <h1 class="heading-xlarge" id="client-startpage-header">
-    @Messages("ated.client-startpage-appoint-header")
-  </h1>
-
-
   
   @form(action = controllers.routes.SubscriptionController.register) {
 

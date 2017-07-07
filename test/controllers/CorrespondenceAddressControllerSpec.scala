@@ -76,7 +76,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be("Where should we send your letters about ATED?")
-            document.getElementById("subtitle").text() must be("ATED registration")
+            document.getElementById("subtitle").text() must be("This section is: ATED registration")
             document.getElementById("correspondence-address-header").text() must be("Where should we send your letters about ATED?")
             document.getElementById("correspondence-address-lede").text() must be("This can be the address of your authorised agent.")
             document.getElementById("line_1_field").text() must be("Address")
@@ -96,7 +96,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             val document = Jsoup.parse(contentAsString(result))
 
             document.title() must be("Enter your client's ATED correspondence address")
-            document.getElementById("subtitle").text() must be("Add a client")
+            document.getElementById("subtitle").text() must be("This section is: Add a client")
             document.getElementById("correspondence-address-header").text() must be("Enter your client's ATED correspondence address")
             document.getElementById("correspondence-address-lede").text() must be("This can be your address as their authorised agent.")
             document.getElementById("line_1_field").text() must be("Address")
