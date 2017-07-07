@@ -89,7 +89,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
           getWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Is this where you want us to send any letters about ATED?")
-            document.getElementById("business-registered-text").text() must be("ATED registration")
+            document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
             document.getElementById("registered-business-address-header").text() must be("Is this where you want us to send any letters about ATED?")
           }
         }
@@ -98,7 +98,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
           getWithAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Is this where we should send your client's letters about ATED?")
-            document.getElementById("business-registered-text").text() must be("Add a client")
+            document.getElementById("business-registered-text").text() must be("This section is: Add a client")
             document.getElementById("registered-business-address-header").text() must be("Is this where we should send your client's letters about ATED?")
           }
         }

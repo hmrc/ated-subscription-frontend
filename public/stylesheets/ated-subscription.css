@@ -93,6 +93,7 @@
 }
 
 /* errors */
+
 .validation-summary h1 {
     margin-top: 10px;
 }
@@ -141,9 +142,8 @@
 }
 
 
-/*-----------------------*/
-/*---aside---*/
-/*-----------------------*/
+
+/* --aside --*/
 
 .related {
     box-sizing: border-box;
@@ -186,7 +186,6 @@
 .link-back:link, .link-back:visited, .link-back:hover, .link-back:active {
     color: #0b0c0c;
 }
-
 
 .link-back {
     font-size: 16px;
@@ -237,7 +236,6 @@ td.ated-one-third {
     border-left: 3px solid #df3034;
     padding: 0.75em 1em;
     box-sizing: border-box;
-    /*padding: 0.63158em 0.84211em 0.63158em 0.84211em;*/
 }
 
 .form-control {
@@ -391,3 +389,42 @@ html.noScroll {
 .form-control-indent {
     max-width:60%;
 }
+
+
+/*  -- new page headers -- */
+
+.page-header {
+  clear: both;
+  display: table;
+}
+
+.page-header-margin {
+    margin-top:1.5em
+}
+
+.page-header .heading-xlarge {
+  margin: .15em 0 0.8em;
+}
+
+.page-header .heading-secondary {
+  color: #6f777b;
+  display: table-header-group;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.11111;
+  margin-bottom: 0;
+  text-transform: none;
+}
+
+@media screen and (min-width: 641px) {
+  .page-header .heading-secondary {
+    font-size: 27px;
+    line-height: 1.11111;
+    padding-bottom: 6px;
+    padding-top: 4px;
+  }
+}
+
+
+
+

@@ -97,7 +97,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/correspondence-address")
 
           document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
-          document.getElementById("subtitle").text() must be("ATED registration")
+          document.getElementById("subtitle").text() must be("This section is: ATED registration")
           document.getElementById("text").text() must be("This can be your authorised agent.")
           document.getElementById("firstName_field").text() must be("First name")
           document.getElementById("lastName_field").text() must be("Last name")
@@ -117,7 +117,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/registered-business-address")
 
           document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
-          document.getElementById("subtitle").text() must be("Add a client")
+          document.getElementById("subtitle").text() must be("This section is: Add a client")
           document.getElementById("text").text() must be("This could be your contact details as their authorised agent.")
           document.getElementById("firstName_field").text() must be("First name")
           document.getElementById("lastName_field").text() must be("Last name")
@@ -138,7 +138,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")
 
           document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
-          document.getElementById("subtitle").text() must be("ATED registration")
+          document.getElementById("subtitle").text() must be("This section is: ATED registration")
           document.getElementById("text").text() must be("This can be your authorised agent.")
           document.getElementById("firstName_field").text() must be("First name")
           document.getElementById("lastName_field").text() must be("Last name")

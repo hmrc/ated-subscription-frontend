@@ -6,9 +6,7 @@
 
 @atedNoAuthMain(title = Messages("ated.agent-startpage-title"), userLoggedIn = true) {
 
-  @pageHeadersAndError(None, "subtitle", Messages("ated.agent-startpage-subheader"))
-
-  <h1 class="heading-xlarge" id="agent-startpage-header">@Messages("ated.agent-startpage-header")</h1>
+  @pageHeadersAndError(None, "subtitle", Messages("ated.agent-startpage-subheader"), "agent-startpage-header", Messages("ated.agent-startpage-header"))
 
   <div class="form-group">
     <span id="lede-paragraph" class="paragraph">@Messages("ated.agent-startpage-lede")</span>

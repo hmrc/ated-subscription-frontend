@@ -15,15 +15,8 @@
 @import controllers.auth.ExternalUrls
 
 @atedMain(title = if(isAgent) { Messages("ated.review-details.agent.title") } else { Messages("ated.review-details.title") }) {
-  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.review-details.agent.subheader")} else {Messages("ated.review-details.subheader")})
-
-<h1 class="heading-xlarge" id="review-business-details-header">
-  @if(isAgent) {
-  @Messages("ated.review-details.agent.header")
-  } else {
-  @Messages("ated.review-details.header")
-  }
-</h1>
+  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.review-details.agent.subheader")} else {Messages("ated.review-details.subheader")},
+  "review-business-details-header", if(isAgent) {Messages("ated.review-details.agent.header")} else {Messages("ated.review-details.header")})
 
 <table>
   <tr>

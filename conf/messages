@@ -11,6 +11,9 @@ ated.i-agree = I agree
 ated.confirm-and-register = Confirm and register
 ated.confirm-and-continue = Confirm and continue
 
+ated.screen-reader.section = This section is:
+ated.screen-reader.name = this is for:
+
 ##validation failed template
 ated.error.summaryHeader=There is a problem with the form
 ated.error.mandatory = You must enter {0}

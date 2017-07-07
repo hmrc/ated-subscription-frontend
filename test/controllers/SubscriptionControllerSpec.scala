@@ -147,7 +147,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
               document.title() must be("Set up your agency for the new ATED online service")
-              document.getElementById("subtitle").text() must be("ATED agency set up")
+              document.getElementById("subtitle").text() must be("This section is: ATED agency set up")
               document.getElementById("agent-startpage-header").text() must be("Set up your agency for the new ATED online service")
               document.getElementById("lede-paragraph").text() must include("Before you can submit ATED returns on behalf of your clients you must set up your agency")
               document.getElementById("agent-startpage-text1").text() must be("Enter your agency's registered name and Unique Taxpayer Reference (UTR).")

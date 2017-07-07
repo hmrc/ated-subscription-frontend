@@ -9,10 +9,8 @@
 @implicitFormInstance = @{ Some(contactDetailsForm) }
 
 @atedMain(title = Messages("ated.contact-details.title")) {
-  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")},
+  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")}, "contact-details.header", Messages("ated.contact-details.header"),
     Some(atedErrorSummary(contactDetailsForm, "ated.contact-details-error.general")))
-
-  <h1 class="heading-xlarge" id="contact-details.header" aria-level="1" role="heading">@Html(Messages("ated.contact-details.header"))</h1>
 
   <div class="form-group">
     <p id="text">
