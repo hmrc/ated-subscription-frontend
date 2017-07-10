@@ -24,8 +24,6 @@
 
   @form(action = controllers.routes.ContactDetailsController.submit(mode)) {
 
-    <div class="form-group">
-
       <fieldset id="contact-details-form">
         <legend class="visuallyhidden">
           @Html(Messages("ated.contact-details.header"))
@@ -47,7 +45,6 @@
         '_showConstraints -> false)
       </fieldset>
 
-    </div>
 
       <button class="button" id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
 

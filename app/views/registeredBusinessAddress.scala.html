@@ -15,9 +15,11 @@
     "registered-business-address-header", if(isAgent) {Messages("ated.registered-business-address.agent.header")} else {Messages("ated.registered-business-address.header")},
     Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
 
-  <div class="form-group">
-    <p id="lede-agent-text">@if(isAgent) { @Messages("ated.registered-business-address.agent.lede-text") }</p>
-  </div>
+  @if(isAgent) {
+    <div class="form-group">
+      <p id="lede-agent-text">@Messages("ated.registered-business-address.agent.lede-text") </p>
+    </div>
+  }
 
   <div class="form-group">
     <div id="registered-address-line-1">@businessAddress.line_1</div>
