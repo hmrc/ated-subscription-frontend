@@ -64,7 +64,7 @@ trait RegisterUserController extends FrontendController with Actions {
 
   def redirectToAted = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
     implicit user => implicit request =>
-      Redirect(ExternalUrls.clientSummaryPath)
+      Redirect(ExternalUrls.atedStartPath)
   }
 
   private def formatErrorMessage(errorNum: String): Option[(String, String, String)] = {

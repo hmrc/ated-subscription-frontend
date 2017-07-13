@@ -46,10 +46,6 @@ class ExternalUrlsSpec extends PlaySpec with OneServerPerSuite {
       ExternalUrls.logoutPath must be(s"""http://localhost:9916/ated/logout""")
     }
 
-    "have client summary " in {
-      ExternalUrls.clientSummaryPath must be(s"""http://localhost:9916/ated/summary""")
-    }
-
     "have review details path" in {
       ExternalUrls.reviewDetailsPath must be(s"""http://localhost:9923/business-customer/review-details/ATED""")
     }

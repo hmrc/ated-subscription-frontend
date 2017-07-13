@@ -30,8 +30,7 @@ object ExternalUrls extends RunMode {
   val signOut = s"$companyAuthHost/gg/sign-out"
 
   val logoutPath = Play.configuration.getString("microservice.services.ated-frontend.logoutUrl").getOrElse("/ated/logout")
-  val atedStartPath = Play.configuration.getString("microservice.services.ated-frontend.atedStartRedirectUrl").getOrElse("/ated/welcome")
-  val clientSummaryPath = Play.configuration.getString("microservice.services.ated-frontend.clientSummaryUrl").getOrElse("/ated/summary")
+  val atedStartPath = Play.configuration.getString("microservice.services.ated-frontend.atedStartRedirectUrl").getOrElse("/ated/home")
 
   val reviewDetailsPath = Play.configuration.getString("microservice.services.business-customer.reviewDetailsUrl")
     .getOrElse("/business-customer/review-details/ATED")

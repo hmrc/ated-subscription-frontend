@@ -162,7 +162,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
       "redirect the user to the Ated Page" in {
         redirectToAtedWithAuthorisedUser { result =>
           status(result) must be(SEE_OTHER)
-          redirectLocation(result).get must include("/ated/summary")
+          redirectLocation(result).get must include("/ated/home")
         }
       }
     }

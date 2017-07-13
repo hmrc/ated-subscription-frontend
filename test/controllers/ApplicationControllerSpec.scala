@@ -63,7 +63,7 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
 
       "be redirected to the ated start page " in {
         val result = controllers.ApplicationController.redirectToAtedStart().apply(FakeRequest())
-        redirectLocation(result).get must include("/ated/welcome")
+        redirectLocation(result).get must include("/ated/home")
       }
     }
 
