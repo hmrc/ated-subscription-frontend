@@ -1,22 +1,26 @@
 function showHideIsAnAgentSection() {
-  var selectedDiv = $('#hidden-isAnAgent');
-  var submitButton = $('#submit');
-  selectedDiv.hide();
 
-  if($('#isAgent-true').is(':checked')) {
-    selectedDiv.show();
-    submitButton.attr('disabled', 'disabled');
-  }
+    var selectedDiv = $('#hidden-isAnAgent');
+    var submitButton = $('#submit');
+    var signOutButton = $('#signOut');
+    selectedDiv.hide();
+    signOutButton.hide();
 
-  $('input[type=radio][name=isAgent]').change(function(){
-    if(this.value == 'true') {
-      selectedDiv.show();
-      submitButton.attr('disabled', 'disabled');
-    } else {
-      selectedDiv.hide();
-      submitButton.removeAttr('disabled');
+    if($('#isAgent-true').is(':checked')) {
+        selectedDiv.show();
     }
-  });
+
+    $('input[type=radio][name=isAgent]').change(function(){
+        if(this.value == 'true') {
+            selectedDiv.show();
+            signOutButton.show();
+            submitButton.hide();
+        } else {
+            selectedDiv.hide();
+            submitButton.show();
+            signOutButton.hide();
+        }
+    });
 
 }
 
