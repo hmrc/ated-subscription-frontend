@@ -95,9 +95,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
           getWithAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Enter your client's ATED correspondence address")
+            document.title() must be("Where should we send your client’s letters about ATED?")
             document.getElementById("subtitle").text() must be("This section is: Add a client")
-            document.getElementById("correspondence-address-header").text() must be("Enter your client's ATED correspondence address")
+            document.getElementById("correspondence-address-header").text() must be("Where should we send your client’s letters about ATED?")
             document.getElementById("correspondence-address-lede").text() must be("This can be your address as their authorised agent.")
             document.getElementById("line_1_field").text() must be("Address")
             document.getElementById("line_1").text() must be("")
