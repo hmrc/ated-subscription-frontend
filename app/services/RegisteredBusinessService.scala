@@ -16,14 +16,14 @@
 
 package services
 
-import connectors.{AtedConnector, BusinessCustomerFrontendConnector}
+import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessCustomerFrontendConnector}
 import models._
 import play.api.Logger
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{InternalServerException, BadRequestException, HeaderCarrier}
-import utils.{SessionUtils, AuthUtils}
+import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier, InternalServerException}
+import utils.{AuthUtils, SessionUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,11 +32,18 @@ trait RegisteredBusinessService {
 
   val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector
   val atedConnector: AtedConnector
+  val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector
 
   def getReviewBusinessDetails(implicit request: Request[_], user: AuthContext): Future[ReviewDetails] = {
-    businessCustomerFrontendConnector.getReviewDetails map { x =>
-      Logger.info("retrieved review details")
-      x
+    businessCustomerFrontendConnector.getReviewDetails map { response =>
+      response.status {
+        case OK => response.json.as[ReviewDetails]
+        case NOT_FOUND =>
+          agentClientMandateFrontendConnector.getOldMandateDetails map { mandate =>
+            val atedRefNumber = mandate.flatMap(_.clientParty.map(_.id))
+          }
+            case _ => ???
+      }
     }
   }
 
@@ -91,6 +98,7 @@ trait RegisteredBusinessService {
 }
 
 object RegisteredBusinessService extends RegisteredBusinessService {
+  val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = agentClientMandateFrontendConnector
   val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector = BusinessCustomerFrontendConnector
   val atedConnector: AtedConnector = AtedConnector
 }

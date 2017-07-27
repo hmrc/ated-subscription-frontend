@@ -23,7 +23,7 @@ import play.api.mvc.Request
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.HttpGet
+import uk.gov.hmrc.play.http.{HttpGet, HttpResponse}
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.Future
@@ -36,9 +36,9 @@ trait BusinessCustomerFrontendConnector extends ServicesConfig  with RawResponse
   val service = "ATED"
   val http: HttpGet
 
-  def getReviewDetails(implicit request: Request[_], ac: AuthContext): Future[ReviewDetails] = {
+  def getReviewDetails(implicit request: Request[_], ac: AuthContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
-    http.GET[ReviewDetails](getUrl)
+    http.GET(getUrl)
   }
 }
 

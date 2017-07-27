@@ -17,7 +17,7 @@
 package connectors
 
 import config.WSHttp
-import models.{AgentEmail, ClientDisplayName}
+import models.{AgentEmail, ClientDisplayName, Mandate}
 import play.api.Logger
 import play.api.mvc.Request
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -33,6 +33,7 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
   def serviceUrl = baseUrl("agent-client-mandate-frontend")
   val emailUri = "mandate/agent/email-session"
   val displayNameUri = "mandate/agent/client-display-name-session"
+  val mandateDetails = "mandate/agent/old-nonuk-mandate-from-session"
   val service = "ATED"
   val http: HttpGet
 
@@ -45,6 +46,12 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
     val getUrl = s"$serviceUrl/$displayNameUri/$service"
     http.GET[Option[ClientDisplayName]](getUrl)
   }
+
+  def getOldMandateDetails(implicit request: Request[_], user: AuthContext): Future[Option[Mandate]] = {
+    val getUrl = s"$serviceUrl/$mandateDetails/$service"
+    http.GET[Option[Mandate]](getUrl)
+  }
+
 }
 
 object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
