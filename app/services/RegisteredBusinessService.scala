@@ -17,13 +17,11 @@
 package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessCustomerFrontendConnector}
-import models._
-import play.api.Logger
+import models.{SubscriptionData, _}
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http.{BadRequestException, HeaderCarrier, InternalServerException}
-import utils.{AuthUtils, SessionUtils}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -34,15 +32,27 @@ trait RegisteredBusinessService {
   val atedConnector: AtedConnector
   val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector
 
-  def getReviewBusinessDetails(implicit request: Request[_], user: AuthContext): Future[ReviewDetails] = {
-    businessCustomerFrontendConnector.getReviewDetails map { response =>
-      response.status {
-        case OK => response.json.as[ReviewDetails]
+  def getReviewBusinessDetails(implicit request: Request[_], user: AuthContext, hc: HeaderCarrier): Future[ReviewDetails] = {
+    businessCustomerFrontendConnector.getReviewDetails flatMap  { response =>
+      response.status match {
+        case OK => Future.successful(response.json.as[ReviewDetails])
         case NOT_FOUND =>
-          agentClientMandateFrontendConnector.getOldMandateDetails map { mandate =>
-            val atedRefNumber = mandate.flatMap(_.clientParty.map(_.id))
+          agentClientMandateFrontendConnector.getOldMandateDetails flatMap  { mandateRef =>
+            val atedRefNumber = mandateRef.map(_.atedRefNumber).getOrElse(throw new RuntimeException("No Old Mandate Reference found for the client!"))
+            atedConnector.retrieveSubscriptionData(atedRefNumber) flatMap { resp =>
+              resp.status match {
+                case OK =>
+                  val subscriptioData = response.json.as[SubscriptionData]
+                  val address = Address(line_1 = subscriptioData.address.head.addressDetails.addressLine1,
+                    line_2 = subscriptioData.address.head.addressDetails.addressLine2,
+                    country = subscriptioData.address.head.addressDetails.countryCode)
+                  Future.successful(ReviewDetails(businessName = subscriptioData.organisationName,
+                    businessType = None, businessAddress = address, sapNumber = "", safeId = subscriptioData.safeId, agentReferenceNumber = user.principal.accounts.agent.flatMap(_.agentBusinessUtr.map(_.value))))
+                case status => throw new RuntimeException(s"Error while retrieving subscription data for ated ref no: $atedRefNumber  status:: $status")
+              }
+            }
           }
-            case _ => ???
+        case _ => throw new RuntimeException(s"Error while retrieving review details from business-customer keystore")
       }
     }
   }
@@ -61,7 +71,7 @@ trait RegisteredBusinessService {
     }
   }
 
-  def getBusinessAddress(implicit request: Request[_], user: AuthContext): Future[Address] = {
+  def getBusinessAddress(implicit request: Request[_], user: AuthContext, hc: HeaderCarrier): Future[Address] = {
     getReviewBusinessDetails.map(_.businessAddress)
   }
 
@@ -98,7 +108,7 @@ trait RegisteredBusinessService {
 }
 
 object RegisteredBusinessService extends RegisteredBusinessService {
-  val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = agentClientMandateFrontendConnector
+  val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
   val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector = BusinessCustomerFrontendConnector
   val atedConnector: AtedConnector = AtedConnector
 }
