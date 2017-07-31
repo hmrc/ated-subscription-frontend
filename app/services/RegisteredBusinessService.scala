@@ -42,12 +42,13 @@ trait RegisteredBusinessService {
             atedConnector.retrieveSubscriptionData(atedRefNumber) flatMap { resp =>
               resp.status match {
                 case OK =>
-                  val subscriptioData = response.json.as[SubscriptionData]
-                  val address = Address(line_1 = subscriptioData.address.head.addressDetails.addressLine1,
-                    line_2 = subscriptioData.address.head.addressDetails.addressLine2,
-                    country = subscriptioData.address.head.addressDetails.countryCode)
-                  Future.successful(ReviewDetails(businessName = subscriptioData.organisationName,
-                    businessType = None, businessAddress = address, sapNumber = "", safeId = subscriptioData.safeId, agentReferenceNumber = user.principal.accounts.agent.flatMap(_.agentBusinessUtr.map(_.value))))
+                  val subscriptionData = resp.json.as[SubscriptionData]
+                  val addressData = subscriptionData.address.filter(_.addressDetails.addressType == "Default Place Of Business").head
+                  val address = Address(line_1 = addressData.addressDetails.addressLine1,
+                    line_2 = addressData.addressDetails.addressLine2,
+                    country = addressData.addressDetails.countryCode)
+                  Future.successful(ReviewDetails(businessName = subscriptionData.organisationName,
+                    businessType = None, businessAddress = address, sapNumber = "", safeId = subscriptionData.safeId, agentReferenceNumber = user.principal.accounts.agent.flatMap(_.agentBusinessUtr.map(_.value))))
                 case status => throw new RuntimeException(s"Error while retrieving subscription data for ated ref no: $atedRefNumber  status:: $status")
               }
             }
@@ -56,7 +57,6 @@ trait RegisteredBusinessService {
       }
     }
   }
-
 
   def getDefaultCorrespondenceAddress(implicit request: Request[_], user: AuthContext, hc: HeaderCarrier): Future[Address] = {
     for {

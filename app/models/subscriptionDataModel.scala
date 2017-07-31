@@ -36,7 +36,6 @@ object EditContactDetails {
   implicit val formats = Json.format[EditContactDetails]
 }
 
-
 case class EditContactDetailsEmail(
                               emailAddress: String,
                               emailConsent: Boolean)
@@ -44,7 +43,6 @@ case class EditContactDetailsEmail(
 object EditContactDetailsEmail {
   implicit val formats = Json.format[EditContactDetailsEmail]
 }
-
 
 case class AddressDetails(addressType: String,
                           addressLine1: String,
@@ -72,7 +70,6 @@ case class SubscriptionData(safeId: String, organisationName: String, emailConse
 object SubscriptionData {
   implicit val formats = Json.format[SubscriptionData]
 }
-
 
 case class ChangeIndicators(nameChanged: Boolean = false,
                             permanentPlaceOfBusinessChanged: Boolean = false,

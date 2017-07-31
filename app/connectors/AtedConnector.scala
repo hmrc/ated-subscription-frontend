@@ -46,9 +46,7 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
   def retrieveSubscriptionData(atedRefNumber: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
-    val getUrl = s"""$serviceURL/$baseURI/$atedRefNumber/$retrieveSubscriptionData"""
-    //val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""
-    println(s"================GETURL====================$getUrl")
+    val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""
     http.GET[HttpResponse](getUrl)
   }
 

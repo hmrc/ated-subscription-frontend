@@ -17,6 +17,7 @@
 package controllers.nonUKReg
 
 import config.FrontendAuthConnector
+import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AtedSubscriptionRegime
 import services.{MandateService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
@@ -34,18 +35,28 @@ trait DeclarationController extends FrontendController with Actions {
 
   def mandateService: MandateService
 
+  def agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector
+
   def view = AuthorisedFor(AtedSubscriptionRegime, GGConfidence) {
     implicit user => implicit request => Ok(views.html.nonUKReg.declaration(getBackLink))
   }
 
   def submit = AuthorisedFor(AtedSubscriptionRegime, GGConfidence).async {
-    implicit user => implicit request =>
-      registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
-        val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
-        mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
-          Future.successful(Redirect(routes.ConfirmationController.view()))
+    implicit user =>
+      implicit request =>
+        agentClientFrontendMandateConnector.getOldMandateDetails flatMap {
+            case Some(mandateFound) =>
+              mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
+                Future.successful(Redirect(routes.ConfirmationController.view()))
+              }
+            case None =>
+              registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
+                val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
+                mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
+                  Future.successful(Redirect(routes.ConfirmationController.view()))
+                }
+              }
         }
-      }
   }
 
   def getBackLink() = {
@@ -58,5 +69,6 @@ object DeclarationController extends DeclarationController {
   val authConnector: AuthConnector = FrontendAuthConnector
   val registerUserService: RegisterUserService = RegisterUserService
   val mandateService: MandateService = MandateService
+  val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
   // $COVERAGE-ON$
 }

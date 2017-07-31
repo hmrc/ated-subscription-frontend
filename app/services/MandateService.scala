@@ -17,7 +17,7 @@
 package services
 
 import connectors._
-import models.{AgentEmail, ClientDisplayName, ContactDetails, NonUKClientDto}
+import models._
 import play.api.http.Status._
 import play.api.mvc.Request
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -80,6 +80,44 @@ trait MandateService {
         case status => throw new RuntimeException("Mandate creation failed.")
       }
     }
+  }
+
+  def updateMandateForNonUK(atedRefNum: String, mandateId: String)(implicit hc: HeaderCarrier, user: AuthContext, request: Request[_]): Future[HttpResponse] = {
+    val contactDetailsFuture = dataCacheConnector.fetchContactDetailsForSession
+    val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
+    val mandateDataFuture = fetchEmailAddress
+    val clientDisplayNameFuture = fetchClientDisplayName
+    val reviewDetailsFuture = registeredBusinessService.getReviewBusinessDetails
+    for {
+      contactDetails <- contactDetailsFuture
+      contactDetailsEmail <- contactDetailsEmailFuture
+      mandateData <- mandateDataFuture
+      reviewDetail <- reviewDetailsFuture
+      clientDisplayNameData <- clientDisplayNameFuture
+      mandateResponse <- {
+        val agentEmail = mandateData.fold("") {_.email}
+        val safeId = reviewDetail.safeId
+        val clientEmail = contactDetailsEmail.map(_.email).getOrElse("")
+        val clientDisplayName = clientDisplayNameData.fold("") {_.name}
+        val dto = NonUKClientDto(
+          safeId = safeId,
+          subscriptionReference = atedRefNum,
+          service = "ated",
+          clientEmail = clientEmail,
+          arn = AuthUtils.getArn,
+          agentEmail = agentEmail,
+          clientDisplayName,
+          mandateRef = Some(mandateId)
+        )
+        mandateConnector.updateMandateForNonUK(dto)
+      }
+    } yield {
+      mandateResponse.status match {
+        case CREATED => mandateResponse
+        case status => throw new RuntimeException("Non-UK Mandate update failed.")
+      }
+    }
+
   }
 
   def fetchEmailAddress(implicit request: Request[_], user: AuthContext): Future[Option[AgentEmail]] = {

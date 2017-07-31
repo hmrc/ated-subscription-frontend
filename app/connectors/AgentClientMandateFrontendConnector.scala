@@ -27,6 +27,8 @@ import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.Future
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {
 
   def serviceUrl = baseUrl("agent-client-mandate-frontend")
@@ -48,7 +50,6 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
 
   def getOldMandateDetails(implicit request: Request[_], user: AuthContext): Future[Option[OldMandateReference]] = {
     val getUrl = s"$serviceUrl/$mandateDetails/$service"
-    println(s"--------------------------------")
     http.GET[Option[OldMandateReference]](getUrl)
   }
 
