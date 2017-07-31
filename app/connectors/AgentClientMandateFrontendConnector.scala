@@ -18,6 +18,8 @@ package connectors
 
 import config.WSHttp
 import models.{AgentEmail, ClientDisplayName, OldMandateReference}
+import play.api.Logger
+import play.api.http.Status.OK
 import play.api.mvc.Request
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -26,7 +28,6 @@ import uk.gov.hmrc.play.http.HttpGet
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {
@@ -50,7 +51,7 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
 
   def getOldMandateDetails(implicit request: Request[_], user: AuthContext): Future[Option[OldMandateReference]] = {
     val getUrl = s"$serviceUrl/$mandateDetails/$service"
-    http.GET[Option[OldMandateReference]](getUrl)
+    http.GET(getUrl) map { response => response.json.asOpt[OldMandateReference]}
   }
 
 }
