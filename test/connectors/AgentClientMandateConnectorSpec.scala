@@ -52,6 +52,24 @@ class AgentClientMandateConnectorSpec extends PlaySpec with OneServerPerSuite wi
 
     }
 
+    "updateMandateForNonUK" must {
+
+      "return response, if status is CREATED" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(CREATED, Some(Json.parse("""{ "reason": "wrong data" }""")))))
+        val result = await(TestAgentClientMandateConnector.updateMandateForNonUK(dto))
+        result.status must be(CREATED)
+      }
+
+      "throw exception, if response status is anything else" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
+        val thrown = the[InternalServerException] thrownBy await(TestAgentClientMandateConnector.updateMandateForNonUK(dto))
+        thrown.getMessage must be(null)
+      }
+
+    }
+
   }
 
   val dto = NonUKClientDto("safeid", "atedRefNum", "ated", "aa@mail.com", "arn", "bb@mail.com", "client display name")

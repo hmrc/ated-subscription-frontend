@@ -33,7 +33,6 @@ trait RegisterUserService {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector
-  val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector
   val governmentGatewayConnector: GovernmentGatewayConnector
   val authenticatorConnector: AuthenticatorConnector
   val registeredBusinessService: RegisteredBusinessService
@@ -120,7 +119,6 @@ object RegisterUserService extends RegisterUserService {
   val registeredBusinessService = RegisteredBusinessService
   val atedSubscriptionConnector = AtedSubscriptionConnector
   val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  val businessCustomerFrontendConnector = BusinessCustomerFrontendConnector
   val governmentGatewayConnector = GovernmentGatewayConnector
   val authenticatorConnector = AuthenticatorConnector
 }

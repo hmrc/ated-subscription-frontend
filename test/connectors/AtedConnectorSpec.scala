@@ -74,6 +74,15 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
         await(result).status must be(OK)
         verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())
       }
+
+      "GET subscription data from ETMP for an agent" in {
+        implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        val result = TestAtedConnector.retrieveSubscriptionData("XN1200000100001")
+        await(result).status must be(OK)
+        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())
+      }
     }
 
   }

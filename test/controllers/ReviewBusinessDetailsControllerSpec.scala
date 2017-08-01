@@ -177,7 +177,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-edit").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("register-address-edit").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
 
-            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any())
             verify(mockMandateService, times(1)).fetchClientDisplayName(Matchers.any(), Matchers.any())
@@ -193,7 +193,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-edit") must be(null)
             document.getElementById("register-address-edit") must be(null)
 
-            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetailsEmail(Matchers.any())
@@ -214,7 +214,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
 
             document.getElementById("contact-pref").text() must be("abc@test.com")
 
-            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any())
           }
@@ -241,7 +241,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(reviewDetails))
+    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(reviewDetails))
     when(mockContactDetailsService.fetchContactDetails(Matchers.any())).thenReturn(Future.successful(contactDetails))
     when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any())).thenReturn(Future.successful(contactDetailsEmail))
     when(mockMandateService.fetchEmailAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(emailAddress)))
@@ -268,7 +268,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
     when(mockContactDetailsService.fetchContactDetails(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
     when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
     when(mockMandateService.fetchEmailAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(emailAddress)))
