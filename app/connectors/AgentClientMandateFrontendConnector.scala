@@ -17,8 +17,9 @@
 package connectors
 
 import config.WSHttp
-import models.{AgentEmail, ClientDisplayName}
+import models.{AgentEmail, ClientDisplayName, OldMandateReference}
 import play.api.Logger
+import play.api.http.Status.OK
 import play.api.mvc.Request
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -27,12 +28,14 @@ import uk.gov.hmrc.play.http.HttpGet
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {
 
   def serviceUrl = baseUrl("agent-client-mandate-frontend")
   val emailUri = "mandate/agent/email-session"
   val displayNameUri = "mandate/agent/client-display-name-session"
+  val mandateDetails = "mandate/agent/old-nonuk-mandate-from-session"
   val service = "ATED"
   val http: HttpGet
 
@@ -45,6 +48,12 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
     val getUrl = s"$serviceUrl/$displayNameUri/$service"
     http.GET[Option[ClientDisplayName]](getUrl)
   }
+
+  def getOldMandateDetails(implicit request: Request[_], user: AuthContext): Future[Option[OldMandateReference]] = {
+    val getUrl = s"$serviceUrl/$mandateDetails/$service"
+    http.GET(getUrl) map { response => response.json.asOpt[OldMandateReference]}
+  }
+
 }
 
 object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {

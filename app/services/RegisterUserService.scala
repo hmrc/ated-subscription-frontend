@@ -33,13 +33,13 @@ trait RegisterUserService {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector
-  val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector
   val governmentGatewayConnector: GovernmentGatewayConnector
   val authenticatorConnector: AuthenticatorConnector
+  val registeredBusinessService: RegisteredBusinessService
 
   def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)(implicit user: AuthContext, hc: HeaderCarrier, request: Request[_]): Future[(SubscribeSuccessResponse, HttpResponse)] = {
     for {
-      businessDetails <- businessCustomerFrontendConnector.getReviewDetails
+      businessDetails <- registeredBusinessService.getReviewBusinessDetails
       address <- dataCacheConnector.fetchCorrespondenceAddress
       contactDetails <- dataCacheConnector.fetchContactDetailsForSession
       contactDetailsEmail <- dataCacheConnector.fetchContactDetailsEmailForSession
@@ -116,9 +116,9 @@ trait RegisterUserService {
 }
 
 object RegisterUserService extends RegisterUserService {
+  val registeredBusinessService = RegisteredBusinessService
   val atedSubscriptionConnector = AtedSubscriptionConnector
   val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  val businessCustomerFrontendConnector = BusinessCustomerFrontendConnector
   val governmentGatewayConnector = GovernmentGatewayConnector
   val authenticatorConnector = AuthenticatorConnector
 }

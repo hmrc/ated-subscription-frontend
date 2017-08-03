@@ -77,7 +77,7 @@ class ConfirmationControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def viewWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
     val result = TestConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

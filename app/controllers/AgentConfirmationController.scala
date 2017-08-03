@@ -19,6 +19,7 @@ package controllers
 import config.FrontendAuthConnector
 import connectors.BusinessCustomerFrontendConnector
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
+import models.ReviewDetails
 import org.joda.time.LocalDate
 import services.RegisterUserService
 import uk.gov.hmrc.play.config.RunMode
@@ -41,10 +42,13 @@ trait AgentConfirmationController extends FrontendController with Actions with R
 
   def view = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user => implicit request =>
-      businessCustomerFEConnector.getReviewDetails.map(reviewDetails =>
-        Ok(views.html.agentConfirmation(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
+      businessCustomerFEConnector.getReviewDetails.map(respone =>
+        respone.status match {
+          case OK =>
+            val reviewDetails = respone.json.as[ReviewDetails]
+            Ok(views.html.agentConfirmation(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
+        }
       )
-
   }
 
   def continue = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {

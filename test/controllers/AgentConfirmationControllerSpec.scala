@@ -28,6 +28,7 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -152,7 +153,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
       businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
       sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
 
-    when(mockBCConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(reviewDetails))
+    when(mockBCConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
     val result = TestAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 

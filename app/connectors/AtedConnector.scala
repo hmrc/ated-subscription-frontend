@@ -33,6 +33,7 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
 
   def serviceURL: String
   val getDetailsURI = "details"
+  val retrieveSubscriptionData = "subscription-data"
 
   def http: HttpGet with HttpPost
 
@@ -42,5 +43,11 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
     http.GET[HttpResponse](s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType")
   }
 
+  def retrieveSubscriptionData(atedRefNumber: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
+    val baseURI = "ated"
+    val authLink = AuthUtils.getAuthLink
+    val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""
+    http.GET[HttpResponse](getUrl)
+  }
 
 }

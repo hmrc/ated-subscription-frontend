@@ -49,24 +49,24 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
 
   val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockBusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
   val mockGovernmentGatewayConnector = mock[GovernmentGatewayConnector]
   val mockAuthenticatorConnector = mock[AuthenticatorConnector]
+  val mockRegisteredBusinessService = mock[RegisteredBusinessService]
 
   override def beforeEach() = {
     reset(mockAtedSubscriptionConnector)
     reset(mockDataCacheConnector)
-    reset(mockBusinessCustomerFrontendConnector)
     reset(mockGovernmentGatewayConnector)
     reset(mockAuthenticatorConnector)
+    reset(mockRegisteredBusinessService)
   }
 
   object TestRegisterUserService extends RegisterUserService {
     val atedSubscriptionConnector: AtedSubscriptionConnector = mockAtedSubscriptionConnector
     val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector = mockBusinessCustomerFrontendConnector
     val governmentGatewayConnector: GovernmentGatewayConnector = mockGovernmentGatewayConnector
     val authenticatorConnector: AuthenticatorConnector = mockAuthenticatorConnector
+    val registeredBusinessService: RegisteredBusinessService = mockRegisteredBusinessService
   }
 
   "RegisterUserService" must {
@@ -88,7 +88,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
 
     "subscribeAted" must {
       "if successful, should return subscribe success response" in {
-        when(mockBusinessCustomerFrontendConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
@@ -100,7 +100,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
       }
 
       "when called by agent to register non-uk client, if successful, should return subscribe success response and not enrol current credential" in {
-        when(mockBusinessCustomerFrontendConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
@@ -114,7 +114,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
       "should handle invalid data in the subscribe success response" in {
         val invalidSuccessResponse = SubscribeSuccessResponse(None, None, None)
 
-        when(mockBusinessCustomerFrontendConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
@@ -127,7 +127,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
       }
 
       "if unsuccessful, should throw runtime exception - cause address is not in keystore" in {
-        when(mockBusinessCustomerFrontendConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(None))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
@@ -139,7 +139,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         thrown.getMessage must include("data not found")
       }
       "if unsuccessful, should throw runtime exception - cause contact details is not in keystore" in {
-        when(mockBusinessCustomerFrontendConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(None))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
@@ -151,7 +151,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         thrown.getMessage must include("data not found")
       }
       "if unsuccessful, should throw runtime exception - cause contact details email is not in keystore" in {
-        when(mockBusinessCustomerFrontendConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(None))

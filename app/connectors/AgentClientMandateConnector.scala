@@ -17,7 +17,7 @@
 package connectors
 
 import config.WSHttp
-import models.NonUKClientDto
+import models.{NonUKClientDto, OldMandateReference}
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -35,6 +35,8 @@ trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
 
   lazy val serviceURL = baseUrl("agent-client-mandate")
   val createMandateURI = "mandate/non-uk"
+  val updateMandateURI = "mandate/non-uk/update"
+
 
   val http: HttpGet with HttpPost = WSHttp
 
@@ -46,11 +48,24 @@ trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
       response.status match {
         case CREATED => response
         case status =>
-          Logger.warn(s"[AgentClientMandateConnector][createMandateForNonUK] - status: $status InternalServerException ${response.body}")
+          Logger.warn(s"[AgentClientMandateConnector][createMandateForNonUK]- Exception occured - status:: $status response:: ${response.body}")
           throw new InternalServerException(response.body)
       }
     }
+  }
 
+  def updateMandateForNonUK(dto: NonUKClientDto)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
+    val data = Json.toJson(dto)
+    val authLink = AuthUtils.agentLink
+    val postURL = s"""$serviceURL$authLink/$updateMandateURI"""
+    http.POST[JsValue, HttpResponse](postURL, data) map { response =>
+      response.status match {
+        case CREATED => response
+        case status =>
+          Logger.warn(s"[AgentClientMandateConnector][updateMandateForNonUK]- Exception occured - status:: $status response:: ${response.body}")
+          throw new InternalServerException(response.body)
+      }
+    }
   }
 
 }

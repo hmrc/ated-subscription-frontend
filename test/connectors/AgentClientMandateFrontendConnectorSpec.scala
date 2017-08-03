@@ -17,15 +17,16 @@
 package connectors
 
 import builders.AuthBuilder
-import models.{AgentEmail, ClientDisplayName}
+import models.{AgentEmail, ClientDisplayName, OldMandateReference}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.http.ws.WSHttp
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
@@ -63,6 +64,14 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
 
       val response = await(TestAgentClientMandateFrontendConnector.getClientDisplayName)
       response.get.name must be("client display name")
+    }
+
+    "get old mandate details" in {
+      val oldMandateDetails = OldMandateReference("mandateId", "atedRef")
+      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(oldMandateDetails)))))
+
+      val response = await(TestAgentClientMandateFrontendConnector.getOldMandateDetails)
+      response.get.atedRefNumber must be("atedRef")
     }
   }
 }
