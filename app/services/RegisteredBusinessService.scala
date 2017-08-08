@@ -18,6 +18,7 @@ package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessCustomerFrontendConnector}
 import models.{SubscriptionData, _}
+import play.api.Logger
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -43,6 +44,7 @@ trait RegisteredBusinessService {
               resp.status match {
                 case OK =>
                   val subscriptionData = resp.json.as[SubscriptionData]
+                  Logger.info("XXXXXXXXXXXX: " + resp.json)
                   val addressData = subscriptionData.address.filter(_.addressDetails.addressType == "Default Place Of Business").head
                   val address = Address(line_1 = addressData.addressDetails.addressLine1,
                     line_2 = addressData.addressDetails.addressLine2,
