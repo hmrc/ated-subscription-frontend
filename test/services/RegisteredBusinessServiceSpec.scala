@@ -71,7 +71,7 @@ class RegisteredBusinessServiceSpec extends PlaySpec with OneServerPerSuite with
       implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
       implicit val request: Request[_] = FakeRequest(GET, "")
       val oldMandateRef = OldMandateReference("mandateId", "atedRefNo")
-      val addressDetails = AddressDetails(addressType = "Default Place Of Business", addressLine1 = "", addressLine2 = "", countryCode = "GB")
+      val addressDetails = AddressDetails(addressType = "Permanent Place Of Business", addressLine1 = "", addressLine2 = "", countryCode = "GB")
       val subscriptionData = SubscriptionData("safeId", "orgName", emailConsent = None, address = Seq(SubscriptionAddress(Some("name1"), Some("name2"), addressDetails = addressDetails)))
       when(mockBusinessCustomerFrontendConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
       when(mockAgentClientMandateFrontendConnector.getOldMandateDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(oldMandateRef)))

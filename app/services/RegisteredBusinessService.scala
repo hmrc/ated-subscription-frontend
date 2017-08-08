@@ -44,8 +44,7 @@ trait RegisteredBusinessService {
               resp.status match {
                 case OK =>
                   val subscriptionData = resp.json.as[SubscriptionData]
-                  Logger.info("XXXXXXXXXXXX: " + resp.json)
-                  val addressData = subscriptionData.address.filter(_.addressDetails.addressType == "Default Place Of Business").head
+                  val addressData = subscriptionData.address.filter(_.addressDetails.addressType == "Permanent Place Of Business").head
                   val address = Address(line_1 = addressData.addressDetails.addressLine1,
                     line_2 = addressData.addressDetails.addressLine2,
                     country = addressData.addressDetails.countryCode)
