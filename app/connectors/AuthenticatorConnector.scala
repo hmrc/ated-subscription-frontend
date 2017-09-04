@@ -26,14 +26,14 @@ import scala.concurrent.Future
 
 trait AuthenticatorConnector extends ServicesConfig with RawResponseReads {
 
-  lazy val serviceURL = baseUrl("authenticator")
+  lazy val serviceURL = baseUrl("government-gateway-authentication")
 
-  val refrehProfileURI = "authenticator/refresh-profile"
+  val refreshProfileURI = "government-gateway-authentication/refresh-profile"
 
   val http: HttpGet with HttpPost = WSHttp
 
   def refreshProfile()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val postUrl = s"""$serviceURL/$refrehProfileURI"""
+    val postUrl = s"""$serviceURL/$refreshProfileURI"""
     http.POSTEmpty[HttpResponse](postUrl)
   }
 }
