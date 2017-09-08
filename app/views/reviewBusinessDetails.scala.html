@@ -36,13 +36,13 @@
       <span id="business-name-label" class="heading-small">@Messages("ated.review-details.business")</span>
     </div>
 
-    <div class="grid grid-2-2 cya-answer">
-      <span id="business-name" class="heading-small">@businessDetails.businessName</span>
+    <div class="grid grid-1-2 cya-answer">
+      <span id="business-name">@businessDetails.businessName</span>
     </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="business-name-edit" aria-label='@Messages("ated.review-details.edit-correspondence.title")'>@Messages("ated.review-details.edit")
-        <span class="screen-reader-text">@Messages("ated.review-details.business")</span>
+      <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="business-name-edit">@Messages("ated.review-details.edit")
+        <span class="visuallyhidden">@Messages("ated.review-details.business")</span>
       </a>
     </div>
 
@@ -81,8 +81,8 @@
     </div>
 
     <div class="grid grid-1-6 cya-change">
-      <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="register-address-edit" aria-label='@Messages("ated.review-details.edit-registered-address.title")'>@Messages("ated.review-details.edit")
-        <span class="screen-reader-text">@Messages("ated.review-details.registered-address")</span>
+      <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="register-address-edit">@Messages("ated.review-details.edit")
+        <span class="visuallyhidden">@Messages("ated.review-details.registered-address")</span>
       </a>
     </div>
   </div>
@@ -91,19 +91,18 @@
     <div class="grid grid-2-6 cya-question">
       <span id="overseas-tax-reference-label" class="heading-small">@Messages("ated.review-details.overseas-tax-reference")</span>
     </div>
-    @businessDetails.identification.map { identification =>
 
     <div class="grid grid-1-2 cya-answer">
+    @businessDetails.identification.map { identification =>
       <div id="overseas-id-number">@identification.idNumber</div>
       <div id="overseas-issuingCountryCode">@AtedSubscriptionUtils.getSelectedCountry(identification.issuingCountryCode)</div>
       <div id="overseas-issuingInstitution">@identification.issuingInstitution</div>
+    }
     </div>
 
-    }
-
     <div class="grid grid-1-6 cya-change">
-      <a href='@ExternalUrls.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit" aria-label='@Messages("ated.review-details.edit-overseas-tax-reference.title")'>@Messages("ated.review-details.edit")
-        <span class="screen-reader-text">@Messages("ated.review-details.overseas-tax-reference")</span>
+      <a href='@ExternalUrls.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit">@Messages("ated.review-details.edit")
+        <span class="visuallyhidden">@Messages("ated.review-details.overseas-tax-reference")</span>
       </a>
     </div>
   </div>
@@ -159,7 +158,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href='@controllers.routes.CorrespondenceAddressController.editAddress(Some("edit"))' id="correspondence-edit" aria-label='@Messages("ated.review-details.edit-correspondence.title")' data-journey-click="ated-subscription:click:correspondence-edit">@Messages("ated.review-details.edit")
-        <span class="screen-reader-text">@Messages("ated.review-details.correspondence-address")</span>
+        <span class="visuallyhidden">@Messages("ated.review-details.correspondence-address")</span>
       </a>
     </div>
 
@@ -178,7 +177,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href=@controllers.routes.ContactDetailsController.editDetails(Some("edit")) id="contact-edit" aria-label='@Messages("ated.review-details.edit-contact.title")' data-journey-click="ated-subscription:click:contact-edit">@Messages("ated.review-details.edit")
-        <span class="screen-reader-text">@Messages("ated.review-details.contact-details")</span>
+        <span class="visuallyhidden">@Messages("ated.review-details.contact-details")</span>
       </a>
     </div>
 
@@ -197,7 +196,7 @@
 
     <div class="grid grid-1-6 cya-change">
       <a href="@controllers.routes.ContactDetailsEmailController.editDetailsEmail" id="contact-pref-edit" aria-label='@Messages("ated.review-details.edit-contact-preference.title")' data-journey-click="ated-subscription:click:contact-pref-edit">@Messages("ated.review-details.edit")
-        <span class="screen-reader-text">@Messages("ated.review-details.contact-preference")</span>
+        <span class="visuallyhidden">@Messages("ated.review-details.contact-preference")</span>
       </a>
     </div>
   </div>
