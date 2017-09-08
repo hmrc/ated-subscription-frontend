@@ -3,6 +3,10 @@ function showHideIsAnAgentSection() {
     var selectedDiv = $('#hidden-isAnAgent');
     var submitButton = $('#submit');
     var signOutButton = $('#signOut');
+
+    var yesSelected = $('#isAgent-true');
+    var noSelected = $('#isAgent-false');
+
     selectedDiv.hide();
     signOutButton.hide();
 
@@ -12,10 +16,12 @@ function showHideIsAnAgentSection() {
 
     $('input[type=radio][name=isAgent]').change(function(){
         if(this.value == 'true') {
+            yesSelected.attr('aria-expanded', 'true')
             selectedDiv.show();
             signOutButton.show();
             submitButton.hide();
         } else {
+            noSelected.attr('aria-expanded', 'false')
             selectedDiv.hide();
             submitButton.show();
             signOutButton.hide();
