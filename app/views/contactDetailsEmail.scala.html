@@ -9,7 +9,7 @@
 @implicitFormInstance = @{ Some(contactDetailsEmailForm) }
 
 @pageScripts = {
-<script type="text/javascript" src='@controllers.routes.AssetsController.at("javascript/contact-email.js")'></script>
+<script src='@controllers.routes.AssetsController.at("javascript/contact-email.js")'></script>
 }
 
 @atedMain(title = Messages("ated.contact-details-email-title"), pageScripts = Some(pageScripts)) {
