@@ -23,10 +23,10 @@ import play.api.mvc.Request
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.{HttpGet, HttpResponse}
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HttpGet, HttpResponse }
 
 trait BusinessCustomerFrontendConnector extends ServicesConfig  with RawResponseReads with HeaderCarrierForPartialsConverter {
 

@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.http._
 import utils.AuthUtils
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpResponse }
 
 object AtedConnector extends AtedConnector {
   val serviceURL = baseUrl("ated")

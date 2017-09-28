@@ -18,11 +18,11 @@ package builders
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.model.DataEvent
 import uk.gov.hmrc.play.audit.model.{AuditAsMagnet, Audit, EventTypes}
 import config.AtedSubscriptionFrontendAuditConnector
 import uk.gov.hmrc.play.audit.model.Audit._
+import uk.gov.hmrc.http.HeaderCarrier
 
 class TestAudit() extends Audit("test", AtedSubscriptionFrontendAuditConnector) {
   var capturedTxName: String = ""

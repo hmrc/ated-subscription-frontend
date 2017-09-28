@@ -16,7 +16,7 @@
 
 package utils
 
-import uk.gov.hmrc.play.http.HttpResponse
+import uk.gov.hmrc.http.HttpResponse
 
 
 object ErrorMessageUtils {

@@ -28,6 +28,7 @@ import utils.AuthUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException }
 
 object AtedSubscriptionConnector extends AtedSubscriptionConnector
 
