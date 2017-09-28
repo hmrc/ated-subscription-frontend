@@ -31,7 +31,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpResponse }
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpGet, HttpResponse}
 
 
 class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
@@ -43,7 +43,7 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSu
         businessType = Some("corporate body"),
         businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
         sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
       val response = await(TestBusinessCustomerFrontendConnector.getReviewDetails)
       response.status must be(OK)
@@ -54,14 +54,14 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSu
   implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
   implicit val request: Request[_] = FakeRequest(GET, "")
 
-  val mockWSHttp = mock[WSHttp]
+  val mockWSHttp = mock[CoreGet]
 
   override def beforeEach = {
     reset(mockWSHttp)
   }
 
   object TestBusinessCustomerFrontendConnector extends BusinessCustomerFrontendConnector {
-    override val http: HttpGet = mockWSHttp
+    override val http: CoreGet = mockWSHttp
     override def crypto: (String) => String = SessionCookieCryptoFilter.encrypt _
   }
 }

@@ -31,28 +31,28 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpResponse }
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpGet, HttpResponse}
 
 class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
   implicit val request: Request[_] = FakeRequest(GET, "")
-  val mockWSHttp = mock[WSHttp]
+  val mockWSHttp = mock[CoreGet]
 
   override def beforeEach = {
     reset(mockWSHttp)
   }
 
   object TestAgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
-    override val http: HttpGet = mockWSHttp
+    override val http: CoreGet = mockWSHttp
     override def crypto: (String) => String = SessionCookieCryptoFilter.encrypt _
   }
 
   "AgentClientMandateFrontendConnector" must {
     "get agent email" in {
       val agentEmail = AgentEmail("aaa@bbb.com")
-      when(mockWSHttp.GET[Option[AgentEmail]](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(agentEmail)))
+      when(mockWSHttp.GET[Option[AgentEmail]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(agentEmail)))
 
       val response = await(TestAgentClientMandateFrontendConnector.getAgentEmail)
       response.get.email must be("aaa@bbb.com")
@@ -60,7 +60,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
 
     "get client display name" in {
       val displayName = ClientDisplayName("client display name")
-      when(mockWSHttp.GET[Option[ClientDisplayName]](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(displayName)))
+      when(mockWSHttp.GET[Option[ClientDisplayName]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(displayName)))
 
       val response = await(TestAgentClientMandateFrontendConnector.getClientDisplayName)
       response.get.name must be("client display name")
@@ -68,7 +68,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
 
     "get old mandate details" in {
       val oldMandateDetails = OldMandateReference("mandateId", "atedRef")
-      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(oldMandateDetails)))))
+      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(oldMandateDetails)))))
 
       val response = await(TestAgentClientMandateFrontendConnector.getOldMandateDetails)
       response.get.atedRefNumber must be("atedRef")

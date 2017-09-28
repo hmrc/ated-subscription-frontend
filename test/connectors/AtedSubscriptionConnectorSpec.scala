@@ -25,26 +25,21 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.{WSGet, WSPost}
+import uk.gov.hmrc.http._
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException }
 
 class AtedSubscriptionConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet with WSPost {
-    override val hooks = NoneRequired
-  }
-
-  val mockWSHttp = mock[MockHttp]
+  trait MockedVerbs extends CoreGet with CorePost
+  val mockWSHttp = mock[MockedVerbs]
 
   override def beforeEach = {
     reset(mockWSHttp)
   }
 
   object TestAtedSubscriptionConnector extends AtedSubscriptionConnector {
-    override val http: HttpGet with HttpPost = mockWSHttp
+    override val http: CoreGet with CorePost = mockWSHttp
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -63,29 +58,29 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with OneServerPerSuite with
     "subscribeAted" must {
       "return status as OK, for successful subscription" in {
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
         val result = TestAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         await(result) must be(subscribeSuccessResponse)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       }
       "return status as BAD_REQUEST, for bad data sent for subscription" in {
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
         val result = TestAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       }
       "return status anything else, for bad data sent for subscription" in {
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
         val result = TestAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       }
     }
 

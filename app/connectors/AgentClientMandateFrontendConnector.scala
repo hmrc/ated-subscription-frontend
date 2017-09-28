@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import uk.gov.hmrc.http.HttpGet
+import uk.gov.hmrc.http.{CoreGet, HttpGet}
 
 trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {
 
@@ -37,7 +37,7 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
   val displayNameUri = "mandate/agent/client-display-name-session"
   val mandateDetails = "mandate/agent/old-nonuk-mandate-from-session"
   val service = "ATED"
-  val http: HttpGet
+  val http: CoreGet
 
   def getAgentEmail(implicit request: Request[_], user: AuthContext): Future[Option[AgentEmail]] = {
     val getUrl = s"$serviceUrl/$emailUri/$service"

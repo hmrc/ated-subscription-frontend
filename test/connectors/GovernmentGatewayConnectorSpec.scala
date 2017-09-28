@@ -33,20 +33,17 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.{WSGet, WSPost}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ BadRequestException, HeaderCarrier, HttpGet, HttpPost, HttpResponse, InternalServerException }
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
 
 
 class GovernmentGatewayConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet with WSPost {
-    override val hooks = NoneRequired
-  }
-
-  val mockWSHttp = mock[MockHttp]
+  trait MockedVerbs extends CoreGet with CorePost
+  val mockWSHttp = mock[MockedVerbs]
 
   object TestGovernmentGatewayConnector extends GovernmentGatewayConnector {
-    override val http: HttpGet with HttpPost = mockWSHttp
+    override val http: CoreGet with CorePost = mockWSHttp
     override val audit: Audit = new TestAudit
     override val appName: String = "Test"
 
@@ -73,7 +70,7 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with OneServerPerSuite wit
     "enrol user" must {
       "works for a user" in {
 
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).
           thenReturn(Future.successful(successfulSubscribeJson))
 
         val result = TestGovernmentGatewayConnector.enrol(request)
@@ -82,20 +79,20 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with OneServerPerSuite wit
       }
 
       "return status as BAD_REQUEST, for bad data sent for enrol" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
         val result = TestGovernmentGatewayConnector.enrol(request)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       }
       "return status anything else, for bad data sent for enrol" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
         val result = TestGovernmentGatewayConnector.enrol(request)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       }
     }
   }

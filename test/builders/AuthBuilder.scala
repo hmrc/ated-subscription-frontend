@@ -51,20 +51,20 @@ object AuthBuilder {
   }
 
   def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       val orgAuthority = Authority(userId, Accounts(org = Some(OrgAccount("org/1234", Org("1234")))), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, Some(""), Some(""), Some(""), "")
       Future.successful(Some(orgAuthority))
     }
   }
 
   def mockAuthorisedAgent(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       Future.successful(Some(createAgentAuthority(userId, agentRefNo = Some("JARN1234567"))))
     }
   }
 
   def mockAuthorisedAgentAssistant(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       Future.successful(Some(createAgentAuthority(userId, agentRole = AgentAssistant, agentRefNo = Some("JARN1234567"))))
     }
   }
@@ -72,7 +72,7 @@ object AuthBuilder {
   def mockUnAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
     val x = new Generator()
     val nino = x.nextNino
-    when(mockAuthConnector.currentAuthority(Matchers.any())) thenReturn {
+    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
       val payeAuthority = Authority(userId, Accounts(paye = Some(PayeAccount(s"paye/$nino", nino))), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, Some(""), Some(""), Some(""), "")
       Future.successful(Some(payeAuthority))
     }

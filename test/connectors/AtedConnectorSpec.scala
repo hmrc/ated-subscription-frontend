@@ -31,20 +31,17 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpResponse }
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
 
 class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet with WSPost with WSDelete {
-    override val hooks = NoneRequired
-  }
-
-  val mockWSHttp = mock[MockHttp]
+  trait MockedVerbs extends CoreGet with CorePost with CoreDelete
+  val mockWSHttp = mock[MockedVerbs]
   val periodKey = "2015"
 
   object TestAtedConnector extends AtedConnector {
-    override val http: HttpGet with HttpPost with HttpDelete = mockWSHttp
+    override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
     override val serviceURL = baseUrl("ated")
   }
 
@@ -61,28 +58,28 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
       "GET agent details from ETMP for a user" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         val result = TestAtedConnector.getDetails("ARN1234567", "arn")
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
       }
 
       "GET user details from ETMP for an agent" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         val result = TestAtedConnector.getDetails("XN1200000100001", "arn")
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
       }
 
       "GET subscription data from ETMP for an agent" in {
         implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         val result = TestAtedConnector.retrieveSubscriptionData("XN1200000100001")
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockWSHttp, times(1)).GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())
       }
     }
 

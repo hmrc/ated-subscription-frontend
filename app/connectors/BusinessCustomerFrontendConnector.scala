@@ -17,16 +17,15 @@
 package connectors
 
 import config.WSHttp
-import models.ReviewDetails
-import play.api.Logger
 import play.api.mvc.Request
+import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HttpGet, HttpResponse }
 
 trait BusinessCustomerFrontendConnector extends ServicesConfig  with RawResponseReads with HeaderCarrierForPartialsConverter {
 
@@ -34,7 +33,7 @@ trait BusinessCustomerFrontendConnector extends ServicesConfig  with RawResponse
   val businessCustomerUri = "business-customer"
   val reviewDetailsUri = "fetch-review-details"
   val service = "ATED"
-  val http: HttpGet
+  val http: CoreGet
 
   def getReviewDetails(implicit request: Request[_], ac: AuthContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
