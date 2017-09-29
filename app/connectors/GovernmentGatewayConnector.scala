@@ -23,9 +23,9 @@ import models._
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.http.{HeaderCarrier, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -35,7 +35,7 @@ trait GovernmentGatewayConnector extends ServicesConfig with RawResponseReads wi
   lazy val serviceURL = baseUrl("government-gateway")
 
   val enrolURI = "enrol"
-  val http: HttpGet with HttpPost = WSHttp
+  val http: CoreGet with CorePost = WSHttp
 
   def metrics: Metrics
 

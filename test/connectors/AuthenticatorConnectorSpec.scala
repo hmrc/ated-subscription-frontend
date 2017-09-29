@@ -26,23 +26,21 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.{HeaderCarrier, _}
-import uk.gov.hmrc.play.http.logging.SessionId
+import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.ws.{WSGet, WSPost}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.logging.SessionId
 
 
 class AuthenticatorConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  class MockHttp extends WSGet with WSPost {
-    override val hooks = NoneRequired
-  }
-
-  val mockWSHttp = mock[MockHttp]
+  trait MockedVerbs extends CoreGet with CorePost
+  val mockWSHttp = mock[MockedVerbs]
 
   object TestAuthenticatorConnector extends AuthenticatorConnector {
-    override val http: HttpGet with HttpPost = mockWSHttp
+    override val http: CoreGet with CorePost = mockWSHttp
   }
 
   override def beforeEach = {
@@ -57,7 +55,7 @@ class AuthenticatorConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
     "refresh user" must {
       "works for a user" in {
 
-        when(mockWSHttp.POSTEmpty[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any())).
+        when(mockWSHttp.POSTEmpty[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
           thenReturn(Future.successful(HttpResponse(OK, responseJson = None)))
 
         val result = TestAuthenticatorConnector.refreshProfile()

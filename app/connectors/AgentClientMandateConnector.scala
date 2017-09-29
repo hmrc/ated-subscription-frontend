@@ -28,6 +28,7 @@ import utils.AuthUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
 
 object AgentClientMandateConnector extends AgentClientMandateConnector
 
@@ -38,7 +39,7 @@ trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
   val updateMandateURI = "mandate/non-uk/update"
 
 
-  val http: HttpGet with HttpPost = WSHttp
+  val http: CoreGet with CorePost = WSHttp
 
   def createMandateForNonUK(dto: NonUKClientDto)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
     val data = Json.toJson(dto)

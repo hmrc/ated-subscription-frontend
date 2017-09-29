@@ -28,6 +28,7 @@ import utils.AuthUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
 
 object AtedSubscriptionConnector extends AtedSubscriptionConnector
 
@@ -36,7 +37,7 @@ trait AtedSubscriptionConnector extends ServicesConfig with RawResponseReads {
   lazy val serviceURL = baseUrl("ated-subscription")
   val subscriptionURI = "subscribe"
 
-  val http: HttpGet with HttpPost = WSHttp
+  val http: CoreGet with CorePost = WSHttp
 
   def subscribeAted(data: JsValue)(implicit user: AuthContext, hc: HeaderCarrier): Future[SubscribeSuccessResponse] = {
     val authLink = AuthUtils.getAuthLink

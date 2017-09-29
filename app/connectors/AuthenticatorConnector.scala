@@ -17,12 +17,11 @@
 package connectors
 
 import config.WSHttp
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
-
 
 trait AuthenticatorConnector extends ServicesConfig with RawResponseReads {
 
@@ -30,7 +29,7 @@ trait AuthenticatorConnector extends ServicesConfig with RawResponseReads {
 
   val refreshProfileURI = "government-gateway-authentication/refresh-profile"
 
-  val http: HttpGet with HttpPost = WSHttp
+  val http: CoreGet with CorePost = WSHttp
 
   def refreshProfile()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val postUrl = s"""$serviceURL/$refreshProfileURI"""
