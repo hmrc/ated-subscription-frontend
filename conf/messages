@@ -245,7 +245,7 @@ ated.agent-startpage-sidebar.64-text = The 64-8 form authorises HM Revenue and C
 ##agent-confirmation
 ated.business-agent.confirmation.message = on {0}
 ated.business-agent.confirmation.finish = Add my ATED clients
-ated.business-agent.confirmation.title = Business Confirmation
+ated.business-agent.confirmation.title = You have successfully set up this business for ATED
 ated.business-agent.confirmation.reference = You have successfully set up {0} for ATED
 ated.business-agent.confirmation.what-happens-next = What happens next
 ated.business-agent.confirmation.what-happens-next-instruction = You should give the unique authorisation number to your clients.

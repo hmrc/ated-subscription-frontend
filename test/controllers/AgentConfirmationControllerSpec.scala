@@ -87,9 +87,8 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Business Confirmation")
-            document.getElementById("message").text() must be(s"on ${Dates.formatDate(LocalDate.now())}")
-            document.getElementById("agent-reference").text() must be("You have successfully set up ACME LTD for ATED")
+            document.title() must be("You have successfully set up this business for ATED")
+            document.getElementById("agent-reference").text() must be(s"You have successfully set up ACME LTD for ATED on ${Dates.formatDate(LocalDate.now())}")
             document.getElementById("submit").text() must be("Add my ATED clients")
           }
         }
