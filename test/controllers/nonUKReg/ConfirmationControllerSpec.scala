@@ -42,7 +42,7 @@ class ConfirmationControllerSpec extends PlaySpec with OneServerPerSuite with Mo
         viewWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be(s"${testReviewBusinessDetails.businessName} has been successfully added to your ATED clients")
+          document.title() must be("Your client has been successfully added to your ATED clients")
         }
       }
     }
