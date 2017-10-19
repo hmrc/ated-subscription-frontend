@@ -43,13 +43,6 @@ object AtedForms {
   val phoneLength = 24
   val telephoneRegex = """^[A-Z0-9)\/(\-*#]+$""".r
 
-  val AreYouAnAgentConstraint: Constraint[AreYouAnAgent] = Constraint("ated.claim-relief.error.agent-claiming")({ model =>
-    model.isAgent.nonEmpty match {
-      case true => Valid
-      case false => Invalid("ated.claim-relief.error.agent-claiming")
-    }
-  })
-
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
     model.isAgent.isEmpty match {
       case (false) if !model.isAgent.get => Valid
