@@ -276,7 +276,7 @@ ated.nonUKReg.declaration.error.general.agree = There is a problem with the chec
 ated.ated.nonUKReg.declaration.i-agree.error = You must confirm that you want to add this client
 
 ## NON-UK-REG Confirmation page
-ated.nonUKReg.confirmation.title = {0} has been successfully added to your ATED clients
+ated.nonUKReg.confirmation.title = Your client has been successfully added to your ATED clients
 ated.nonUKReg.confirmation.header = {0} has been successfully added to your ATED clients
 ated.nonUKReg.confirmation.date.header = on {0}
 ated.nonUKReg.confirmation.what-next = What happens next
