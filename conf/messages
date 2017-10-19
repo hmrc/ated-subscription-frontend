@@ -114,7 +114,6 @@ ated.contact-details-error.general.telephone = There is a problem with the telep
 
 ##contact-details-email
 ated.contact-details-email-title = Can we use an email address as a point of contact?
-ated.contact-details.agent.subheader = Add a client
 ated.contact-details-email-header = Can we use an email address as a point of contact?
 ated.contact-details-email-lede = If we can use email rather than letter there will be less delays in dealing with enquiries.
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
