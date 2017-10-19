@@ -276,8 +276,7 @@ ated.ated.nonUKReg.declaration.i-agree.error = You must confirm that you want to
 
 ## NON-UK-REG Confirmation page
 ated.nonUKReg.confirmation.title = Your client has been successfully added to your ATED clients
-ated.nonUKReg.confirmation.header = {0} has been successfully added to your ATED clients
-ated.nonUKReg.confirmation.date.header = on {0}
+ated.nonUKReg.confirmation.header = {0} has been successfully added to your ATED clients on {1}
 ated.nonUKReg.confirmation.what-next = What happens next
 ated.nonUKReg.confirmation.what-next.text = You can create returns for your new client or add another client.
 ated.nonUKReg.confirmation.view-client.button = View all my clients
