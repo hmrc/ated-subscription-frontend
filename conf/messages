@@ -41,7 +41,6 @@ ated.claim-relief.error.agent-claiming = You must answer the agent question
 
 ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href="{0}" data-journey-click="ated-subscription:click:claim-relief">you need to sign in using your agent Government Gateway details</a>.
 ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
-ated.claim-relief.error.agent-claiming-true = You must sign in with your agent details if you are an agent
 ated.appoint-agent-error.general.appointAgent =  There is a problem with the appoint an agent question
 
 ated.appoint-agent.question.true.info-title = To appoint an agent you must:
@@ -119,7 +118,7 @@ ated.contact-details-email-lede = If we can use email rather than letter there w
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
 ated.contact-details.email.risk.help.answer = <p>HMRC may need to send emails to you about your ATED account (this doesn’t include email notifications which we will also send).</p><p>Any emails from HMRC are not secure and are always at risk of being read by others.</p><p>If you have doubts about the authenticity of an email, which claims to come from HMRC, don't respond to it. Forward it to us at:<p><a href="mailto:phishing@hmrc.gsi.gov.uk" data-journey-click="ated-subscription:email-phishing">phishing@hmrc.gsi.gov.uk</a><p>In order for us to send you emails in the future you must confirm (for yourself or on behalf of your agent) that you are happy for us to do so, and you understand the risks involved.</p><p>Note: If we need to send any confidential information, we will only do this by letter or telephone. Corresponding by letter may lead to delays in dealing with enquiries.</p>
 ated.contact-details.email = Email address
-ated.contact-details.email.legend = Can we contact them by email?
+ated.contact-details.email.legend = Can we use an email address as a point of contact?
 
 ated.contact-details.email.error = You must answer the can we contact them by email question
 
@@ -275,7 +274,7 @@ ated.nonUKReg.declaration.error.general.agree = There is a problem with the chec
 ated.ated.nonUKReg.declaration.i-agree.error = You must confirm that you want to add this client
 
 ## NON-UK-REG Confirmation page
-ated.nonUKReg.confirmation.title = {0} has been successfully added to your ATED clients
+ated.nonUKReg.confirmation.title = Your client has been successfully added to your ATED clients
 ated.nonUKReg.confirmation.header = {0} has been successfully added to your ATED clients
 ated.nonUKReg.confirmation.date.header = on {0}
 ated.nonUKReg.confirmation.what-next = What happens next

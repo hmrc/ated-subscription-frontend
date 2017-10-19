@@ -45,22 +45,18 @@ object AtedForms {
   val areYouAnAgentForm = Form(mapping(
     "isAgent" -> optional(boolean)
       .verifying(Messages("ated.claim-relief.error.agent-claiming"), result => result.isDefined)
-      .verifying(Messages("ated.claim-relief.error.agent-claiming-true"), result => result.isDefined && !result.get)
-  )(AreYouAnAgent.apply)(AreYouAnAgent.unapply)
-  )
+  )(AreYouAnAgent.apply)(AreYouAnAgent.unapply))
 
   val appointAgentForm = Form(mapping(
     "appointAgent" -> optional(boolean)
       .verifying(Messages("ated.claim-relief.error.agent-appoint"), result => result.isDefined)
-  )(AppointAgentForm.apply)(AppointAgentForm.unapply)
-  )
+  )(AppointAgentForm.apply)(AppointAgentForm.unapply))
 
 
   val businessAddressForm = Form(mapping(
     "isCorrespondenceAddress" -> optional(boolean)
       .verifying(Messages("ated.registered-business-address-error.correspondenceAddress"), result => result.isDefined)
-  )(BusinessAddress.apply)(BusinessAddress.unapply)
-  )
+  )(BusinessAddress.apply)(BusinessAddress.unapply))
 
   val correspondenceAddressForm = Form(
     mapping(
@@ -84,8 +80,7 @@ object AtedForms {
       "country" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
 
-    )(Address.apply)(Address.unapply)
-  )
+    )(Address.apply)(Address.unapply))
 
   def checkFieldLengthIfPopulated(optionValue: Option[String], fieldLength: Int): Boolean = {
     optionValue match {
@@ -117,9 +112,7 @@ object AtedForms {
         val z = x.length > phoneLength
         p || z})
 
-
-  )(ContactDetails.apply)(ContactDetails.unapply)
-  )
+  )(ContactDetails.apply)(ContactDetails.unapply))
 
 
   val contactDetailsEmailForm = Form(mapping(
