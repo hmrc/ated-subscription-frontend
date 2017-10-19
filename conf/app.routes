@@ -34,7 +34,7 @@ GET                 /redirectToAtedStart                        controllers.Appl
 GET                 /start-subscription                         controllers.SubscriptionController.subscribe
 GET                 /start-agent-subscription                   controllers.SubscriptionController.subscribeAgent
 GET                 /appoint-agent                              controllers.SubscriptionController.appoint
-POST                /continue                                   controllers.SubscriptionController.continue
+GET                 /continue                                   controllers.SubscriptionController.continue
 POST                /register                                   controllers.SubscriptionController.register
 
 GET                 /agent/declaration                          controllers.nonUKReg.DeclarationController.view
