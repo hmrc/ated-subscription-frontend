@@ -41,7 +41,6 @@ ated.claim-relief.error.agent-claiming = You must answer the agent question
 
 ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href="{0}" data-journey-click="ated-subscription:click:claim-relief">you need to sign in using your agent Government Gateway details</a>.
 ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
-ated.claim-relief.error.agent-claiming-true = You must sign in with your agent details if you are an agent
 ated.appoint-agent-error.general.appointAgent =  There is a problem with the appoint an agent question
 
 ated.appoint-agent.question.true.info-title = To appoint an agent you must:
