@@ -33,13 +33,13 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
       '_labelClass -> "block-label",
       '_labelAfter -> true,
       '_trackGA -> true)
+
+      <div class="panel-indent" id="hidden-isAnAgent">
+        <p>@Html(Messages("ated.claim-relief.agent-claiming-true.info", ExternalUrls.signIn))</p>
+      </div>
     </div>
 
-    <div class="panel-indent" id="hidden-isAnAgent">
-      <p>@Html(Messages("ated.claim-relief.agent-claiming-true.info", ExternalUrls.signIn))</p>
-    </div>
-
-    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-continue")</button>
+    <button id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-continue")</button>
   }
 
 }
