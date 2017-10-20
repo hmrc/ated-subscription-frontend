@@ -8,12 +8,12 @@
 @import controllers.auth.ExternalUrls
 
 @(businessDetails: ReviewDetails,
-        correspondenceAddress: Address,
-        contactDetails: ContactDetails,
-        contactDetailsEmail: Option[ContactDetailsEmail],
-        emailAddress: Option[AgentEmail],
-        clientDisplayName: Option[ClientDisplayName],
-        backLink: Option[String])(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+  correspondenceAddress: Address,
+  contactDetails: ContactDetails,
+  contactDetailsEmail: Option[ContactDetailsEmail],
+  emailAddress: Option[AgentEmail],
+  clientDisplayName: Option[ClientDisplayName],
+  backLink: Option[String])(implicit request: Request[_], authContext: AuthContext, messages: Messages)
 
 @title = @{
   isAgent match {
@@ -102,7 +102,8 @@
         </div>
 
         <div class="grid grid-1-6 cya-change">
-          <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="register-address-edit">@Messages("ated.review-details.edit")
+          <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="register-address-edit">
+            @Messages("ated.review-details.edit")
             <span class="visuallyhidden">@Messages("ated.review-details.registered-address")</span>
           </a>
         </div>
@@ -122,30 +123,31 @@
         </div>
 
         <div class="grid grid-1-6 cya-change">
-          <a href='@ExternalUrls.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit">@Messages("ated.review-details.edit")
+          <a href='@ExternalUrls.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit">
+            @Messages("ated.review-details.edit")
             <span class="visuallyhidden">@Messages("ated.review-details.overseas-tax-reference")</span>
           </a>
         </div>
       </div>
 
-  }else{
+    }else{
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
-        <span id="business-address-label" class="heading-small">@Messages("ated.review-details.registered-address")</span>
+      <div class="grid-wrapper row-border">
+        <div class="grid grid-2-6 cya-question">
+          <span id="business-address-label" class="heading-small">@Messages("ated.review-details.registered-address")</span>
+        </div>
+
+        <div id="business-address" class="grid grid-1-2 cya-answer">
+          @businessDetails.businessAddress.line_1<br>
+          @businessDetails.businessAddress.line_2<br>
+          @businessDetails.businessAddress.line_3.map {line_3 => @line_3<br> }
+          @businessDetails.businessAddress.line_4.map {line_4 => @line_4<br> }
+          @businessDetails.businessAddress.postcode.map {postcode => @postcode<br> }
+          @AtedSubscriptionUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
+        </div>
       </div>
 
-      <div id="business-address" class="grid grid-1-2 cya-answer">
-        @businessDetails.businessAddress.line_1<br>
-        @businessDetails.businessAddress.line_2<br>
-        @businessDetails.businessAddress.line_3.map {line_3 => @line_3<br> }
-        @businessDetails.businessAddress.line_4.map {line_4 => @line_4<br> }
-        @businessDetails.businessAddress.postcode.map {postcode => @postcode<br> }
-        @AtedSubscriptionUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
-      </div>
-    </div>
-
-  }
+    }
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
@@ -164,13 +166,11 @@
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.routes.CorrespondenceAddressController.editAddress(Some("edit"))"
             id="correspondence-edit"
-            aria-label="@Messages("ated.review-details.edit-correspondence.title")"
             data-journey-click="ated-subscription:click:correspondence-edit">
           @Messages("ated.review-details.edit")
           <span class="visuallyhidden">@Messages("ated.review-details.correspondence-address")</span>
         </a>
       </div>
-
     </div>
 
     <div class="grid-wrapper row-border">
@@ -186,13 +186,11 @@
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.routes.ContactDetailsController.editDetails(Some("edit"))"
             id="contact-edit"
-            aria-label="@Messages("ated.review-details.edit-contact.title")"
             data-journey-click="ated-subscription:click:contact-edit">
           @Messages("ated.review-details.edit")
           <span class="visuallyhidden">@Messages("ated.review-details.contact-details")</span>
         </a>
       </div>
-
     </div>
 
     <div class="grid-wrapper row-border">
@@ -207,7 +205,6 @@
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.routes.ContactDetailsEmailController.editDetailsEmail"
             id="contact-pref-edit"
-            aria-label="@Messages("ated.review-details.edit-contact-preference.title")"
             data-journey-click="ated-subscription:click:contact-pref-edit">
           @Messages("ated.review-details.edit")
           <span class="visuallyhidden">@Messages("ated.review-details.contact-preference")</span>
@@ -228,9 +225,9 @@
         <div class="grid grid-1-6 cya-change">
           <a href="@ExternalUrls.clientDisplayNameEditPath"
               id="client-display-name-edit"
-              aria-label="@Messages("ated.review-details.edit-display-name.title")"
               data-journey-click="ated-subscription:click:client-display-name-edit">
             @Messages("ated.review-details.edit")
+            <span class="visuallyhidden">@Messages("ated.review-details.display-name")</span>
           </a>
         </div>
       </div>
@@ -249,9 +246,9 @@
         <div class="grid grid-1-6 cya-change">
           <a href="@ExternalUrls.agentEmailEditPath"
               id="agent-email-address-edit"
-              aria-label="@Messages("ated.review-details.edit-email-address.title")"
               data-journey-click="ated-subscription:click:agent-email-address-edit">
             @Messages("ated.review-details.edit")
+            <span class="visuallyhidden">@Messages("ated.review-details.email-address")</span>
           </a>
         </div>
       </div>
