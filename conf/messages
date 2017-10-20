@@ -187,12 +187,11 @@ ated.review-details.display-name = Display name
 ated.review-details.email-address = Agent''s email address
 
 ##registered-user page
-ated.registered-user.title = Registered User
-ated.registered-user.confirmation.message = You have successfully registered for ATED
-ated.registered-user.confirmation.what-happens-next = What happens next
-ated.registered-user.confirmation.what-happens-next.instruction1 = you can create an ATED return
-ated.registered-user.confirmation.what-happens-next.instruction2 = you can appoint an ATED registered agent
-ated.registered-user.confirmation.date=on {0}
+ated.registered-user.title = You have successfully registered for ATED
+ated.registered-user.confirmation.message = You have successfully registered for ATED on {0}
+ated.registered-user.confirmation.you-can = You can:
+ated.registered-user.confirmation.instruction1 = create an ATED return
+ated.registered-user.confirmation.instruction2 = appoint an ATED-registered agent
 
 ##subscription-start-page client
 ated.registration-subheader = ATED registration
