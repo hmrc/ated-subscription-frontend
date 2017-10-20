@@ -16,9 +16,9 @@
     Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
 
   @if(isAgent) {
-    <div class="form-group">
+
       <p id="lede-agent-text">@Messages("ated.registered-business-address.agent.lede-text") </p>
-    </div>
+
   }
 
   <div class="form-group">
@@ -46,7 +46,7 @@
       "false" -> Messages("ated.registered-business-address.correspondence-address.no")),
       '_groupClass -> "form-group form-group-compound inline",
       '_labelClass -> "block-label",
-      '_legend -> Messages("ated.registered-business-address.header"),
+      '_legend -> Messages("ated.registered-business-address.agent.header"),
       '_legendClass -> "visuallyhidden",
       '_labelAfter -> true,
       '_trackGA -> true

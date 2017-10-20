@@ -1,53 +1,69 @@
-@import models._
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
-@(contactDetailsForm: Form[ContactDetails], mode: Option[String], backLink: Option[String] = None)(implicit request: Request[_], authContext: AuthContext, messages: Messages)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import utils.AuthUtils._
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import models._
+
+@(contactDetailsForm: Form[ContactDetails],
+    mode: Option[String],
+    backLink: Option[String] = None
+)(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+
 
 @implicitFormInstance = @{ Some(contactDetailsForm) }
 
-@atedMain(title = Messages("ated.contact-details.title")) {
-  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")}, "contact-details.header", Messages("ated.contact-details.header"),
-    Some(atedErrorSummary(contactDetailsForm, "ated.contact-details-error.general")))
-
-  <div class="form-group">
-    <p id="text">
-      @if(isAgent) {
-        @Messages("ated.contact-details.agent.lede")
-      } else {
-        @Messages("ated.contact-details.lede")
-      }
-    </p>
-  </div>
-
-  @form(action = controllers.routes.ContactDetailsController.submit(mode)) {
-
-      <fieldset id="contact-details-form">
-        <legend class="visuallyhidden">
-          @Html(Messages("ated.contact-details.header"))
-        </legend>
-
-        @atedInput(contactDetailsForm("firstName"),
-        '_label ->  Html(Messages("ated.contact-details.firstName")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false)
-
-        @atedInput(contactDetailsForm("lastName"),
-        '_label ->  Html(Messages("ated.contact-details.lastName")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false)
-
-        @atedInput(contactDetailsForm("telephone"),
-        '_label ->  Html(Messages("ated.contact-details.telephone")),
-        '_labelClass -> "form-label-bold",
-        '_showConstraints -> false)
-      </fieldset>
-
-
-      <button class="button" id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
-
-  }
-
+@subTitleText = @{
+    isAgent match {
+        case true => Messages("ated.contact-details.agent.subheader")
+        case false => Messages("ated.contact-details.subheader")
+    }
 }
+
+@ledeText = @{
+    isAgent match {
+        case true => Messages("ated.contact-details.agent.lede")
+        case false => Messages("ated.contact-details.lede")
+    }
+}
+
+@atedMain(title = Messages("ated.contact-details.title")) {
+
+    @pageHeadersAndError(
+        backLink,
+        "subtitle", subTitleText,
+        "contact-details.header", Messages("ated.contact-details.header"),
+        Some(atedErrorSummary(contactDetailsForm, "ated.contact-details-error.general"))
+    )
+
+    <p id="text">@ledeText</p>
+
+    @form(action = controllers.routes.ContactDetailsController.submit(mode)) {
+
+        <fieldset id="contact-details-form">
+            <legend class="visuallyhidden">@Html(Messages("ated.contact-details.header"))</legend>
+
+            @atedInput(contactDetailsForm("firstName"),
+                '_label ->  Messages("ated.contact-details.firstName"),
+                '_labelClass -> "form-label-bold",
+                '_showConstraints -> false
+            )
+
+            @atedInput(contactDetailsForm("lastName"),
+                '_label ->  Messages("ated.contact-details.lastName"),
+                '_labelClass -> "form-label-bold",
+                '_showConstraints -> false
+            )
+
+            @atedInput(contactDetailsForm("telephone"),
+                '_label ->  Messages("ated.contact-details.telephone"),
+                '_labelClass -> "form-label-bold",
+                '_showConstraints -> false
+            )
+
+        </fieldset>
+
+        <button id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
+    }
+}
+

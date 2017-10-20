@@ -38,6 +38,7 @@ ated.claim-relief.isAgent.label = Are you an agent?
 ated.claim-relief.cancel = Cancel
 
 ated.claim-relief.error.agent-claiming = You must answer the agent question
+ated.claim-relief.error.agent-claiming-true = You must sign in with your agent details if you are an agent
 
 ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href="{0}" data-journey-click="ated-subscription:click:claim-relief">you need to sign in using your agent Government Gateway details</a>.
 ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
@@ -113,11 +114,10 @@ ated.contact-details-error.general.telephone = There is a problem with the telep
 
 ##contact-details-email
 ated.contact-details-email-title = Can we use an email address as a point of contact?
-ated.contact-details.agent.subheader = Add a client
 ated.contact-details-email-header = Can we use an email address as a point of contact?
 ated.contact-details-email-lede = If we can use email rather than letter there will be less delays in dealing with enquiries.
 ated.contact-details.email.risk.help.text = What are the risks of email and why we need your consent
-ated.contact-details.email.risk.help.answer = <p>HMRC may need to send emails to you about your ATED account (this doesn’t include email notifications which we will also send).</p><p>Any emails from HMRC are not secure and are always at risk of being read by others.</p><p>If you have doubts about the authenticity of an email, which claims to come from HMRC, don't respond to it. Forward it to us at:<p><a href="mailto:phishing@hmrc.gsi.gov.uk" data-journey-click="ated-subscription:email-phishing">phishing@hmrc.gsi.gov.uk</a><p>In order for us to send you emails in the future you must confirm (for yourself or on behalf of your agent) that you are happy for us to do so, and you understand the risks involved.</p><p>Note: If we need to send any confidential information, we will only do this by letter or telephone. Corresponding by letter may lead to delays in dealing with enquiries.</p>
+ated.contact-details.email.risk.help.answer = <p>HMRC may need to send emails to you about your ATED account (this does not include email notifications which we will also send).</p><p>Any emails from HMRC are not secure and are always at risk of being read by others.</p><p>If you have doubts about the authenticity of an email, which claims to come from HMRC, do not respond to it. Forward it to us at:<p><a href="mailto:phishing@hmrc.gsi.gov.uk" data-journey-click="ated-subscription:email-phishing">phishing@hmrc.gsi.gov.uk</a><p>In order for us to send you emails in the future you must confirm (for yourself or on behalf of your agent) that you are happy for us to do so, and you understand the risks involved.</p><p>Note: If we need to send any confidential information, we will only do this by letter or telephone. Corresponding by letter may lead to delays in dealing with enquiries.</p>
 ated.contact-details.email = Email address
 ated.contact-details.email.legend = Can we use an email address as a point of contact?
 
@@ -242,10 +242,9 @@ ated.agent-startpage-sidebar.64-title = 64-8
 ated.agent-startpage-sidebar.64-text = The 64-8 form authorises HM Revenue and Customs (HMRC) to communicate with an accountant, tax agent or adviser acting on your behalf. The 64-8 form does not cover the new ATED online service.
 
 ##agent-confirmation
-ated.business-agent.confirmation.message = on {0}
 ated.business-agent.confirmation.finish = Add my ATED clients
-ated.business-agent.confirmation.title = You have successfully set up this business for ATED
-ated.business-agent.confirmation.reference = You have successfully set up {0} for ATED
+ated.business-agent.confirmation.title = You have successfully set up this agency for ATED
+ated.business-agent.confirmation.reference = You have successfully set up {0} for ATED on {1}
 ated.business-agent.confirmation.what-happens-next = What happens next
 ated.business-agent.confirmation.what-happens-next-instruction = You should give the unique authorisation number to your clients.
 ated.business-agent.confirmation.message1 = Your clients will then need to:
@@ -276,8 +275,7 @@ ated.ated.nonUKReg.declaration.i-agree.error = You must confirm that you want to
 
 ## NON-UK-REG Confirmation page
 ated.nonUKReg.confirmation.title = Your client has been successfully added to your ATED clients
-ated.nonUKReg.confirmation.header = {0} has been successfully added to your ATED clients
-ated.nonUKReg.confirmation.date.header = on {0}
+ated.nonUKReg.confirmation.header = {0} has been successfully added to your ATED clients on {1}
 ated.nonUKReg.confirmation.what-next = What happens next
 ated.nonUKReg.confirmation.what-next.text = You can create returns for your new client or add another client.
 ated.nonUKReg.confirmation.view-client.button = View all my clients
