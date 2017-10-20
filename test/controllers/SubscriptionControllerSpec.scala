@@ -187,14 +187,12 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("client-startpage-header").text() must be("Do you want to appoint an agent to act for you?")
-            document.getElementById("appoint-agent-title").text() must be("To appoint an agent you must:")
-            document.getElementById("appoint-agent-text1").text() must be("make sure your agent has set up their agency for ATED and given you their unique authorisation number")
-            document.getElementById("appoint-agent-text2").text() must be("register to use the new ATED online service")
-            document.getElementById("appoint-agent-text3").text() must be("enter the unique authorisation number when asked")
-            document.getElementById("appoint-agent-title2").text() must be("You must:")
-            document.getElementById("appoint-agent-text5").text() must be("register to use the new ATED online service")
-            document.getElementById("appoint-agent-text6").text() must be("select the correct relief for your property or tell us about a property that is liable for an ATED charge")
-            document.getElementById("appoint-agent-text7").text() must be("confirm and submit the relief declaration or ATED return")
+            document.getElementById("appoint-agent-text1").text() must be("Make sure your agent has set up their agency for ATED and given you their unique authorisation number.")
+            document.getElementById("appoint-agent-text2").text() must be("Register to use the new ATED online service.")
+            document.getElementById("appoint-agent-text3").text() must be("Enter the unique authorisation number when asked.")
+            document.getElementById("appoint-agent-text5").text() must be("Register to use the new ATED online service.")
+            document.getElementById("appoint-agent-text6").text() must be("Select the correct relief for your property or tell us about a property that is liable for an ATED charge.")
+            document.getElementById("appoint-agent-text7").text() must be("Confirm and submit the relief declaration or ATED return.")
 
           }
         }
