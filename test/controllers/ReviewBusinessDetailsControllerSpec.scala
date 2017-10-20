@@ -45,6 +45,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
   val mockMandateService = mock[MandateService]
 
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
+  val testAddress2 = Address("line_1", "line_2", Some("line_3"), Some("line_3"), Some("NE1 1AB"), "GB")
   val testIdentification = Identification(idNumber = "ID123", issuingInstitution = "InstTest", issuingCountryCode = "FR")
   val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", businessType = Some("test Type"), businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None,
@@ -52,6 +53,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
   )
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
+  val testContactNoEmail = ContactDetailsEmail(Some(false), "")
   val testContactLetter = ContactDetails("ABC", "DEF", "1234567890")
   val emailAddress = AgentEmail("test@mail.com")
   val clientDisplayName = ClientDisplayName("client display name")
@@ -107,8 +109,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
-            document.getElementById("correspondence-address-label").text() must be("Correspondence address")
-            document.getElementById("contact-details-label").text() must be("Contact details")
+            document.getElementById("correspondence-address-label").text() must be("Where we will send letters about ATED")
+            document.getElementById("contact-details-label").text() must be("Who we will contact about ATED")
             document.getElementById("email-address-label").text() must be("Agent's email address")
             document.getElementById("contact-pref-label").text() must be("Email address")
             document.getElementById("client-display-name-label").text() must be("Display name")
@@ -126,9 +128,9 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
-            document.getElementById("correspondence-address-label").text() must be("Correspondence address")
+            document.getElementById("correspondence-address-label").text() must be("Where we will send letters about ATED")
             document.getElementById("contact-pref-label").text() must be("Email address")
-            document.getElementById("contact-details-label").text() must be("Contact details")
+            document.getElementById("contact-details-label").text() must be("Who we will contact about ATED")
             document.select(".button").text must be("Confirm and continue")
           }
         }
@@ -140,24 +142,24 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
 
             document.getElementById("overseas-tax-reference-label").text() must be("Overseas company registration number")
 
-            document.getElementById("registered-address-line-1").text() must be("line_1")
-            document.getElementById("registered-address-line-2").text() must be("line_2")
-            document.select("#registered-address-line-3").size() must be(0)
-            document.select("#registered-address-line-4").size() must be(0)
-            document.select("#registered-postcode").size() must be(0)
-            document.getElementById("registered-country").text() must be("United Kingdom")
+            document.getElementById("registered-address").text() must be("line_1 line_2 United Kingdom")
+//            document.getElementById("registered-address-line-2").text() must be("line_2")
+//            document.select("#registered-address-line-3").size() must be(0)
+//            document.select("#registered-address-line-4").size() must be(0)
+//            document.select("#registered-postcode").size() must be(0)
+//            document.getElementById("registered-country").text() must be("United Kingdom")
 
             document.getElementById("overseas-id-number").text() must be("ID123")
             document.getElementById("overseas-issuingCountryCode").text() must be("France")
             document.getElementById("overseas-issuingInstitution").text() must be("InstTest")
 
-            document.getElementById("line_1").text() must be("line_1")
-            document.getElementById("line_2").text() must be("line_2")
-            document.select("#line_3").size() must be(0)
-            document.select("#line_4").size() must be(0)
-            document.select("#postcode").size() must be(0)
-            document.getElementById("country").text() must be("United Kingdom")
-            document.getElementById("correspondence-edit").text() must be("Edit Correspondence address")
+            document.getElementById("correspondence-address").text() must be("line_1 line_2 United Kingdom")
+//            document.getElementById("line_2").text() must be("line_2")
+//            document.select("#line_3").size() must be(0)
+//            document.select("#line_4").size() must be(0)
+//            document.select("#postcode").size() must be(0)
+//            document.getElementById("country").text() must be("United Kingdom")
+            document.getElementById("correspondence-edit").text() must be("Edit Where we will send letters about ATED")
             document.getElementById("correspondence-edit").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
 
             document.getElementById("contact-edit").attr("href") must be("/ated-subscription/contact-details?mode=edit")
@@ -168,10 +170,10 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
             document.getElementById("agent-email-address-edit").attr("href") must be("http://localhost:9959/mandate/agent/email/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
-            document.getElementById("correspondence-edit").text() must be("Edit Correspondence address")
+            document.getElementById("correspondence-edit").text() must be("Edit Where we will send letters about ATED")
             document.getElementById("client-display-name-edit").attr("href") must be("http://localhost:9959/mandate/agent/client-display-name/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("client-display-name").text() must be("client display name")
-            document.getElementById("contact-edit").text() must be("Edit Contact details")
+            document.getElementById("contact-edit").text() must be("Edit Who we will contact about ATED")
 
 
             document.getElementById("business-name-edit").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
@@ -203,16 +205,16 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
         }
 
         "contain details from Keystore with contact preference of letter" in {
-          getWithAuthorisedUser (Some(testContactLetter), Some(testContactEmail),testAddress = Some(testAddress)) { result =>
+          getWithAuthorisedUser (Some(testContactLetter), Some(testContactNoEmail), testAddress = Some(testAddress2)) { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("business-name").text() must be("test Name")
             document.getElementById("correspondence-edit").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
-
+            document.getElementById("correspondence-address").text() must be("line_1 line_2 line_3 line_3 NE1 1AB United Kingdom")
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
-            document.getElementById("contact-edit").text() must be("Edit Contact details")
+            document.getElementById("contact-edit").text() must be("Edit Who we will contact about ATED")
 
-            document.getElementById("contact-pref").text() must be("abc@test.com")
+            document.getElementById("contact-pref").text() must be("Not provided")
 
             verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any())
