@@ -42,29 +42,18 @@ ated.claim-relief.error.agent-claiming-true = You must sign in with your agent d
 
 ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href="{0}" data-journey-click="ated-subscription:click:claim-relief">you need to sign in using your agent Government Gateway details</a>.
 ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
+
 ated.appoint-agent-error.general.appointAgent =  There is a problem with the appoint an agent question
-
-ated.appoint-agent.question.true.info-title = To appoint an agent you must:
-ated.appoint-agent.question.true.info1 = make sure your agent has set up their agency for ATED and given you their unique authorisation number
-ated.appoint-agent.question.true.info2 =  register to use the new ATED online service
-ated.appoint-agent.question.true.info3 =  enter the unique authorisation number when asked
-
-
-ated.appoint-agent.question.false.info-title = You must:
-ated.appoint-agent.question.false.info1 =  register to use the new ATED online service
-ated.appoint-agent.question.false.info2 =  select the correct relief for your property or tell us about a property that is liable for an ATED charge
-ated.appoint-agent.question.false.info3 =  confirm and submit the relief declaration or ATED return
-
-
-
-
+ated.appoint-agent.question.true.info1 = Make sure your agent has set up their agency for ATED and given you their unique authorisation number.
+ated.appoint-agent.question.true.info2 = Register to use the new ATED online service.
+ated.appoint-agent.question.true.info3 = Enter the unique authorisation number when asked.
+ated.appoint-agent.question.false.info1 = Register to use the new ATED online service.
+ated.appoint-agent.question.false.info2 = Select the correct relief for your property or tell us about a property that is liable for an ATED charge.
+ated.appoint-agent.question.false.info3 = Confirm and submit the relief declaration or ATED return.
 
 ated.claim-relief.error.agent.false = You have entered agent details but indicated that you are not an agent. Check your details and try again.
 ated.claim-relief.error.agent.true = The details you entered do not allow you to proceed as an agent. Check your details and try again.
 ated.claim-relief.error.agent-appoint = You must answer the appoint an agent question
-
-
-
 
 ##registered-business-address
 ated.registered-business-address.title = Is this where you want us to send any letters about ATED?
