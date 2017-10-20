@@ -10,9 +10,11 @@
 
 @implicitFormInstance = @{ Some(businessAddressForm) }
 
+@header = @{if(isAgent) {Messages("ated.registered-business-address.agent.header")} else {Messages("ated.registered-business-address.header")}}
+
 @atedMain(title = if(isAgent) { Messages("ated.registered-business-address.agent.title") } else { Messages("ated.registered-business-address.title") }) {
   @pageHeadersAndError(backLink, "business-registered-text", if(isAgent) {Messages("ated.registered-business-address.agent.sub-header")} else {Messages("ated.registered-business-address.sub-header")},
-    "registered-business-address-header", if(isAgent) {Messages("ated.registered-business-address.agent.header")} else {Messages("ated.registered-business-address.header")},
+    "registered-business-address-header", header,
     Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
 
   @if(isAgent) {
@@ -40,13 +42,13 @@
 
     <div id="isCorrespondenceAddress">
 
-      @atedInputRadioGroup(
+      @atedInputRadioGroupNew(
       businessAddressForm("isCorrespondenceAddress"),
       Seq("true" -> Messages("ated.registered-business-address.correspondence-address.yes"),
       "false" -> Messages("ated.registered-business-address.correspondence-address.no")),
       '_groupClass -> "form-group form-group-compound inline",
       '_labelClass -> "block-label",
-      '_legend -> Messages("ated.registered-business-address.agent.header"),
+      '_legend -> header,
       '_legendClass -> "visuallyhidden",
       '_labelAfter -> true,
       '_trackGA -> true
