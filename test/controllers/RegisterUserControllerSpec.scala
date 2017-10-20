@@ -148,11 +148,11 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
         confirmationWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Registered User")
-          document.getElementById("header").text() must be("You have successfully registered for ATED")
-          document.getElementById("happens-next").text() must be("What happens next")
-          document.getElementById("instruction-1").text() must be("you can create an ATED return")
-          document.getElementById("instruction-2").text() must be("you can appoint an ATED registered agent")
+          document.title() must be("You have successfully registered for ATED")
+          document.getElementById("header").text() must include("You have successfully registered for ATED")
+          document.getElementById("happens-next").text() must be("You can:")
+          document.getElementById("instruction-1").text() must be("create an ATED return")
+          document.getElementById("instruction-2").text() must be("appoint an ATED-registered agent")
           document.getElementById("submit").text() must be("Continue")
         }
       }
