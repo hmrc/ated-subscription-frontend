@@ -143,22 +143,11 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("overseas-tax-reference-label").text() must be("Overseas company registration number")
 
             document.getElementById("registered-address").text() must be("line_1 line_2 United Kingdom")
-//            document.getElementById("registered-address-line-2").text() must be("line_2")
-//            document.select("#registered-address-line-3").size() must be(0)
-//            document.select("#registered-address-line-4").size() must be(0)
-//            document.select("#registered-postcode").size() must be(0)
-//            document.getElementById("registered-country").text() must be("United Kingdom")
-
             document.getElementById("overseas-id-number").text() must be("ID123")
             document.getElementById("overseas-issuingCountryCode").text() must be("France")
             document.getElementById("overseas-issuingInstitution").text() must be("InstTest")
 
             document.getElementById("correspondence-address").text() must be("line_1 line_2 United Kingdom")
-//            document.getElementById("line_2").text() must be("line_2")
-//            document.select("#line_3").size() must be(0)
-//            document.select("#line_4").size() must be(0)
-//            document.select("#postcode").size() must be(0)
-//            document.getElementById("country").text() must be("United Kingdom")
             document.getElementById("correspondence-edit").text() must be("Edit Where we will send letters about ATED")
             document.getElementById("correspondence-edit").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
 
