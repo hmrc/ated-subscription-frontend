@@ -113,12 +113,15 @@
         <div class="grid grid-2-6 cya-question">
           <span id="overseas-tax-reference-label" class="heading-small">@Messages("ated.review-details.overseas-tax-reference")</span>
         </div>
-
         <div class="grid grid-1-2 cya-answer">
-          @businessDetails.identification.map { identification =>
-            <div id="overseas-id-number">@identification.idNumber</div>
-            <div id="overseas-issuingCountryCode">@AtedSubscriptionUtils.getSelectedCountry(identification.issuingCountryCode)</div>
-            <div id="overseas-issuingInstitution">@identification.issuingInstitution</div>
+          @if(businessDetails.identification.isEmpty) {
+            <div id="overseas-not-provided">@Messages("ated.review-details.contact-preference-not-provided")</div>
+          } else {
+            @businessDetails.identification.map { identification =>
+              <div id="overseas-id-number">@identification.idNumber</div>
+              <div id="overseas-issuingCountryCode">@AtedSubscriptionUtils.getSelectedCountry(identification.issuingCountryCode)</div>
+              <div id="overseas-issuingInstitution">@identification.issuingInstitution</div>
+            }
           }
         </div>
 
