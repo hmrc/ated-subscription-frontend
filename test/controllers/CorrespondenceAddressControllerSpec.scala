@@ -95,9 +95,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
           getWithAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Where should we send your client’s letters about ATED?")
             document.getElementById("subtitle").text() must be("This section is: Add a client")
-            document.getElementById("correspondence-address-header").text() must be("Where should we send your client’s letters about ATED?")
             document.getElementById("correspondence-address-lede").text() must be("This can be your address as their authorised agent.")
             document.getElementById("line_1_field").text() must be("Address line 1")
             document.getElementById("line_1").text() must be("")
@@ -116,6 +114,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             val document = Jsoup.parse(contentAsString(result))
           }
         }
+
         "if data exists in keystore, fill the form with that data in the page" in {
           editWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))

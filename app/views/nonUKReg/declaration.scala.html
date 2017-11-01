@@ -9,23 +9,15 @@
 
   @pageHeadersAndError(backLink, "subtitle", Messages("ated.nonUKReg.declaration.sub-header"), "declaration-header", Messages("ated.nonUKReg.declaration.header"))
 
-  <p id="declaration-lede-1"> @Messages("ated.nonUKReg.declaration.before-declaration-text-1") </p>
-  <p id="declaration-lede-2"> @Messages("ated.nonUKReg.declaration.before-declaration-text-2") </p>
+  <p id="declaration-lede"> @Messages("ated.nonUKReg.declaration.before-declaration-text") </p>
 
-  <div class="form-group"></div>
-
-    <h2 id="i-confirm-heading"> @Messages("ated.nonUKReg.declaration.i-confirm.heading") </h2>
-
-    <ul class="list-bullet">
-      <li id="i-confirm-text-1"> @Messages("ated.nonUKReg.declaration.i-confirm.text-1") </li>
-      <li id="i-confirm-text-2"> @Messages("ated.nonUKReg.declaration.i-confirm.text-2") </li>
-    </ul>
+  <p id="i-confirm-text"> @Messages("ated.nonUKReg.declaration.i-confirm.text") </p>
 
   @form(action = controllers.nonUKReg.routes.DeclarationController.submit) {
 
       <button class="button" id="submit" type="submit">@Messages("ated.confirm-and-register")</button>
 
-    }
-
   }
+
+}
 
