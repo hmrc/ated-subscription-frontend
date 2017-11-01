@@ -47,12 +47,8 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be("Declaration")
           document.getElementById("declaration-header").text must be("Declaration")
-          document.getElementById("declaration-lede-1").text must be("Before you can add a client you must have an ATED 1 in place. This allows HMRC to exchange and disclose information about your client with your agency and to deal with them on matters relating to the Annual Tax on Enveloped Dwellings (ATED) and ATED related Capital Gains Tax (CGT) only.")
-          document.getElementById("declaration-lede-2").text must be("Submission of form 64-8 ‘Authorising your agent’ to HMRC for other tax matters does not cover ATED or ATED related CGT.")
           document.getElementById("subtitle").text must be("This section is: Add a client")
-          document.getElementById("i-confirm-heading").text must be("I confirm that:")
-          document.getElementById("i-confirm-text-1").text must be("my client has nominated me as an agent to act on their behalf in respect of ATED")
-          document.getElementById("i-confirm-text-2").text must be("the information I have given is correct and complete")
+          document.getElementById("i-confirm-text").text must be("I confirm that my client has nominated me as an agent to act on their behalf in respect of Annual Tax on Enveloped Dwellings and that the information I have given is correct and complete.")
           document.getElementById("submit").text must be("Confirm and register")
         }
       }
