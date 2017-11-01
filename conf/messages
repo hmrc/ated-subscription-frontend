@@ -218,9 +218,9 @@ ated.agent-startpage-cancel = Cancel
 
 ##subscription-start-page-sidebar agent
 ated.agent-startpage-sidebar.ated-return-title = ATED return
-ated.agent-startpage-sidebar.ated-return-text = If your property isn?t covered by one of the reliefs it will be liable for an ATED charge.
+ated.agent-startpage-sidebar.ated-return-text = If your property is not covered by one of the reliefs it will be liable for an ATED charge.
 ated.agent-startpage-sidebar.relief-declaration-title = Relief declaration return
-ated.agent-startpage-sidebar.relief-declaration-text = Claiming a relief may mean you don?t have to pay any charge on your property.
+ated.agent-startpage-sidebar.relief-declaration-text = Claiming a relief may mean you do not have to pay any charge on your property.
 ated.agent-startpage-sidebar.relief-declaration-link = View a list of reliefs for ATED.
 ated.agent-startpage-sidebar.about-return-title = About your returns
 ated.agent-startpage-sidebar.about-return-text = Each chargeable or relief return will be treated as an individual return whether you send them individually or together.
