@@ -218,9 +218,9 @@ ated.agent-startpage-cancel = Cancel
 
 ##subscription-start-page-sidebar agent
 ated.agent-startpage-sidebar.ated-return-title = ATED return
-ated.agent-startpage-sidebar.ated-return-text = If your property is not covered by one of the reliefs it will be liable for an ATED charge.
+ated.agent-startpage-sidebar.ated-return-text = If your property isn''t covered by one of the reliefs it will be liable for an ATED charge.
 ated.agent-startpage-sidebar.relief-declaration-title = Relief declaration return
-ated.agent-startpage-sidebar.relief-declaration-text = Claiming a relief may mean you do not have to pay any charge on your property.
+ated.agent-startpage-sidebar.relief-declaration-text = Claiming a relief may mean you don''t have to pay any charge on your property.
 ated.agent-startpage-sidebar.relief-declaration-link = View a list of reliefs for ATED.
 ated.agent-startpage-sidebar.about-return-title = About your returns
 ated.agent-startpage-sidebar.about-return-text = Each chargeable or relief return will be treated as an individual return whether you send them individually or together.
@@ -239,7 +239,7 @@ ated.business-agent.confirmation.message1 = Your clients will then need to:
 ated.business-agent.confirmation.happens-next-item1 = login or create a government gateway account
 ated.business-agent.confirmation.happens-next-item2 = register their company to use the new ATED online service
 ated.business-agent.confirmation.happens-next-item3 = enter the unique authorisation number you gave them
-ated.business-agent.confirmation.happens-next-message2 = Your clients need to let you know once they have sent the request. You have 28 days to logon and accept the agent request, you will not receive an email notification.
+ated.business-agent.confirmation.happens-next-message2 = Your clients need to let you know once they have sent the request. You have 28 days to logon and accept the agent request, you won''t receive an email notification.
 ated.business-agent.confirmation.home-link =  View your ATED clients
 ated.business-agent.happens-next = You can now add your clients.
 
