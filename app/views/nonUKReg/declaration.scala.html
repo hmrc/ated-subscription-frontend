@@ -11,7 +11,9 @@
 
   <p id="declaration-lede"> @Messages("ated.nonUKReg.declaration.before-declaration-text") </p>
 
-  <p id="i-confirm-text"> @Messages("ated.nonUKReg.declaration.i-confirm.text") </p>
+  <p id="i-confirm-text">
+    <span class="text-bold">@Messages("ated.nonUKReg.declaration.i-confirm.text")</span>
+  </p>
 
   @form(action = controllers.nonUKReg.routes.DeclarationController.submit) {
 
