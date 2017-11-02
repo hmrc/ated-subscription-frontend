@@ -88,7 +88,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with OneServerPerSuite 
         getWithAuthorisedAgent { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Can we use an email address as a point of contact?")
+          document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details")
@@ -108,7 +108,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with OneServerPerSuite 
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
 
-          document.title() must be("Can we use an email address as a point of contact?")
+          document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")
@@ -125,7 +125,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with OneServerPerSuite 
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
 
-          document.title() must be("Can we use an email address as a point of contact?")
+          document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
           document.getElementById("emailConsent-true").attr("checked") must be("")
           document.getElementById("emailConsent-false").attr("checked") must be("")
           document.getElementById("email").attr("value") must be("")

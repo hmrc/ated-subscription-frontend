@@ -105,7 +105,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Check your business details")
+            document.title() must be("Check your business details - GOV.UK")
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
@@ -124,7 +124,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Check your client's ATED details are correct")
+            document.title() must be("Check your client's ATED details are correct - GOV.UK")
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)

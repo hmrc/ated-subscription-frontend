@@ -75,7 +75,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
           getWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Where should we send your letters about ATED?")
+            document.title() must be("Where should we send your letters about ATED? - GOV.UK")
             document.getElementById("subtitle").text() must be("This section is: ATED registration")
             document.getElementById("correspondence-address-header").text() must be("Where should we send your letters about ATED?")
             document.getElementById("correspondence-address-lede").text() must be("This can be the address of your authorised agent.")
@@ -95,7 +95,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
           getWithAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Where should we send your client's letters about ATED?")
+            document.title() must be("Where should we send your client's letters about ATED? - GOV.UK")
             document.getElementById("subtitle").text() must be("This section is: Add a client")
             document.getElementById("correspondence-address-lede").text() must be("This can be your address as their authorised agent.")
             document.getElementById("correspondence-address-header").text() must be("Where should we send your client's letters about ATED?")
@@ -120,7 +120,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
         "if data exists in keystore, fill the form with that data in the page" in {
           editWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Where should we send your letters about ATED?")
+            document.title() must be("Where should we send your letters about ATED? - GOV.UK")
             document.getElementById("correspondence-address-header").text() must be("Where should we send your letters about ATED?")
             document.getElementById("correspondence-address-lede").text() must be("This can be the address of your authorised agent.")
             document.getElementById("line_1").attr("value") must be("line_1")
