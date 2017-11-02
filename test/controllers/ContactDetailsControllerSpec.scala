@@ -90,7 +90,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
         getWithAuthorisedUser(None){ result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED?")
+          document.title() must be("Who should we contact about ATED? - GOV.UK")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/correspondence-address")
@@ -110,7 +110,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
         getWithAuthorisedAgent(Some("skip")) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED?")
+          document.title() must be("Who should we contact about ATED? - GOV.UK")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/registered-business-address")
@@ -131,7 +131,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
 
-          document.title() must be("Who should we contact about ATED?")
+          document.title() must be("Who should we contact about ATED? - GOV.UK")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")

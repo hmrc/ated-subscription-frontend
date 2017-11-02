@@ -45,7 +45,7 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
         viewWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Declaration")
+          document.title() must be("Declaration - GOV.UK")
           document.getElementById("declaration-header").text must be("Declaration")
           document.getElementById("subtitle").text must be("This section is: Add a client")
           document.getElementById("i-confirm-text").text must be("I confirm that my client has nominated me as an agent to act on their behalf in respect of Annual Tax on Enveloped Dwellings and that the information I have given is correct and complete.")
