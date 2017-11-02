@@ -469,3 +469,13 @@ html.noScroll {
         width:100%;
     }
 }
+
+/*  -- Vertical Spacing -- */
+
+.margin-bottom-default {
+  margin-bottom: 30px;
+}
+
+p.margin-bottom-default {
+  margin-bottom: 30px !important;
+}
