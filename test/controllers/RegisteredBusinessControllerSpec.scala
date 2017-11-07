@@ -23,7 +23,7 @@ import models.{Address, BusinessAddress}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.{BeforeAndAfterEach}
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
@@ -37,7 +37,7 @@ import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HeaderCarrier
 
-class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach{
 
   val mockAuthConnector = mock[AuthConnector]
   val mockRegisteredBusinessService = mock[RegisteredBusinessService]
@@ -106,13 +106,12 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
         "should contain address fetched from Keystore" in {
           getWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
+            val bizAddress = document.select("#businessAddress")
 
-            document.getElementById("registered-address-line-1").text() must be("line_1")
-            document.getElementById("registered-address-line-2").text() must be("line_2")
-            document.select("#registered-address-line-3").size() must be(0)
-            document.select("#registered-address-line-4").size() must be(0)
-            document.select("#registered-postcode").size() must be(0)
-            document.getElementById("registered-country").text() must be("United Kingdom")
+            bizAddress.text() must include("line_1")
+            bizAddress.text() must include("line_2")
+            bizAddress.text() must include("United Kingdom")
+
             verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any())
           }
         }

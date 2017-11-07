@@ -23,20 +23,20 @@
 
   }
 
-  <div class="form-group">
-    <div id="registered-address-line-1">@businessAddress.line_1</div>
-    <div id="registered-address-line-2">@businessAddress.line_2</div>
+  <p id="businessAddress" class="margin-bottom-default">
+    @businessAddress.line_1 <br>
+    @businessAddress.line_2 <br>
     @businessAddress.line_3.map {line_3 =>
-      <div id="registered-address-line-3">@line_3</div>
+      @line_3 <br>
     }
     @businessAddress.line_4.map {line_4 =>
-      <div id="registered-address-line-4">@line_4</div>
+      @line_4 <br>
     }
     @businessAddress.postcode.map {postcode =>
-      <div id="registered-postcode">@postcode</div>
+      @postcode <br>
     }
-    <div id="registered-country">@AtedSubscriptionUtils.getSelectedCountry(businessAddress.country)</div>
-  </div>
+    @AtedSubscriptionUtils.getSelectedCountry(businessAddress.country)
+  </p>
 
   @form(action = controllers.routes.RegisteredBusinessController.continue) {
 

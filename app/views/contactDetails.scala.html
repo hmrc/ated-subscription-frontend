@@ -40,28 +40,23 @@
 
     @form(action = controllers.routes.ContactDetailsController.submit(mode)) {
 
-        <fieldset id="contact-details-form">
-            <legend class="visuallyhidden">@Html(Messages("ated.contact-details.header"))</legend>
+        @atedInput(contactDetailsForm("firstName"),
+            '_label ->  Messages("ated.contact-details.firstName"),
+            '_labelClass -> "form-label-bold",
+            '_showConstraints -> false
+        )
 
-            @atedInput(contactDetailsForm("firstName"),
-                '_label ->  Messages("ated.contact-details.firstName"),
-                '_labelClass -> "form-label-bold",
-                '_showConstraints -> false
-            )
+        @atedInput(contactDetailsForm("lastName"),
+            '_label ->  Messages("ated.contact-details.lastName"),
+            '_labelClass -> "form-label-bold",
+            '_showConstraints -> false
+        )
 
-            @atedInput(contactDetailsForm("lastName"),
-                '_label ->  Messages("ated.contact-details.lastName"),
-                '_labelClass -> "form-label-bold",
-                '_showConstraints -> false
-            )
-
-            @atedInput(contactDetailsForm("telephone"),
-                '_label ->  Messages("ated.contact-details.telephone"),
-                '_labelClass -> "form-label-bold",
-                '_showConstraints -> false
-            )
-
-        </fieldset>
+        @atedInput(contactDetailsForm("telephone"),
+            '_label ->  Messages("ated.contact-details.telephone"),
+            '_labelClass -> "form-label-bold",
+            '_showConstraints -> false
+        )
 
         <button id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
     }

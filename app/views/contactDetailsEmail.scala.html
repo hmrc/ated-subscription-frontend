@@ -16,52 +16,55 @@
     @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")}, "contact-details-email.header", Messages("ated.contact-details-email-header"),
         Some(atedErrorSummary(contactDetailsEmailForm, "ated.contact-details-error.general")))
 
-<p id="lede">
+  <p id="lede">
     @Messages("ated.contact-details-email-lede")
-</p>
+  </p>
 
-<div id = "email-consent-risk">
-
+  <div id = "email-consent-risk">
     <details>
-        <summary>
-            <span class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">@Messages("ated.contact-details.email.risk.help.text")</span>
-        </summary>
-        <div id="details-content-0" class="panel-indent font-xsmall">
-            <p id="email-risk-ans">@Html(Messages("ated.contact-details.email.risk.help.answer"))</p>
-        </div>
+      <summary>
+        <span class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">@Messages("ated.contact-details.email.risk.help.text")</span>
+      </summary>
+      <div id="details-content-0" class="panel-indent">
+        <p>@Messages("ated.contact-details.email.risk.p1")</p>
+        <p>@Messages("ated.contact-details.email.risk.p2")</p>
+        <p>@Messages("ated.contact-details.email.risk.p3")</p>
+        <p>@Html(Messages("ated.contact-details.email.risk.email"))</p>
+        <p>@Messages("ated.contact-details.email.risk.p4")</p>
+        <p>@Messages("ated.contact-details.email.risk.p5")</p>
+      </div>
     </details>
+  </div>
 
-</div>
+  @form(action = controllers.routes.ContactDetailsEmailController.submit(mode)) {
 
-@form(action = controllers.routes.ContactDetailsEmailController.submit(mode)) {
+    <div class="form-group" id="emailConsent">
 
-<div class="form-group" id="emailConsent">
+      @atedInputRadioGroupNew(contactDetailsEmailForm("emailConsent"),
+      Seq("true" -> Messages("ated.radio.yes.label"),
+      "false" -> Messages("ated.radio.no.label")),
+      '_legend -> Messages("ated.contact-details-email-header"),
+      '_legendClass -> "visuallyhidden",
+      '_groupClass -> "inline",
+      '_labelClass -> "block-label",
+      '_labelAfter -> true,
+      '_trackGA -> true)
 
-        @atedInputRadioGroupNew(contactDetailsEmailForm("emailConsent"),
-        Seq("true" -> Messages("ated.radio.yes.label"),
-        "false" -> Messages("ated.radio.no.label")),
-        '_legend -> Messages("ated.contact-details-email-header"),
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
-        '_labelAfter -> true,
-        '_trackGA -> true)
-
-</div>
-
-<div id="email-contact-hidden" class="form-group">
-    <div class="panel-indent">
-                @atedInput(contactDetailsEmailForm("email"),
-                '_label ->  Html(Messages("ated.contact-details.email")),
-                '_labelClass -> "form-label-bold",
-                '_inputClass -> "form-control-indent",
-                '_type -> "text",
-                '_showConstraints -> false)
     </div>
-</div>
+
+    <div id="email-contact-hidden" class="form-group">
+        <div class="panel-indent">
+          @atedInput(contactDetailsEmailForm("email"),
+          '_label ->  Html(Messages("ated.contact-details.email")),
+          '_labelClass -> "form-label-bold",
+          '_inputClass -> "form-control-indent",
+          '_type -> "text",
+          '_showConstraints -> false)
+        </div>
+    </div>
 
     <button class="button" id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
 
 
-}
+  }
 }
