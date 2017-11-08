@@ -7,11 +7,13 @@
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/subscription.js")'></script>
+  <script src='@controllers.routes.AssetsController.at("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
-      showHideIsAnAgentSection();
-      showHideAppointAgent();
+      // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
     });
   </script>
 }
@@ -26,9 +28,9 @@
   @form(action = controllers.routes.SubscriptionController.register) {
 
     <div class="form-group" id="appointAgent">
-      @atedInputRadioGroupNew(appointAgentForm("appointAgent"),
-      Seq("true" -> Messages("ated.radio.yes.label"),
-      "false" -> Messages("ated.radio.no.label")),
+      @atedInputRadioGroupReveal(appointAgentForm("appointAgent"),
+        Seq("true" -> (Messages("ated.radio.yes.label"), Some("hidden-appointAgent-true")),
+            "false" -> (Messages("ated.radio.no.label"), Some("hidden-appointAgent-false"))),
       '_legend -> Messages("ated.client-startpage-appoint-header"),
       '_legendClass -> "visuallyhidden",
       '_groupClass -> "inline",
@@ -36,7 +38,7 @@
       '_labelAfter -> true,
       '_trackGA -> true)
 
-      <div id="hidden-appointAgent-true" class="panel-indent">
+      <div id="hidden-appointAgent-true" class="panel-indent js-hidden">
         <ul class="list-bullet">
           <li id="appoint-agent-text1">@Messages("ated.appoint-agent.question.true.info1")</li>
           <li id="appoint-agent-text2">@Messages("ated.appoint-agent.question.true.info2")</li>
@@ -44,7 +46,7 @@
         </ul>
       </div>
 
-      <div id="hidden-appointAgent-false" class="panel-indent">
+      <div id="hidden-appointAgent-false" class="panel-indent js-hidden">
         <ul class="list-bullet">
           <li id="appoint-agent-text5">@Messages("ated.appoint-agent.question.false.info1")</li>
           <li id="appoint-agent-text6">@Messages("ated.appoint-agent.question.false.info2")</li>
@@ -54,7 +56,7 @@
 
     </div>
 
-      <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-register")</button>
+    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-register")</button>
 
   }
 

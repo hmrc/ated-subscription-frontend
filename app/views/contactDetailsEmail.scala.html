@@ -9,21 +9,27 @@
 @implicitFormInstance = @{ Some(contactDetailsEmailForm) }
 
 @pageScripts = {
-    <script src='@controllers.routes.AssetsController.at("javascript/contact-email.js")'></script>
+  <script src='@controllers.routes.AssetsController.at("javascript/show-hide-content.js")'></script>
+  <script>
+    $(document).ready(function() {
+      // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
+    });
+  </script>
 }
 
 @atedMain(title = Messages("ated.contact-details-email-title"), pageScripts = Some(pageScripts)) {
     @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")}, "contact-details-email.header", Messages("ated.contact-details-email-header"),
         Some(atedErrorSummary(contactDetailsEmailForm, "ated.contact-details-error.general")))
 
-  <p id="lede">
-    @Messages("ated.contact-details-email-lede")
-  </p>
+  <p id="lede">@Messages("ated.contact-details-email-lede")</p>
 
   <div id = "email-consent-risk">
     <details>
       <summary>
-        <span class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">@Messages("ated.contact-details.email.risk.help.text")</span>
+        <span class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">@Messages("ated.contact-details.email.risk.help.text")    </span>
       </summary>
       <div id="details-content-0" class="panel-indent">
         <p>@Messages("ated.contact-details.email.risk.p1")</p>
@@ -40,26 +46,27 @@
 
     <div class="form-group" id="emailConsent">
 
-      @atedInputRadioGroupNew(contactDetailsEmailForm("emailConsent"),
-      Seq("true" -> Messages("ated.radio.yes.label"),
-      "false" -> Messages("ated.radio.no.label")),
-      '_legend -> Messages("ated.contact-details-email-header"),
-      '_legendClass -> "visuallyhidden",
-      '_groupClass -> "inline",
-      '_labelClass -> "block-label",
-      '_labelAfter -> true,
-      '_trackGA -> true)
+      @atedInputRadioGroupReveal(contactDetailsEmailForm("emailConsent"),
+        Seq("true" -> (Messages("ated.radio.yes.label"), Some("email-contact-hidden")),
+            "false" -> (Messages("ated.radio.no.label"), None)),
+        '_legend -> Messages("ated.contact-details-email-header"),
+        '_legendClass -> "visuallyhidden",
+        '_groupClass -> "inline",
+        '_labelClass -> "block-label",
+        '_labelAfter -> true,
+        '_trackGA -> true
+      )
 
     </div>
 
-    <div id="email-contact-hidden" class="form-group">
+    <div id="email-contact-hidden" class="form-group js-hidden">
         <div class="panel-indent">
           @atedInput(contactDetailsEmailForm("email"),
-          '_label ->  Html(Messages("ated.contact-details.email")),
-          '_labelClass -> "form-label-bold",
-          '_inputClass -> "form-control-indent",
-          '_type -> "text",
-          '_showConstraints -> false)
+            '_label ->  Html(Messages("ated.contact-details.email")),
+            '_labelClass -> "form-label-bold",
+            '_inputClass -> "form-control-indent",
+            '_type -> "text",
+            '_showConstraints -> false)
         </div>
     </div>
 
