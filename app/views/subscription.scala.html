@@ -51,6 +51,6 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
     <button id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-continue")</button>
   }
   <div class="form-group">
-    <a class="link-back" id="signOut" href="@routes.ApplicationController.logout()" onkeyup='spaceBarHandler(event,"@routes.ApplicationController.logout()")'>@Messages("ated.sign-out")</a>
+    <a class="button" id="signOut" href="@routes.ApplicationController.logout()" onkeyup='spaceBarHandler(event,"@routes.ApplicationController.logout()")'>@Messages("ated.sign-out")</a>
   </div>
 }

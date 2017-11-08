@@ -24,14 +24,12 @@
     @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.contact-details.agent.subheader")} else {Messages("ated.contact-details.subheader")}, "contact-details-email.header", Messages("ated.contact-details-email-header"),
         Some(atedErrorSummary(contactDetailsEmailForm, "ated.contact-details-error.general")))
 
-  <p id="lede">
-    @Messages("ated.contact-details-email-lede")
-  </p>
+  <p id="lede">@Messages("ated.contact-details-email-lede")</p>
 
   <div id = "email-consent-risk">
     <details>
       <summary>
-        <span class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">@Messages("ated.contact-details.email.risk.help.text")</span>
+        <span class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">@Messages("ated.contact-details.email.risk.help.text")    </span>
       </summary>
       <div id="details-content-0" class="panel-indent">
         <p>@Messages("ated.contact-details.email.risk.p1")</p>
