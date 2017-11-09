@@ -16,6 +16,16 @@
       // to toggle hidden content
       var showHideContent = new GOVUK.ShowHideContent()
       showHideContent.init()
+
+      //Clear input when selecting 'No'
+      $('input[type=radio][name=emailConsent]').change(function(){
+        if(this.value == 'true') {
+          // Do nothing
+        } else {
+          $('#email').val("");
+        }
+      });
+
     });
   </script>
 }
