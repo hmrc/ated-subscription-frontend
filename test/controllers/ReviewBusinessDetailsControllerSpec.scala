@@ -109,6 +109,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
+            document.getElementById("overseas-issuing-country-label") must be(null)
+            document.getElementById("overseas-issuing-institution-label") must be(null)
             document.getElementById("correspondence-address-label").text() must be("Where we will send letters about ATED")
             document.getElementById("contact-details-label").text() must be("Who we will contact about ATED")
             document.getElementById("email-address-label").text() must be("Agent's email address")
@@ -128,6 +130,9 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
+            document.getElementById("overseas-issuing-country-label") must be(null)
+            document.getElementById("overseas-issuing-institution-label") must be(null)
+
             document.getElementById("correspondence-address-label").text() must be("Where we will send letters about ATED")
             document.getElementById("contact-pref-label").text() must be("Email address")
             document.getElementById("contact-details-label").text() must be("Who we will contact about ATED")
@@ -141,6 +146,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name").text() must be("test Name")
 
             document.getElementById("overseas-tax-reference-label").text() must be("Overseas company registration number")
+            document.getElementById("overseas-issuing-country-label").text() must be("Country that issued the number")
+            document.getElementById("overseas-issuing-institution-label").text() must be("Institution that issued the number")
 
             document.getElementById("registered-address").text() must be("line_1 line_2 United Kingdom")
             document.getElementById("overseas-id-number").text() must be("ID123")

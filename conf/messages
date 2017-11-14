@@ -173,6 +173,10 @@ ated.review-details.business = Business name
 ated.review-details.business-type = Type of business
 ated.review-details.registered-address = Registered address
 ated.review-details.overseas-tax-reference = Overseas company registration number
+
+ated.review-details.issuing-institution = Institution that issued the number
+ated.review-details.issuing-country = Country that issued the number
+
 ated.review-details.edit-registered-address.title = Edit Registered address
 ated.review-details.edit-overseas-tax-reference.title = Edit Overseas company registration number
 ated.review-details.correspondence-address = Where we will send letters about ATED
