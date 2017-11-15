@@ -9,10 +9,12 @@
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
 @pageScripts = {
-
+  <script src='@controllers.routes.AssetsController.at("javascript/accessible-autocomplete.min.js")'></script>
   <script>
     $(document).ready(function() {
-      countryCodeAutoComplete()
+      accessibleAutocomplete.enhanceSelectElement({
+        selectElement: document.querySelector('#country')
+      })
     });
   </script>
 }
@@ -73,7 +75,7 @@
         @atedDropdown(correspondenceAddressForm("country"),
         elementOptions = isoCodeList,
         displayEmptyValue = true,
-        '_emptyValueText -> Messages("ated.address.country.select"),
+        '_emptyValueText -> "",
         '_label -> Html(Messages("ated.address.country")),
         '_labelClass -> ("form-label-bold"))
 
