@@ -40,17 +40,17 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
   val http: CoreGet
 
   def getAgentEmail(implicit request: Request[_], user: AuthContext): Future[Option[AgentEmail]] = {
-    val getUrl = s"$serviceUrl/$emailUri/$service"
+    val getUrl = s"$serviceUrl/$emailUri/"
     http.GET[Option[AgentEmail]](getUrl)
   }
 
   def getClientDisplayName(implicit request: Request[_], user: AuthContext): Future[Option[ClientDisplayName]] = {
-    val getUrl = s"$serviceUrl/$displayNameUri/$service"
+    val getUrl = s"$serviceUrl/$displayNameUri/"
     http.GET[Option[ClientDisplayName]](getUrl)
   }
 
   def getOldMandateDetails(implicit request: Request[_], user: AuthContext): Future[Option[OldMandateReference]] = {
-    val getUrl = s"$serviceUrl/$mandateDetails/$service"
+    val getUrl = s"$serviceUrl/$mandateDetails/"
     http.GET(getUrl) map { response => response.json.asOpt[OldMandateReference]}
   }
 
