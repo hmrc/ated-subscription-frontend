@@ -116,7 +116,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
         "subscribe to service and view the confirmation page if the registration and refresh worked" in {
           continueWithAuthorisedUser(OK) { result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result) must be(Some("http://localhost:9959/mandate/agent/summary/ated"))
+            redirectLocation(result) must be(Some("http://localhost:9959/mandate/agent/summary"))
           }
         }
 
