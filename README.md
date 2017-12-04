@@ -9,7 +9,7 @@ Users subscribing must also register in ETMP (using business-customer-frontend) 
 Requirements
 ------------
 
-This service is written in [Scala] and [Play], so needs at least the latest [JRE] to run.
+This service is written in [Scala] and [Play], so needs the latest [JRE] to run.
 
 
 Authentication
