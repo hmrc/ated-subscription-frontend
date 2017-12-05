@@ -35,7 +35,7 @@ object ExternalUrls extends RunMode {
   val reviewDetailsPath = Play.configuration.getString("microservice.services.business-customer.reviewDetailsUrl")
     .getOrElse("/business-customer/review-details/ATED")
 
-  val agentAtedSummaryPath = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.agentAtedSummaryUrl").getOrElse("/mandate/agent/summary/ated")
+  val agentAtedSummaryPath = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.agentAtedSummaryUrl").getOrElse("/mandate/agent/summary")
   val clientDisplayNameEditPath = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.clientDisplayNameEditUrl")
     .getOrElse("/mandate/agent/client-display-name/ated/edit")
   val agentEmailEditPath = Play.configuration.getString("microservice.services.agent-client-mandate-frontend.agentEmailEditUrl")
