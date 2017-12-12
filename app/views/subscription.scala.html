@@ -32,7 +32,6 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
   @form(action = controllers.routes.SubscriptionController.continue) {
 
     <div class="form-group" id="isAgent">
-
       @atedInputRadioGroupReveal(areYouAnAgentForm("isAgent"),
         Seq("true" -> (Messages("ated.radio.yes.label"), Some("hidden-isAnAgent")),
             "false" -> (Messages("ated.radio.no.label"), None)),
@@ -43,12 +42,12 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
         '_labelAfter -> true,
         '_trackGA -> true)
 
-      <div id="hidden-isAnAgent" class="panel-indent js-hidden">
-        <p>@Html(Messages("ated.claim-relief.agent-claiming-true.info", ExternalUrls.signIn))</p>
-      </div>
+        <div id="hidden-isAnAgent" class="panel-indent js-hidden">
+          @Html(Messages("ated.claim-relief.agent-claiming-true.info", ExternalUrls.signIn))
+        </div>
     </div>
-
     <button id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-continue")</button>
+
   }
   <div class="form-group">
     <a class="button" role="button" id="signOut" href="@routes.ApplicationController.logout()" onkeyup='spaceBarHandler(event,"@routes.ApplicationController.logout()")'>@Messages("ated.sign-out")</a>

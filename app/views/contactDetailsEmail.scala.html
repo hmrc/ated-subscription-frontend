@@ -67,18 +67,21 @@
         '_trackGA -> true
       )
 
-    </div>
-
-    <div id="email-contact-hidden" class="form-group js-hidden">
+      <div id="email-contact-hidden" class="form-group js-hidden">
         <div class="panel-indent">
           @atedInput(contactDetailsEmailForm("email"),
             '_label ->  Html(Messages("ated.contact-details.email")),
-            '_labelClass -> "form-label-bold",
+            '_labelClass -> "form-label",
             '_inputClass -> "form-control-indent",
             '_type -> "text",
             '_showConstraints -> false)
         </div>
     </div>
+
+
+    </div>
+
+
 
     <button class="button" id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
 
