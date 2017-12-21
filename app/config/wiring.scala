@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.ws._
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
+import uk.gov.hmrc.auth.core.PlayAuthConnector
 
 object AtedSubscriptionFrontendAuditConnector extends Auditing with AppName with RunMode {
   override lazy val auditingConfig = LoadAuditingConfig("auditing")
@@ -56,3 +57,7 @@ object AtedSessionCache extends SessionCache with AppName with ServicesConfig {
   override lazy val baseUri = baseUrl("cachable.session-cache")
   override lazy val domain = getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
 }
+object AuthClientConnector extends PlayAuthConnector with ServicesConfig {
+    val serviceUrl: String = baseUrl("auth")
+    lazy val http = WSHttp
+  }

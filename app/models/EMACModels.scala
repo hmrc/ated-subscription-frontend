@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package metrics
+package models
 
-import metrics.Metrics.metrics
+import play.api.libs.json.Json
 
-object MetricsEnum extends Enumeration {
+case class Verifier(key: String, value: String)
 
-  type MetricsEnum = Value
-  val GG_CLIENT_ENROL = Value
-  val API4Enrolment = Value
-  val API10DeEnrolment = Value
+object Verifier {
+  implicit val formats = Json.format[Verifier]
+}
+
+case class RequestEMACPayload(userId: String, friendlyName: String, `type`: String, verifiers: List[Verifier])
+
+object RequestEMACPayload {
+  implicit val formats = Json.format[RequestEMACPayload]
 }

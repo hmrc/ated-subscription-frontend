@@ -52,7 +52,7 @@ trait DeclarationController extends FrontendController with Actions {
             case None =>
               registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
                 val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
-                mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
+                 mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
                   Future.successful(Redirect(routes.ConfirmationController.view()))
                 }
               }

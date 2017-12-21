@@ -34,15 +34,21 @@ object Metrics extends Metrics with MicroserviceMetrics{
 
   val registry = metrics.defaultRegistry
   val timers = Map(
-    MetricsEnum.GG_CLIENT_ENROL -> registry.timer("gg-enrol-client-ated-response-timer")
+      MetricsEnum.GG_CLIENT_ENROL -> registry.timer("gg-enrol-client-ated-response-timer"),
+      MetricsEnum.API4Enrolment -> registry.timer("api4-enrolment-response-timer"),
+      MetricsEnum.API10DeEnrolment -> metrics.defaultRegistry.timer("api10-de-enrolment-response-timer")
   )
 
   val successCounters = Map(
-    MetricsEnum.GG_CLIENT_ENROL -> registry.counter("gg-enrol-client-ated-success-counter")
+    MetricsEnum.GG_CLIENT_ENROL -> registry.counter("gg-enrol-client-ated-success-counter"),
+    MetricsEnum.API4Enrolment -> metrics.defaultRegistry.counter("api4-enrolment-success"),
+    MetricsEnum.API10DeEnrolment -> metrics.defaultRegistry.counter("api10-de-enrolment-success")
   )
 
   val failedCounters = Map(
-    MetricsEnum.GG_CLIENT_ENROL -> registry.counter("gg-enrol-client-ated-failed-counter")
+    MetricsEnum.GG_CLIENT_ENROL -> registry.counter("gg-enrol-client-ated-failed-counter"),
+    MetricsEnum.API4Enrolment -> metrics.defaultRegistry.counter("api4-enrolment-failed"),
+    MetricsEnum.API10DeEnrolment -> metrics.defaultRegistry.counter("api10-de-enrolment-failed")
   )
 
   override def startTimer(api: MetricsEnum): Context = timers(api).time()

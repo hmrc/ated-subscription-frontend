@@ -24,7 +24,8 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "domain" % domainVersion,
     "uk.gov.hmrc" %% "http-caching-client" % httpCachingClientVersion,
     "com.kenshoo" %% "metrics-play" % "2.3.0_0.1.8",
-    "com.codahale.metrics" % "metrics-graphite" % "3.0.2"
+    "com.codahale.metrics" % "metrics-graphite" % "3.0.2",
+    "uk.gov.hmrc" %% "auth-client" % "2.4.0"
   )
 
 
