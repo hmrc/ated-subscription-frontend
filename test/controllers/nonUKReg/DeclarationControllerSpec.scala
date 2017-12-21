@@ -31,7 +31,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{MandateService, RegisterUserService}
+import services.{MandateService, RegisterEmacUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -89,12 +89,15 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
   val mockRegisterUserService = mock[RegisterUserService]
   val mockMandateService = mock[MandateService]
   val mockAgentClientFrontendMandateConnector = mock[AgentClientMandateFrontendConnector]
+  val mockRegisterEmacUserService = mock[RegisterEmacUserService]
 
   object TestDeclarationController extends DeclarationController {
     override val authConnector = mockAuthConnector
     override val registerUserService = mockRegisterUserService
     override val mandateService = mockMandateService
     override val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mockAgentClientFrontendMandateConnector
+    override val registerEmacUserService = mockRegisterEmacUserService
+    val isEmacFeatureToggle: Boolean = false
   }
 
   override def beforeEach(): Unit = {

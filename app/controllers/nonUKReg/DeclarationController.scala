@@ -19,19 +19,25 @@ package controllers.nonUKReg
 import config.FrontendAuthConnector
 import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AtedSubscriptionRegime
-import services.{MandateService, RegisterUserService}
+import services.{MandateService, RegisterEmacUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import services.RegisterUserService.runModeConfiguration
+import uk.gov.hmrc.play.config.RunMode
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DeclarationController extends FrontendController with Actions {
+trait DeclarationController extends FrontendController with Actions with RunMode{
+
+  val isEmacFeatureToggle: Boolean
 
   def registerUserService: RegisterUserService
+
+  def registerEmacUserService: RegisterEmacUserService
 
   def mandateService: MandateService
 
@@ -49,13 +55,24 @@ trait DeclarationController extends FrontendController with Actions {
               mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
                 Future.successful(Redirect(routes.ConfirmationController.view()))
               }
-            case None =>
-              registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
+            case None => {
+              if(isEmacFeatureToggle){
+                  registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
+                  val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
+                   mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
+                    Future.successful(Redirect(routes.ConfirmationController.view()))
+                  }
+                }
+              }
+              else{
+               registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
                 val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
-                 mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
+                mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
                   Future.successful(Redirect(routes.ConfirmationController.view()))
                 }
               }
+              }
+            }
         }
   }
 
@@ -68,7 +85,9 @@ object DeclarationController extends DeclarationController {
   // $COVERAGE-OFF$
   val authConnector: AuthConnector = FrontendAuthConnector
   val registerUserService: RegisterUserService = RegisterUserService
+  val registerEmacUserService: RegisterEmacUserService = RegisterEmacUserService
   val mandateService: MandateService = MandateService
   val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
+  val isEmacFeatureToggle : Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
   // $COVERAGE-ON$
 }
