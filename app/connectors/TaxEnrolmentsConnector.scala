@@ -52,7 +52,10 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
 
     val jsonData = Json.toJson(requestPayload)
     val enrolmentKey = s"$ATED_SERVICE_NAME~atedRefNumber~$atedRefNumber"
-    val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
+    println("groupId" + groupId)
+    val splitGroupId = groupId.split("testGroupId-")(1)
+    val postUrl = s"""$enrolmentUrl/groups/$splitGroupId/enrolments/$enrolmentKey"""
+    /*val postUrl = "http://localhost:9995/tax-enrolments/groups/f0e19840-9805-41ee-b0db-1226348f1c1f/enrolments/HMRC-ATED-ORG~atedRefNumber~XY1200000100002"*/
 
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
 

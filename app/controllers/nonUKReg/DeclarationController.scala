@@ -48,15 +48,19 @@ trait DeclarationController extends FrontendController with Actions with RunMode
   }
 
   def submit = AuthorisedFor(AtedSubscriptionRegime, GGConfidence).async {
+    println("************************************************** in emalc controller start")
     implicit user =>
       implicit request =>
         agentClientFrontendMandateConnector.getOldMandateDetails flatMap {
             case Some(mandateFound) =>
-              mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
+              println("************************************************** in emalc controller in some" + isEmacFeatureToggle)
+                mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
                 Future.successful(Redirect(routes.ConfirmationController.view()))
               }
             case None => {
+              println("************************************************** in emalc controller in none" + isEmacFeatureToggle)
               if(isEmacFeatureToggle){
+                println("************************************************** in emalc controller")
                   registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
                   val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
                    mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
@@ -65,6 +69,7 @@ trait DeclarationController extends FrontendController with Actions with RunMode
                 }
               }
               else{
+                println("************************************************** in emalc controller in else" + isEmacFeatureToggle)
                registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
                 val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
                 mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>

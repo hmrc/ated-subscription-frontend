@@ -18,9 +18,10 @@ package controllers
 
 import config.FrontendAuthConnector
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
+import controllers.nonUKReg.DeclarationController.runModeConfiguration
 import org.joda.time.LocalDate
 import play.api.Logger
-import services.RegisterUserService
+import services.{RegisterEmacUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
@@ -28,27 +29,50 @@ import utils.AuthUtils._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages
+import uk.gov.hmrc.play.config.RunMode
 import utils.ErrorMessageUtils._
 
 import scala.concurrent.Future
 
-trait RegisterUserController extends FrontendController with Actions {
+trait RegisterUserController extends FrontendController with Actions with RunMode {
 
   val registerUserService: RegisterUserService
+  val registerEmacUserService : RegisterEmacUserService
+  val isEmacFeatureToggle : Boolean
 
   def registerUser = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user => implicit request =>
       if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
-      else registerUserService.subscribeAted() flatMap { registerResponse =>
-        (registerResponse._1, registerResponse._2.status) match {
-          case (_, BAD_GATEWAY) =>
-            val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
-              Logger.warn(s"[RegisterUserController][registerUser] - Exception - No matching GG ErrorNumbers")
-              throw new RuntimeException(Messages("ated.business-registration.error.bad.gateway.other"))
+      else {
+        if (isEmacFeatureToggle) {
+          println("***********************************************************************changed code in EMAC")
+          registerEmacUserService.subscribeAted() flatMap { registerResponse =>
+            (registerResponse._1, registerResponse._2.status) match {
+              case (_, BAD_GATEWAY) =>
+                val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
+                  Logger.warn(s"[RegisterUserController][registerUser] - Exception - No matching GG ErrorNumbers")
+                  throw new RuntimeException(Messages("ated.business-registration.error.bad.gateway.other"))
+                }
+                Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
+                Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
+              case (_, _) => Future.successful((Redirect(controllers.routes.RegisterUserController.confirmation())))
             }
-            Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
-            Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
-          case (_, _) => Future.successful((Redirect(controllers.routes.RegisterUserController.confirmation())))
+          }
+        }
+        else{
+          println("***********************************************************************changed code else")
+          registerUserService.subscribeAted() flatMap { registerResponse =>
+            (registerResponse._1, registerResponse._2.status) match {
+              case (_, BAD_GATEWAY) =>
+                val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
+                  Logger.warn(s"[RegisterUserController][registerUser] - Exception - No matching GG ErrorNumbers")
+                  throw new RuntimeException(Messages("ated.business-registration.error.bad.gateway.other"))
+                }
+                Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
+                Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
+              case (_, _) => Future.successful((Redirect(controllers.routes.RegisterUserController.confirmation())))
+            }
+          }
         }
       }
   }
@@ -85,4 +109,6 @@ trait RegisterUserController extends FrontendController with Actions {
 object RegisterUserController extends RegisterUserController {
   val authConnector = FrontendAuthConnector
   val registerUserService = RegisterUserService
+  val registerEmacUserService = RegisterEmacUserService
+  val isEmacFeatureToggle : Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
 }
