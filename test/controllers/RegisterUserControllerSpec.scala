@@ -31,19 +31,23 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.RegisterUserService
+import services.{RegisterEmacUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   val mockAuthConnector = mock[AuthConnector]
   val mockRegisterUserService = mock[RegisterUserService]
+  val mockRegisterEMACUserService = mock[RegisterEmacUserService]
+  val isEmacFeatureToggle = false
 
   object TestRegisterUserController extends RegisterUserController {
     val authConnector = mockAuthConnector
     val registerUserService = mockRegisterUserService
+    val registerEmacUserService = mockRegisterEMACUserService
+    val isEmacFeatureToggle = false
   }
 
   override def beforeEach(): Unit = {
