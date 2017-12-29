@@ -97,7 +97,7 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     override val mandateService = mockMandateService
     override val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mockAgentClientFrontendMandateConnector
     override val registerEmacUserService = mockRegisterEmacUserService
-    val isEmacFeatureToggle: Boolean = false
+    val isEmacFeatureToggle: Boolean = true
   }
 
   override def beforeEach(): Unit = {
@@ -122,7 +122,7 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(oldMandateRef))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(succResp(ated), HttpResponse(OK, Some(enrolResp))))
+    when(mockRegisterEmacUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(succResp(ated), HttpResponse(OK, Some(enrolResp))))
     when(mockMandateService.createMandateForNonUK(Matchers.eq("atedRefNum"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
     when(mockMandateService.updateMandateForNonUK(Matchers.eq("atedRefNum"), Matchers.eq("mandateId"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
     val result = TestDeclarationController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))

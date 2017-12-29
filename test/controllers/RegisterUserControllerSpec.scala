@@ -41,13 +41,12 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   val mockAuthConnector = mock[AuthConnector]
   val mockRegisterUserService = mock[RegisterUserService]
   val mockRegisterEMACUserService = mock[RegisterEmacUserService]
-  val isEmacFeatureToggle = false
 
   object TestRegisterUserController extends RegisterUserController {
     val authConnector = mockAuthConnector
     val registerUserService = mockRegisterUserService
     val registerEmacUserService = mockRegisterEMACUserService
-    val isEmacFeatureToggle = false
+    val isEmacFeatureToggle = true
   }
 
   override def beforeEach(): Unit = {
@@ -197,7 +196,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(OK, Some(enrolResp))))
+    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(OK, Some(enrolResp))))
     val result = TestRegisterUserController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -207,7 +206,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_GATEWAY, Some(badGatewayResponse))))
+    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_GATEWAY, Some(badGatewayResponse))))
     val result = TestRegisterUserController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
