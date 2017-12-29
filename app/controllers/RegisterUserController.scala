@@ -45,7 +45,6 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
       if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
       else {
         if (isEmacFeatureToggle) {
-          println("***********************************************************************changed code in EMAC")
           registerEmacUserService.subscribeAted() flatMap { registerResponse =>
             (registerResponse._1, registerResponse._2.status) match {
               case (_, BAD_GATEWAY) =>
@@ -60,7 +59,6 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
           }
         }
         else{
-          println("***********************************************************************changed code else")
           registerUserService.subscribeAted() flatMap { registerResponse =>
             (registerResponse._1, registerResponse._2.status) match {
               case (_, BAD_GATEWAY) =>

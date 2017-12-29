@@ -26,21 +26,21 @@ import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import metrics.{Metrics, MetricsEnum}
 import audit.Auditable
-import models.RequestEMACPayload
+import models.{RequestEMACPayload}
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
+import utils.AtedSubscriptionUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
-  val serviceURL = baseUrl("tax-enrolments") //
+  val serviceURL = baseUrl("enrolment-store-proxy") //
 
   val enrolURI = "enrol"
   val http: CoreGet with CorePost = WSHttp
 
   val ATED_SERVICE_NAME = "HMRC-ATED-ORG"
-  val deEnrolURI = "tax-enrolments/de-enrol"
-  val enrolmentUrl = s"$serviceURL/tax-enrolments"
+  val enrolmentUrl = s"$serviceURL/enrolment-store-proxy/enrolment-store"
 
 
   def metrics: Metrics
@@ -51,11 +51,10 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
     val timer = metrics.startTimer(MetricsEnum.API4Enrolment)
 
     val jsonData = Json.toJson(requestPayload)
-    val enrolmentKey = s"$ATED_SERVICE_NAME~atedRefNumber~$atedRefNumber"
-    println("groupId" + groupId)
-    val splitGroupId = groupId.split("testGroupId-")(1)
-    val postUrl = s"""$enrolmentUrl/groups/$splitGroupId/enrolments/$enrolmentKey"""
-    /*val postUrl = "http://localhost:9995/tax-enrolments/groups/f0e19840-9805-41ee-b0db-1226348f1c1f/enrolments/HMRC-ATED-ORG~atedRefNumber~XY1200000100002"*/
+    val enrolmentKey = s"$ATED_SERVICE_NAME~ATEDRefNumber~$atedRefNumber"
+
+   val validatedGroupId = validateGroupId(groupId)
+    val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
 
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
 
@@ -64,7 +63,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
       auditEnrolUser(requestPayload, response)
 
       response.status match {
-        case OK | BAD_GATEWAY =>
+        case CREATED =>
           metrics.incrementSuccessCounter(MetricsEnum.API4Enrolment)
           response
         case BAD_REQUEST =>

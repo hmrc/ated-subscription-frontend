@@ -25,7 +25,7 @@ import play.api.mvc.Request
 import play.api.test.Helpers.OK
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AtedSubscriptionUtils, GovernmentGatewayConstants, SessionUtils}
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
 import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, GGCredId, ~}
@@ -78,14 +78,13 @@ trait RegisterEmacUserService extends RunMode with AuthorisedFunctions {
           Future.successful(HttpResponse(OK, responseJson = Some(enrolResp)))
         } else {
               Logger.info("EMAC is switched ON so enrolling using EMAC enrol service.")
-              authConnector.authorise(EmptyPredicate, credentials and groupIdentifier) flatMap {
+              authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
               case Credentials(ggCred, _) ~ Some(groupId) =>
                 val grpId = groupId
                 val requestPayload = createEMACEnrolRequest(atedSubscriptionSuccess,ggCred,
                   businessDetails.utr.getOrElse(""), businessDetails.businessAddress.postcode.getOrElse(""),
                   businessDetails.safeId, businessDetails.businessType.getOrElse(""))
-
-                taxEnrolmentsConnector.enrol(requestPayload, grpId, atedSubscriptionSuccess.atedRefNumber.getOrElse(""))
+                  taxEnrolmentsConnector.enrol(requestPayload, grpId, atedSubscriptionSuccess.atedRefNumber.getOrElse(""))
               case _ ~ None =>
                 Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
               case Credentials(_, _) ~ _ =>
@@ -120,7 +119,6 @@ trait RegisterEmacUserService extends RunMode with AuthorisedFunctions {
         Verifier("SAFEID", safeId)
       ) :+ utrVerifier
     }
-
     RequestEMACPayload(userId = gGCredId,
       friendlyName = GovernmentGatewayConstants.FRIENDLY_NAME,
       `type` = enrolmentType,
