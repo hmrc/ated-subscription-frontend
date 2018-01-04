@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,4 +30,3 @@ case class RequestEMACPayload(userId: String, friendlyName: String, `type`: Stri
 object RequestEMACPayload {
   implicit val formats = Json.format[RequestEMACPayload]
 }
-

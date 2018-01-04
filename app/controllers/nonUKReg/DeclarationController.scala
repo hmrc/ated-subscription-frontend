@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.config.RunMode
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DeclarationController extends FrontendController with Actions with RunMode{
+trait DeclarationController extends FrontendController with Actions with RunMode {
 
   val isEmacFeatureToggle: Boolean
 
@@ -51,28 +51,28 @@ trait DeclarationController extends FrontendController with Actions with RunMode
     implicit user =>
       implicit request =>
         agentClientFrontendMandateConnector.getOldMandateDetails flatMap {
-            case Some(mandateFound) =>
-                mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
-                Future.successful(Redirect(routes.ConfirmationController.view()))
-              }
-            case None => {
-              if(isEmacFeatureToggle){
-                  registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
-                  val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
-                    mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
-                    Future.successful(Redirect(routes.ConfirmationController.view()))
-                  }
-                }
-              }
-              else{
-               registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
+          case Some(mandateFound) =>
+            mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
+              Future.successful(Redirect(routes.ConfirmationController.view()))
+            }
+          case None => {
+            if (isEmacFeatureToggle) {
+              registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
                 val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
                 mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
                   Future.successful(Redirect(routes.ConfirmationController.view()))
                 }
               }
+            }
+            else {
+              registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
+                val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
+                mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
+                  Future.successful(Redirect(routes.ConfirmationController.view()))
+                }
               }
             }
+          }
         }
   }
 
@@ -88,6 +88,6 @@ object DeclarationController extends DeclarationController {
   val registerEmacUserService: RegisterEmacUserService = RegisterEmacUserService
   val mandateService: MandateService = MandateService
   val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
-  val isEmacFeatureToggle : Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
+  val isEmacFeatureToggle: Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
   // $COVERAGE-ON$
 }

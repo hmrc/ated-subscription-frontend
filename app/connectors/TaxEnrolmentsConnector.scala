@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,24 @@ import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import metrics.{Metrics, MetricsEnum}
 import audit.Auditable
-import models.{RequestEMACPayload}
+import models.RequestEMACPayload
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import utils.AtedSubscriptionUtils._
+import utils.GovernmentGatewayConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
-  val serviceURL = baseUrl("enrolment-store-proxy") //
+  val serviceURL = baseUrl("enrolment-store-proxy")
 
   val enrolURI = "enrol"
   val http: CoreGet with CorePost = WSHttp
 
-  val ATED_SERVICE_NAME = "HMRC-ATED-ORG"
   val enrolmentUrl = s"$serviceURL/enrolment-store-proxy/enrolment-store"
-
 
   def metrics: Metrics
 
@@ -51,7 +49,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
     val timer = metrics.startTimer(MetricsEnum.API4Enrolment)
 
     val jsonData = Json.toJson(requestPayload)
-    val enrolmentKey = s"$ATED_SERVICE_NAME~ATEDRefNumber~$atedRefNumber"
+    val enrolmentKey = s"${GovernmentGatewayConstants.ATED_SERVICE_NAME}~ATEDRefNumber~$atedRefNumber"
 
    val validatedGroupId = validateGroupId(groupId)
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
@@ -66,66 +64,23 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
         case CREATED =>
           metrics.incrementSuccessCounter(MetricsEnum.API4Enrolment)
           response
-        case BAD_REQUEST =>
-          metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-          Logger.warn(s"[GovernmentGatewayConnector][enrol] - Bad Request Exception")
-          doFailedAudit("enrolFailed", jsonData.toString, response.body)
-          throw new BadRequestException(response.body)
         case status =>
           metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-          Logger.warn(s"[ECMPGatewayConnector][enrol] - status: $status")
+          Logger.warn(s"[TaxEnrolmentsConnector][enrol] - status: $status")
           doFailedAudit("enrolFailed", jsonData.toString, response.body)
           throw new InternalServerException(response.body)
       }
     }
   }
 
-
- /* def processResponse(response: HttpResponse, postUrl: String, requestPayload: RequestEMACPayload)(implicit hc: HeaderCarrier): HttpResponse = {
-    response.status match {
-      case OK =>
-        metrics.incrementSuccessCounter(MetricsEnum.API4Enrolment)
-        response
-      case BAD_REQUEST =>
-        metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
-          s"gg url:$postUrl, " +
-          s"Bad Request Exception account Ref:${requestPayload.verifiers}, " +
-          s"Service: $ATED_SERVICE_NAME")
-        throw new BadRequestException(response.body)
-      case NOT_FOUND =>
-        metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
-          s"Not Found Exception account Ref:${requestPayload.verifiers}, " +
-          s"Service: $ATED_SERVICE_NAME}")
-        throw new NotFoundException(response.body)
-      case SERVICE_UNAVAILABLE =>
-        metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-        Logger.warn(s"[GovernmentGatewayConnector][enrol] - " +
-          s"gg url:$postUrl, " +
-          s"Service Unavailable Exception account Ref:${requestPayload.verifiers}, " +
-          s"Service: $ATED_SERVICE_NAME}")
-        throw new ServiceUnavailableException(response.body)
-      case BAD_GATEWAY =>
-        metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-        createWarning(postUrl, None, requestPayload.verifiers, response.body, response.status, Some("BAD_GATEWAY"))
-        response
-      case status =>
-        metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-        createWarning(postUrl, Some(status), requestPayload.verifiers, response.body, response.status)
-        throw new InternalServerException(response.body)
-    }
-  }*/
-
   private def auditEnrolUser(enrolRequest: RequestEMACPayload,
                              response: HttpResponse)(implicit hc: HeaderCarrier) = {
-
     val eventType = response.status match {
-      case OK => EventTypes.Succeeded
+      case CREATED => EventTypes.Succeeded
       case _ => EventTypes.Failed
     }
-    sendDataEvent(transactionName = "enrolUser",
-      detail = Map("txName" -> "enrolUser",
+    sendDataEvent(transactionName = "emacEnrolCall",
+      detail = Map("txName" -> "emacEnrolCall",
         "userId" -> s"${enrolRequest.userId}",
         "responseStatus" -> s"${response.status}",
         "responseBody" -> s"${response.body}",

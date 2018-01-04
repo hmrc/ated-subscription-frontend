@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ trait RegisterEmacUserService extends RunMode with AuthorisedFunctions {
           val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
           Future.successful(HttpResponse(OK, responseJson = Some(enrolResp)))
         } else {
-              Logger.info("EMAC is switched ON so enrolling using EMAC enrol service.")
+              println("EMAC is switched ON so enrolling using EMAC enrol service.")
               authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
               case Credentials(ggCred, _) ~ Some(groupId) =>
                 val grpId = groupId
@@ -107,7 +107,7 @@ trait RegisterEmacUserService extends RunMode with AuthorisedFunctions {
                                      gGCredId: String, utr: String, postcode: String,
                                      safeId : String, businessType: String): RequestEMACPayload = {
     val atedRef = atedSubscriptionSuccess.atedRefNumber
-      .getOrElse(throw new RuntimeException("[RegisterUserService][createEnrolRequest] ated reference number not returned from ETMP subscribe"))
+      .getOrElse(throw new RuntimeException("[RegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe"))
 
     def createVerifiers() = {
       val utrVerifier = businessType match {
