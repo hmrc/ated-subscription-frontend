@@ -19,7 +19,7 @@ package controllers.nonUKReg
 import config.FrontendAuthConnector
 import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AtedSubscriptionRegime
-import services.{MandateService, RegisterEmacUserService, RegisterUserService}
+import services.{MandateService, NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -37,7 +37,7 @@ trait DeclarationController extends FrontendController with Actions with RunMode
 
   def registerUserService: RegisterUserService
 
-  def registerEmacUserService: RegisterEmacUserService
+  def registerEmacUserService: NewRegisterUserService
 
   def mandateService: MandateService
 
@@ -85,7 +85,7 @@ object DeclarationController extends DeclarationController {
   // $COVERAGE-OFF$
   val authConnector: AuthConnector = FrontendAuthConnector
   val registerUserService: RegisterUserService = RegisterUserService
-  val registerEmacUserService: RegisterEmacUserService = RegisterEmacUserService
+  val registerEmacUserService: NewRegisterUserService = NewRegisterUserService
   val mandateService: MandateService = MandateService
   val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
   val isEmacFeatureToggle: Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)

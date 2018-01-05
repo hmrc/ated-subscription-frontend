@@ -61,6 +61,30 @@ class AtedSubscriptionUtilsSpec extends PlaySpec with OneServerPerSuite {
     }
 
 
+    "validateGroupId" must {
+
+      "throw an exception" when {
+        "invalid string is passed" in {
+          val thrown = the[RuntimeException] thrownBy AtedSubscriptionUtils.validateGroupId("abc-def-ghi")
+          thrown.getMessage must include("Invalid groupId from auth")
+        }
+      }
+
+      "return groupId" when {
+        "valid string is passed" in {
+          val result = AtedSubscriptionUtils.validateGroupId("42424200-0000-0000-0000-000000000000")
+          result must be("42424200-0000-0000-0000-000000000000")
+        }
+
+        "string with testGroupId- is passed" in {
+          val result = AtedSubscriptionUtils.validateGroupId("testGroupId-0000-0000-0000-000000000000")
+          result must be("0000-0000-0000-000000000000")
+        }
+      }
+
+    }
+
+
   }
 
 }

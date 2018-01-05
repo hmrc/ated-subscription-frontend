@@ -31,7 +31,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{RegisterEmacUserService, RegisterUserService}
+import services.{NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -40,7 +40,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   val mockAuthConnector = mock[AuthConnector]
   val mockRegisterUserService = mock[RegisterUserService]
-  val mockRegisterEMACUserService = mock[RegisterEmacUserService]
+  val mockRegisterEMACUserService = mock[NewRegisterUserService]
 
   object TestRegisterUserController extends RegisterUserController {
     val authConnector = mockAuthConnector

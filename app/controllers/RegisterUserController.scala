@@ -18,10 +18,9 @@ package controllers
 
 import config.FrontendAuthConnector
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
-import controllers.nonUKReg.DeclarationController.runModeConfiguration
 import org.joda.time.LocalDate
 import play.api.Logger
-import services.{RegisterEmacUserService, RegisterUserService}
+import services.{NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
@@ -37,7 +36,7 @@ import scala.concurrent.Future
 trait RegisterUserController extends FrontendController with Actions with RunMode {
 
   val registerUserService: RegisterUserService
-  val registerEmacUserService : RegisterEmacUserService
+  val newRegisterUserService : NewRegisterUserService
   val isEmacFeatureToggle : Boolean
 
   def registerUser = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
@@ -45,7 +44,7 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
       if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
       else {
         if (isEmacFeatureToggle) {
-          registerEmacUserService.subscribeAted() flatMap { registerResponse =>
+          newRegisterUserService.subscribeAted() flatMap { registerResponse =>
             (registerResponse._1, registerResponse._2.status) match {
               case (_, BAD_GATEWAY) =>
                 val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
@@ -54,7 +53,7 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
                 }
                 Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
                 Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
-              case (_, _) => Future.successful((Redirect(controllers.routes.RegisterUserController.confirmation())))
+              case (_, _) => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
             }
           }
         }
@@ -107,6 +106,6 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
 object RegisterUserController extends RegisterUserController {
   val authConnector = FrontendAuthConnector
   val registerUserService = RegisterUserService
-  val registerEmacUserService = RegisterEmacUserService
+  val newRegisterUserService = NewRegisterUserService
   val isEmacFeatureToggle : Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
 }

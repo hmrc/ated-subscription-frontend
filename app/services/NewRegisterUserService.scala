@@ -34,9 +34,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import uk.gov.hmrc.play.config.RunMode
+import utils.AtedSubscriptionUtils.validateGroupId
 
 
-trait RegisterEmacUserService extends RunMode with AuthorisedFunctions {
+trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector
@@ -77,19 +78,15 @@ trait RegisterEmacUserService extends RunMode with AuthorisedFunctions {
           val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
           Future.successful(HttpResponse(OK, responseJson = Some(enrolResp)))
         } else {
-              println("EMAC is switched ON so enrolling using EMAC enrol service.")
               authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
               case Credentials(ggCred, _) ~ Some(groupId) =>
-                val grpId = groupId
+                val grpId = validateGroupId(groupId)
                 val requestPayload = createEMACEnrolRequest(atedSubscriptionSuccess,ggCred,
                   businessDetails.utr.getOrElse(""), businessDetails.businessAddress.postcode.getOrElse(""),
                   businessDetails.safeId, businessDetails.businessType.getOrElse(""))
                   taxEnrolmentsConnector.enrol(requestPayload, grpId, atedSubscriptionSuccess.atedRefNumber.getOrElse(""))
               case _ ~ None =>
-                Future.failed(new InternalServerException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
-              case Credentials(_, _) ~ _ =>
-                Future.failed(new InternalServerException("Failed to enrol - user had a different auth provider ID (not a valid GG user)"))
-
+                Future.failed(new RuntimeException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
           }
         }
       }
@@ -159,7 +156,7 @@ trait RegisterEmacUserService extends RunMode with AuthorisedFunctions {
 
 }
 
-object RegisterEmacUserService extends RegisterEmacUserService {
+object NewRegisterUserService extends NewRegisterUserService {
   val registeredBusinessService = RegisteredBusinessService
   val atedSubscriptionConnector = AtedSubscriptionConnector
   val dataCacheConnector = AtedSubscriptionDataCacheConnector

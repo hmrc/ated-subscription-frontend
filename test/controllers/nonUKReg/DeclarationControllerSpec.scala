@@ -31,7 +31,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{MandateService, RegisterEmacUserService, RegisterUserService}
+import services.{MandateService, NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -80,7 +80,6 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
           redirectLocation(result) must be(Some("/ated-subscription/agent/confirmation"))
         }
       }
-
     }
 
   }
@@ -89,7 +88,7 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
   val mockRegisterUserService = mock[RegisterUserService]
   val mockMandateService = mock[MandateService]
   val mockAgentClientFrontendMandateConnector = mock[AgentClientMandateFrontendConnector]
-  val mockRegisterEmacUserService = mock[RegisterEmacUserService]
+  val mockRegisterEmacUserService = mock[NewRegisterUserService]
 
   object TestDeclarationController extends DeclarationController {
     override val authConnector = mockAuthConnector

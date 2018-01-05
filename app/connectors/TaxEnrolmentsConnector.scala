@@ -51,7 +51,6 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
     val jsonData = Json.toJson(requestPayload)
     val enrolmentKey = s"${GovernmentGatewayConstants.ATED_SERVICE_NAME}~ATEDRefNumber~$atedRefNumber"
 
-   val validatedGroupId = validateGroupId(groupId)
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
 
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
@@ -87,8 +86,6 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
         "status" -> s"$eventType"))
   }
 }
-
-
 
 object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
   val appName = AppName.appName
