@@ -88,7 +88,9 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
 }
 
 object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
+  // $COVERAGE-OFF$
   val appName = AppName.appName
   override val metrics = Metrics
   val audit: Audit = new Audit(AppName.appName, AtedSubscriptionFrontendAuditConnector)
+  // $COVERAGE-ON$
 }

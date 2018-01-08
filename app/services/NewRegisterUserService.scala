@@ -46,7 +46,6 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
   val taxEnrolmentsConnector : TaxEnrolmentsConnector
   val enrolmentType = "principal"
 
-
   def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)(implicit user: AuthContext, hc: HeaderCarrier, request: Request[_]): Future[(SubscribeSuccessResponse, HttpResponse)] = {
     for {
       businessDetails <- registeredBusinessService.getReviewBusinessDetails
@@ -99,7 +98,6 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
     authenticatorConnector.refreshProfile()
   }
 
-
   private def createEMACEnrolRequest(atedSubscriptionSuccess: SubscribeSuccessResponse,
                                      gGCredId: String, utr: String, postcode: String,
                                      safeId : String, businessType: String): RequestEMACPayload = {
@@ -147,10 +145,12 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
 }
 
 object NewRegisterUserService extends NewRegisterUserService {
+  // $COVERAGE-OFF$
   val registeredBusinessService = RegisteredBusinessService
   val atedSubscriptionConnector = AtedSubscriptionConnector
   val dataCacheConnector = AtedSubscriptionDataCacheConnector
   val authenticatorConnector = AuthenticatorConnector
   override val authConnector = AuthClientConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
+  // $COVERAGE-ON$
 }

@@ -104,8 +104,10 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
 
 
 object RegisterUserController extends RegisterUserController {
+  // $COVERAGE-OFF$
   val authConnector = FrontendAuthConnector
   val registerUserService = RegisterUserService
   val newRegisterUserService = NewRegisterUserService
   val isEmacFeatureToggle : Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
+  // $COVERAGE-ON$
 }
