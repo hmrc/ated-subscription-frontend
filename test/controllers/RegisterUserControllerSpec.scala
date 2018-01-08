@@ -45,8 +45,9 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   object TestRegisterUserController extends RegisterUserController {
     val authConnector = mockAuthConnector
     val registerUserService = mockRegisterUserService
-    val registerEmacUserService = mockRegisterEMACUserService
     val isEmacFeatureToggle = true
+    val newRegisterUserService = mockRegisterEMACUserService
+
   }
 
   override def beforeEach(): Unit = {

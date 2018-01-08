@@ -143,16 +143,6 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
       faxNumber = None,
       emailAddress = email)
   }
-  private def createVerifiers(safeId: String, utr: Option[String], businessType: String, postcode: String) = {
-    val utrVerifier = businessType match {
-      case "SOP" => Verifier("SAUTR", utr.getOrElse(""))
-      case _ => Verifier("CTUTR", utr.getOrElse(""))
-    }
-    List(
-      Verifier("Postcode", postcode),
-      Verifier("SAFEID", safeId)
-    ) :+ utrVerifier
-  }
 
 }
 
