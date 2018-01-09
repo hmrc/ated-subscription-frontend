@@ -57,7 +57,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
 
     http.POST[JsValue, HttpResponse](postUrl, jsonData) map { response =>
       timerContext.stop()
-      auditEnrolUser(requestPayload, response)
+      auditEnrolUser(postUrl, requestPayload, response)
 
       response.status match {
         case CREATED =>
@@ -72,7 +72,8 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
     }
   }
 
-  private def auditEnrolUser(enrolRequest: RequestEMACPayload,
+  private def auditEnrolUser(postUrl: String,
+                             enrolRequest: RequestEMACPayload,
                              response: HttpResponse)(implicit hc: HeaderCarrier) = {
     val eventType = response.status match {
       case CREATED => EventTypes.Succeeded
@@ -81,6 +82,9 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
     sendDataEvent(transactionName = "emacEnrolCall",
       detail = Map("txName" -> "emacEnrolCall",
         "userId" -> s"${enrolRequest.userId}",
+        "serviceName" -> s"${GovernmentGatewayConstants.ATED_SERVICE_NAME}",
+        "postUrl" -> s"$postUrl",
+        "requestBody" -> s"${Json.prettyPrint(Json.toJson(enrolRequest))}",
         "responseStatus" -> s"${response.status}",
         "responseBody" -> s"${response.body}",
         "status" -> s"$eventType"))

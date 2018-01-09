@@ -68,7 +68,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
 
     "enrolment through EMAC" when {
 
-
       "not respond with NOT_FOUND for the GET" in {
         val result = route(FakeRequest(POST, "/ated-subscription/register-user"))
         result.isDefined must be(true)
@@ -106,50 +105,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
           }
         }
 
-        "fail to subcribe a client and redirect to error page" when {
-
-          "different client try to register with same details" in {
-            registerWithDuplicateUser(badGatewayResponse9001) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("Somebody has already registered from your organisation")
-            }
-          }
-
-          "known facts already exist for the client in GG" in {
-            registerWithDuplicateUser(badGatewayResponse11006) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("Somebody has already registered from your organisation")
-            }
-          }
-
-          "multiple enrollments exist for the credential in GG" in {
-            registerWithDuplicateUser(badGatewayResponse10004) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("Somebody has already registered from your organisation")
-            }
-          }
-
-          "users with non-admin role tries to subscribe to ATED" in {
-            registerWithDuplicateUser(badGatewayResponse8026) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("You must be logged in as an administrator to submit an ATED return")
-            }
-          }
-        }
-
-        "throw a RuntimeException" when {
-
-          "BAD_GATWAY error is returned but with a different error code" in {
-            registerWithDuplicateUser(badGatewayResponseOthers) { result =>
-              val thrown = the[RuntimeException] thrownBy redirectLocation(result).get
-              thrown.getMessage must include("No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception")
-            }
-          }
-        }
       }
 
       "confirmation" must {
@@ -354,6 +309,8 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     test(result)
   }
 
+  //GG methods to be removed START
+
   def registerWithUnAuthorisedUserGG(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
@@ -410,5 +367,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     val result = TestRegisterUserWithGGController.redirectToAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
+
+  //GG methods to be removed END
 
 }

@@ -102,18 +102,14 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
                                      gGCredId: String, utr: String, postcode: String,
                                      safeId : String, businessType: String): RequestEMACPayload = {
     val atedRef = atedSubscriptionSuccess.atedRefNumber
-      .getOrElse(throw new RuntimeException("[RegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe"))
+      .getOrElse(throw new RuntimeException("[NewRegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe"))
 
-    def createVerifiers() = {
-      val utrVerifier = businessType match {
-        case "SOP" => Verifier("SAUTR", utr)
-        case _ => Verifier("CTUTR", utr)
-      }
-      List(
+    def createVerifiers() = List(
         Verifier("Postcode", postcode),
-        Verifier("SAFEID", safeId)
-      ) :+ utrVerifier
-    }
+        Verifier("SAFEID", safeId),
+        Verifier("CTUTR", utr)
+      )
+
     RequestEMACPayload(userId = gGCredId,
       friendlyName = GovernmentGatewayConstants.FRIENDLY_NAME,
       `type` = enrolmentType,

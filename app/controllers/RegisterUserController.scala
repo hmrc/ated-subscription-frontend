@@ -36,66 +36,60 @@ import scala.concurrent.Future
 trait RegisterUserController extends FrontendController with Actions with RunMode {
 
   val registerUserService: RegisterUserService
-  val newRegisterUserService : NewRegisterUserService
-  val isEmacFeatureToggle : Boolean
+  val newRegisterUserService: NewRegisterUserService
+  val isEmacFeatureToggle: Boolean
 
   def registerUser = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
-      else {
-        if (isEmacFeatureToggle) {
-          newRegisterUserService.subscribeAted() flatMap { registerResponse =>
-            (registerResponse._1, registerResponse._2.status) match {
-              case (_, BAD_GATEWAY) =>
-                val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
-                  Logger.warn(s"[RegisterUserController][registerUser] - Exception - No matching GG ErrorNumbers")
-                  throw new RuntimeException(Messages("ated.business-registration.error.bad.gateway.other"))
-                }
-                Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
-                Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
-              case (_, _) => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
+    implicit user =>
+      implicit request =>
+        if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
+        else {
+          if (isEmacFeatureToggle) {
+            newRegisterUserService.subscribeAted() flatMap { registerResponse =>
+              Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
+            }
+          }
+          else {
+            registerUserService.subscribeAted() flatMap { registerResponse =>
+              (registerResponse._1, registerResponse._2.status) match {
+                case (_, BAD_GATEWAY) =>
+                  val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
+                    Logger.warn(s"[RegisterUserController][registerUser] - Exception - No matching GG ErrorNumbers")
+                    throw new RuntimeException(Messages("ated.business-registration.error.bad.gateway.other"))
+                  }
+                  Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
+                  Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
+                case (_, _) => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
+              }
             }
           }
         }
-        else{
-          registerUserService.subscribeAted() flatMap { registerResponse =>
-            (registerResponse._1, registerResponse._2.status) match {
-              case (_, BAD_GATEWAY) =>
-                val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
-                  Logger.warn(s"[RegisterUserController][registerUser] - Exception - No matching GG ErrorNumbers")
-                  throw new RuntimeException(Messages("ated.business-registration.error.bad.gateway.other"))
-                }
-                Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
-                Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
-              case (_, _) => Future.successful((Redirect(controllers.routes.RegisterUserController.confirmation())))
-            }
-          }
-        }
-      }
   }
 
   def confirmation = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      for {
-        refreshResp <- registerUserService.refreshProfile
-      } yield {
-        Ok(views.html.registerUserConfirmation(Dates.formatDate(LocalDate.now())))
-      }
+    implicit user =>
+      implicit request =>
+        for {
+          refreshResp <- registerUserService.refreshProfile
+        } yield {
+          Ok(views.html.registerUserConfirmation(Dates.formatDate(LocalDate.now())))
+        }
   }
 
   def redirectToAted = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
-    implicit user => implicit request =>
-      Redirect(ExternalUrls.atedStartPath)
+    implicit user =>
+      implicit request =>
+        Redirect(ExternalUrls.atedStartPath)
   }
 
   private def formatErrorMessage(errorNum: String): Option[(String, String, String)] = {
     errorNum match {
       case "9001" | "11006" | "10004" => Some(Messages("ated.business-registration-error.duplicate.identifier.header"),
-    Messages("ated.business-registration-error.duplicate.identifier.title"),
-    Messages("ated.business-registration-error.duplicate.identifier.message"))
+        Messages("ated.business-registration-error.duplicate.identifier.title"),
+        Messages("ated.business-registration-error.duplicate.identifier.message"))
       case "8026" => Some(Messages("ated.business-registration-error.wrong.role.header"),
-    Messages("ated.business-registration-error.wrong.role.title"),
-    Messages("ated.business-registration-error.wrong.role.message"))
+        Messages("ated.business-registration-error.wrong.role.title"),
+        Messages("ated.business-registration-error.wrong.role.message"))
       case _ => None
     }
   }
@@ -108,6 +102,6 @@ object RegisterUserController extends RegisterUserController {
   val authConnector = FrontendAuthConnector
   val registerUserService = RegisterUserService
   val newRegisterUserService = NewRegisterUserService
-  val isEmacFeatureToggle : Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
+  val isEmacFeatureToggle: Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
   // $COVERAGE-ON$
 }
