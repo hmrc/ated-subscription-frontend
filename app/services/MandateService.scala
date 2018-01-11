@@ -117,7 +117,6 @@ trait MandateService {
         case status => throw new RuntimeException("Non-UK Mandate update failed.")
       }
     }
-
   }
 
   def fetchEmailAddress(implicit request: Request[_], user: AuthContext): Future[Option[AgentEmail]] = {
