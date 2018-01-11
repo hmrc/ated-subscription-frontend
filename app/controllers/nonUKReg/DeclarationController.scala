@@ -58,7 +58,8 @@ trait DeclarationController extends FrontendController with Actions with RunMode
           case None => {
             if (isEmacFeatureToggle) {
               registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
-                val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
+                val (etmpSubscriptionResponse, emacEnrolResponse) = response
+                val atedRefNo = etmpSubscriptionResponse.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
                 mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
                   Future.successful(Redirect(routes.ConfirmationController.view()))
                 }

@@ -67,7 +67,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
           metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
           Logger.warn(s"[TaxEnrolmentsConnector][enrol] - status: $status")
           doFailedAudit("enrolFailed", jsonData.toString, response.body)
-          throw new InternalServerException(response.body)
+          response
       }
     }
   }

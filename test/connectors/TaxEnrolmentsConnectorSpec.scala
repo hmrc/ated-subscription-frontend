@@ -99,8 +99,8 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
         val result = TestTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
-        val thrown = the[InternalServerException] thrownBy await(result)
-        Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
+        val enrolResponse = await(result)
+        enrolResponse.status must be(INTERNAL_SERVER_ERROR)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       }
     }

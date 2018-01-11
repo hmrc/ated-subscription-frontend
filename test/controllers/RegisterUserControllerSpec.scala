@@ -103,6 +103,32 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
               redirectLocation(result).get must include("/ated-subscription/agent/declaration")
             }
           }
+
+          "return to error page for duplicate users" in {
+            registerWithDuplicateUser {
+              result =>
+                status(result) must be(OK)
+                val document = Jsoup.parse(contentAsString(result))
+                document.title() must be("Somebody has already registered from your organisation - GOV.UK")
+            }
+          }
+
+          "return to error page for wrong role users" in {
+            registerWithWrongRoleUser {
+              result =>
+                status(result) must be(OK)
+                val document = Jsoup.parse(contentAsString(result))
+                document.title() must be("You must be logged in as an administrator to submit an ATED return - GOV.UK")
+            }
+          }
+
+          "throw exeception for invalid users" in {
+            registerWithInvalidUser {
+              result =>
+                val thrown = the[RuntimeException] thrownBy redirectLocation(result).get
+                thrown.getMessage must include("EMAC Allocate an Enrolment to a Group failed for no definite reason")
+            }
+          }
         }
 
       }
@@ -133,7 +159,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     }
 
     "enrolment through GG" when {
-
 
       "not respond with NOT_FOUND for the GET" in {
         val result = route(FakeRequest(POST, "/ated-subscription/register-user"))
@@ -269,21 +294,40 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(OK, Some(enrolResp))))
+    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(CREATED, Some(enrolResp))))
     val result = TestRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def registerWithDuplicateUser(badGatewayResponse: JsValue)(test: Future[Result] => Any) {
+  def registerWithDuplicateUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_GATEWAY, Some(badGatewayResponse))))
+    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_REQUEST)))
     val result = TestRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
+  def registerWithWrongRoleUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
+    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(FORBIDDEN)))
+    val result = TestRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def registerWithInvalidUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
+    when(mockRegisterEMACUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(INTERNAL_SERVER_ERROR)))
+    val result = TestRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
 
   def registerWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"

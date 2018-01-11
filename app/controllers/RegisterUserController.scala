@@ -39,14 +39,32 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
   val newRegisterUserService: NewRegisterUserService
   val isEmacFeatureToggle: Boolean
 
+  private val DuplicateUserError = "duplicate user error"
+  private val WrongRoleUserError = "wrong role user error"
+
+
   def registerUser = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user =>
       implicit request =>
         if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
         else {
           if (isEmacFeatureToggle) {
-            newRegisterUserService.subscribeAted() flatMap { registerResponse =>
-              Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
+            newRegisterUserService.subscribeAted() map { registerResponse =>
+              val (etmpSuccesResponse, emacEnrolResponse) = registerResponse
+              emacEnrolResponse.status match {
+                case CREATED => Redirect(controllers.routes.RegisterUserController.confirmation())
+                case BAD_REQUEST | CONFLICT =>
+                  val errMessage = formatEmacErrorMessage(DuplicateUserError)
+                  Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
+                  Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
+                case FORBIDDEN =>
+                  val errMessage = formatEmacErrorMessage(WrongRoleUserError)
+                  Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
+                  Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
+                case _ =>
+                  Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - no definite reason found")
+                  throw new RuntimeException(Messages("ated.business-registration.error.other"))
+              }
             }
           }
           else {
@@ -93,6 +111,18 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
       case _ => None
     }
   }
+
+  private def formatEmacErrorMessage(str: String) =
+    str match {
+      case DuplicateUserError =>
+        (Messages("ated.business-registration-error.duplicate.identifier.header"),
+          Messages("ated.business-registration-error.duplicate.identifier.title"),
+          Messages("ated.business-registration-error.duplicate.identifier.message"))
+      case WrongRoleUserError =>
+        (Messages("ated.business-registration-error.wrong.role.header"),
+          Messages("ated.business-registration-error.wrong.role.title"),
+          Messages("ated.business-registration-error.wrong.role.message"))
+    }
 
 }
 
