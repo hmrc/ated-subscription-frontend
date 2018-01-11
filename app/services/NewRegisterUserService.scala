@@ -16,7 +16,6 @@
 
 package services
 
-
 import config.AuthClientConnector
 import connectors._
 import models._
@@ -26,21 +25,26 @@ import play.api.mvc.Request
 import play.api.test.Helpers.OK
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AtedSubscriptionUtils, GovernmentGatewayConstants, SessionUtils}
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
+import uk.gov.hmrc.auth.core.authorise.EmptyPredicate
+import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, GGCredId, ~}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import uk.gov.hmrc.play.config.RunMode
+import utils.AtedSubscriptionUtils.validateGroupId
 
 
-trait RegisterUserService extends RunMode {
+trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector
-  val governmentGatewayConnector: GovernmentGatewayConnector
   val authenticatorConnector: AuthenticatorConnector
   val registeredBusinessService: RegisteredBusinessService
-
+  val taxEnrolmentsConnector : TaxEnrolmentsConnector
+  val enrolmentType = "principal"
 
   def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)(implicit user: AuthContext, hc: HeaderCarrier, request: Request[_]): Future[(SubscribeSuccessResponse, HttpResponse)] = {
     for {
@@ -73,10 +77,16 @@ trait RegisterUserService extends RunMode {
           val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
           Future.successful(HttpResponse(OK, responseJson = Some(enrolResp)))
         } else {
-            val enrolmentReq = createEnrolRequest(atedSubscriptionSuccess,
-              businessDetails.businessAddress.postcode.getOrElse(""), businessDetails.utr.getOrElse(""))
-            governmentGatewayConnector.enrol(enrolmentReq)
-
+              authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
+              case Credentials(ggCred, _) ~ Some(groupId) =>
+                val grpId = validateGroupId(groupId)
+                val requestPayload = createEMACEnrolRequest(atedSubscriptionSuccess,ggCred,
+                  businessDetails.utr.getOrElse(""), businessDetails.businessAddress.postcode.getOrElse(""),
+                  businessDetails.safeId, businessDetails.businessType.getOrElse(""))
+                  taxEnrolmentsConnector.enrol(requestPayload, grpId, atedSubscriptionSuccess.atedRefNumber.getOrElse(""))
+              case _ ~ None =>
+                Future.failed(new RuntimeException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
+          }
         }
       }
     } yield {
@@ -88,16 +98,23 @@ trait RegisterUserService extends RunMode {
     authenticatorConnector.refreshProfile()
   }
 
-  private def createEnrolRequest(atedSubscriptionSuccess: SubscribeSuccessResponse, postcode: String, utr: String): EnrolRequest = {
+  private def createEMACEnrolRequest(atedSubscriptionSuccess: SubscribeSuccessResponse,
+                                     gGCredId: String, utr: String, postcode: String,
+                                     safeId : String, businessType: String): RequestEMACPayload = {
     val atedRef = atedSubscriptionSuccess.atedRefNumber
-      .getOrElse(throw new RuntimeException("[RegisterUserService][createEnrolRequest] ated reference number not returned from ETMP subscribe"))
+      .getOrElse(throw new RuntimeException("[NewRegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe"))
 
-    EnrolRequest(portalId = GovernmentGatewayConstants.ATED_PORTAL_IDENTIFIER,
-      serviceName = GovernmentGatewayConstants.ATED_SERVICE_NAME,
+    def createVerifiers() = List(
+        Verifier("Postcode", postcode),
+        Verifier("SAFEID", safeId),
+        Verifier("CTUTR", utr)
+      )
+
+    RequestEMACPayload(userId = gGCredId,
       friendlyName = GovernmentGatewayConstants.FRIENDLY_NAME,
-      knownFacts = Seq(atedRef, utr, "", postcode))
+      `type` = enrolmentType,
+      verifiers = createVerifiers())
   }
-
 
   def toEtmpAddress(address: Address): EtmpAddressDetails = {
     val etmpAddress = EtmpAddressDetails(addressType = "Correspondence",
@@ -123,10 +140,13 @@ trait RegisterUserService extends RunMode {
 
 }
 
-object RegisterUserService extends RegisterUserService {
+object NewRegisterUserService extends NewRegisterUserService {
+  // $COVERAGE-OFF$
   val registeredBusinessService = RegisteredBusinessService
   val atedSubscriptionConnector = AtedSubscriptionConnector
   val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  val governmentGatewayConnector = GovernmentGatewayConnector
   val authenticatorConnector = AuthenticatorConnector
+  override val authConnector = AuthClientConnector
+  val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
+  // $COVERAGE-ON$
 }
