@@ -106,7 +106,6 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
 
     def createVerifiers() = List(
         Verifier("Postcode", postcode),
-        Verifier("SAFEID", safeId),
         Verifier("CTUTR", utr)
       )
 
