@@ -43,14 +43,18 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
   val subscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
   val enrolSuccessResponse = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
-  val testAddress = Address("line_1", "line_2", None, None, None, "GB")
+  val testAddress = Address("line_1", "line_2", None, None, postcode = Some("XX11XX"), "GB")
+  val testAddressNoPOstCode = Address("line_1", "line_2", None, None, postcode = None, "GB")
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
-  val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", businessType = Some("test Type"), businessAddress = testAddress,
+
+  val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("test Type"), businessAddress = testAddress,
     sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
-  val testReviewBusinessDetailsforSOP = ReviewDetails(businessName = "test Name", businessType = Some("SOP"), businessAddress = testAddress,
+  val testReviewBusinessDetailsforSOP = ReviewDetails(businessName = "test Name",utr = Some("1111111111"), businessType = Some("SOP"), businessAddress = testAddress,
     sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
 
+  val testReviewBusinessDetailsNoUtrPostCode = ReviewDetails(businessName = "test Name", businessType = Some("SOP"), businessAddress = testAddressNoPOstCode,
+    sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
 
   val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockDataCacheConnector = mock[DataCacheConnector]
@@ -143,6 +147,20 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
         val result = TestNewRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)
         thrown.getMessage must include("Failed to enrol - user did not have a group identifier (not a valid GG user)")
+      }
+
+      "throw exception when utr and postcode not present" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtrPostCode))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = TestNewRegisterUserService.subscribeAted()
+        val thrown = the[RuntimeException] thrownBy await(result)
+        thrown.getMessage must include("[NewRegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
       }
 
       "should handle invalid data in the subscribe success response" in {

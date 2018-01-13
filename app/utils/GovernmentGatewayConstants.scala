@@ -22,4 +22,7 @@ object GovernmentGatewayConstants {
   val ATED_SERVICE_NAME = "HMRC-ATED-ORG"
   val ATED_PORTAL_IDENTIFIER = "Default"
   val FRIENDLY_NAME = "ATED Enrolment"
+
+  val VerifierPostalCode = "Postcode"
+  val VerifierCtUtr= "CTUTR"
 }
