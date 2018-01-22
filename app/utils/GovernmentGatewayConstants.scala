@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,4 +22,7 @@ object GovernmentGatewayConstants {
   val ATED_SERVICE_NAME = "HMRC-ATED-ORG"
   val ATED_PORTAL_IDENTIFIER = "Default"
   val FRIENDLY_NAME = "ATED Enrolment"
+
+  val VerifierPostalCode = "Postcode"
+  val VerifierCtUtr= "CTUTR"
 }

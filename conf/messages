@@ -287,3 +287,4 @@ ated.business-registration-error.wrong.role.title = You must be logged in as an 
 ated.business-registration-error.wrong.role.message = If you require access you need to <a href="https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target="_blank">add administrators to your account in Government Gateway.</a>
 
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
+ated.business-registration.error.other = EMAC Allocate an Enrolment to a Group failed for no definite reason

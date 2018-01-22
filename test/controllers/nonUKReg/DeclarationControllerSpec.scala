@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{MandateService, RegisterUserService}
+import services.{MandateService, NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -55,46 +55,88 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     }
 
     "submit" must {
-      "for valid form, redirect to confirmation page" in {
-        val fakeRequest = FakeRequest().withFormUrlEncodedBody()
-        val oldMandateRef = Some(OldMandateReference("mandateId", "atedRefNum"))
-        submitWithAuthorisedUser(fakeRequest, ated = Some("atedRefNum"), oldMandateRef) { result =>
-          status(result) must be(SEE_OTHER)
-          redirectLocation(result) must be(Some("/ated-subscription/agent/confirmation"))
+
+      "enrolling to GG" when {
+
+        "for valid form, redirect to confirmation page" in {
+          val fakeRequest = FakeRequest().withFormUrlEncodedBody()
+          val oldMandateRef = Some(OldMandateReference("mandateId", "atedRefNum"))
+          submitWithAuthorisedUserForGG(fakeRequest, ated = Some("atedRefNum"), oldMandateRef) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated-subscription/agent/confirmation"))
+          }
+        }
+
+        "for valid form, but API4 call fail, so no atedRefNum is returned in response, throw exception" in {
+          val fakeRequest = FakeRequest().withFormUrlEncodedBody()
+          val oldMandateRef = Some(OldMandateReference("mandateId", "atedRefNum"))
+          submitWithAuthorisedUserForGG(fakeRequest, ated = None) { result =>
+            val thrown = the[RuntimeException] thrownBy await(result)
+            thrown.getMessage must be("ated reference number not found")
+          }
+        }
+
+        "for valid form, but NO previous mandate details - redirect to confirmation page" in {
+          val fakeRequest = FakeRequest().withFormUrlEncodedBody()
+          submitWithAuthorisedUserForGG(fakeRequest, ated = Some("atedRefNum")) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated-subscription/agent/confirmation"))
+          }
         }
       }
 
-      "for valid form, but API4 call fail, so no atedRefNum is returned in response, throw exception" in {
-        val fakeRequest = FakeRequest().withFormUrlEncodedBody()
-        val oldMandateRef = Some(OldMandateReference("mandateId", "atedRefNum"))
-        submitWithAuthorisedUser(fakeRequest, ated = None) { result =>
-          val thrown = the[RuntimeException] thrownBy await(result)
-          thrown.getMessage must be("ated reference number not found")
+      "enrolling to EMAC" when {
+
+        "for valid form, redirect to confirmation page" in {
+          val fakeRequest = FakeRequest().withFormUrlEncodedBody()
+          val oldMandateRef = Some(OldMandateReference("mandateId", "atedRefNum"))
+          submitWithAuthorisedUserForEmac(fakeRequest, ated = Some("atedRefNum"), oldMandateRef) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated-subscription/agent/confirmation"))
+          }
+        }
+
+        "for valid form, but API4 call fail, so no atedRefNum is returned in response, throw exception" in {
+          val fakeRequest = FakeRequest().withFormUrlEncodedBody()
+          submitWithAuthorisedUserForEmac(fakeRequest, ated = None) { result =>
+            val thrown = the[RuntimeException] thrownBy await(result)
+            thrown.getMessage must be("ated reference number not found")
+          }
+        }
+
+        "for valid form, but NO previous mandate details - redirect to confirmation page" in {
+          val fakeRequest = FakeRequest().withFormUrlEncodedBody()
+          submitWithAuthorisedUserForEmac(fakeRequest, ated = Some("atedRefNum")) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result) must be(Some("/ated-subscription/agent/confirmation"))
+          }
         }
       }
-
-      "for valid form, but NO previous mandate details - redirect to confirmation page" in {
-        val fakeRequest = FakeRequest().withFormUrlEncodedBody()
-        submitWithAuthorisedUser(fakeRequest, ated = Some("atedRefNum")) { result =>
-          status(result) must be(SEE_OTHER)
-          redirectLocation(result) must be(Some("/ated-subscription/agent/confirmation"))
-        }
-      }
-
     }
-
   }
 
   val mockAuthConnector = mock[AuthConnector]
   val mockRegisterUserService = mock[RegisterUserService]
   val mockMandateService = mock[MandateService]
   val mockAgentClientFrontendMandateConnector = mock[AgentClientMandateFrontendConnector]
+  val mockRegisterEmacUserService = mock[NewRegisterUserService]
 
-  object TestDeclarationController extends DeclarationController {
+  object TestDeclarationControllerWithEMAC extends DeclarationController {
     override val authConnector = mockAuthConnector
     override val registerUserService = mockRegisterUserService
     override val mandateService = mockMandateService
     override val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mockAgentClientFrontendMandateConnector
+    override val registerEmacUserService = mockRegisterEmacUserService
+    val isEmacFeatureToggle: Boolean = true
+  }
+
+  object TestDeclarationControllerWithGG extends DeclarationController {
+    override val authConnector = mockAuthConnector
+    override val registerUserService = mockRegisterUserService
+    override val mandateService = mockMandateService
+    override val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mockAgentClientFrontendMandateConnector
+    override val registerEmacUserService = mockRegisterEmacUserService
+    val isEmacFeatureToggle: Boolean = false
   }
 
   override def beforeEach(): Unit = {
@@ -107,22 +149,35 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
   def viewWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestDeclarationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = TestDeclarationControllerWithEMAC.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def succResp(ated: Option[String] = None) = SubscribeSuccessResponse(None, ated, Some("formBundleNo"))
+
   val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
 
-  def submitWithAuthorisedUser(request: FakeRequest[AnyContentAsFormUrlEncoded], ated: Option[String] = None,
-                               oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
+  def submitWithAuthorisedUserForGG(request: FakeRequest[AnyContentAsFormUrlEncoded], ated: Option[String] = None,
+                                    oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(oldMandateRef))
     when(mockRegisterUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(succResp(ated), HttpResponse(OK, Some(enrolResp))))
     when(mockMandateService.createMandateForNonUK(Matchers.eq("atedRefNum"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
     when(mockMandateService.updateMandateForNonUK(Matchers.eq("atedRefNum"), Matchers.eq("mandateId"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
-    val result = TestDeclarationController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
+    val result = TestDeclarationControllerWithGG.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
+    test(result)
+  }
+
+  def submitWithAuthorisedUserForEmac(request: FakeRequest[AnyContentAsFormUrlEncoded], ated: Option[String] = None,
+                                      oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(oldMandateRef))
+    when(mockRegisterEmacUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(succResp(ated), HttpResponse(CREATED, Some(enrolResp))))
+    when(mockMandateService.createMandateForNonUK(Matchers.eq("atedRefNum"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
+    when(mockMandateService.updateMandateForNonUK(Matchers.eq("atedRefNum"), Matchers.eq("mandateId"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
+    val result = TestDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
     test(result)
   }
 

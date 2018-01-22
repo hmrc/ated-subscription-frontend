@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
-import uk.gov.hmrc.http.HttpResponse
+import play.api.libs.json.Json
+
+case class Verifier(key: String, value: String)
+
+object Verifier {
+  implicit val formats = Json.format[Verifier]
+}
+
+case class RequestEMACPayload(userId: String, friendlyName: String, `type`: String, verifiers: List[Verifier])
 
 
-object ErrorMessageUtils {
-
-  def parseErrorResp(resp: HttpResponse): String = {
-     val msgToXml = scala.xml.XML.loadString((resp.json \ "message").as[String])
-       (msgToXml \\ "ErrorNumber").text
-  }
-
+object RequestEMACPayload {
+  implicit val formats = Json.format[RequestEMACPayload]
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,30 @@ class AtedSubscriptionUtilsSpec extends PlaySpec with OneServerPerSuite {
       "the case should be correct for the postcode" in {
         AtedSubscriptionUtils.formatPostCode(Some("aa1 1aa")) must be(Some("AA1 1AA"))
       }
+    }
+
+
+    "validateGroupId" must {
+
+      "throw an exception" when {
+        "invalid string is passed" in {
+          val thrown = the[RuntimeException] thrownBy AtedSubscriptionUtils.validateGroupId("abc-def-ghi")
+          thrown.getMessage must include("Invalid groupId from auth")
+        }
+      }
+
+      "return groupId" when {
+        "valid string is passed" in {
+          val result = AtedSubscriptionUtils.validateGroupId("42424200-0000-0000-0000-000000000000")
+          result must be("42424200-0000-0000-0000-000000000000")
+        }
+
+        "string with testGroupId- is passed" in {
+          val result = AtedSubscriptionUtils.validateGroupId("testGroupId-0000-0000-0000-000000000000")
+          result must be("0000-0000-0000-000000000000")
+        }
+      }
+
     }
 
 
