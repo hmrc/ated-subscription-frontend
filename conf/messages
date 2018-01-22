@@ -200,7 +200,7 @@ ated.review-details.email-address = Agent''s email address
 ##registered-user page
 ated.registered-user.title = You have successfully registered for ATED
 ated.registered-user.confirmation.message = You have successfully registered for ATED on {0}
-ated.registered-user.confirmation.you-can = You can:
+ated.registered-user.confirmation.you-can = Use this service to:
 ated.registered-user.confirmation.instruction1 = create an ATED return
 ated.registered-user.confirmation.instruction2 = appoint an ATED-registered agent
 
