@@ -1,5 +1,5 @@
-ated.title=ATED
-ated.navTitle=Submit and view your ATED returns
+ated.title = ATED
+ated.navTitle = Submit and view your ATED returns
 
 ated.radio.yes.label = Yes
 ated.radio.no.label = No
@@ -15,7 +15,7 @@ ated.screen-reader.section = This section is:
 ated.screen-reader.name = this is for:
 
 ##validation failed template
-ated.error.summaryHeader=There is a problem with the form
+ated.error.summaryHeader = There is a problem with the form
 ated.error.mandatory = You must enter {0}
 ated.error.length = {0} must not be more than {1} characters
 ated.error.country.number = The country code cannot contain numbers
@@ -40,10 +40,10 @@ ated.claim-relief.cancel = Cancel
 ated.claim-relief.error.agent-claiming = You must answer the agent question
 ated.claim-relief.error.agent-claiming-true = You must sign in with your agent details if you are an agent
 
-ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href="{0}" data-journey-click="ated-subscription:click:claim-relief">you need to sign in using your agent Government Gateway details</a>.
+ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href = "{0}" data-journey-click = "ated-subscription:click:claim-relief">you need to sign in using your agent Government Gateway details</a>.
 ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
 
-ated.appoint-agent-error.general.appointAgent =  There is a problem with the appoint an agent question
+ated.appoint-agent-error.general.appointAgent = There is a problem with the appoint an agent question
 ated.appoint-agent.question.true.info1 = Make sure your agent has set up their agency for ATED and given you their unique authorisation number.
 ated.appoint-agent.question.true.info2 = Register to use the new ATED online service.
 ated.appoint-agent.question.true.info3 = Enter the unique authorisation number when asked.
@@ -93,7 +93,7 @@ ated.contact-details-telephone.error = You must enter a telephone number
 ated.contact-details-first-name.length = The first name cannot be more than 35 characters
 ated.contact-details-last-name.length = The last name cannot be more than 35 characters
 ated.contact-details-telephone.length = The telephone number cannot be more than 24 characters
-ated.contact-details-telephone.invalidText=The telephone number is not valid
+ated.contact-details-telephone.invalidText = The telephone number is not valid
 
 
 ated.contact-details-error.general.firstName = There is a problem with the first name. Check it and try again.
@@ -111,7 +111,7 @@ ated.contact-details.email.risk.p1 = HMRC may need to send emails to you about y
 ated.contact-details.email.risk.p2 = Any emails from HMRC are not secure and are always at risk of being read by others.
 ated.contact-details.email.risk.p3 = If you have doubts about the authenticity of an email, which claims to come from HMRC, do not respond to it. Forward it to us at:
 ated.contact-details.email.risk.p4 = In order for us to send you emails in the future you must confirm (for yourself or on behalf of your agent) that you are happy for us to do so, and you understand the risks involved.
-ated.contact-details.email.risk.email = <a href="mailto:phishing@hmrc.gsi.gov.uk" data-journey-click="ated-subscription:email-phishing">phishing@hmrc.gsi.gov.uk</a>
+ated.contact-details.email.risk.email = <a href = "mailto:phishing@hmrc.gsi.gov.uk" data-journey-click = "ated-subscription:email-phishing">phishing@hmrc.gsi.gov.uk</a>
 ated.contact-details.email.risk.p5 = Note: If we need to send any confidential information, we will only do this by letter or telephone. Corresponding by letter may lead to delays in dealing with enquiries.
 
 ated.contact-details.email = Email address
@@ -219,7 +219,7 @@ ated.client-startpage-cancel = Cancel
 ated.agent-startpage-title = Set up your agency for the new ATED online service
 ated.agent-startpage-subheader = ATED agency set up
 ated.agent-startpage-header = Set up your agency for the new ATED online service
-ated.agent-startpage-lede =  Before you can submit ATED returns on behalf of your clients you must set up your agency.
+ated.agent-startpage-lede = Before you can submit ATED returns on behalf of your clients you must set up your agency.
 ated.agent-startpage-text1 = You must enter your agency''s registered name and Unique Taxpayer Reference (UTR).
 ated.agent-startpage-text2 = After setting up your details, you can add your clients.
 ated.agent-startpage-continue = Set up your agency
@@ -250,7 +250,7 @@ ated.business-agent.confirmation.happens-next-item1 = login or create a governme
 ated.business-agent.confirmation.happens-next-item2 = register their company to use the new ATED online service
 ated.business-agent.confirmation.happens-next-item3 = enter the unique authorisation number you gave them
 ated.business-agent.confirmation.happens-next-message2 = Your clients need to let you know once they have sent the request. You have 28 days to logon and accept the agent request, you won''t receive an email notification.
-ated.business-agent.confirmation.home-link =  View your ATED clients
+ated.business-agent.confirmation.home-link = View your ATED clients
 ated.business-agent.happens-next = You can now add your clients.
 
 ##log out page
@@ -281,10 +281,10 @@ ated.nonUKReg.confirmation.view-client.button = View all my clients
 ##error messages
 ated.business-registration-error.duplicate.identifier.header = Somebody has already registered from your organisation
 ated.business-registration-error.duplicate.identifier.title = Somebody has already registered from your organisation
-ated.business-registration-error.duplicate.identifier.message = If you require access you need to <a href="https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target="_blank">add administrators to your account in Government Gateway.</a>
+ated.business-registration-error.duplicate.identifier.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
 ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.title = You must be logged in as an administrator to submit an ATED return
-ated.business-registration-error.wrong.role.message = If you require access you need to <a href="https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target="_blank">add administrators to your account in Government Gateway.</a>
+ated.business-registration-error.wrong.role.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
 
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
 ated.business-registration.error.other = EMAC Allocate an Enrolment to a Group failed for no definite reason
