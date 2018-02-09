@@ -1,26 +1,19 @@
-ated.title = ATED
-ated.navTitle = Submit and view your ATED returns
-
 ated.radio.yes.label = Yes
 ated.radio.no.label = No
 ated.back = Back
 ated.continue = Continue
 ated.sign-out = Sign out
 ated.navTitle = Submit and view your ATED returns
-ated.i-agree = I agree
 ated.confirm-and-register = Confirm and register
 ated.confirm-and-continue = Confirm and continue
 
 ated.screen-reader.section = This section is:
-ated.screen-reader.name = this is for:
 
 ##### VALIDATION FAILED TEMPLATE
 
 ated.error.summaryHeader = There is a problem with the form
 ated.error.mandatory = You must enter {0}
 ated.error.length = {0} must not be more than {1} characters
-ated.error.country.number = The country code cannot contain numbers
-ated.error.country.letters = You have entered invalid characters. Enter 2 letters for the country code
 
 unauthorised.title = UNAUTHORISED
 unauthorised.header = You are not authorised to use this service
@@ -33,26 +26,19 @@ unauthorised.assistant.lede-paragraph = Once enrolled an admin agent can assign 
 
 ##### CLAIM RELIEF
 
-ated.claim-relief.title = Are you an appointed agent claiming ATED relief for someone else?
-ated.claim-relief.header = Are you an appointed agent claiming ATED relief for someone else?
-ated.claim-relief.message = You must create an ATED account to claim reliefs.
-ated.claim-relief.continue = Continue
-ated.claim-relief.isAgent.label = Are you an agent?
-ated.claim-relief.cancel = Cancel
-
 ated.claim-relief.error.agent-claiming = You must answer the agent question
 ated.claim-relief.error.agent-claiming-true = You must sign in with your agent details if you are an agent
 
 ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href = "{0}" data-journey-click = "ated-subscription:click:claim-relief">you need to sign in using your agent Government Gateway details</a>.
-ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
 
-ated.appoint-agent-error.general.appointAgent = There is a problem with the appoint an agent question
 ated.appoint-agent.question.true.info1 = Make sure your agent has set up their agency for ATED and given you their unique authorisation number.
 ated.appoint-agent.question.true.info2 = Register to use the new ATED online service.
 ated.appoint-agent.question.true.info3 = Enter the unique authorisation number when asked.
 ated.appoint-agent.question.false.info1 = Register to use the new ATED online service.
 ated.appoint-agent.question.false.info2 = Select the correct relief for your property or tell us about a property that is liable for an ATED charge.
 ated.appoint-agent.question.false.info3 = Confirm and submit the relief declaration or ATED return.
+ated.appoint-agent-error.general.appointAgent = There is a problem with the appoint an agent question
+ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
 
 ated.claim-relief.error.agent.false = You have entered agent details but indicated that you are not an agent. Check your details and try again.
 ated.claim-relief.error.agent.true = The details you entered do not allow you to proceed as an agent. Check your details and try again.
@@ -71,11 +57,10 @@ ated.registered-business-address.agent.lede-text = This can be your address as t
 ated.registered-business-address.correspondence-address.yes = Yes
 ated.registered-business-address.correspondence-address.no = No
 ated.registered-business-address.continue = Continue
-ated.registered-business-address.cancel = Cancel
 ated.registered-business-address-error.correspondenceAddress = Select an option for the correspondence address
-ated.business-address-error.general.isCorrespondenceAddress = There is a problem with the correspondence address question
 
-##contact-details-form
+##### CONTACT DETAILS FORM
+
 ated.contact-details.title = Who should we contact about ATED?
 ated.contact-details.header = Who should we contact about ATED?
 ated.contact-details.subheader = ATED registration
@@ -87,8 +72,6 @@ ated.contact-details.lastName = Last name
 ated.contact-details.telephone = Telephone number
 
 ated.contact-details.continue = Continue
-ated.contact-details.cancel = Cancel
-ated.contact-details.email-consent.message = I am (my client is) happy to be contacted by email
 
 ated.contact-details-first-name.error = You must enter a first name
 ated.contact-details-last-name.error = You must enter a last name
@@ -98,10 +81,6 @@ ated.contact-details-first-name.length = The first name cannot be more than 35 c
 ated.contact-details-last-name.length = The last name cannot be more than 35 characters
 ated.contact-details-telephone.length = The telephone number cannot be more than 24 characters
 ated.contact-details-telephone.invalidText = The telephone number is not valid
-
-ated.contact-details-error.general.firstName = There is a problem with the first name. Check it and try again.
-ated.contact-details-error.general.lastName = There is a problem with the last name. Check it and try again.
-ated.contact-details-error.general.telephone = There is a problem with the telephone number. Check it and try again.
 
 ##### CONTACT DETAILS EMAIL
 
@@ -118,16 +97,12 @@ ated.contact-details.email.risk.email = <a href = "mailto:phishing@hmrc.gsi.gov.
 ated.contact-details.email.risk.p5 = Note: If we need to send any confidential information, we will only do this by letter or telephone. Corresponding by letter may lead to delays in dealing with enquiries.
 
 ated.contact-details.email = Email address
-ated.contact-details.email.legend = Can we use an email address as a point of contact?
 
 ated.contact-details.email.error = You must answer the can we contact them by email question
 
 ated.contact-details-email.length = The email address cannot be more than 241 characters.
 ated.contact-details-email.error = You must enter an email address
 ated.contact-details-emailx.error = The email address is not valid
-
-ated.contact-details-error.general.email = There is a problem with the email address. Check it and try again.
-ated.contact-details-error.general.emailConsent = There is a problem with the can we contact them by email question
 
 ##### CORRESPONDENCE ADDRESS
 
@@ -139,26 +114,16 @@ ated.correspondence-address.agent.title = Where should we send your client''s le
 ated.correspondence-address.agent.subheader = Add a client
 ated.correspondence-address.agent.header = Where should we send your client''s letters about ATED?
 ated.correspondence-address.agent.lede = This can be your address as their authorised agent.
-ated.address.address = Address
 ated.address.line-1 = Address line 1
 ated.address.line-2 = Address line 2
 ated.address.line-3 = Address line 3 (optional)
 ated.address.line-4 = Address line 4 (optional)
 ated.address.postcode = Postcode (optional)
 ated.address.postcode.field = Postcode
-#ated.address.country = ISO country code
+ated.address.country = ISO country code
 ated.address.country = Country
-ated.address.country.select = Select one country
-ated.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country e.g. United States = ''US''; Germany = ''DE''
 ated.correspondence-address.continue = Continue
-ated.correspondence-address.back = Back
 
-ated.correspondence-address-error.general.line_1 = There is a problem with address line 1
-ated.correspondence-address-error.general.line_2 = There is a problem with address line 2
-ated.correspondence-address-error.general.line_3 = There is a problem with address line 3
-ated.correspondence-address-error.general.line_4 = There is a problem with address line 4
-ated.correspondence-address-error.general.postcode = There is a problem with the postcode
-ated.correspondence-address-error.general.country = There is a problem with the country field
 ated.error.address.postalcode.format = You must enter a valid postcode
 ated.error.address.postalcode.missing-space = The postcode must contain a space
 
@@ -175,30 +140,17 @@ ated.review-details.agent.subheader = Add a client
 ated.review-details.service = Service
 ated.review-details.service.ated = ATED
 ated.review-details.business = Business name
-ated.review-details.business-type = Type of business
 ated.review-details.registered-address = Registered address
 ated.review-details.overseas-tax-reference = Overseas company registration number
 
 ated.review-details.issuing-institution = Institution that issued the number
 ated.review-details.issuing-country = Country that issued the number
 
-ated.review-details.edit-registered-address.title = Edit Registered address
-ated.review-details.edit-overseas-tax-reference.title = Edit Overseas company registration number
 ated.review-details.correspondence-address = Where we will send letters about ATED
 ated.review-details.contact-details = Who we will contact about ATED
 ated.review-details.edit = Edit
-ated.review-details.edit-contact.title = Edit contact details
-ated.review-details.edit-correspondence.title = Edit correspondence address
-ated.review-details.button = Confirm and register
-ated.review-details.back = Back
-ated.review-details.confirmation = I want to register {0} for ATED. I confirm these details are accurate and complete to the best of my knowledge.
 ated.review-details.contact-preference = Email address
 ated.review-details.contact-preference-not-provided = Not provided
-ated.review-details.edit-email-address.title = Edit Email
-ated.review-details.edit-contact-preference.title = Edit contact preference
-ated.review-details.contact-preference.email = Email
-ated.review-details.contact-preference.letter = Letter
-ated.review-details.edit-display-name.title = Edit Display name
 ated.review-details.display-name = Display name
 ated.review-details.email-address = Agent''s email address
 
@@ -219,7 +171,6 @@ ated.client-startpage-appoint-title = Do you want to appoint an agent to act for
 ated.client-startpage-appoint-header = Do you want to appoint an agent to act for you?
 ated.client-startpage-register = Register
 ated.client-startpage-continue = Continue
-ated.client-startpage-cancel = Cancel
 
 ##### SUBSCRIPTION START PAGE AGENT 
 
@@ -230,8 +181,6 @@ ated.agent-startpage-lede = Before you can submit ATED returns on behalf of your
 ated.agent-startpage-text1 = You must enter your agency''s registered name and Unique Taxpayer Reference (UTR).
 ated.agent-startpage-text2 = After setting up your details, you can add your clients.
 ated.agent-startpage-continue = Set up your agency
-ated.agent-startpage-back = Back
-ated.agent-startpage-cancel = Cancel
 
 ##### SUBSCRIPTION START PAGE SIDEBAR AGENT 
 
@@ -252,23 +201,6 @@ ated.agent-startpage-sidebar.64-text = The 64-8 form authorises HM Revenue and C
 ated.business-agent.confirmation.finish = Add my ATED clients
 ated.business-agent.confirmation.title = You have successfully set up this agency for ATED
 ated.business-agent.confirmation.reference = You have successfully set up {0} for ATED on {1}
-ated.business-agent.confirmation.what-happens-next = What happens next
-ated.business-agent.confirmation.what-happens-next-instruction = You should give the unique authorisation number to your clients.
-ated.business-agent.confirmation.message1 = Your clients will then need to:
-ated.business-agent.confirmation.happens-next-item1 = login or create a government gateway account
-ated.business-agent.confirmation.happens-next-item2 = register their company to use the new ATED online service
-ated.business-agent.confirmation.happens-next-item3 = enter the unique authorisation number you gave them
-ated.business-agent.confirmation.happens-next-message2 = Your clients need to let you know once they have sent the request. You have 28 days to logon and accept the agent request, you won''t receive an email notification.
-ated.business-agent.confirmation.home-link = View your ATED clients
-ated.business-agent.happens-next = You can now add your clients.
-
-##### LOG OUT PAGE
-
-ated.signout-title = You have successfully signed out
-ated.signout-header = You''re signed out
-ated-signout-info = You''re now signed out of your ATED account.
-ated.signout-redirect-to-home = Please return to start page
-ated.signout-explore-gov-uk = Explore GOV.UK
 
 ##### NON UK REG DECLARATION PAGE
 
@@ -277,9 +209,6 @@ ated.nonUKReg.declaration.header = Declaration
 ated.nonUKReg.declaration.sub-header = Add a client
 ated.nonUKReg.declaration.before-declaration-text = Before you can add a client you must have an ATED 1 in place. This allows HMRC to exchange and disclose information about your client with your agency and to deal with them on matters relating to the Annual Tax on Enveloped Dwellings (ATED) and ATED related Capital Gains Tax (CGT) only. Submission of form 64-8 ''Authorising your agent'' to HMRC for other tax matters does not cover ATED or ATED related CGT.
 ated.nonUKReg.declaration.i-confirm.text = I confirm that my client has nominated me as an agent to act on their behalf in respect of Annual Tax on Enveloped Dwellings and that the information I have given is correct and complete.
-ated.nonUKReg.declaration.i-agree = I agree
-ated.nonUKReg.declaration.error.general.agree = There is a problem with the checkbox
-ated.ated.nonUKReg.declaration.i-agree.error = You must confirm that you want to add this client
 
 ##### NON UK REG CONFIRMATION PAGE
 
