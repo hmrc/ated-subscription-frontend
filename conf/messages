@@ -14,7 +14,8 @@ ated.confirm-and-continue = Confirm and continue
 ated.screen-reader.section = This section is:
 ated.screen-reader.name = this is for:
 
-##validation failed template
+##### VALIDATION FAILED TEMPLATE
+
 ated.error.summaryHeader = There is a problem with the form
 ated.error.mandatory = You must enter {0}
 ated.error.length = {0} must not be more than {1} characters
@@ -24,12 +25,14 @@ ated.error.country.letters = You have entered invalid characters. Enter 2 letter
 unauthorised.title = UNAUTHORISED
 unauthorised.header = You are not authorised to use this service
 
-#unauthorised assistant
+##### UNAUTHORISED ASSISTANT
+
 unauthorised.assistant.title = Unauthorised Assistant Agent
 unauthorised.assistant.header = Only admin agents can enrol for the ATED service
 unauthorised.assistant.lede-paragraph = Once enrolled an admin agent can assign assistant agents to work on their behalf.
 
-##claim-relief
+##### CLAIM RELIEF
+
 ated.claim-relief.title = Are you an appointed agent claiming ATED relief for someone else?
 ated.claim-relief.header = Are you an appointed agent claiming ATED relief for someone else?
 ated.claim-relief.message = You must create an ATED account to claim reliefs.
@@ -55,7 +58,8 @@ ated.claim-relief.error.agent.false = You have entered agent details but indicat
 ated.claim-relief.error.agent.true = The details you entered do not allow you to proceed as an agent. Check your details and try again.
 ated.claim-relief.error.agent-appoint = You must answer the appoint an agent question
 
-##registered-business-address
+##### REGISTERED BUSINESS ADDRESS
+
 ated.registered-business-address.title = Is this where you want us to send any letters about ATED?
 ated.registered-business-address.header = Is this where you want us to send any letters about ATED?
 ated.registered-business-address.sub-header = ATED registration
@@ -95,13 +99,12 @@ ated.contact-details-last-name.length = The last name cannot be more than 35 cha
 ated.contact-details-telephone.length = The telephone number cannot be more than 24 characters
 ated.contact-details-telephone.invalidText = The telephone number is not valid
 
-
 ated.contact-details-error.general.firstName = There is a problem with the first name. Check it and try again.
 ated.contact-details-error.general.lastName = There is a problem with the last name. Check it and try again.
 ated.contact-details-error.general.telephone = There is a problem with the telephone number. Check it and try again.
 
+##### CONTACT DETAILS EMAIL
 
-##contact-details-email
 ated.contact-details-email-title = Can we use an email address as a point of contact?
 ated.contact-details-email-header = Can we use an email address as a point of contact?
 ated.contact-details-email-lede = If we can use email rather than letters there will be less delays in dealing with enquiries.
@@ -126,7 +129,8 @@ ated.contact-details-emailx.error = The email address is not valid
 ated.contact-details-error.general.email = There is a problem with the email address. Check it and try again.
 ated.contact-details-error.general.emailConsent = There is a problem with the can we contact them by email question
 
-##correspondence-address
+##### CORRESPONDENCE ADDRESS
+
 ated.correspondence-address.title = Where should we send your letters about ATED?
 ated.correspondence-address.subheader = ATED registration
 ated.correspondence-address.header = Where should we send your letters about ATED?
@@ -158,7 +162,8 @@ ated.correspondence-address-error.general.country = There is a problem with the 
 ated.error.address.postalcode.format = You must enter a valid postcode
 ated.error.address.postalcode.missing-space = The postcode must contain a space
 
-##review-details
+##### REVIEW DETAILS
+
 ated.review-details.title = Check your business details
 ated.review-details.header = Check your business details
 ated.review-details.subheader = ATED registration
@@ -197,14 +202,16 @@ ated.review-details.edit-display-name.title = Edit Display name
 ated.review-details.display-name = Display name
 ated.review-details.email-address = Agent''s email address
 
-##registered-user page
+##### REGISTERED USER PAGE
+
 ated.registered-user.title = You have successfully registered for ATED
 ated.registered-user.confirmation.message = You have successfully registered for ATED on {0}
 ated.registered-user.confirmation.you-can = Use this service to:
 ated.registered-user.confirmation.instruction1 = create an ATED return
 ated.registered-user.confirmation.instruction2 = appoint an ATED-registered agent
 
-##subscription-start-page client
+##### SUBSCRIPTION START PAGE CLIENT
+
 ated.registration-subheader = ATED registration
 ated.client-startpage-title = Are you an agent acting for a client?
 ated.client-startpage-header = Are you an agent acting for a client?
@@ -214,8 +221,8 @@ ated.client-startpage-register = Register
 ated.client-startpage-continue = Continue
 ated.client-startpage-cancel = Cancel
 
+##### SUBSCRIPTION START PAGE AGENT 
 
-##subscription-start-page agent
 ated.agent-startpage-title = Set up your agency for the new ATED online service
 ated.agent-startpage-subheader = ATED agency set up
 ated.agent-startpage-header = Set up your agency for the new ATED online service
@@ -226,7 +233,8 @@ ated.agent-startpage-continue = Set up your agency
 ated.agent-startpage-back = Back
 ated.agent-startpage-cancel = Cancel
 
-##subscription-start-page-sidebar agent
+##### SUBSCRIPTION START PAGE SIDEBAR AGENT 
+
 ated.agent-startpage-sidebar.ated-return-title = ATED return
 ated.agent-startpage-sidebar.ated-return-text = If your property isn''t covered by one of the reliefs it will be liable for an ATED charge.
 ated.agent-startpage-sidebar.relief-declaration-title = Relief declaration return
@@ -239,7 +247,8 @@ ated.agent-startpage-sidebar.ated-1-text = The ATED-1 form authorises your agent
 ated.agent-startpage-sidebar.64-title = 64-8
 ated.agent-startpage-sidebar.64-text = The 64-8 form authorises HM Revenue and Customs (HMRC) to communicate with an accountant, tax agent or adviser acting on your behalf. The 64-8 form does not cover the new ATED online service.
 
-##agent-confirmation
+##### AGENT CONFIRMATION 
+
 ated.business-agent.confirmation.finish = Add my ATED clients
 ated.business-agent.confirmation.title = You have successfully set up this agency for ATED
 ated.business-agent.confirmation.reference = You have successfully set up {0} for ATED on {1}
@@ -253,14 +262,16 @@ ated.business-agent.confirmation.happens-next-message2 = Your clients need to le
 ated.business-agent.confirmation.home-link = View your ATED clients
 ated.business-agent.happens-next = You can now add your clients.
 
-##log out page
+##### LOG OUT PAGE
+
 ated.signout-title = You have successfully signed out
 ated.signout-header = You''re signed out
 ated-signout-info = You''re now signed out of your ATED account.
 ated.signout-redirect-to-home = Please return to start page
 ated.signout-explore-gov-uk = Explore GOV.UK
 
-## NON-UK-REG Declaration page
+##### NON UK REG DECLARATION PAGE
+
 ated.nonUKReg.declaration.title = Declaration
 ated.nonUKReg.declaration.header = Declaration
 ated.nonUKReg.declaration.sub-header = Add a client
@@ -270,15 +281,16 @@ ated.nonUKReg.declaration.i-agree = I agree
 ated.nonUKReg.declaration.error.general.agree = There is a problem with the checkbox
 ated.ated.nonUKReg.declaration.i-agree.error = You must confirm that you want to add this client
 
-## NON-UK-REG Confirmation page
+##### NON UK REG CONFIRMATION PAGE
+
 ated.nonUKReg.confirmation.title = Your client has been successfully added to your ATED clients
 ated.nonUKReg.confirmation.header = {0} has been successfully added to your ATED clients on {1}
 ated.nonUKReg.confirmation.what-next = What happens next
 ated.nonUKReg.confirmation.what-next.text = You can create returns for your new client or add another client.
 ated.nonUKReg.confirmation.view-client.button = View all my clients
 
+##### ERROR MESSAGES
 
-##error messages
 ated.business-registration-error.duplicate.identifier.header = Somebody has already registered from your organisation
 ated.business-registration-error.duplicate.identifier.title = Somebody has already registered from your organisation
 ated.business-registration-error.duplicate.identifier.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
