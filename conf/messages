@@ -98,6 +98,10 @@ ated.contact-details.email.risk.p5 = Note: If we need to send any confidential i
 
 ated.contact-details.email = Email address
 
+ated.contact-details-error.general.firstName = There is a problem with the first name. Check it and try again.
+ated.contact-details-error.general.lastName = There is a problem with the last name. Check it and try again.
+ated.contact-details-error.general.telephone = There is a problem with the telephone number. Check it and try again.
+
 ated.contact-details.email.error = You must answer the can we contact them by email question
 
 ated.contact-details-email.length = The email address cannot be more than 241 characters.
@@ -124,6 +128,9 @@ ated.address.country = ISO country code
 ated.address.country = Country
 ated.correspondence-address.continue = Continue
 
+ated.contact-details-error.general.email = There is a problem with the email address. Check it and try again.
+ated.contact-details-error.general.emailConsent = There is a problem with the can we contact them by email question
+
 ated.error.address.postalcode.format = You must enter a valid postcode
 ated.error.address.postalcode.missing-space = The postcode must contain a space
 
@@ -145,6 +152,13 @@ ated.review-details.overseas-tax-reference = Overseas company registration numbe
 
 ated.review-details.issuing-institution = Institution that issued the number
 ated.review-details.issuing-country = Country that issued the number
+
+ated.correspondence-address-error.general.line_1 = There is a problem with address line 1
+ated.correspondence-address-error.general.line_2 = There is a problem with address line 2
+ated.correspondence-address-error.general.line_3 = There is a problem with address line 3
+ated.correspondence-address-error.general.line_4 = There is a problem with address line 4
+ated.correspondence-address-error.general.postcode = There is a problem with the postcode
+ated.correspondence-address-error.general.country = There is a problem with the country field
 
 ated.review-details.correspondence-address = Where we will send letters about ATED
 ated.review-details.contact-details = Who we will contact about ATED
