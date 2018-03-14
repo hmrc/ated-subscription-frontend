@@ -45,8 +45,6 @@ trait ContactDetailsEmailController extends FrontendController with Actions {
       }
   }
 
-
-
   def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
     implicit user => implicit request =>
       validateEmail(contactDetailsEmailForm.bindFromRequest).fold(
