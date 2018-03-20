@@ -112,10 +112,10 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
     }
 */
     def verifiers = (utr, postcode) match {
-      case (Some(uniqueTaxRef), Some(pc)) =>
-        List(Verifier(GovernmentGatewayConstants.VerifierPostalCode, pc), Verifier(GovernmentGatewayConstants.VerifierCtUtr, uniqueTaxRef))
-      case (None, Some(pc)) =>
-        List(Verifier(GovernmentGatewayConstants.VerifierNonUKPostalCode, pc)) //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
+      case (Some(uniqueTaxRef), Some(ukClientPostCode)) =>
+        List(Verifier(GovernmentGatewayConstants.VerifierPostalCode, ukClientPostCode), Verifier(GovernmentGatewayConstants.VerifierCtUtr, uniqueTaxRef))
+      case (None, Some(nonUkClientPostCode)) =>
+        List(Verifier(GovernmentGatewayConstants.VerifierNonUKPostalCode, nonUkClientPostCode)) //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
       case (None, None) =>
         throw new RuntimeException(s"[NewRegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
     }
