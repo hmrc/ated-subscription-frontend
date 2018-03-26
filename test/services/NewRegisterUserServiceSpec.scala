@@ -56,6 +56,9 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
   val testReviewBusinessDetailsNoUtrPostCode = ReviewDetails(businessName = "test Name", businessType = Some("SOP"), businessAddress = testAddressNoPOstCode,
     sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
 
+  val testReviewBusinessDetailsNoUtr = ReviewDetails(businessName = "test Name", utr = None, businessType = Some("SOP"), businessAddress = testAddress,
+    sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
+
   val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockDataCacheConnector = mock[DataCacheConnector]
   val mockTaxEnrolmentConnector = mock[TaxEnrolmentsConnector]
@@ -88,6 +91,7 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
       RegisterUserService.dataCacheConnector must be(AtedSubscriptionDataCacheConnector)
       RegisterUserService.governmentGatewayConnector must be(GovernmentGatewayConnector)
     }
+
     "refreshProfile" must {
       "if successful, should return subscribe success response" in {
         when(mockAuthenticatorConnector.refreshProfile()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
@@ -112,6 +116,19 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
       }
       "if successful, should return subscribe success response for sole user" in {
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsforSOP))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = await(TestNewRegisterUserService.subscribeAted())
+        result._1 must be(subscribeSuccessResponse)
+      }
+
+      "if successful, should return subscribe success response for Non-UK Clients" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtr))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
