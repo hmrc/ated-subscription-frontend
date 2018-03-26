@@ -53,6 +53,8 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
 
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
 
+    println(s"-----TaxEnrolmentsConnector---addKnownFacts---${Json.prettyPrint(Json.toJson(requestPayload))}")
+
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
 
     http.POST[JsValue, HttpResponse](postUrl, jsonData) map { response =>

@@ -42,7 +42,6 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
   private val DuplicateUserError = "duplicate user error"
   private val WrongRoleUserError = "wrong role user error"
 
-
   def registerUser = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user =>
       implicit request =>
