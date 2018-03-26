@@ -59,6 +59,8 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
       timerContext.stop()
       auditEnrolUser(postUrl, requestPayload, response)
 
+      Logger.debug(s"PostUrl::$postUrl ---- requestBody:: $jsonData --- responseBody::${response.body} --- responseStatus:: ${response.status}")
+
       response.status match {
         case CREATED =>
           metrics.incrementSuccessCounter(MetricsEnum.API4Enrolment)
