@@ -102,15 +102,6 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
     val atedRef = atedSubscriptionSuccess.atedRefNumber
       .getOrElse(throw new RuntimeException("[NewRegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe"))
 
-  /*  if(utr.isEmpty && postcode.isEmpty)
-      throw new RuntimeException(s"[NewRegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
-
-    def verifiers = {
-      val postCodeKnownFact = postcode.map(Verifier(GovernmentGatewayConstants.VerifierPostalCode, _))
-      val utrKnownFact = utr.map(Verifier(GovernmentGatewayConstants.VerifierCtUtr, _))
-      List(postCodeKnownFact,utrKnownFact).flatten
-    }
-*/
     def verifiers = (utr, postcode) match {
       case (Some(uniqueTaxRef), Some(ukClientPostCode)) =>
         List(Verifier(GovernmentGatewayConstants.VerifierPostalCode, ukClientPostCode), Verifier(GovernmentGatewayConstants.VerifierCtUtr, uniqueTaxRef))
