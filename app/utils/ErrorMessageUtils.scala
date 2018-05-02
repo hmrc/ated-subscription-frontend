@@ -17,13 +17,22 @@
 package utils
 
 import uk.gov.hmrc.http.HttpResponse
-
+import javax.xml.parsers.{SAXParser, SAXParserFactory}
+import scala.xml.XML
 
 object ErrorMessageUtils {
 
   def parseErrorResp(resp: HttpResponse): String = {
-     val msgToXml = scala.xml.XML.loadString((resp.json \ "message").as[String])
-       (msgToXml \\ "ErrorNumber").text
+    val msgToXml = XML.withSAXParser(secureSAXParser) loadString (resp.json \ "message").as[String]
+    (msgToXml \\ "ErrorNumber").text
+  }
+
+  def secureSAXParser: SAXParser = {
+    val saxParserFactory = SAXParserFactory.newInstance()
+    saxParserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false)
+    saxParserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+    saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+    saxParserFactory.newSAXParser()
   }
 
 }
