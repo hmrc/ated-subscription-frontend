@@ -27,6 +27,7 @@ object ErrorMessageUtils {
     (msgToXml \\ "ErrorNumber").text
   }
 
+
   def secureSAXParser: SAXParser = {
     val saxParserFactory = SAXParserFactory.newInstance()
     saxParserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false)
