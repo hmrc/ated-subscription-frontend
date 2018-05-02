@@ -23,7 +23,7 @@ import scala.xml.XML
 object ErrorMessageUtils {
 
   def parseErrorResp(resp: HttpResponse): String = {
-    val msgToXml = XML.withSAXParser(secureSAXParser) loadString (resp.json \ "message").as[String]
+    val msgToXml = XML.withSAXParser(secureSAXParser).loadString((resp.json \ "message").as[String])
     (msgToXml \\ "ErrorNumber").text
   }
 
