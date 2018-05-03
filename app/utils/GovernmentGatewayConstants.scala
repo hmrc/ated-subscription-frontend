@@ -24,6 +24,6 @@ object GovernmentGatewayConstants {
   val FRIENDLY_NAME = "ATED Enrolment"
 
   val VerifierPostalCode = "Postcode"
-  val VerifierNonUKPostalCode = "PostCode"
+  val VerifierNonUKPostalCode = "NonUKPostalCode"
   val VerifierCtUtr= "CTUTR"
 }
