@@ -25,6 +25,8 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
+import scala.concurrent.Future
+
 trait ContactDetailsController extends FrontendController with Actions {
 
   val contactDetailsService: ContactDetailsService
@@ -37,18 +39,21 @@ trait ContactDetailsController extends FrontendController with Actions {
       }
   }
 
-  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
+  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user => implicit request =>
       contactDetailsForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(views.html.contactDetails(formWithErrors, mode, getBackLink(mode)))
+          Future.successful(BadRequest(views.html.contactDetails(formWithErrors, mode, getBackLink(mode))))
         },
         contactDetails => {
           val telephoneWithoutSpaces = contactDetails.telephone.replaceAll(" ", "")
-          val contact = contactDetailsService.saveContactDetails(contactDetails.copy(telephone = telephoneWithoutSpaces))
-         mode match {
-            case Some(modeType) if (modeType == "edit") => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
-            case _ => Redirect(controllers.routes.ContactDetailsEmailController.view () )
+          for {
+            contact <- contactDetailsService.saveContactDetails(contactDetails.copy(telephone = telephoneWithoutSpaces))
+          } yield {
+            mode match {
+              case Some(modeType) if (modeType == "edit") => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
+              case _ => Redirect(controllers.routes.ContactDetailsEmailController.view())
+            }
           }
         }
       )

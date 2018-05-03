@@ -45,15 +45,18 @@ trait ContactDetailsEmailController extends FrontendController with Actions {
       }
   }
 
-  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
+  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user => implicit request =>
       validateEmail(contactDetailsEmailForm.bindFromRequest).fold(
         formWithErrors => {
-          BadRequest(views.html.contactDetailsEmail(formWithErrors, mode, getBackLink(mode)))
+          Future.successful(BadRequest(views.html.contactDetailsEmail(formWithErrors, mode, getBackLink(mode))))
         },
         contactDetailsEmail => {
-          val contact = contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
-          Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
+         for {
+           contact <- contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
+         } yield {
+           Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
+         }
         }
       )
   }

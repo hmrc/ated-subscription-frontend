@@ -26,6 +26,8 @@ import utils.AtedSubscriptionUtils
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
+import scala.concurrent.Future
+
 trait CorrespondenceAddressController extends FrontendController with Actions {
 
   val correspondenceAddressService: CorrespondenceAddressService
@@ -38,17 +40,20 @@ trait CorrespondenceAddressController extends FrontendController with Actions {
       }
   }
 
-  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
+  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user => implicit request =>
       correspondenceAddressForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.correspondenceAddress(formWithErrors, mode, AtedSubscriptionUtils.getIsoCodeTupleList, getBackLink(mode))),
+        formWithErrors => Future.successful(BadRequest(views.html.correspondenceAddress(formWithErrors, mode, AtedSubscriptionUtils.getIsoCodeTupleList, getBackLink(mode)))),
         addressData => {
           val trimmedPostCode = AtedSubscriptionUtils.formatPostCode(addressData.postcode)
           val trimmedAddress =addressData.copy(postcode = trimmedPostCode)
-          val correspondenceAddress = correspondenceAddressService.saveCorrespondenceAddress(address = trimmedAddress)
-          mode match {
-            case Some(edit) => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
-            case _ => Redirect(controllers.routes.ContactDetailsController.editDetails())
+          for {
+            correspondenceAddress <- correspondenceAddressService.saveCorrespondenceAddress(address = trimmedAddress)
+          } yield {
+            mode match {
+              case Some(edit) => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
+              case _ => Redirect(controllers.routes.ContactDetailsController.editDetails())
+            }
           }
         }
       )
