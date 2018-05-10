@@ -67,9 +67,11 @@ trait RegisteredBusinessController extends FrontendController with Actions {
           dataCacheConnector.saveRegisteredBusinessDetails(businessAddressData)
           val isCorrespondenceAddress = businessAddressData.isCorrespondenceAddress.getOrElse(false)
           if (isCorrespondenceAddress) {
-            registeredBusinessService.getDefaultCorrespondenceAddress flatMap { address =>
-              val correspondenceAddress = correspondenceAddressService.saveCorrespondenceAddress(address)
-              Future.successful(Redirect(controllers.routes.ContactDetailsController.editDetails(Some("skip"))))
+            for{
+              address <- registeredBusinessService.getDefaultCorrespondenceAddress
+              correspondenceAddress <- correspondenceAddressService.saveCorrespondenceAddress(address)
+            } yield {
+              Redirect(controllers.routes.ContactDetailsController.editDetails(Some("skip")))
             }
           } else {
             Future.successful(Redirect(controllers.routes.CorrespondenceAddressController.editAddress()))

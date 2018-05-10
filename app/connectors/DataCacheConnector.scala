@@ -43,25 +43,23 @@ trait DataCacheConnector {
   }
 
   def saveRegisteredBusinessDetails(businessAddress: BusinessAddress)(implicit hc: HeaderCarrier): Future[Option[BusinessAddress]] = {
-     sessionCache.cache[BusinessAddress](bcRegDetailseId, businessAddress)flatMap
-       { data => Future.successful(data.getEntry[BusinessAddress](bcRegDetailseId)) }
+     sessionCache.cache[BusinessAddress](bcRegDetailseId, businessAddress) map {
+         data => data.getEntry[BusinessAddress](bcRegDetailseId)
+       }
   }
-
-
-
 
   def fetchAndGetReviewDetailsForSession(implicit hc: HeaderCarrier): Future[Option[ReviewDetails]] = {
     sessionCache.fetchAndGetEntry[ReviewDetails](bcSourceId)
   }
 
   def saveReviewDetails(reviewDetails: ReviewDetails)(implicit hc: HeaderCarrier): Future[Option[ReviewDetails]] = {
-    val result = sessionCache.cache[ReviewDetails](bcSourceId, reviewDetails)
-    result flatMap { data => Future.successful(data.getEntry[ReviewDetails](bcSourceId)) }
+    sessionCache.cache[ReviewDetails](bcSourceId, reviewDetails) map  {
+      data => data.getEntry[ReviewDetails](bcSourceId) }
   }
 
   def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier): Future[Option[Address]] = {
-    sessionCache.cache[Address](addressFormId, address) flatMap { cachedData =>
-      Future.successful(cachedData.getEntry[Address](addressFormId))
+    sessionCache.cache[Address](addressFormId, address) map { cachedData =>
+      cachedData.getEntry[Address](addressFormId)
     }
   }
 
@@ -70,8 +68,8 @@ trait DataCacheConnector {
   }
 
   def saveContactDetails(contactDetails: ContactDetails)(implicit hc: HeaderCarrier): Future[Option[ContactDetails]] = {
-    sessionCache.cache[ContactDetails](contactFormId, contactDetails) flatMap { cachedData =>
-      Future.successful(cachedData.getEntry[ContactDetails](contactFormId))
+    sessionCache.cache[ContactDetails](contactFormId, contactDetails) map { cachedData =>
+      cachedData.getEntry[ContactDetails](contactFormId)
     }
   }
 
@@ -88,8 +86,8 @@ trait DataCacheConnector {
   }
 
   def saveContactDetailsEmail(contactDetailsEmail: ContactDetailsEmail)(implicit hc: HeaderCarrier): Future[Option[ContactDetailsEmail]] = {
-    sessionCache.cache[ContactDetailsEmail](contactEmailFormId, contactDetailsEmail) flatMap { cachedData =>
-      Future.successful(cachedData.getEntry[ContactDetailsEmail](contactEmailFormId))
+    sessionCache.cache[ContactDetailsEmail](contactEmailFormId, contactDetailsEmail) map { cachedData =>
+      cachedData.getEntry[ContactDetailsEmail](contactEmailFormId)
     }
   }
 
