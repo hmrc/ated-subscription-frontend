@@ -7,7 +7,7 @@ This service provides the ability for UK-based or Non-UK based ATED clients (or 
 Users subscribing must also register in ETMP (using business-customer-frontend) before subscribing (ROSM).
 
 Requirements
-------------
+-------------
 
 This service is written in [Scala] and [Play], so needs the latest [JRE] to run.
 
