@@ -97,9 +97,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
         "contain title and header as Your correspondence address for agent registering non-uk client" in {
           getWithAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where we should send your client's letters about ATED? - GOV.UK")
+            document.title() must be("Is this where we should send your client’s letters about ATED? - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: Add a client")
-            document.getElementById("registered-business-address-header").text() must be("Is this where we should send your client's letters about ATED?")
+            document.getElementById("registered-business-address-header").text() must be("Is this where we should send your client’s letters about ATED?")
           }
         }
 
