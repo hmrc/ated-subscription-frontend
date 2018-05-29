@@ -51,8 +51,8 @@ ated.claim-relief.error.agent-appoint = You must answer the appoint an agent que
 ated.registered-business-address.title = Is this where you want us to send any letters about ATED?
 ated.registered-business-address.header = Is this where you want us to send any letters about ATED?
 ated.registered-business-address.sub-header = ATED registration
-ated.registered-business-address.agent.title = Is this where we should send your client''s letters about ATED?
-ated.registered-business-address.agent.header = Is this where we should send your client''s letters about ATED?
+ated.registered-business-address.agent.title = Is this where we should send your client’s letters about ATED?
+ated.registered-business-address.agent.header = Is this where we should send your client’s letters about ATED?
 ated.registered-business-address.agent.sub-header = Add a client
 ated.registered-business-address.agent.lede-text = This can be your address as their authorised agent.
 
@@ -116,9 +116,9 @@ ated.correspondence-address.title = Where should we send your letters about ATED
 ated.correspondence-address.subheader = ATED registration
 ated.correspondence-address.header = Where should we send your letters about ATED?
 ated.correspondence-address.lede = This can be the address of your authorised agent.
-ated.correspondence-address.agent.title = Where should we send your client''s letters about ATED?
+ated.correspondence-address.agent.title = Where should we send your client’s letters about ATED?
 ated.correspondence-address.agent.subheader = Add a client
-ated.correspondence-address.agent.header = Where should we send your client''s letters about ATED?
+ated.correspondence-address.agent.header = Where should we send your client’s letters about ATED?
 ated.correspondence-address.agent.lede = This can be your address as their authorised agent.
 ated.address.line-1 = Address line 1
 ated.address.line-2 = Address line 2
@@ -142,8 +142,8 @@ ated.review-details.title = Check your business details
 ated.review-details.header = Check your business details
 ated.review-details.subheader = ATED registration
 
-ated.review-details.agent.title = Check your client''s ATED details are correct
-ated.review-details.agent.header = Check your client''s ATED details are correct
+ated.review-details.agent.title = Check your client’s ATED details are correct
+ated.review-details.agent.header = Check your client’s ATED details are correct
 ated.review-details.agent.subheader = Add a client
 
 ated.review-details.service = Service
@@ -168,7 +168,7 @@ ated.review-details.edit = Edit
 ated.review-details.contact-preference = Email address
 ated.review-details.contact-preference-not-provided = Not provided
 ated.review-details.display-name = Display name
-ated.review-details.email-address = Agent''s email address
+ated.review-details.email-address = Agent’s email address
 
 ##### REGISTERED USER PAGE
 
@@ -194,16 +194,16 @@ ated.agent-startpage-title = Set up your agency for the new ATED online service
 ated.agent-startpage-subheader = ATED agency set up
 ated.agent-startpage-header = Set up your agency for the new ATED online service
 ated.agent-startpage-lede = Before you can submit ATED returns on behalf of your clients you must set up your agency.
-ated.agent-startpage-text1 = You must enter your agency''s registered name and Unique Taxpayer Reference (UTR).
+ated.agent-startpage-text1 = You must enter your agency’s registered name and Unique Taxpayer Reference (UTR).
 ated.agent-startpage-text2 = After setting up your details, you can add your clients.
 ated.agent-startpage-continue = Set up your agency
 
 ##### SUBSCRIPTION START PAGE SIDEBAR AGENT 
 
 ated.agent-startpage-sidebar.ated-return-title = ATED return
-ated.agent-startpage-sidebar.ated-return-text = If your property isn''t covered by one of the reliefs it will be liable for an ATED charge.
+ated.agent-startpage-sidebar.ated-return-text = If your property is not covered by one of the reliefs it will be liable for an ATED charge.
 ated.agent-startpage-sidebar.relief-declaration-title = Relief declaration return
-ated.agent-startpage-sidebar.relief-declaration-text = Claiming a relief may mean you don''t have to pay any charge on your property.
+ated.agent-startpage-sidebar.relief-declaration-text = Claiming a relief may mean you do not have to pay any charge on your property.
 ated.agent-startpage-sidebar.relief-declaration-link = View a list of reliefs for ATED.
 ated.agent-startpage-sidebar.about-return-title = About your returns
 ated.agent-startpage-sidebar.about-return-text = Each chargeable or relief return will be treated as an individual return whether you send them individually or together.
@@ -223,7 +223,7 @@ ated.business-agent.confirmation.reference = You have successfully set up {0} fo
 ated.nonUKReg.declaration.title = Declaration
 ated.nonUKReg.declaration.header = Declaration
 ated.nonUKReg.declaration.sub-header = Add a client
-ated.nonUKReg.declaration.before-declaration-text = Before you can add a client you must have an ATED 1 in place. This allows HMRC to exchange and disclose information about your client with your agency and to deal with them on matters relating to the Annual Tax on Enveloped Dwellings (ATED) and ATED related Capital Gains Tax (CGT) only. Submission of form 64-8 ''Authorising your agent'' to HMRC for other tax matters does not cover ATED or ATED related CGT.
+ated.nonUKReg.declaration.before-declaration-text = Before you can add a client you must have an ATED 1 in place. This allows HMRC to exchange and disclose information about your client with your agency and to deal with them on matters relating to the Annual Tax on Enveloped Dwellings (ATED) and ATED related Capital Gains Tax (CGT) only. Submission of form 64-8 ‘Authorising your agent’ to HMRC for other tax matters does not cover ATED or ATED related CGT.
 ated.nonUKReg.declaration.i-confirm.text = I confirm that my client has nominated me as an agent to act on their behalf in respect of Annual Tax on Enveloped Dwellings and that the information I have given is correct and complete.
 
 ##### NON UK REG CONFIRMATION PAGE

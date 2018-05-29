@@ -113,7 +113,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("overseas-issuing-institution-label") must be(null)
             document.getElementById("correspondence-address-label").text() must be("Where we will send letters about ATED")
             document.getElementById("contact-details-label").text() must be("Who we will contact about ATED")
-            document.getElementById("email-address-label").text() must be("Agent's email address")
+            document.getElementById("email-address-label").text() must be("Agent’s email address")
             document.getElementById("contact-pref-label").text() must be("Email address")
             document.getElementById("client-display-name-label").text() must be("Display name")
             document.select(".button").text must be("Confirm and register")
@@ -126,7 +126,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Check your client's ATED details are correct - GOV.UK")
+            document.title() must be("Check your client’s ATED details are correct - GOV.UK")
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
