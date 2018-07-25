@@ -39,7 +39,6 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector
-  val authenticatorConnector: AuthenticatorConnector
   val registeredBusinessService: RegisteredBusinessService
   val taxEnrolmentsConnector : TaxEnrolmentsConnector
   val enrolmentType = "principal"
@@ -92,10 +91,6 @@ trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
     }
   }
 
-  def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    authenticatorConnector.refreshProfile()
-  }
-
   private def createEMACEnrolRequest(atedSubscriptionSuccess: SubscribeSuccessResponse,
                                      gGCredId: String, utr: Option[String], postcode: Option[String],
                                      safeId : String): RequestEMACPayload = {
@@ -146,7 +141,6 @@ object NewRegisterUserService extends NewRegisterUserService {
   val registeredBusinessService = RegisteredBusinessService
   val atedSubscriptionConnector = AtedSubscriptionConnector
   val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  val authenticatorConnector = AuthenticatorConnector
   override val authConnector = AuthClientConnector
   val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
   // $COVERAGE-ON$

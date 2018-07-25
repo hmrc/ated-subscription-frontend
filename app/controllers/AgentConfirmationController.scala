@@ -29,6 +29,8 @@ import uk.gov.hmrc.play.views.formatting.Dates
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
+import scala.concurrent.Future
+
 object AgentConfirmationController extends AgentConfirmationController {
   override val authConnector = FrontendAuthConnector
   val registerUserService: RegisterUserService = RegisterUserService
@@ -53,13 +55,6 @@ trait AgentConfirmationController extends FrontendController with Actions with R
 
   def continue = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user => implicit request =>
-      for {
-        refreshResp <- registerUserService.refreshProfile
-      } yield {
-        refreshResp.status match {
-          case OK | NO_CONTENT => Redirect(ExternalUrls.agentAtedSummaryPath)
-          case _ => Redirect(ExternalUrls.logoutPath)
-        }
-      }
+      Future.successful(Redirect(ExternalUrls.agentAtedSummaryPath))
   }
 }
