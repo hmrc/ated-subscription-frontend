@@ -49,14 +49,12 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
   val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockDataCacheConnector = mock[DataCacheConnector]
   val mockGovernmentGatewayConnector = mock[GovernmentGatewayConnector]
-  val mockAuthenticatorConnector = mock[AuthenticatorConnector]
   val mockRegisteredBusinessService = mock[RegisteredBusinessService]
 
   override def beforeEach() = {
     reset(mockAtedSubscriptionConnector)
     reset(mockDataCacheConnector)
     reset(mockGovernmentGatewayConnector)
-    reset(mockAuthenticatorConnector)
     reset(mockRegisteredBusinessService)
   }
 
@@ -64,25 +62,16 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
     val atedSubscriptionConnector: AtedSubscriptionConnector = mockAtedSubscriptionConnector
     val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
     val governmentGatewayConnector: GovernmentGatewayConnector = mockGovernmentGatewayConnector
-    val authenticatorConnector: AuthenticatorConnector = mockAuthenticatorConnector
     val registeredBusinessService: RegisteredBusinessService = mockRegisteredBusinessService
   }
 
   "RegisterUserService" must {
 
     "use correct connectors" in {
-      RegisterUserService.authenticatorConnector must be(AuthenticatorConnector)
       RegisterUserService.atedSubscriptionConnector must be(AtedSubscriptionConnector)
       RegisterUserService.dataCacheConnector must be(AtedSubscriptionDataCacheConnector)
       RegisterUserService.governmentGatewayConnector must be(GovernmentGatewayConnector)
     }
-    "refreshProfile" must {
-      "if successful, should return subscribe success response" in {
-        when(mockAuthenticatorConnector.refreshProfile()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
-        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        val result = TestRegisterUserService.refreshProfile
-        await(result).status must be(OK)
-      }
     }
 
     "subscribeAted" must {
@@ -162,7 +151,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         thrown.getMessage must include("data not found")
       }
     }
-  }
+
 
   "toEtmpAddress" must {
     "correctly populate the address" in {

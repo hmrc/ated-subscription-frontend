@@ -341,7 +341,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockRegisterUserService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
     val result = TestRegisterUserWithEMACController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -400,7 +399,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockRegisterUserService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
     val result = TestRegisterUserWithGGController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

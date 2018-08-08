@@ -49,27 +49,25 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
 
   val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("test Type"), businessAddress = testAddress,
-    sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
-  val testReviewBusinessDetailsforSOP = ReviewDetails(businessName = "test Name",utr = Some("1111111111"), businessType = Some("SOP"), businessAddress = testAddress,
-    sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+  val testReviewBusinessDetailsforSOP = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("SOP"), businessAddress = testAddress,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   val testReviewBusinessDetailsNoUtrPostCode = ReviewDetails(businessName = "test Name", businessType = Some("SOP"), businessAddress = testAddressNoPOstCode,
-    sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   val testReviewBusinessDetailsNoUtr = ReviewDetails(businessName = "test Name", utr = None, businessType = Some("SOP"), businessAddress = testAddress,
-    sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockDataCacheConnector = mock[DataCacheConnector]
   val mockTaxEnrolmentConnector = mock[TaxEnrolmentsConnector]
-  val mockAuthenticatorConnector = mock[AuthenticatorConnector]
   val mockRegisteredBusinessService = mock[RegisteredBusinessService]
   val mockAuthClientConnector = mock[AuthConnector]
 
   override def beforeEach() = {
     reset(mockAtedSubscriptionConnector)
     reset(mockDataCacheConnector)
-    reset(mockAuthenticatorConnector)
     reset(mockRegisteredBusinessService)
     reset(mockAuthClientConnector)
   }
@@ -77,7 +75,6 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
   object TestNewRegisterUserService extends NewRegisterUserService {
     val atedSubscriptionConnector: AtedSubscriptionConnector = mockAtedSubscriptionConnector
     val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    val authenticatorConnector: AuthenticatorConnector = mockAuthenticatorConnector
     val registeredBusinessService: RegisteredBusinessService = mockRegisteredBusinessService
     val authConnector: AuthConnector = mockAuthClientConnector
     val taxEnrolmentsConnector: TaxEnrolmentsConnector = mockTaxEnrolmentConnector
@@ -86,20 +83,12 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
   "NewRegisterUserService" must {
 
     "use correct connectors" in {
-      RegisterUserService.authenticatorConnector must be(AuthenticatorConnector)
       RegisterUserService.atedSubscriptionConnector must be(AtedSubscriptionConnector)
       RegisterUserService.dataCacheConnector must be(AtedSubscriptionDataCacheConnector)
       RegisterUserService.governmentGatewayConnector must be(GovernmentGatewayConnector)
     }
 
-    "refreshProfile" must {
-      "if successful, should return subscribe success response" in {
-        when(mockAuthenticatorConnector.refreshProfile()(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
-        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        val result = TestNewRegisterUserService.refreshProfile
-        await(result).status must be(OK)
-      }
-    }
+  }
 
     "subscribeAted" must {
       "if successful, should return subscribe success response for company user" in {
@@ -233,7 +222,7 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
         thrown.getMessage must include("data not found")
       }
     }
-  }
+
 
   "toEtmpAddress" must {
     "correctly populate the address" in {

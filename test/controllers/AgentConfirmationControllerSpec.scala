@@ -119,13 +119,6 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
             redirectLocation(result) must be(Some("http://localhost:9959/mandate/agent/summary"))
           }
         }
-
-        "subscribe to service and view the confirmation page if the registration worked and refresh failed" in {
-          continueWithAuthorisedUser(FORBIDDEN) { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/logout")
-          }
-        }
       }
     }
   }
@@ -176,7 +169,6 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockRegisterUserService.refreshProfile(Matchers.any())).thenReturn(Future.successful(HttpResponse(refreshStatus)))
     val result = TestAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)

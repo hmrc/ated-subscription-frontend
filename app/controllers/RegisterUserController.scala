@@ -86,11 +86,7 @@ trait RegisterUserController extends FrontendController with Actions with RunMod
   def confirmation = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user =>
       implicit request =>
-        for {
-          refreshResp <- registerUserService.refreshProfile
-        } yield {
-          Ok(views.html.registerUserConfirmation(Dates.formatDate(LocalDate.now())))
-        }
+          Future.successful(Ok(views.html.registerUserConfirmation(Dates.formatDate(LocalDate.now()))))
   }
 
   def redirectToAted = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {

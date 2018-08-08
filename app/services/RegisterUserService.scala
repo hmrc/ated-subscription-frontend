@@ -38,7 +38,6 @@ trait RegisterUserService extends RunMode {
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector
   val governmentGatewayConnector: GovernmentGatewayConnector
-  val authenticatorConnector: AuthenticatorConnector
   val registeredBusinessService: RegisteredBusinessService
 
 
@@ -84,10 +83,6 @@ trait RegisterUserService extends RunMode {
     }
   }
 
-  def refreshProfile(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    authenticatorConnector.refreshProfile()
-  }
-
   private def createEnrolRequest(atedSubscriptionSuccess: SubscribeSuccessResponse, postcode: String, utr: String): EnrolRequest = {
     val atedRef = atedSubscriptionSuccess.atedRefNumber
       .getOrElse(throw new RuntimeException("[RegisterUserService][createEnrolRequest] ated reference number not returned from ETMP subscribe"))
@@ -128,5 +123,4 @@ object RegisterUserService extends RegisterUserService {
   val atedSubscriptionConnector = AtedSubscriptionConnector
   val dataCacheConnector = AtedSubscriptionDataCacheConnector
   val governmentGatewayConnector = GovernmentGatewayConnector
-  val authenticatorConnector = AuthenticatorConnector
 }
