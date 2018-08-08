@@ -18,7 +18,7 @@ Authentication
 This user logs into this service using the [Government Gateway]
 
 
-Acronyms
+Acronyms 
 --------
 
 In the context of this service we use the following acronyms:
