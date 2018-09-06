@@ -42,6 +42,7 @@ object AtedForms {
   val nameLength = 35
   val phoneLength = 24
   val telephoneRegex = """^[A-Z0-9)\/(\-*#]+$""".r
+  val nameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
 
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
     model.isAgent.isEmpty match {
@@ -110,10 +111,10 @@ object AtedForms {
   val contactDetailsForm = Form(mapping(
     "firstName" -> text
       .verifying(Messages("ated.contact-details-first-name.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-first-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+      .verifying(Messages("ated.contact-details-first-name.length"), x => x.trim.matches( nameRegex)),
     "lastName" -> text
       .verifying(Messages("ated.contact-details-last-name.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-last-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+      .verifying(Messages("ated.contact-details-last-name.length"), x => x.trim.matches( nameRegex)),
     "telephone" -> text
       .verifying(Messages("ated.contact-details-telephone.error"), x => x.trim.length > lengthZero)
       .verifying(Messages("ated.contact-details-telephone.length"), x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
