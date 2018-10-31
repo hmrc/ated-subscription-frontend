@@ -81,8 +81,7 @@ object AtedForms {
           x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
         constraint[String](Messages("ated.error.invalid", Messages("ated.address.line-1")),
           x => x.isEmpty || x.matches(addressLineRegex))
-      )
-      ),
+      )),
       "line_2" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => x.trim.length > lengthZero)
         .verifying(Messages("ated.error.length", Messages("ated.address.line-2"), addressLineLength),
@@ -90,13 +89,16 @@ object AtedForms {
         .verifying(Messages("ated.error.invalid", Messages("ated.address.line-2")), x => x.isEmpty || x.trim.matches(addressLineRegex)),
       "line_3" -> optional(text)
         .verifying(Messages("ated.error.length", Messages("ated.address.line-3"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+          x => checkFieldLengthIfPopulated(x, addressLineLength))
+        .verifying(Messages("ated.error.invalid", Messages("ated.address.line-3")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))),
       "line_4" -> optional(text)
         .verifying(Messages("ated.error.length", Messages("ated.address.line-4"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+          x => checkFieldLengthIfPopulated(x, addressLineLength))
+        .verifying(Messages("ated.error.invalid", Messages("ated.address.line-4")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))),
       "postcode" -> optional(text)
         .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), postcodeLength),
-          x => checkFieldLengthIfPopulated(AtedSubscriptionUtils.formatPostCode(x), postcodeLength)),
+          x => checkFieldLengthIfPopulated(AtedSubscriptionUtils.formatPostCode(x), postcodeLength))
+        .verifying(Messages("ated.error.length", Messages("ated.address.postcode")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))),
       "country" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
 

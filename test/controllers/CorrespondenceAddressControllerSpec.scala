@@ -185,7 +185,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             }
           }
 
-          "If entered invalid, Address line 1 must fail with error" in {
+          "Address line 1 must fail with error on entering invalid address" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
             val line1 = "****££^^^^^"
             val inputJson = Json.parse( s"""{ "line_1": "$line1", "line_2": "qwe", "line_3": "qwe", "line_4": "qwe", "postcode": "ne77du", "country": "UK"}""")
@@ -207,6 +207,27 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             }
           }
 
+          "Address line 2 must fail with an error on entering invalid address" in {
+            implicit val hc: HeaderCarrier = HeaderCarrier()
+            val line2 = "gggg****"
+            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "$line2", "line_3": "", "line_4": "", "postcode": "", "country": ""}""")
+            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+              result =>
+                status(result) must be(BAD_REQUEST)
+                contentAsString(result) must include("ated.error.invalid")
+            }
+          }
+
+          "Address line 3 is optional but if entered, must be valid characters" in {
+            implicit val hc: HeaderCarrier = HeaderCarrier()
+            val line3 = "ashafsg*jhj"
+            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "$line3", "line_4": "", "postcode": "", "country": ""}""")
+            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+              result =>
+                status(result) must be(BAD_REQUEST)
+                contentAsString(result) must include("ated.error.invalid")
+            }
+          }
 
           "Address line 3 is optional but if entered, must be maximum of 35 characters" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -219,6 +240,17 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             }
           }
 
+          "Address line 4 is optional but if entered, must be valid characters" in {
+            implicit val hc: HeaderCarrier = HeaderCarrier()
+            val line4 = "888989*$"
+            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "$line4", "postcode": "", "country": ""}""")
+            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+              result =>
+                status(result) must be(BAD_REQUEST)
+                contentAsString(result) must include("ated.error.invalid")
+            }
+          }
+
           "Address line 4 is optional but if entered, must be maximum of 35 characters" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
             val line4 = "a" * 36
@@ -227,6 +259,28 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Address line 4 (optional) must not be more than 35 characters")
+            }
+          }
+
+          "Postcode is optional but if entered, must be maximum of 35 characters" in {
+            implicit val hc: HeaderCarrier = HeaderCarrier()
+            val line = "a" * 36
+            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "$line", "country": ""}""")
+            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+              result =>
+                status(result) must be(BAD_REQUEST)
+                contentAsString(result) must include("Address line 4 (optional) must not be more than 35 characters")
+            }
+          }
+
+          "Postcode is optional but if entered, must be a valid string" in {
+            implicit val hc: HeaderCarrier = HeaderCarrier()
+            val line = "hghghgh*yuy"
+            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "$line", "country": ""}""")
+            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+              result =>
+                status(result) must be(BAD_REQUEST)
+                contentAsString(result) must include("ated.error.invalid")
             }
           }
 
