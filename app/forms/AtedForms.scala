@@ -24,6 +24,8 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import utils.AtedSubscriptionUtils
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
+import uk.gov.hmrc.play.mappers.StopOnFirstFail._
 
 import scala.annotation.tailrec
 
@@ -33,7 +35,7 @@ object AtedForms {
   // scalastyle:off line.size.limitgit diff
 
   val emailRegex =
-  """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
+    """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
   val addressLineLength = 35
   val postcodeLength = 9
   val countryLength = 2
@@ -109,19 +111,26 @@ object AtedForms {
 
 
   val contactDetailsForm = Form(mapping(
-    "firstName" -> text
-      .verifying(Messages("ated.contact-details-first-name.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-first-name.length"), x => x.trim.matches( nameRegex)),
-    "lastName" -> text
-      .verifying(Messages("ated.contact-details-last-name.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-last-name.length"), x => x.trim.matches( nameRegex)),
+    "firstName" -> text.verifying(
+      StopOnFirstFail(
+        constraint[String](Messages("ated.contact-details-first-name.error"), x => x.nonEmpty),
+        constraint[String](Messages("ated.contact-details-first-name.length"), x => x.trim.matches(nameRegex))
+      )
+    ),
+    "lastName" -> text.verifying(
+      StopOnFirstFail(
+        constraint[String](Messages("ated.contact-details-last-name.error"), x => x.trim.length > lengthZero),
+        constraint[String](Messages("ated.contact-details-last-name.length"), x => x.trim.matches(nameRegex))
+      )
+    ),
     "telephone" -> text
       .verifying(Messages("ated.contact-details-telephone.error"), x => x.trim.length > lengthZero)
       .verifying(Messages("ated.contact-details-telephone.length"), x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
       .verifying(Messages("ated.contact-details-telephone.invalidText"), x => x.isEmpty || {
         val p = telephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
         val z = x.length > phoneLength
-        p || z})
+        p || z
+      })
 
   )(ContactDetails.apply)(ContactDetails.unapply))
 
@@ -138,9 +147,9 @@ object AtedForms {
       val formErrors = emailConsent match {
         case Some("true") => {
           val email = f.data.get("email").getOrElse("")
-          if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)){
+          if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
             Seq(FormError("email", Messages("ated.contact-details-email.error")))
-          } else if (email.length > emailLength){
+          } else if (email.length > emailLength) {
             Seq(FormError("email", Messages("ated.contact-details-email.length")))
           } else {
             val x = emailRegex.findFirstMatchIn(email).exists(_ => true)
@@ -164,6 +173,7 @@ object AtedForms {
       if (fe.isEmpty) f
       else y(f.withError(fe.head), fe.tail)
     }
+
     y(form, formErrors)
   }
 

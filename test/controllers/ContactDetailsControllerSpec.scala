@@ -181,7 +181,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
 
         "First name must be have valid characters" in {
           implicit val hc: HeaderCarrier = HeaderCarrier()
-          val fname = "a++//%$%"
+          val fname = "2121313131"
           val inputJson = Json.parse( s"""{ "firstName": "$fname", "lastName": "DEF", "telephone": ""}""")
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
@@ -189,6 +189,34 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
             contentAsString(result) must include("The first name cannot be more than 35 characters")
           }
         }
+
+
+        "First name must NOT be empty" in {
+          implicit val hc: HeaderCarrier = HeaderCarrier()
+          val fname = ""
+          val inputJson = Json.parse( s"""{ "firstName": "$fname", "lastName": "DEF", "telephone": ""}""")
+
+          submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+            status(result) must be(BAD_REQUEST)
+
+            val doc = Jsoup.parse(contentAsString(result))
+            doc.getElementsByClass("error-notification").html() must include("You must enter a first name")
+          }
+        }
+
+
+        "Last name must not be empty" in {
+          implicit val hc: HeaderCarrier = HeaderCarrier()
+          val lname = ""
+          val inputJson = Json.parse( s"""{ "firstName": "ABC", "lastName": "$lname", "telephone": ""}""")
+
+          submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+            status(result) must be(BAD_REQUEST)
+            val doc = Jsoup.parse(contentAsString(result))
+            doc.getElementsByClass("error-notification").html() must include("You must enter a last name")
+          }
+        }
+
 
         "Last name must be maximum of 35 characters" in {
           implicit val hc: HeaderCarrier = HeaderCarrier()
