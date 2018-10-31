@@ -106,7 +106,7 @@ ated.contact-details-error.general.telephone = There is a problem with the telep
 
 ated.contact-details.email.error = You must answer the can we contact them by email question
 
-ated.contact-details-email.length = The email address cannot be more than 241 characters.
+ated.contact-details-email.length = The email address cannot be more than 132 characters.
 ated.contact-details-email.error = You must enter an email address
 ated.contact-details-emailx.error = The email address is not valid
 

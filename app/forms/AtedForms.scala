@@ -37,7 +37,7 @@ object AtedForms {
   val addressLineLength = 35
   val postcodeLength = 9
   val countryLength = 2
-  val emailLength = 241
+  val emailLength = 132
   val lengthZero = 0
   val nameLength = 35
   val phoneLength = 24
