@@ -45,6 +45,8 @@ object AtedForms {
   val phoneLength = 24
   val telephoneRegex = """^[A-Z0-9)\/(\-*#]+$""".r
   val nameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
+  val addressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
+
 
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
     model.isAgent.isEmpty match {
@@ -73,14 +75,19 @@ object AtedForms {
 
   val correspondenceAddressForm = Form(
     mapping(
-      "line_1" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => x.trim.length > lengthZero)
-        .verifying(Messages("ated.error.length", Messages("ated.address.line-1"), addressLineLength),
+      "line_1" -> text.verifying(StopOnFirstFail(
+        constraint[String](Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => x.trim.length > lengthZero),
+        constraint[String](Messages("ated.error.length", Messages("ated.address.line-1"), addressLineLength),
           x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+        constraint[String](Messages("ated.error.invalid", Messages("ated.address.line-1")),
+          x => x.isEmpty || x.matches(addressLineRegex))
+      )
+      ),
       "line_2" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => x.trim.length > lengthZero)
         .verifying(Messages("ated.error.length", Messages("ated.address.line-2"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+        .verifying(Messages("ated.error.invalid", Messages("ated.address.line-2")), x => x.isEmpty || x.trim.matches(addressLineRegex)),
       "line_3" -> optional(text)
         .verifying(Messages("ated.error.length", Messages("ated.address.line-3"), addressLineLength),
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
@@ -113,7 +120,7 @@ object AtedForms {
   val contactDetailsForm = Form(mapping(
     "firstName" -> text.verifying(
       StopOnFirstFail(
-        constraint[String](Messages("ated.contact-details-first-name.error"), x => x.nonEmpty),
+        constraint[String](Messages("ated.contact-details-first-name.error"), x => x.trim.length > lengthZero),
         constraint[String](Messages("ated.contact-details-first-name.length"), x => x.trim.matches(nameRegex))
       )
     ),

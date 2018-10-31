@@ -185,6 +185,17 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             }
           }
 
+          "If entered invalid, Address line 1 must fail with error" in {
+            implicit val hc: HeaderCarrier = HeaderCarrier()
+            val line1 = "****££^^^^^"
+            val inputJson = Json.parse( s"""{ "line_1": "$line1", "line_2": "qwe", "line_3": "qwe", "line_4": "qwe", "postcode": "ne77du", "country": "UK"}""")
+            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+              result =>
+                status(result) must be(BAD_REQUEST)
+                contentAsString(result) must include("Need error message")
+            }
+          }
+
           "If entered, Address line 2 must be maximum of 35 characters" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
             val line2 = "a" * 36
