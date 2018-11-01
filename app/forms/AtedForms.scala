@@ -25,7 +25,7 @@ import play.api.Play.current
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import utils.AtedSubscriptionUtils
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
-import uk.gov.hmrc.play.mappers.StopOnFirstFail._
+import uk.gov.hmrc.play.mappers.StopOnFirstFail.{constraint, _}
 
 import scala.annotation.tailrec
 
@@ -46,6 +46,7 @@ object AtedForms {
   val telephoneRegex = """^[A-Z0-9)\/(\-*#]+$""".r
   val nameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
   val addressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
+  val postCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"
 
 
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
@@ -87,18 +88,16 @@ object AtedForms {
         .verifying(Messages("ated.error.length", Messages("ated.address.line-2"), addressLineLength),
           x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
         .verifying(Messages("ated.error.invalid", Messages("ated.address.line-2")), x => x.isEmpty || x.trim.matches(addressLineRegex)),
-      "line_3" -> optional(text)
-        .verifying(Messages("ated.error.length", Messages("ated.address.line-3"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength))
-        .verifying(Messages("ated.error.invalid", Messages("ated.address.line-3")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))),
-      "line_4" -> optional(text)
-        .verifying(Messages("ated.error.length", Messages("ated.address.line-4"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength))
-        .verifying(Messages("ated.error.invalid", Messages("ated.address.line-4")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))),
+      "line_3" -> optional(text).verifying(StopOnFirstFail(
+        constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-3"), addressLineLength),
+          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+        constraint[Option[String]](Messages("ated.error.invalid", Messages("ated.address.line-3")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))))),
+      "line_4" -> optional(text).verifying(StopOnFirstFail(
+        constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-4"), addressLineLength),
+          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+          constraint[Option[String]](Messages("ated.error.invalid", Messages("ated.address.line-4")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))))),
       "postcode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), postcodeLength),
-          x => checkFieldLengthIfPopulated(AtedSubscriptionUtils.formatPostCode(x), postcodeLength))
-        .verifying(Messages("ated.error.length", Messages("ated.address.postcode")), x => x.fold[Boolean](false)(_.matches(addressLineRegex))),
+        .verifying(Messages("ated.error.address.postalcode.format"), x => x.isEmpty || x.fold[Boolean](false)(_.matches(postCodeRegex))),
       "country" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
 

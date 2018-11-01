@@ -129,6 +129,7 @@ ated.address.postcode.field = Postcode
 ated.address.country = ISO country code
 ated.address.country = Country
 ated.correspondence-address.continue = Continue
+ated.error.invalid =  "invalid msg"
 
 ated.contact-details-error.general.email = There is a problem with the email address. Check it and try again.
 ated.contact-details-error.general.emailConsent = There is a problem with the can we contact them by email question

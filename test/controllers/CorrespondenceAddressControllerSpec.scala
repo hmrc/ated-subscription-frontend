@@ -262,14 +262,14 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             }
           }
 
-          "Postcode is optional but if entered, must be maximum of 35 characters" in {
+          "Postcode is optional but if entered, must be maximum of 10 characters" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
-            val line = "a" * 36
+            val line = "a" * 12
             val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "$line", "country": ""}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("Address line 4 (optional) must not be more than 35 characters")
+                contentAsString(result) must include("You must enter a valid postcode")
             }
           }
 
@@ -280,7 +280,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("ated.error.invalid")
+                contentAsString(result) must include("You must enter a valid postcode")
             }
           }
 
