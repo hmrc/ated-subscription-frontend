@@ -168,9 +168,10 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
 
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("You must enter Address line 1")
-              contentAsString(result) must include("You must enter Address line 2")
-              contentAsString(result) must include("You must enter Country")
+              val doc = contentAsString(result)
+              doc must include("You must enter Address line 1")
+              doc must include("You must enter Address line 2")
+              doc must include("You must enter Country")
             }
           }
 
@@ -188,7 +189,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
           "Address line 1 must fail with error on entering invalid address" in {
             implicit val hc: HeaderCarrier = HeaderCarrier()
             val line1 = "****££^^^^^"
-            val inputJson = Json.parse( s"""{ "line_1": "$line1", "line_2": "qwe", "line_3": "qwe", "line_4": "qwe", "postcode": "ne77du", "country": "UK"}""")
+            val inputJson = Json.parse( s"""{ "line_1": "$line1", "line_2": "qwe", "line_3": "qwe", "line_4": "qwe", "postcode": "", "country": "UK"}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
