@@ -123,13 +123,15 @@ object AtedForms {
     "firstName" -> text.verifying(
       StopOnFirstFail(
         constraint[String](Messages("ated.contact-details-first-name.error"), x => x.trim.length > lengthZero),
-        constraint[String](Messages("ated.contact-details-first-name.length"), x => x.trim.matches(nameRegex))
+        constraint[String](Messages("ated.contact-details-first-name.length"), x => x.trim.length <= nameLength),
+        constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(nameRegex))
       )
     ),
     "lastName" -> text.verifying(
       StopOnFirstFail(
         constraint[String](Messages("ated.contact-details-last-name.error"), x => x.trim.length > lengthZero),
-        constraint[String](Messages("ated.contact-details-last-name.length"), x => x.trim.matches(nameRegex))
+        constraint[String](Messages("ated.contact-details-last-name.length"), x => x.trim.length <= nameLength),
+        constraint[String](Messages("ated.contact-details-last-name.invalid"), x => x.trim.matches(nameRegex))
       )
     ),
     "telephone" -> text

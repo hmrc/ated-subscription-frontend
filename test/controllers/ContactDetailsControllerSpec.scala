@@ -186,7 +186,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
             status(result) must be(BAD_REQUEST)
-            contentAsString(result) must include("The first name cannot be more than 35 characters")
+            contentAsString(result) must include("ated.contact-details-first-name.invalid")
           }
         }
 
@@ -217,6 +217,16 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
           }
         }
 
+        "Last name must be have valid characters" in {
+          implicit val hc: HeaderCarrier = HeaderCarrier()
+          val fname = "2121313131"
+          val inputJson = Json.parse( s"""{ "firstName": "name", "lastName": "$fname", "telephone": ""}""")
+
+          submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+            status(result) must be(BAD_REQUEST)
+            contentAsString(result) must include("ated.contact-details-last-name.invalid")
+          }
+        }
 
         "Last name must be maximum of 35 characters" in {
           implicit val hc: HeaderCarrier = HeaderCarrier()
