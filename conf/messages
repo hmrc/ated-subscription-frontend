@@ -80,7 +80,9 @@ ated.contact-details-last-name.error = You must enter a last name
 ated.contact-details-telephone.error = You must enter a telephone number
 
 ated.contact-details-first-name.length = The first name cannot be more than 35 characters
+ated.contact-details-first-name.invalid = The first name must only include letters a to z, ampersands (&), apostrophes (‘) and hyphens (-)
 ated.contact-details-last-name.length = The last name cannot be more than 35 characters
+ated.contact-details-last-name.invalid = The first last must only include letters a to z, ampersands (&), apostrophes (‘) and hyphens (-)
 ated.contact-details-telephone.length = The telephone number cannot be more than 24 characters
 ated.contact-details-telephone.invalidText = The telephone number is not valid
 
@@ -129,7 +131,7 @@ ated.address.postcode.field = Postcode
 ated.address.country = ISO country code
 ated.address.country = Country
 ated.correspondence-address.continue = Continue
-ated.error.invalid =  "invalid msg"
+ated.address.error.invalid =  {0} must only include letters a to z, numbers 0 to 9, commas (,), full stops (.), hyphens (-), spaces, apostrophes (‘) and ampersands (&)
 
 ated.contact-details-error.general.email = There is a problem with the email address. Check it and try again.
 ated.contact-details-error.general.emailConsent = There is a problem with the can we contact them by email question

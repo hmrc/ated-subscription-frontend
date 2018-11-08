@@ -79,23 +79,23 @@ object AtedForms {
         constraint[String](Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => x.trim.length > lengthZero),
         constraint[String](Messages("ated.error.length", Messages("ated.address.line-1"), addressLineLength),
           x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-        constraint[String](Messages("ated.error.invalid", Messages("ated.address.line-1")),
+        constraint[String](Messages("ated.address.error.invalid", Messages("ated.address.line-1")),
           x => x.isEmpty || x.matches(addressLineRegex))
       )),
       "line_2" -> text.verifying(StopOnFirstFail(
         constraint[String](Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => x.trim.length > lengthZero),
           constraint[String](Messages("ated.error.length", Messages("ated.address.line-2"), addressLineLength),
           x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-          constraint[String](Messages("ated.error.invalid", Messages("ated.address.line-2")), x => x.isEmpty || x.trim.matches(addressLineRegex)))),
+          constraint[String](Messages("ated.address.error.invalid", Messages("ated.address.line-2")), x => x.isEmpty || x.trim.matches(addressLineRegex)))),
       "line_3" -> optional(text).verifying(StopOnFirstFail(
         constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-3"), addressLineLength),
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
-        constraint[Option[String]](Messages("ated.error.invalid", Messages("ated.address.line-3")), x => x.isEmpty
+        constraint[Option[String]](Messages("ated.address.error.invalid", Messages("ated.address.line-3")), x => x.isEmpty
           || x.fold[Boolean](false)(_.matches(addressLineRegex))))),
       "line_4" -> optional(text).verifying(StopOnFirstFail(
         constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-4"), addressLineLength),
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
-          constraint[Option[String]](Messages("ated.error.invalid", Messages("ated.address.line-4")), x => x.isEmpty
+          constraint[Option[String]](Messages("ated.address.error.invalid", Messages("ated.address.line-4")), x => x.isEmpty
             || x.fold[Boolean](false)(_.matches(addressLineRegex))))),
       "postcode" -> optional(text)
         .verifying(Messages("ated.error.address.postalcode.format"), x => x.isEmpty || x.fold[Boolean](false)(_.matches(postCodeRegex))),

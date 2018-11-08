@@ -193,7 +193,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("Need error message")
+                contentAsString(result) must include("Address line 1 must only include letters a to z, numbers 0 to 9, commas (,), full stops (.), hyphens (-), spaces, apostrophes (‘) and ampersands (&amp;)")
             }
           }
 
@@ -215,7 +215,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("ated.error.invalid")
+                contentAsString(result) must include("Address line 2 must only include letters a to z, numbers 0 to 9, commas (,), full stops (.), hyphens (-), spaces, apostrophes (‘) and ampersands (&amp;)")
             }
           }
 
@@ -226,7 +226,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("ated.error.invalid")
+                contentAsString(result) must include("Address line 3 (optional) must only include letters a to z, numbers 0 to 9, commas (,), full stops (.), hyphens (-), spaces, apostrophes (‘) and ampersands (&amp;)")
             }
           }
 
@@ -248,7 +248,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("ated.error.invalid")
+                contentAsString(result) must include("Address line 4 (optional) must only include letters a to z, numbers 0 to 9, commas (,), full stops (.), hyphens (-), spaces, apostrophes (‘) and ampersands (&amp;)")
             }
           }
 

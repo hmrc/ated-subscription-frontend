@@ -186,7 +186,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
             status(result) must be(BAD_REQUEST)
-            contentAsString(result) must include("ated.contact-details-first-name.invalid")
+            contentAsString(result) must include("The first name must only include letters a to z, ampersands (&), apostrophes (‘) and hyphens (-)")
           }
         }
 
@@ -224,7 +224,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
             status(result) must be(BAD_REQUEST)
-            contentAsString(result) must include("ated.contact-details-last-name.invalid")
+            contentAsString(result) must include("The last name must only include letters a to z, ampersands (&), apostrophes (‘) and hyphens (-)")
           }
         }
 
