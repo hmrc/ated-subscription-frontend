@@ -34,12 +34,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
-  val serviceURL = baseUrl("enrolment-store-proxy")
+  val serviceURL = baseUrl("tax-enrolments")
 
   val enrolURI = "enrol"
   val http: CoreGet with CorePost = WSHttp
 
-  val enrolmentUrl = s"$serviceURL/enrolment-store-proxy/enrolment-store"
+  val enrolmentUrl = s"$serviceURL/tax-enrolments"
 
   def metrics: Metrics
 
