@@ -25,11 +25,11 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.hmrc.play.mappers.StopOnFirstFail.constraint
-import utils.ValidationConstants
+import utils.ValidationConstants._
 
 import scala.annotation.tailrec
 
-object AtedForms extends ValidationConstants {
+object AtedForms {
 
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
     model.isAgent.isEmpty match {
@@ -59,31 +59,31 @@ object AtedForms extends ValidationConstants {
   val correspondenceAddressForm = Form(
     mapping(
       "line_1" -> text.verifying(StopOnFirstFail(
-        constraint[String](Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => x.trim.length > lengthZero),
-        constraint[String](Messages("ated.error.length", Messages("ated.address.line-1"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+        constraint[String](Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => x.trim.length > LengthZero),
+        constraint[String](Messages("ated.error.length", Messages("ated.address.line-1"), AddressLineLength),
+          x => x.isEmpty || (x.nonEmpty && x.length <= AddressLineLength)),
         constraint[String](Messages("ated.address.error.invalid", Messages("ated.address.line-1")),
-          x => x.isEmpty || x.matches(addressLineRegex))
+          x => x.isEmpty || x.matches(AddressLineRegex))
       )),
       "line_2" -> text.verifying(StopOnFirstFail(
-        constraint[String](Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => x.trim.length > lengthZero),
-          constraint[String](Messages("ated.error.length", Messages("ated.address.line-2"), addressLineLength),
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-          constraint[String](Messages("ated.address.error.invalid", Messages("ated.address.line-2")), x => x.isEmpty || x.trim.matches(addressLineRegex)))),
+        constraint[String](Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => x.trim.length > LengthZero),
+          constraint[String](Messages("ated.error.length", Messages("ated.address.line-2"), AddressLineLength),
+          x => x.isEmpty || (x.nonEmpty && x.length <= AddressLineLength)),
+          constraint[String](Messages("ated.address.error.invalid", Messages("ated.address.line-2")), x => x.isEmpty || x.trim.matches(AddressLineRegex)))),
       "line_3" -> optional(text).verifying(StopOnFirstFail(
-        constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-3"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+        constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-3"), AddressLineLength),
+          x => checkFieldLengthIfPopulated(x, AddressLineLength)),
         constraint[Option[String]](Messages("ated.address.error.invalid", Messages("ated.address.line-3")), x => x.isEmpty
-          || x.fold[Boolean](false)(_.matches(addressLineRegex))))),
+          || x.fold[Boolean](false)(_.matches(AddressLineRegex))))),
       "line_4" -> optional(text).verifying(StopOnFirstFail(
-        constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-4"), addressLineLength),
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+        constraint[Option[String]](Messages("ated.error.length", Messages("ated.address.line-4"), AddressLineLength),
+          x => checkFieldLengthIfPopulated(x, AddressLineLength)),
           constraint[Option[String]](Messages("ated.address.error.invalid", Messages("ated.address.line-4")), x => x.isEmpty
-            || x.fold[Boolean](false)(_.matches(addressLineRegex))))),
+            || x.fold[Boolean](false)(_.matches(AddressLineRegex))))),
       "postcode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format"), x => x.isEmpty || x.fold[Boolean](false)(_.matches(postCodeRegex))),
+        .verifying(Messages("ated.error.address.postalcode.format"), x => x.isEmpty || x.fold[Boolean](false)(_.matches(PostCodeRegex))),
       "country" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
+        verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > LengthZero)
 
     )(Address.apply)(Address.unapply))
 
@@ -105,24 +105,24 @@ object AtedForms extends ValidationConstants {
   val contactDetailsForm = Form(mapping(
     "firstName" -> text.verifying(
       StopOnFirstFail(
-        constraint[String](Messages("ated.contact-details-first-name.error"), x => x.trim.length > lengthZero),
-        constraint[String](Messages("ated.contact-details-first-name.length"), x => x.trim.length <= nameLength),
-        constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(nameRegex))
+        constraint[String](Messages("ated.contact-details-first-name.error"), x => x.trim.length > LengthZero),
+        constraint[String](Messages("ated.contact-details-first-name.length"), x => x.trim.length <= NameLength),
+        constraint[String](Messages("ated.contact-details-first-name.invalid"), x => x.trim.matches(NameRegex))
       )
     ),
     "lastName" -> text.verifying(
       StopOnFirstFail(
-        constraint[String](Messages("ated.contact-details-last-name.error"), x => x.trim.length > lengthZero),
-        constraint[String](Messages("ated.contact-details-last-name.length"), x => x.trim.length <= nameLength),
-        constraint[String](Messages("ated.contact-details-last-name.invalid"), x => x.trim.matches(nameRegex))
+        constraint[String](Messages("ated.contact-details-last-name.error"), x => x.trim.length > LengthZero),
+        constraint[String](Messages("ated.contact-details-last-name.length"), x => x.trim.length <= NameLength),
+        constraint[String](Messages("ated.contact-details-last-name.invalid"), x => x.trim.matches(NameRegex))
       )
     ),
     "telephone" -> text
-      .verifying(Messages("ated.contact-details-telephone.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-telephone.length"), x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
+      .verifying(Messages("ated.contact-details-telephone.error"), x => x.trim.length > LengthZero)
+      .verifying(Messages("ated.contact-details-telephone.length"), x => x.isEmpty || (x.nonEmpty && x.length <= PhoneLength))
       .verifying(Messages("ated.contact-details-telephone.invalidText"), x => x.isEmpty || {
-        val p = telephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
-        val z = x.length > phoneLength
+        val p = TelephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
+        val z = x.length > PhoneLength
         p || z
       })
 
@@ -141,13 +141,13 @@ object AtedForms extends ValidationConstants {
       val formErrors = emailConsent match {
         case Some("true") => {
           val email = f.data.getOrElse("email","")
-          if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
+          if (email.isEmpty || (email.nonEmpty && email.trim.length == LengthZero)) {
             Seq(FormError("email", Messages("ated.contact-details-email.error")))
-          } else if (email.length > emailLength) {
+          } else if (email.length > EmailLength) {
             Seq(FormError("email", Messages("ated.contact-details-email.length")))
           } else {
-            val x = emailRegex.findFirstMatchIn(email).exists(_ => true)
-            val y = email.length == lengthZero
+            val x = EmailRegex.findFirstMatchIn(email).exists(_ => true)
+            val y = email.length == LengthZero
             if (x || y) {
               Nil
             } else {

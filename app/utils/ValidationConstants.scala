@@ -16,20 +16,21 @@
 
 package utils
 
-trait ValidationConstants {
+object ValidationConstants {
 
-  val emailRegex =
+  val EmailRegex =
     """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
-  val addressLineLength = 35
-  val postcodeLength = 9
-  val countryLength = 2
-  val emailLength = 132
-  val lengthZero = 0
-  val nameLength = 35
-  val phoneLength = 24
-  val telephoneRegex = "^[A-Z0-9 )/(\\-*#]+$".r
-  val nameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
-  val addressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
-  val postCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"
+  val AddressLineLength = 35
+  val PostcodeLength = 10
+  val CountryLength = 2
+  val EmailLength = 132
+  val LengthZero = 0
+  val NameLength = 35
+  val PhoneLength = 24
+  val TelephoneRegex = "^[A-Z0-9 )/(\\-*#]+$".r
+  val NameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
+  val AddressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
+  val PostCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"
 
 }
+
