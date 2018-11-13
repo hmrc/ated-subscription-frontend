@@ -25,28 +25,11 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.hmrc.play.mappers.StopOnFirstFail.constraint
+import utils.ValidationConstants
 
 import scala.annotation.tailrec
 
-object AtedForms {
-
-  // this is with respect to play 2.3.8 but it has been changed in play 2.4; when upgrade, look into play src to change this;
-  // scalastyle:off line.size.limitgit diff
-
-  val emailRegex =
-    """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
-  val addressLineLength = 35
-  val postcodeLength = 9
-  val countryLength = 2
-  val emailLength = 132
-  val lengthZero = 0
-  val nameLength = 35
-  val phoneLength = 24
-  val telephoneRegex = "^[A-Z0-9 )/(\\-*#]+$".r
-  val nameRegex = "^[a-zA-Z &`\\-\'^]{1,35}$"
-  val addressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
-  val postCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"
-
+object AtedForms extends ValidationConstants {
 
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
     model.isAgent.isEmpty match {
@@ -157,7 +140,7 @@ object AtedForms {
       val emailConsent = f.data.get("emailConsent")
       val formErrors = emailConsent match {
         case Some("true") => {
-          val email = f.data.get("email").getOrElse("")
+          val email = f.data.getOrElse("email","")
           if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)) {
             Seq(FormError("email", Messages("ated.contact-details-email.error")))
           } else if (email.length > emailLength) {
