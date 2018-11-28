@@ -45,9 +45,9 @@ object AtedForms {
 
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
     model.isAgent.isEmpty match {
-      case false if !model.isAgent.get => Valid
-      case false if model.isAgent.get => Invalid("ated.claim-relief.error.agent-claiming-true", "isAgent")
-      case true => Invalid("ated.claim-relief.error.agent-claiming", "isAgent")
+      case (false) if !model.isAgent.get => Valid
+      case (false) if model.isAgent.get => Invalid("ated.claim-relief.error.agent-claiming-true", "isAgent")
+      case (true) => Invalid("ated.claim-relief.error.agent-claiming", "isAgent")
     }
   })
 
