@@ -17,13 +17,12 @@
 package forms
 
 import models._
-import play.api.data.{Form, FormError}
+import play.api.Play.current
 import play.api.data.Forms._
+import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.data.{Form, FormError}
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.data.validation.{Constraint, Invalid, Valid}
-import utils.AtedSubscriptionUtils
 
 import scala.annotation.tailrec
 
@@ -35,7 +34,8 @@ object AtedForms {
   val emailRegex =
   """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
   val addressLineLength = 35
-  val postcodeLength = 9
+  val PostcodeLength = 10
+  val PostCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"
   val countryLength = 2
   val emailLength = 241
   val lengthZero = 0
@@ -85,8 +85,7 @@ object AtedForms {
         .verifying(Messages("ated.error.length", Messages("ated.address.line-4"), addressLineLength),
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "postcode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format", Messages("ated.address.postcode.field"), postcodeLength),
-          x => checkFieldLengthIfPopulated(AtedSubscriptionUtils.formatPostCode(x), postcodeLength)),
+        .verifying(Messages("ated.error.address.postalcode.format"), x => x.fold(true)(v => v.isEmpty || v.matches(PostCodeRegex))),
       "country" -> text.
         verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
 
@@ -136,7 +135,7 @@ object AtedForms {
       val emailConsent = f.data.get("emailConsent")
       val formErrors = emailConsent match {
         case Some("true") => {
-          val email = f.data.get("email").getOrElse("")
+          val email = f.data.getOrElse("email", "")
           if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)){
             Seq(FormError("email", Messages("ated.contact-details-email.error")))
           } else if (email.length > emailLength){
