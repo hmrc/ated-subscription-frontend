@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,11 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
 
   val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("test Type"), businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+
   val testReviewBusinessDetailsforSOP = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("SOP"), businessAddress = testAddress,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+
+  val testReviewBusinessDetailsNoPostCode = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("SOP"), businessAddress = testAddressNoPOstCode,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   val testReviewBusinessDetailsNoUtrPostCode = ReviewDetails(businessName = "test Name", businessType = Some("SOP"), businessAddress = testAddressNoPOstCode,
@@ -167,6 +171,20 @@ class NewRegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mo
         val result = TestNewRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)
         thrown.getMessage must include("[NewRegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
+      }
+
+      "throw exception when postcode not present" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoPostCode))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddressNoPOstCode)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = TestNewRegisterUserService.subscribeAted()
+        val thrown = the[RuntimeException] thrownBy await(result)
+        thrown.getMessage must include("[NewRegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode must be supplied")
       }
 
       "should handle invalid data in the subscribe success response" in {
