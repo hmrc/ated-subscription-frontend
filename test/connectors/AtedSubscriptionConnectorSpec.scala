@@ -21,8 +21,10 @@ import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.{Configuration, Play}
+import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http._
@@ -40,6 +42,10 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with OneServerPerSuite with
 
   object TestAtedSubscriptionConnector extends AtedSubscriptionConnector {
     override val http: CoreGet with CorePost = mockWSHttp
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()

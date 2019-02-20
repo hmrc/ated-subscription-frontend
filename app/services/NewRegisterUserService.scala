@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.config.RunMode
 import utils.AtedSubscriptionUtils.validateGroupId
 
 
-trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
+trait NewRegisterUserService extends AuthorisedFunctions {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector

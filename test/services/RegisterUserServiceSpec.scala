@@ -22,7 +22,7 @@ import models._
 import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import org.mockito.Mockito._
 import play.api.libs.json.Json

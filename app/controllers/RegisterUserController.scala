@@ -19,7 +19,7 @@ package controllers
 import config.FrontendAuthConnector
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
 import org.joda.time.LocalDate
-import play.api.Logger
+import play.api.{Logger, Play}
 import services.{NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -28,12 +28,11 @@ import utils.AuthUtils._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.config.RunMode
 import utils.ErrorMessageUtils._
 
 import scala.concurrent.Future
 
-trait RegisterUserController extends FrontendController with Actions with RunMode {
+trait RegisterUserController extends FrontendController with Actions {
 
   val registerUserService: RegisterUserService
   val newRegisterUserService: NewRegisterUserService
@@ -127,6 +126,6 @@ object RegisterUserController extends RegisterUserController {
   val authConnector = FrontendAuthConnector
   val registerUserService = RegisterUserService
   val newRegisterUserService = NewRegisterUserService
-  val isEmacFeatureToggle: Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
+  val isEmacFeatureToggle: Boolean = Play.current.configuration.getBoolean("emacsFeatureToggle").getOrElse(true)
   // $COVERAGE-ON$
 }

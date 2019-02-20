@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -77,7 +77,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
   "ReviewDetailsController" must {
 
     "not respond with NOT_FOUND for the GET" in {
-      val result = route(FakeRequest(GET, "/ated-subscription/review-business-details"))
+      val result = route(app, FakeRequest(GET, "/ated-subscription/review-business-details"))
       result.isDefined must be(true)
       status(result.get) must not be NOT_FOUND
     }

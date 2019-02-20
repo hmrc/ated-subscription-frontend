@@ -18,7 +18,7 @@ package connectors
 
 
 import config.{AtedSubscriptionFrontendAuditConnector, WSHttp}
-import play.api.Logger
+import play.api.{Configuration, Logger, Play}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import metrics.{Metrics, MetricsEnum}
 import audit.Auditable
 import models.RequestEMACPayload
+import play.api.Mode.Mode
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import utils.AtedSubscriptionUtils._
 import utils.GovernmentGatewayConstants
@@ -95,8 +96,12 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
 
 object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
   // $COVERAGE-OFF$
-  val appName = AppName.appName
+  val appName = AppName(Play.current.configuration).appName
   override val metrics = Metrics
-  val audit: Audit = new Audit(AppName.appName, AtedSubscriptionFrontendAuditConnector)
+  val audit: Audit = new Audit(appName, AtedSubscriptionFrontendAuditConnector)
   // $COVERAGE-ON$
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

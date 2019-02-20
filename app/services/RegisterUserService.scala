@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import uk.gov.hmrc.play.config.RunMode
 
 
-trait RegisterUserService extends RunMode {
+trait RegisterUserService {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector

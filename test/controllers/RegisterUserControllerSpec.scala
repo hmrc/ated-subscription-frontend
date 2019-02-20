@@ -25,7 +25,7 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
@@ -69,7 +69,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     "enrolment through EMAC" when {
 
       "not respond with NOT_FOUND for the GET" in {
-        val result = route(FakeRequest(POST, "/ated-subscription/register-user"))
+        val result = route(app, FakeRequest(POST, "/ated-subscription/register-user"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }
@@ -161,7 +161,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     "enrolment through GG" when {
 
       "not respond with NOT_FOUND for the GET" in {
-        val result = route(FakeRequest(POST, "/ated-subscription/register-user"))
+        val result = route(app, FakeRequest(POST, "/ated-subscription/register-user"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }

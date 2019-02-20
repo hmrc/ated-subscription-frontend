@@ -37,7 +37,7 @@ object AgentConfirmationController extends AgentConfirmationController {
   override val businessCustomerFEConnector: BusinessCustomerFrontendConnector = BusinessCustomerFrontendConnector
 }
 
-trait AgentConfirmationController extends FrontendController with Actions with RunMode {
+trait AgentConfirmationController extends FrontendController with Actions {
 
   def registerUserService: RegisterUserService
   val businessCustomerFEConnector: BusinessCustomerFrontendConnector

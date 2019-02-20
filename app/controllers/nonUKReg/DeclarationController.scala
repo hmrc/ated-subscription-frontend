@@ -19,19 +19,18 @@ package controllers.nonUKReg
 import config.FrontendAuthConnector
 import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AtedSubscriptionRegime
+import play.api.Play
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import services.{MandateService, NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import services.RegisterUserService.runModeConfiguration
-import uk.gov.hmrc.play.config.RunMode
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DeclarationController extends FrontendController with Actions with RunMode {
+trait DeclarationController extends FrontendController with Actions {
 
   val isEmacFeatureToggle: Boolean
 
@@ -89,6 +88,6 @@ object DeclarationController extends DeclarationController {
   val registerEmacUserService: NewRegisterUserService = NewRegisterUserService
   val mandateService: MandateService = MandateService
   val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
-  val isEmacFeatureToggle: Boolean = runModeConfiguration.getBoolean("emacsFeatureToggle").getOrElse(true)
+  val isEmacFeatureToggle: Boolean = Play.current.configuration.getBoolean("emacsFeatureToggle").getOrElse(true)
   // $COVERAGE-ON$
 }

@@ -17,7 +17,10 @@
 package connectors
 
 import config.WSHttp
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.mvc.Request
+import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -44,6 +47,10 @@ trait BusinessCustomerFrontendConnector extends ServicesConfig  with RawResponse
 object BusinessCustomerFrontendConnector extends BusinessCustomerFrontendConnector {
   // $COVERAGE-OFF$
   val http = WSHttp
-  override def crypto: (String) => String = SessionCookieCryptoFilter.encrypt _
+  override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
   // $COVERAGE-ON$
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

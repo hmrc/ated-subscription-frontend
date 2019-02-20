@@ -20,7 +20,8 @@ import config.FrontendAuthConnector
 import controllers.auth.{AtedSubscriptionAuthHelpers, AtedSubscriptionRegime}
 import forms.AtedForms._
 import models.AreYouAnAgent
-import play.api.Play
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.AuthUtils
 import play.api.i18n.Messages.Implicits._
@@ -72,4 +73,8 @@ trait SubscriptionController extends FrontendController with AtedSubscriptionAut
 
 object SubscriptionController extends SubscriptionController {
   val authConnector = FrontendAuthConnector
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

@@ -35,7 +35,7 @@ object ApplicationController extends ApplicationController {
   // $COVERAGE-ON$
 }
 
-trait ApplicationController extends FrontendController with RunMode with Actions {
+trait ApplicationController extends FrontendController with Actions {
 
   val dataCacheConnector: DataCacheConnector
 

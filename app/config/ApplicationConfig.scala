@@ -16,6 +16,8 @@
 
 package config
 
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import play.api.Play._
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -33,6 +35,10 @@ trait ApplicationConfig {
 }
 
 object ApplicationConfig extends ApplicationConfig with ServicesConfig {
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing key: $key"))
 

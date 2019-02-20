@@ -18,7 +18,8 @@ package connectors
 
 import config.WSHttp
 import models.SubscribeSuccessResponse
-import play.api.Logger
+import play.api.Mode.Mode
+import play.api.{Configuration, Logger, Play}
 import play.api.http.Status._
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -30,7 +31,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http._
 
-object AtedSubscriptionConnector extends AtedSubscriptionConnector
+object AtedSubscriptionConnector extends AtedSubscriptionConnector {
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
+}
 
 trait AtedSubscriptionConnector extends ServicesConfig with RawResponseReads {
 
