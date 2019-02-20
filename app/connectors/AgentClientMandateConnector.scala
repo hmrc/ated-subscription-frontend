@@ -17,19 +17,18 @@
 package connectors
 
 import config.WSHttp
-import models.{NonUKClientDto, OldMandateReference}
+import models.NonUKClientDto
 import play.api.Mode.Mode
-import play.api.{Configuration, Logger, Play}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import play.api.{Configuration, Logger, Play}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.http._
 import utils.AuthUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http._
 
 object AgentClientMandateConnector extends AgentClientMandateConnector {
   override protected def mode: Mode = Play.current.mode

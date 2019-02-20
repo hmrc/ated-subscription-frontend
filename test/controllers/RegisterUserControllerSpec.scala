@@ -19,7 +19,6 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendAuthConnector
 import models.{EnrolResponse, SubscribeSuccessResponse}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -32,10 +31,10 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{NewRegisterUserService, RegisterUserService}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   val mockAuthConnector = mock[AuthConnector]

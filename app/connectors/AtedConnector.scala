@@ -17,8 +17,8 @@
 package connectors
 
 import config.WSHttp
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext

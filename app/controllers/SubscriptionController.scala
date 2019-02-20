@@ -19,12 +19,11 @@ package controllers
 import config.FrontendAuthConnector
 import controllers.auth.{AtedSubscriptionAuthHelpers, AtedSubscriptionRegime}
 import forms.AtedForms._
-import models.AreYouAnAgent
 import play.api.Mode.Mode
+import play.api.i18n.Messages.Implicits._
 import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.AuthUtils
-import play.api.i18n.Messages.Implicits._
 
 trait SubscriptionController extends FrontendController with AtedSubscriptionAuthHelpers {
 

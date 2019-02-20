@@ -19,14 +19,11 @@ package controllers
 import config.FrontendAuthConnector
 import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
-
-import play.api.{Logger, Play}
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.DiscardingCookie
-import uk.gov.hmrc.play.config.RunMode
+import play.api.{Logger, Play}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 object ApplicationController extends ApplicationController {
   // $COVERAGE-OFF$

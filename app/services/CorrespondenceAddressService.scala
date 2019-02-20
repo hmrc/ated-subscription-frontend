@@ -18,9 +18,9 @@ package services
 
 import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
 import models.Address
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 trait CorrespondenceAddressService {
 

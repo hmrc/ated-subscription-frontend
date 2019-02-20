@@ -17,18 +17,17 @@
 package connectors
 
 
-import config.{AtedSubscriptionFrontendAuditConnector, WSHttp}
-import play.api.{Configuration, Logger, Play}
-import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import metrics.{Metrics, MetricsEnum}
 import audit.Auditable
+import config.{AtedSubscriptionFrontendAuditConnector, WSHttp}
+import metrics.{Metrics, MetricsEnum}
 import models.RequestEMACPayload
 import play.api.Mode.Mode
+import play.api.http.Status._
+import play.api.libs.json.{JsValue, Json}
+import play.api.{Configuration, Logger, Play}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
-import utils.AtedSubscriptionUtils._
+import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
 import utils.GovernmentGatewayConstants
 
 import scala.concurrent.ExecutionContext.Implicits.global

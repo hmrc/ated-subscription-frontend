@@ -20,12 +20,12 @@ import connectors._
 import models._
 import play.api.http.Status._
 import play.api.mvc.Request
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AuthUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 object MandateService extends MandateService {
   // $COVERAGE-OFF$

@@ -19,15 +19,15 @@ package controllers
 import config.FrontendAuthConnector
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
 import org.joda.time.LocalDate
+import play.api.Play.current
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 import play.api.{Logger, Play}
 import services.{NewRegisterUserService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 import utils.AuthUtils._
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.i18n.Messages
 import utils.ErrorMessageUtils._
 
 import scala.concurrent.Future

@@ -24,17 +24,16 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.Mode.Mode
-import play.api.{Configuration, Play}
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.ws.WSHttp
 import play.api.test.Helpers._
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpGet, HttpResponse}
 
 
 class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {

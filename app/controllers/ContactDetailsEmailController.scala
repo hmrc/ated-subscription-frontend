@@ -19,11 +19,12 @@ package controllers
 import config.FrontendAuthConnector
 import controllers.auth.AtedSubscriptionRegime
 import forms.AtedForms._
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import services.ContactDetailsService
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
+
 import scala.concurrent.Future
 
 trait ContactDetailsEmailController extends FrontendController with Actions {

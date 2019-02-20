@@ -19,13 +19,13 @@ package controllers.nonUKReg
 import config.FrontendAuthConnector
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
 import org.joda.time.LocalDate
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import services.RegisteredBusinessService
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 trait ConfirmationController extends FrontendController with Actions {
 

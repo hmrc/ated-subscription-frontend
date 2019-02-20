@@ -18,7 +18,6 @@ package controllers.auth
 
 import play.api.Play
 import play.api.Play.current
-import uk.gov.hmrc.play.config.RunMode
 
 object ExternalUrls {
 

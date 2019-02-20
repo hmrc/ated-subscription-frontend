@@ -16,7 +16,6 @@
 
 package models
 
-import org.joda.time.LocalDate
 import play.api.libs.json.Json
 
 case class RegisteredAddressDetails(addressLine1: String,

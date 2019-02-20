@@ -17,9 +17,9 @@
 package controllers.auth
 
 import play.api.Play
-import play.api.mvc.{Action, Result, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.play.config.RunMode
-import uk.gov.hmrc.play.frontend.auth.{AuthContext, PageVisibilityPredicate, TaxRegime, Actions}
+import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, PageVisibilityPredicate, TaxRegime}
 import utils.AuthUtils._
 
 //scalastyle:off

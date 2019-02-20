@@ -23,15 +23,13 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.{Configuration, Play}
 import play.api.Mode.Mode
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws._
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.http.{CorePost, _}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{CorePost, _}
 
 class AgentClientMandateConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
