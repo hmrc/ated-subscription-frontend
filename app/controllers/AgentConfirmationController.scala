@@ -21,13 +21,12 @@ import connectors.BusinessCustomerFrontendConnector
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
 import models.ReviewDetails
 import org.joda.time.LocalDate
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import services.RegisterUserService
-import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 import scala.concurrent.Future
 
@@ -37,7 +36,7 @@ object AgentConfirmationController extends AgentConfirmationController {
   override val businessCustomerFEConnector: BusinessCustomerFrontendConnector = BusinessCustomerFrontendConnector
 }
 
-trait AgentConfirmationController extends FrontendController with Actions with RunMode {
+trait AgentConfirmationController extends FrontendController with Actions {
 
   def registerUserService: RegisterUserService
   val businessCustomerFEConnector: BusinessCustomerFrontendConnector

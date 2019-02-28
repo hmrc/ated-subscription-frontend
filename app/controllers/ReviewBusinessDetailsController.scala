@@ -18,11 +18,11 @@ package controllers
 
 import config.FrontendAuthConnector
 import controllers.auth.AtedSubscriptionRegime
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 trait ReviewBusinessDetailsController extends FrontendController with Actions {
 

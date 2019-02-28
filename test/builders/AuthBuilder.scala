@@ -16,7 +16,6 @@
 
 package builders
 
-import net.sourceforge.htmlunit.corejs.javascript.NativeGenerator.GeneratorClosedException
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import uk.gov.hmrc.domain._

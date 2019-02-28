@@ -26,18 +26,18 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.RegisterUserService
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -61,7 +61,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
 
     "view" must {
       "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated-subscription/agent-confirmation"))
+        val result = route(app, FakeRequest(GET, "/ated-subscription/agent-confirmation"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }
@@ -97,7 +97,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
 
     "continue" must {
       "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated-subscription/agent-confirmation/continue/summary"))
+        val result = route(app, FakeRequest(GET, "/ated-subscription/agent-confirmation/continue/summary"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }

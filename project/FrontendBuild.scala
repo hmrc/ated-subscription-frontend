@@ -9,23 +9,16 @@ object FrontendBuild extends Build with MicroService {
 
 private object AppDependencies {
 
-  import play.sbt.PlayImport._
   import play.core.PlayVersion
-
-  private val frontendBootstrapVersion = "10.5.0"
-  private val httpCachingClientVersion = "7.1.0"
-  private val playPartialsVersion = "6.1.0"
-  private val domainVersion = "5.2.0"
+  import play.sbt.PlayImport._
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "frontend-bootstrap" % frontendBootstrapVersion,
-    "uk.gov.hmrc" %% "play-partials" % playPartialsVersion,
-    "uk.gov.hmrc" %% "domain" % domainVersion,
-    "uk.gov.hmrc" %% "http-caching-client" % httpCachingClientVersion,
-    "com.kenshoo" %% "metrics-play" % "2.3.0_0.1.8",
-    "com.codahale.metrics" % "metrics-graphite" % "3.0.2",
-    "uk.gov.hmrc" %% "auth-client" % "2.16.0-play-25"
+    "uk.gov.hmrc" %% "frontend-bootstrap" % "12.4.0",
+    "uk.gov.hmrc" %% "play-partials" % "6.5.0",
+    "uk.gov.hmrc" %% "domain" % "5.3.0",
+    "uk.gov.hmrc" %% "http-caching-client" % "8.1.0",
+    "uk.gov.hmrc" %% "auth-client" % "2.19.0-play-25"
   )
 
   trait TestDependencies {
@@ -40,7 +33,7 @@ private object AppDependencies {
         "org.pegdown" % "pegdown" % "1.6.0",
         "org.jsoup" % "jsoup" % "1.9.2" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "uk.gov.hmrc" %% "hmrctest" % "3.1.0",
+        "uk.gov.hmrc" %% "hmrctest" % "3.5.0-play-25",
         "org.mockito" % "mockito-all" % "1.10.19" % scope
       )
     }.test

@@ -1,13 +1,9 @@
+import play.routes.compiler.StaticRoutesGenerator
+import play.sbt.routes.RoutesKeys.routesGenerator
 import sbt.Keys._
-import sbt.Tests.{Group, SubProcess}
 import sbt._
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
-import play.sbt.routes.RoutesKeys.routesGenerator
-import play.routes.compiler.StaticRoutesGenerator
-import scoverage.ScoverageKeys
-import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import uk.gov.hmrc.SbtArtifactory
 
 trait MicroService {
 
@@ -16,7 +12,6 @@ trait MicroService {
   import uk.gov.hmrc.SbtAutoBuildPlugin
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
   import uk.gov.hmrc.versioning.SbtGitVersioning
-  import scoverage.ScoverageSbtPlugin._
 
   val appName: String
 

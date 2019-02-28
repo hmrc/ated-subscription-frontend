@@ -16,21 +16,19 @@
 
 package config
 
-import java.io.File
-
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Request
 import play.api.{Application, Configuration, Play}
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
+import uk.gov.hmrc.play.config.{AppName, ControllerConfig}
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import uk.gov.hmrc.play.frontend.filters.{ FrontendAuditFilter, FrontendLoggingFilter, MicroserviceFilterSupport }
+import uk.gov.hmrc.play.frontend.filters.{FrontendAuditFilter, FrontendLoggingFilter, MicroserviceFilterSupport}
 
-object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
+object ApplicationGlobal extends DefaultFrontendGlobal {
 
   override val auditConnector = AtedSubscriptionFrontendAuditConnector
   override val loggingFilter = AtedSubscriptionFrontendLoggingFilter
@@ -38,7 +36,7 @@ object ApplicationGlobal extends DefaultFrontendGlobal with RunMode {
 
   override def onStart(app: Application) {
     super.onStart(app)
-    ApplicationCrypto.verifyConfiguration()
+    new ApplicationCrypto(app.configuration.underlying).verifyConfiguration()
   }
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
@@ -56,7 +54,7 @@ object AtedSubscriptionFrontendLoggingFilter extends FrontendLoggingFilter with 
   override def controllerNeedsLogging(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsLogging
 }
 
-object AtedSubscriptionFrontendAuditFilter extends FrontendAuditFilter with RunMode with AppName with MicroserviceFilterSupport {
+object AtedSubscriptionFrontendAuditFilter extends FrontendAuditFilter with AppName with MicroserviceFilterSupport {
 
   override lazy val maskedFormFields = Seq.empty[String]
 
@@ -65,4 +63,6 @@ object AtedSubscriptionFrontendAuditFilter extends FrontendAuditFilter with RunM
   override lazy val auditConnector = AtedSubscriptionFrontendAuditConnector
 
   override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
+
+  override protected def appNameConfiguration: Configuration = Play.current.configuration
 }

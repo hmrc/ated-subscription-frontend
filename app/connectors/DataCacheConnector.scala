@@ -19,10 +19,10 @@ package connectors
 import config.AtedSessionCache
 import models._
 import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait DataCacheConnector {
 

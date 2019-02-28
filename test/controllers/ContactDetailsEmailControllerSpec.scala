@@ -19,22 +19,22 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import models.{ContactDetails, ContactDetailsEmail}
+import models.ContactDetailsEmail
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import services.ContactDetailsService
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, SessionKeys }
 
 class ContactDetailsEmailControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -54,7 +54,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with OneServerPerSuite 
 
   "ContactDetailsEmailController" must {
     "not respond with NOT_FOUND" in {
-      val result = route(FakeRequest(GET, "/ated-subscription/contact-details-email"))
+      val result = route(app, FakeRequest(GET, "/ated-subscription/contact-details-email"))
       result.isDefined must be(true)
       status(result.get) must not be NOT_FOUND
     }

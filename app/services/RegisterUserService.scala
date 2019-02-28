@@ -17,23 +17,20 @@
 package services
 
 
-import config.AuthClientConnector
 import connectors._
 import models._
-import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.test.Helpers.OK
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.{AtedSubscriptionUtils, GovernmentGatewayConstants, SessionUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
-import uk.gov.hmrc.play.config.RunMode
 
 
-trait RegisterUserService extends RunMode {
+trait RegisterUserService {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector

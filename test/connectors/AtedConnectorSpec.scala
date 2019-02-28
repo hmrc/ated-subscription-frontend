@@ -19,20 +19,18 @@ package connectors
 import java.util.UUID
 
 import builders._
-import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.libs.json.{JsValue, Json}
+import play.api.Mode.Mode
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost}
-
-import scala.concurrent.Future
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
+
+import scala.concurrent.Future
 
 class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -43,6 +41,10 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
   object TestAtedConnector extends AtedConnector {
     override val http: CoreGet with CorePost with CoreDelete = mockWSHttp
     override val serviceURL = baseUrl("ated")
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   override def beforeEach = {
@@ -50,7 +52,6 @@ class AtedConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSuga
   }
 
   "AtedConnector" must {
-    import AuthBuilder._
 
     val periodKey = 2015
 

@@ -24,17 +24,17 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 
 class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
@@ -58,7 +58,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
     "editAddress" must {
 
       "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(GET, "/ated-subscription/correspondence-address"))
+        val result = route(app, FakeRequest(GET, "/ated-subscription/correspondence-address"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }
@@ -153,7 +153,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
     "submit" must {
 
       "not respond with NOT_FOUND" in {
-        val result = route(FakeRequest(POST, "/ated-subscription/correspondence-address"))
+        val result = route(app, FakeRequest(POST, "/ated-subscription/correspondence-address"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }

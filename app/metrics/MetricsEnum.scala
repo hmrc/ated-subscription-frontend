@@ -16,8 +16,6 @@
 
 package metrics
 
-import metrics.Metrics.metrics
-
 object MetricsEnum extends Enumeration {
 
   type MetricsEnum = Value

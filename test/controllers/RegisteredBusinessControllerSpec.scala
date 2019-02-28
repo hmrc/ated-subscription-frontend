@@ -19,23 +19,23 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
+import connectors.DataCacheConnector
 import models.{Address, BusinessAddress}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfterEach}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, RegisteredBusinessService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.HeaderCarrier
 
 class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach{
 
@@ -64,13 +64,13 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
   "RegisteredBusinessController" must {
 
     "not respond with NOT_FOUND for the GET" in {
-      val result = route(FakeRequest(GET, "/ated-subscription/registered-business-address"))
+      val result = route(app, FakeRequest(GET, "/ated-subscription/registered-business-address"))
       result.isDefined must be(true)
       status(result.get) must not be NOT_FOUND
     }
 
     "not respond with NOT_FOUND for the POST" in {
-      val result = route(FakeRequest(POST, "/ated-subscription/registered-business-address"))
+      val result = route(app, FakeRequest(POST, "/ated-subscription/registered-business-address"))
       result.isDefined must be(true)
       status(result.get) must not be NOT_FOUND
     }

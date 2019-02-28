@@ -18,17 +18,18 @@ package connectors
 
 import config.WSHttp
 import models.{AgentEmail, ClientDisplayName, OldMandateReference}
-import play.api.Logger
-import play.api.http.Status.OK
+import play.api.Mode.Mode
 import play.api.mvc.Request
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.http.CoreGet
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import uk.gov.hmrc.http.{CoreGet, HttpGet}
+import scala.concurrent.Future
 
 trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {
 
@@ -59,6 +60,9 @@ trait AgentClientMandateFrontendConnector extends ServicesConfig with RawRespons
 object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
   // $COVERAGE-OFF$
   val http = WSHttp
-  override def crypto: (String) => String = SessionCookieCryptoFilter.encrypt _
+  override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
   // $COVERAGE-ON$
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 }

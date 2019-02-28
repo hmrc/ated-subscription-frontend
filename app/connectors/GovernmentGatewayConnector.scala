@@ -20,9 +20,10 @@ import audit.Auditable
 import config.{AtedSubscriptionFrontendAuditConnector, WSHttp}
 import metrics.{Metrics, MetricsEnum}
 import models._
-import play.api.Logger
+import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import play.api.{Configuration, Logger, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
 import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
@@ -86,8 +87,12 @@ trait GovernmentGatewayConnector extends ServicesConfig with RawResponseReads wi
 }
 
 object GovernmentGatewayConnector extends GovernmentGatewayConnector {
-  override val audit: Audit = new Audit(AppName.appName, AtedSubscriptionFrontendAuditConnector)
-  override val appName: String = AppName.appName
+  override val appName: String = AppName(Play.current.configuration).appName
+  override val audit: Audit = new Audit(appName, AtedSubscriptionFrontendAuditConnector)
+
+  override protected def mode: Mode = Play.current.mode
+
+  override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   override def metrics = Metrics
 }

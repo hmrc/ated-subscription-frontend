@@ -17,15 +17,15 @@
 package controllers
 
 import config.FrontendAuthConnector
+import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
 import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
 import forms.AtedForms._
 import models.BusinessAddress
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import services.{CorrespondenceAddressService, RegisteredBusinessService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
 
 import scala.concurrent.Future
 

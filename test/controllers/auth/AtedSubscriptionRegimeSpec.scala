@@ -18,10 +18,9 @@ package controllers.auth
 
 import controllers.auth.AtedSubscriptionRegime._
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
-
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 
 class AtedSubscriptionRegimeSpec extends PlaySpec with OneServerPerSuite with MockitoSugar {
 

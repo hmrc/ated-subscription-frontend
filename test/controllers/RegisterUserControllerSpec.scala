@@ -19,23 +19,22 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import config.FrontendAuthConnector
 import models.{EnrolResponse, SubscribeSuccessResponse}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{NewRegisterUserService, RegisterUserService}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   val mockAuthConnector = mock[AuthConnector]
@@ -69,7 +68,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     "enrolment through EMAC" when {
 
       "not respond with NOT_FOUND for the GET" in {
-        val result = route(FakeRequest(POST, "/ated-subscription/register-user"))
+        val result = route(app, FakeRequest(POST, "/ated-subscription/register-user"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }
@@ -161,7 +160,7 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     "enrolment through GG" when {
 
       "not respond with NOT_FOUND for the GET" in {
-        val result = route(FakeRequest(POST, "/ated-subscription/register-user"))
+        val result = route(app, FakeRequest(POST, "/ated-subscription/register-user"))
         result.isDefined must be(true)
         status(result.get) must not be NOT_FOUND
       }

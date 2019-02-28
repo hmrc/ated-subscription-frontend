@@ -19,22 +19,22 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import models.{BusinessAddress, ContactDetails}
+import models.ContactDetails
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ContactDetailsService
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, SessionKeys }
 
 
 class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
@@ -56,7 +56,7 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
   "ContactDetailsController" must {
 
     "not respond with NOT_FOUND" in {
-      val result = route(FakeRequest(GET, "/ated-subscription/contact-details"))
+      val result = route(app, FakeRequest(GET, "/ated-subscription/contact-details"))
       result.isDefined must be(true)
       status(result.get) must not be NOT_FOUND
     }

@@ -22,11 +22,13 @@ import builders.{AuthBuilder, SessionBuilder}
 import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.Mode.Mode
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
@@ -38,10 +40,18 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
 
   object TestSubscriptionController extends SubscriptionController {
     val authConnector = mockAuthConnector
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   object TestSubscriptionControllerWhiteListing extends SubscriptionController {
     val authConnector = mockAuthConnector
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   override def beforeEach(): Unit = {
@@ -53,14 +63,14 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     "Start subscription" must {
       "respond without NOT FOUND for the user link " in {
 
-        val result = route(FakeRequest(GET, "/ated-subscription/start-subscription"))
+        val result = route(app, FakeRequest(GET, "/ated-subscription/start-subscription"))
         result.isDefined must be(true)
         status(result.get) must not be (NOT_FOUND)
       }
 
       "respond without NOT FOUND for the agent link " in {
 
-        val result = route(FakeRequest(GET, "/ated-subscription/start-agent-subscription"))
+        val result = route(app, FakeRequest(GET, "/ated-subscription/start-agent-subscription"))
         result.isDefined must be(true)
         status(result.get) must not be (NOT_FOUND)
       }

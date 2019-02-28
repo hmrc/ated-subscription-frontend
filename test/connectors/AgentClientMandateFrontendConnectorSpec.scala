@@ -21,17 +21,19 @@ import models.{AgentEmail, ClientDisplayName, OldMandateReference}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.Mode.Mode
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.http.ws.WSHttp
 import play.api.test.Helpers._
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpGet, HttpResponse}
 
 class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -46,7 +48,11 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
 
   object TestAgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
     override val http: CoreGet = mockWSHttp
-    override def crypto: (String) => String = SessionCookieCryptoFilter.encrypt _
+    override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
+
+    override protected def mode: Mode = Play.current.mode
+
+    override protected def runModeConfiguration: Configuration = Play.current.configuration
   }
 
   "AgentClientMandateFrontendConnector" must {

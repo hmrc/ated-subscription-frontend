@@ -18,9 +18,8 @@ package controllers.auth
 
 import play.api.Play
 import play.api.Play.current
-import uk.gov.hmrc.play.config.RunMode
 
-object ExternalUrls extends RunMode {
+object ExternalUrls {
 
   val companyAuthHost = s"${Play.configuration.getString("microservice.services.auth.company-auth.host").getOrElse("")}"
   val loginCallback = Play.configuration.getString("microservice.services.auth.login-callback.url").getOrElse("/ated-subscription/start")

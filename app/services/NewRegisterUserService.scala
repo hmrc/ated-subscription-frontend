@@ -22,20 +22,19 @@ import models._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.test.Helpers.OK
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.{AtedSubscriptionUtils, GovernmentGatewayConstants, SessionUtils}
-import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.frontend.auth.AuthContext
+import utils.AtedSubscriptionUtils.validateGroupId
+import utils.{AtedSubscriptionUtils, GovernmentGatewayConstants, SessionUtils}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.config.RunMode
-import utils.AtedSubscriptionUtils.validateGroupId
 
 
-trait NewRegisterUserService extends RunMode with AuthorisedFunctions {
+trait NewRegisterUserService extends AuthorisedFunctions {
 
   val atedSubscriptionConnector: AtedSubscriptionConnector
   val dataCacheConnector: DataCacheConnector
