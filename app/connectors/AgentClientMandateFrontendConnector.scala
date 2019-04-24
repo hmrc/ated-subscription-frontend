@@ -61,8 +61,9 @@ object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendCon
   // $COVERAGE-OFF$
   val http = WSHttp
   override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
-  // $COVERAGE-ON$
+
   override protected def mode: Mode = Play.current.mode
 
   override protected def runModeConfiguration: Configuration = Play.current.configuration
+  // $COVERAGE-ON$
 }
