@@ -31,9 +31,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object AtedSubscriptionConnector extends AtedSubscriptionConnector {
+  // $COVERAGE-OFF$
   override protected def mode: Mode = Play.current.mode
 
   override protected def runModeConfiguration: Configuration = Play.current.configuration
+  // $COVERAGE-ON$
 }
 
 trait AtedSubscriptionConnector extends ServicesConfig with RawResponseReads {

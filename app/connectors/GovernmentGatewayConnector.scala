@@ -90,9 +90,11 @@ object GovernmentGatewayConnector extends GovernmentGatewayConnector {
   override val appName: String = AppName(Play.current.configuration).appName
   override val audit: Audit = new Audit(appName, AtedSubscriptionFrontendAuditConnector)
 
+  // $COVERAGE-OFF$
   override protected def mode: Mode = Play.current.mode
 
   override protected def runModeConfiguration: Configuration = Play.current.configuration
 
   override def metrics = Metrics
+  // $COVERAGE-ON$
 }

@@ -73,7 +73,9 @@ trait SubscriptionController extends FrontendController with AtedSubscriptionAut
 object SubscriptionController extends SubscriptionController {
   val authConnector = FrontendAuthConnector
 
+  // $COVERAGE-OFF$
   override protected def mode: Mode = Play.current.mode
 
   override protected def runModeConfiguration: Configuration = Play.current.configuration
+  // $COVERAGE-ON$
 }

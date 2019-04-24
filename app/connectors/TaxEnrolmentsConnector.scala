@@ -98,9 +98,9 @@ object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
   val appName = AppName(Play.current.configuration).appName
   override val metrics = Metrics
   val audit: Audit = new Audit(appName, AtedSubscriptionFrontendAuditConnector)
-  // $COVERAGE-ON$
 
   override protected def mode: Mode = Play.current.mode
 
   override protected def runModeConfiguration: Configuration = Play.current.configuration
+  // $COVERAGE-ON$
 }
