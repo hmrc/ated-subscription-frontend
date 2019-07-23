@@ -47,7 +47,6 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
 
   object TestAgentConfirmationController extends AgentConfirmationController {
     override val authConnector = mockAuthConnector
-    override val registerUserService = mockRegisterUserService
     override val businessCustomerFEConnector = mockBCConnector
   }
 

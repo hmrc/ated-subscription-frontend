@@ -20,6 +20,7 @@ import builders.AuthBuilder
 import connectors._
 import models._
 import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -28,6 +29,8 @@ import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
@@ -40,29 +43,45 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
   val subscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
   val enrolSuccessResponse = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
-  val testAddress = Address("line_1", "line_2", None, None, None, "GB")
+  val testAddress = Address("line_1", "line_2", None, None, postcode = Some("XX11XX"), "GB")
+  val testAddressNoPOstCode = Address("line_1", "line_2", None, None, postcode = None, "GB")
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
-  val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", businessType = Some("test Type"), businessAddress = testAddress,
-    sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
+
+  val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("test Type"), businessAddress = testAddress,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+
+  val testReviewBusinessDetailsforSOP = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("SOP"), businessAddress = testAddress,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+
+  val testReviewBusinessDetailsNoPostCode = ReviewDetails(businessName = "test Name", utr = Some("1111111111"), businessType = Some("SOP"), businessAddress = testAddressNoPOstCode,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+
+  val testReviewBusinessDetailsNoUtrPostCode = ReviewDetails(businessName = "test Name", businessType = Some("SOP"), businessAddress = testAddressNoPOstCode,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+
+  val testReviewBusinessDetailsNoUtr = ReviewDetails(businessName = "test Name", utr = None, businessType = Some("SOP"), businessAddress = testAddress,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockDataCacheConnector = mock[DataCacheConnector]
-  val mockGovernmentGatewayConnector = mock[GovernmentGatewayConnector]
+  val mockTaxEnrolmentConnector = mock[TaxEnrolmentsConnector]
   val mockRegisteredBusinessService = mock[RegisteredBusinessService]
+  val mockAuthClientConnector = mock[AuthConnector]
 
   override def beforeEach() = {
     reset(mockAtedSubscriptionConnector)
     reset(mockDataCacheConnector)
-    reset(mockGovernmentGatewayConnector)
     reset(mockRegisteredBusinessService)
+    reset(mockAuthClientConnector)
   }
 
   object TestRegisterUserService extends RegisterUserService {
     val atedSubscriptionConnector: AtedSubscriptionConnector = mockAtedSubscriptionConnector
     val dataCacheConnector: DataCacheConnector = mockDataCacheConnector
-    val governmentGatewayConnector: GovernmentGatewayConnector = mockGovernmentGatewayConnector
     val registeredBusinessService: RegisteredBusinessService = mockRegisteredBusinessService
+    val authConnector: AuthConnector = mockAuthClientConnector
+    val taxEnrolmentsConnector: TaxEnrolmentsConnector = mockTaxEnrolmentConnector
   }
 
   "RegisterUserService" must {
@@ -70,18 +89,45 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
     "use correct connectors" in {
       RegisterUserService.atedSubscriptionConnector must be(AtedSubscriptionConnector)
       RegisterUserService.dataCacheConnector must be(AtedSubscriptionDataCacheConnector)
-      RegisterUserService.governmentGatewayConnector must be(GovernmentGatewayConnector)
-    }
+      RegisterUserService.taxEnrolmentsConnector must be(TaxEnrolmentsConnector)
     }
 
+  }
+
     "subscribeAted" must {
-      "if successful, should return subscribe success response" in {
+      "if successful, should return subscribe success response for company user" in {
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockGovernmentGatewayConnector.enrol(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(enrolSuccessResponse))))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = await(TestRegisterUserService.subscribeAted())
+        result._1 must be(subscribeSuccessResponse)
+      }
+      "if successful, should return subscribe success response for sole user" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsforSOP))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = await(TestRegisterUserService.subscribeAted())
+        result._1 must be(subscribeSuccessResponse)
+      }
+
+      "if successful, should return subscribe success response for Non-UK Clients" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtr))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(TestRegisterUserService.subscribeAted())
         result._1 must be(subscribeSuccessResponse)
@@ -93,10 +139,52 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockGovernmentGatewayConnector.enrol(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(enrolSuccessResponse))))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(TestRegisterUserService.subscribeAted(true))
         result._2.json must be(enrolSuccessResponse)
+      }
+
+      "throw exception for invalid users" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), None)))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = TestRegisterUserService.subscribeAted()
+        val thrown = the[RuntimeException] thrownBy await(result)
+        thrown.getMessage must include("Failed to enrol - user did not have a group identifier (not a valid GG user)")
+      }
+
+      "throw exception when utr and postcode not present" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtrPostCode))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = TestRegisterUserService.subscribeAted()
+        val thrown = the[RuntimeException] thrownBy await(result)
+        thrown.getMessage must include("[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
+      }
+
+      "throw exception when postcode not present" in {
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoPostCode))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddressNoPOstCode)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        val result = TestRegisterUserService.subscribeAted()
+        val thrown = the[RuntimeException] thrownBy await(result)
+        thrown.getMessage must include("[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode must be supplied")
       }
 
       "should handle invalid data in the subscribe success response" in {
@@ -107,7 +195,8 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(invalidSuccessResponse))
-        when(mockGovernmentGatewayConnector.enrol(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(enrolSuccessResponse))))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockAuthClientConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = TestRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)
@@ -120,7 +209,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockGovernmentGatewayConnector.enrol(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(enrolSuccessResponse))))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = TestRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)
@@ -132,7 +221,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(None))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockGovernmentGatewayConnector.enrol(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(enrolSuccessResponse))))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = TestRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)
@@ -144,7 +233,7 @@ class RegisterUserServiceSpec extends PlaySpec with OneServerPerSuite with Mocki
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(None))
         when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockGovernmentGatewayConnector.enrol(Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(enrolSuccessResponse))))
+        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = TestRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)

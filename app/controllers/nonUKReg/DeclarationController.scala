@@ -22,7 +22,7 @@ import controllers.auth.AtedSubscriptionRegime
 import play.api.Play
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import services.{MandateService, NewRegisterUserService, RegisterUserService}
+import services.{MandateService, RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -32,11 +32,9 @@ import scala.concurrent.Future
 
 trait DeclarationController extends FrontendController with Actions {
 
-  val isEmacFeatureToggle: Boolean
 
-  def registerUserService: RegisterUserService
 
-  def registerEmacUserService: NewRegisterUserService
+  def registerEmacUserService: RegisterUserService
 
   def mandateService: MandateService
 
@@ -55,7 +53,6 @@ trait DeclarationController extends FrontendController with Actions {
               Future.successful(Redirect(routes.ConfirmationController.view()))
             }
           case None => {
-            if (isEmacFeatureToggle) {
               registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
                 val (etmpSubscriptionResponse, emacEnrolResponse) = response
                 val atedRefNo = etmpSubscriptionResponse.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
@@ -63,15 +60,7 @@ trait DeclarationController extends FrontendController with Actions {
                   Future.successful(Redirect(routes.ConfirmationController.view()))
                 }
               }
-            }
-            else {
-              registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
-                val atedRefNo = response._1.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
-                mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
-                  Future.successful(Redirect(routes.ConfirmationController.view()))
-                }
-              }
-            }
+
           }
         }
   }
@@ -84,10 +73,8 @@ trait DeclarationController extends FrontendController with Actions {
 object DeclarationController extends DeclarationController {
   // $COVERAGE-OFF$
   val authConnector: AuthConnector = FrontendAuthConnector
-  val registerUserService: RegisterUserService = RegisterUserService
-  val registerEmacUserService: NewRegisterUserService = NewRegisterUserService
+  val registerEmacUserService: RegisterUserService = RegisterUserService
   val mandateService: MandateService = MandateService
   val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
-  val isEmacFeatureToggle: Boolean = Play.current.configuration.getBoolean("emacsFeatureToggle").getOrElse(true)
   // $COVERAGE-ON$
 }
