@@ -23,7 +23,7 @@ import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.{Logger, Play}
-import services.{NewRegisterUserService, RegisterUserService}
+import services.{RegisterUserService}
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
@@ -34,9 +34,8 @@ import scala.concurrent.Future
 
 trait RegisterUserController extends FrontendController with Actions {
 
+
   val registerUserService: RegisterUserService
-  val newRegisterUserService: NewRegisterUserService
-  val isEmacFeatureToggle: Boolean
 
   private val DuplicateUserError = "duplicate user error"
   private val WrongRoleUserError = "wrong role user error"
@@ -46,8 +45,7 @@ trait RegisterUserController extends FrontendController with Actions {
       implicit request =>
         if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
         else {
-          if (isEmacFeatureToggle) {
-            newRegisterUserService.subscribeAted() map { registerResponse =>
+            registerUserService.subscribeAted() map { registerResponse =>
               val (etmpSuccesResponse, emacEnrolResponse) = registerResponse
               emacEnrolResponse.status match {
                 case CREATED => Redirect(controllers.routes.RegisterUserController.confirmation())
@@ -63,24 +61,11 @@ trait RegisterUserController extends FrontendController with Actions {
                   Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - no definite reason found")
                   throw new RuntimeException(Messages("ated.business-registration.error.other"))
               }
-            }
-          }
-          else {
-            registerUserService.subscribeAted() flatMap { registerResponse =>
-              (registerResponse._1, registerResponse._2.status) match {
-                case (_, BAD_GATEWAY) =>
-                  val errorMessage = formatErrorMessage(parseErrorResp(registerResponse._2)).getOrElse {
-                    Logger.warn(s"[RegisterUserController][registerUser] - Exception - No matching GG ErrorNumbers")
-                    throw new RuntimeException(Messages("ated.business-registration.error.bad.gateway.other"))
-                  }
-                  Logger.warn(s"[RegisterUserController][registerUser] - Exception - While GG enrolment")
-                  Future.successful(Ok(views.html.global_error(errorMessage._1, errorMessage._2, errorMessage._3)))
-                case (_, _) => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
-              }
-            }
+
           }
         }
-  }
+        }
+
 
   def confirmation = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
     implicit user =>
@@ -125,7 +110,5 @@ object RegisterUserController extends RegisterUserController {
   // $COVERAGE-OFF$
   val authConnector = FrontendAuthConnector
   val registerUserService = RegisterUserService
-  val newRegisterUserService = NewRegisterUserService
-  val isEmacFeatureToggle: Boolean = Play.current.configuration.getBoolean("emacsFeatureToggle").getOrElse(true)
   // $COVERAGE-ON$
 }

@@ -30,7 +30,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{NewRegisterUserService, RegisterUserService}
+import services.{RegisterUserService}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
@@ -38,28 +38,19 @@ import scala.concurrent.Future
 
 class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
   val mockAuthConnector = mock[AuthConnector]
-  val mockRegisterUserService = mock[RegisterUserService]
-  val mockRegisterEMACUserService = mock[NewRegisterUserService]
+  val mockRegisterEMACUserService = mock[RegisterUserService]
 
   object TestRegisterUserWithEMACController extends RegisterUserController {
     val authConnector = mockAuthConnector
-    val registerUserService = mockRegisterUserService
-    val isEmacFeatureToggle = true
-    val newRegisterUserService = mockRegisterEMACUserService
+    val registerUserService = mockRegisterEMACUserService
 
   }
 
-  object TestRegisterUserWithGGController extends RegisterUserController {
-    val authConnector = mockAuthConnector
-    val registerUserService = mockRegisterUserService
-    val isEmacFeatureToggle = false
-    val newRegisterUserService = mockRegisterEMACUserService
 
-  }
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
-    reset(mockRegisterUserService)
+    reset(mockRegisterEMACUserService)
     reset(mockRegisterEMACUserService)
   }
 
@@ -157,115 +148,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
       }
     }
 
-    "enrolment through GG" when {
-
-      "not respond with NOT_FOUND for the GET" in {
-        val result = route(app, FakeRequest(POST, "/ated-subscription/register-user"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
-
-      "registerUser" must {
-        "unauthorised users" must {
-          "respond with a redirect" in {
-            registerWithUnAuthorisedUserGG { result =>
-              status(result) must be(SEE_OTHER)
-            }
-          }
-
-          "be redirected to the login page" in {
-            registerWithUnAuthorisedUserGG { result =>
-              redirectLocation(result).get must include("/ated-subscription/unauthorised")
-            }
-          }
-        }
-
-        "Authorised Users" must {
-          "subscribe to service and redirect to the confirmation page" in {
-            registerWithAuthorisedUserGG { result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/ated-subscription/user-confirmation")
-            }
-          }
-          "redirect to the declaration page, if an Agent registers non-uk based client" in {
-            registerWithAuthorisedAgentGG { result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/ated-subscription/agent/declaration")
-            }
-          }
-        }
-
-        "fail to subcribe a client and redirect to error page" when {
-
-          "different client try to register with same details" in {
-            registerWithDuplicateUserGG(badGatewayResponse9001) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("Somebody has already registered from your organisation")
-            }
-          }
-
-          "known facts already exist for the client in GG" in {
-            registerWithDuplicateUserGG(badGatewayResponse11006) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("Somebody has already registered from your organisation")
-            }
-          }
-
-          "multiple enrollments exist for the credential in GG" in {
-            registerWithDuplicateUserGG(badGatewayResponse10004) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("Somebody has already registered from your organisation")
-            }
-          }
-
-          "users with non-admin role tries to subscribe to ATED" in {
-            registerWithDuplicateUserGG(badGatewayResponse8026) { result =>
-              val document = Jsoup.parse(contentAsString(result))
-              status(result) must be(OK)
-              document.getElementById("content").text() must include("You must be logged in as an administrator to submit an ATED return")
-            }
-          }
-        }
-
-        "throw a RuntimeException" when {
-
-          "BAD_GATWAY error is returned but with a different error code" in {
-            registerWithDuplicateUserGG(badGatewayResponseOthers) { result =>
-              val thrown = the[RuntimeException] thrownBy redirectLocation(result).get
-              thrown.getMessage must include("No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception")
-            }
-          }
-        }
-      }
-
-      "confirmation" must {
-        "refresh user-profile and view confirmation page" in {
-          confirmationWithAuthorisedUserGG { result =>
-            status(result) must be(OK)
-            val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("You have successfully registered for ATED - GOV.UK")
-            document.getElementById("header").text() must include("You have successfully registered for ATED")
-            document.getElementById("happens-next").text() must be("Use this service to:")
-            document.getElementById("instruction-1").text() must be("create an ATED return")
-            document.getElementById("instruction-2").text() must be("appoint an ATED-registered agent")
-            document.getElementById("submit").text() must be("Continue")
-          }
-        }
-      }
-
-      "Redirect To Ated" must {
-        "redirect the user to the Ated Page" in {
-          redirectToAtedWithAuthorisedUserGG { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/ated/home")
-          }
-        }
-      }
-    }
   }
 
   val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
@@ -351,64 +233,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
     test(result)
   }
 
-  //GG methods to be removed START
 
-  def registerWithUnAuthorisedUserGG(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestRegisterUserWithGGController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def registerWithUnAuthenticatedGG(test: Future[Result] => Any) {
-    val result = TestRegisterUserWithGGController.registerUser.apply(SessionBuilder.buildRequestWithSessionNoUser())
-    test(result)
-  }
-
-  def registerWithAuthorisedUserGG(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(OK, Some(enrolResp))))
-    val result = TestRegisterUserWithGGController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def registerWithDuplicateUserGG(badGatewayResponse: JsValue)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_GATEWAY, Some(badGatewayResponse))))
-    val result = TestRegisterUserWithGGController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-
-  def registerWithAuthorisedAgentGG(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    val result = TestRegisterUserWithGGController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def confirmationWithAuthorisedUserGG(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    val result = TestRegisterUserWithGGController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def redirectToAtedWithAuthorisedUserGG(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestRegisterUserWithGGController.redirectToAted.apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  //GG methods to be removed END
 
 }
