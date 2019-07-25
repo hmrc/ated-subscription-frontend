@@ -79,17 +79,6 @@ trait RegisterUserController extends FrontendController with Actions {
         Redirect(ExternalUrls.atedStartPath)
   }
 
-  private def formatErrorMessage(errorNum: String): Option[(String, String, String)] = {
-    errorNum match {
-      case "9001" | "11006" | "10004" => Some(Messages("ated.business-registration-error.duplicate.identifier.header"),
-        Messages("ated.business-registration-error.duplicate.identifier.title"),
-        Messages("ated.business-registration-error.duplicate.identifier.message"))
-      case "8026" => Some(Messages("ated.business-registration-error.wrong.role.header"),
-        Messages("ated.business-registration-error.wrong.role.title"),
-        Messages("ated.business-registration-error.wrong.role.message"))
-      case _ => None
-    }
-  }
 
   private def formatEmacErrorMessage(str: String) =
     str match {
