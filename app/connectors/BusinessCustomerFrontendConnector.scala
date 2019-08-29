@@ -23,7 +23,6 @@ import play.api.{Configuration, Play}
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.{CoreGet, HttpResponse}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
@@ -32,13 +31,13 @@ import scala.concurrent.Future
 
 trait BusinessCustomerFrontendConnector extends ServicesConfig  with RawResponseReads with HeaderCarrierForPartialsConverter {
 
-  def serviceUrl = baseUrl("business-customer-frontend")
+  def serviceUrl: String = baseUrl("business-customer-frontend")
   val businessCustomerUri = "business-customer"
   val reviewDetailsUri = "fetch-review-details"
   val service = "ATED"
   val http: CoreGet
 
-  def getReviewDetails(implicit request: Request[_], ac: AuthContext): Future[HttpResponse] = {
+  def getReviewDetails(implicit request: Request[_]): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
     http.GET(getUrl)
   }

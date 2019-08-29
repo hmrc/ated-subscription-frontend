@@ -46,7 +46,7 @@ trait MandateService {
 
   def registeredBusinessService: RegisteredBusinessService
 
-  def createMandateForNonUK(atedRefNum: String)(implicit hc: HeaderCarrier, user: AuthContext, request: Request[_]): Future[HttpResponse] = {
+  def createMandateForNonUK(atedRefNum: String)(implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_]): Future[HttpResponse] = {
     val contactDetailsFuture = dataCacheConnector.fetchContactDetailsForSession
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
@@ -82,7 +82,7 @@ trait MandateService {
     }
   }
 
-  def updateMandateForNonUK(atedRefNum: String, mandateId: String)(implicit hc: HeaderCarrier, user: AuthContext, request: Request[_]): Future[HttpResponse] = {
+  def updateMandateForNonUK(atedRefNum: String, mandateId: String)(implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_]): Future[HttpResponse] = {
     val contactDetailsFuture = dataCacheConnector.fetchContactDetailsForSession
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
@@ -119,11 +119,11 @@ trait MandateService {
     }
   }
 
-  def fetchEmailAddress(implicit request: Request[_], user: AuthContext): Future[Option[AgentEmail]] = {
+  def fetchEmailAddress(implicit request: Request[_], user: AtedSubscriptionAuthData): Future[Option[AgentEmail]] = {
     if (AuthUtils.isAgent) mandateFrontendConnector.getAgentEmail else Future.successful(None)
   }
 
-  def fetchClientDisplayName(implicit request: Request[_], user: AuthContext): Future[Option[ClientDisplayName]] = {
+  def fetchClientDisplayName(implicit request: Request[_], user: AtedSubscriptionAuthData): Future[Option[ClientDisplayName]] = {
     if (AuthUtils.isAgent) mandateFrontendConnector.getClientDisplayName else Future.successful(None)
   }
 

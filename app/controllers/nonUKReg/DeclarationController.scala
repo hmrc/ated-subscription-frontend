@@ -16,21 +16,19 @@
 
 package controllers.nonUKReg
 
-import config.FrontendAuthConnector
+import config.AuthClientConnector
 import connectors.AgentClientMandateFrontendConnector
-import controllers.auth.AtedSubscriptionRegime
-import play.api.Play
+import controllers.auth.AuthFunctionality
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import services.{MandateService, RegisterUserService}
-import uk.gov.hmrc.play.frontend.auth.Actions
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait DeclarationController extends FrontendController with Actions {
+trait DeclarationController extends FrontendController with AuthFunctionality {
 
 
 
@@ -40,39 +38,41 @@ trait DeclarationController extends FrontendController with Actions {
 
   def agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector
 
-  def view = AuthorisedFor(AtedSubscriptionRegime, GGConfidence) {
-    implicit user => implicit request => Ok(views.html.nonUKReg.declaration(getBackLink))
+  def view: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        Future.successful(Ok(views.html.nonUKReg.declaration(getBackLink)))
+      }
   }
 
-  def submit = AuthorisedFor(AtedSubscriptionRegime, GGConfidence).async {
-    implicit user =>
-      implicit request =>
+  def submit: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
         agentClientFrontendMandateConnector.getOldMandateDetails flatMap {
           case Some(mandateFound) =>
             mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
               Future.successful(Redirect(routes.ConfirmationController.view()))
             }
-          case None => {
-              registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
-                val (etmpSubscriptionResponse, emacEnrolResponse) = response
-                val atedRefNo = etmpSubscriptionResponse.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
-                mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
-                  Future.successful(Redirect(routes.ConfirmationController.view()))
-                }
+          case None =>
+            registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
+              val (etmpSubscriptionResponse, emacEnrolResponse) = response
+              val atedRefNo = etmpSubscriptionResponse.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
+              mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
+                Future.successful(Redirect(routes.ConfirmationController.view()))
               }
-
-          }
+            }
         }
+      }
   }
 
-  def getBackLink() = {
-    Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+  def getBackLink: Some[String] = {
+    Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
   }
 }
 
 object DeclarationController extends DeclarationController {
   // $COVERAGE-OFF$
-  val authConnector: AuthConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
   val registerEmacUserService: RegisterUserService = RegisterUserService
   val mandateService: MandateService = MandateService
   val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector

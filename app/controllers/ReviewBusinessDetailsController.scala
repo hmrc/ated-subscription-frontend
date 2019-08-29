@@ -16,23 +16,23 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AtedSubscriptionRegime
+import config.AuthClientConnector
+import controllers.auth.AuthFunctionality
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Action
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
-import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-trait ReviewBusinessDetailsController extends FrontendController with Actions {
+trait ReviewBusinessDetailsController extends FrontendController with AuthFunctionality {
 
   val registeredBusinessService: RegisteredBusinessService
   val correspondenceAddressService: CorrespondenceAddressService
   val contactDetailsService: ContactDetailsService
   val mandateService: MandateService
 
-  def reviewDetails = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
+  def reviewDetails = Action.async { implicit request =>
+    authoriseFor { implicit auth =>
       for {
         businessDetails <- registeredBusinessService.getReviewBusinessDetails
         address <- correspondenceAddressService.fetchCorrespondenceAddress
@@ -50,13 +50,14 @@ trait ReviewBusinessDetailsController extends FrontendController with Actions {
           Some(controllers.routes.ContactDetailsEmailController.editDetailsEmail().url)
         ))
       }
+    }
   }
 
 
 }
 
 object ReviewBusinessDetailsController extends ReviewBusinessDetailsController {
-  val authConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
   val registeredBusinessService = RegisteredBusinessService
   val correspondenceAddressService = CorrespondenceAddressService
   val contactDetailsService = ContactDetailsService

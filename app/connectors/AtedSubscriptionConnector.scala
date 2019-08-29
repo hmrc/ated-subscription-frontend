@@ -17,14 +17,13 @@
 package connectors
 
 import config.WSHttp
-import models.SubscribeSuccessResponse
+import models.{AtedSubscriptionAuthData, SubscribeSuccessResponse}
 import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.JsValue
 import play.api.{Configuration, Logger, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AuthUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,7 +44,7 @@ trait AtedSubscriptionConnector extends ServicesConfig with RawResponseReads {
 
   val http: CoreGet with CorePost = WSHttp
 
-  def subscribeAted(data: JsValue)(implicit user: AuthContext, hc: HeaderCarrier): Future[SubscribeSuccessResponse] = {
+  def subscribeAted(data: JsValue)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[SubscribeSuccessResponse] = {
     val authLink = AuthUtils.getAuthLink
     val postURL = s"""$serviceURL$authLink/$subscriptionURI"""
     http.POST[JsValue, HttpResponse](postURL, data) map { response =>

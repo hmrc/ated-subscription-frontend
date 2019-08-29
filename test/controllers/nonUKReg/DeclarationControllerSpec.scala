@@ -32,8 +32,8 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{MandateService, RegisterUserService}
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -125,7 +125,7 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
                                       oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(oldMandateRef))
+    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any())).thenReturn(Future.successful(oldMandateRef))
     when(mockRegisterEmacUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(succResp(ated), HttpResponse(CREATED, Some(enrolResp))))
     when(mockMandateService.createMandateForNonUK(Matchers.eq("atedRefNum"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
     when(mockMandateService.updateMandateForNonUK(Matchers.eq("atedRefNum"), Matchers.eq("mandateId"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))

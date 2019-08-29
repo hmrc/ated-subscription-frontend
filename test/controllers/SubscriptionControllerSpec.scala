@@ -29,7 +29,7 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Configuration, Play}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -61,20 +61,6 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   "SubscriptionController" must {
 
     "Start subscription" must {
-      "respond without NOT FOUND for the user link " in {
-
-        val result = route(app, FakeRequest(GET, "/ated-subscription/start-subscription"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
-
-      "respond without NOT FOUND for the agent link " in {
-
-        val result = route(app, FakeRequest(GET, "/ated-subscription/start-agent-subscription"))
-        result.isDefined must be(true)
-        status(result.get) must not be (NOT_FOUND)
-      }
-
       "unauthorised users" must {
         "respond with a redirect" in {
           getWithUnAuthorisedUser { result =>
@@ -372,6 +358,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   }
 
   def submitWithUnAuthenticated(test: Future[Result] => Any) {
+    AuthBuilder.mockUnAuthorisedUserNotLogged(mockAuthConnector)
     val result = TestSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }

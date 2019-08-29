@@ -16,53 +16,60 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AtedSubscriptionRegime
+import config.AuthClientConnector
+import controllers.auth.AuthFunctionality
 import forms.AtedForms._
+import models.AtedSubscriptionAuthData
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import services.ContactDetailsService
-import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-trait ContactDetailsEmailController extends FrontendController with Actions {
+trait ContactDetailsEmailController extends FrontendController with AuthFunctionality {
 
   val contactDetailsService: ContactDetailsService
 
-  def view = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      val mode = None
-      Future.successful(Ok(views.html.contactDetailsEmail(contactDetailsEmailForm, mode, getBackLink(mode))))
-  }
-
-  def editDetailsEmail = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      val mode = Some("edit")
-      contactDetailsService.fetchContactDetailsEmail map {
-        case Some(data) => Ok(views.html.contactDetailsEmail(contactDetailsEmailForm.fill(data), mode, getBackLink(mode)))
-        case _ => Ok(views.html.contactDetailsEmail(contactDetailsEmailForm, mode, getBackLink(mode)))
+  def view: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        val mode = None
+        Future.successful(Ok(views.html.contactDetailsEmail(contactDetailsEmailForm, mode, getBackLink(mode))))
       }
   }
 
-  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      validateEmail(contactDetailsEmailForm.bindFromRequest).fold(
-        formWithErrors => {
-          Future.successful(BadRequest(views.html.contactDetailsEmail(formWithErrors, mode, getBackLink(mode))))
-        },
-        contactDetailsEmail => {
-         for {
-           contact <- contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
-         } yield {
-           Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
-         }
+  def editDetailsEmail: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        val mode = Some("edit")
+        contactDetailsService.fetchContactDetailsEmail map {
+          case Some(formData) => Ok(views.html.contactDetailsEmail(contactDetailsEmailForm.fill(formData), mode, getBackLink(mode)))
+          case _ => Ok(views.html.contactDetailsEmail(contactDetailsEmailForm, mode, getBackLink(mode)))
         }
-      )
+      }
   }
 
-  def getBackLink(mode: Option[String]) = {
+  def submit(mode: Option[String]): Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        validateEmail(contactDetailsEmailForm.bindFromRequest).fold(
+          formWithErrors => {
+            Future.successful(BadRequest(views.html.contactDetailsEmail(formWithErrors, mode, getBackLink(mode))))
+          },
+          contactDetailsEmail => {
+            for {
+              contact <- contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
+            } yield {
+              Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
+            }
+          }
+        )
+      }
+  }
+
+  def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
       case Some(edit) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
       case _ => Some(controllers.routes.ContactDetailsController.editDetails(None).url)
@@ -71,6 +78,6 @@ trait ContactDetailsEmailController extends FrontendController with Actions {
 }
 
 object ContactDetailsEmailController extends ContactDetailsEmailController {
-  val authConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
   val contactDetailsService: ContactDetailsService = ContactDetailsService
 }

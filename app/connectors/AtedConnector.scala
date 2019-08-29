@@ -17,11 +17,11 @@
 package connectors
 
 import config.WSHttp
+import models.AtedSubscriptionAuthData
 import play.api.Mode.Mode
 import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import utils.AuthUtils
 
@@ -44,13 +44,13 @@ trait AtedConnector extends ServicesConfig with RawResponseReads {
 
   def http: CoreGet with CorePost
 
-  def getDetails(identifier: String, identifierType: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def getDetails(identifier: String, identifierType: String)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     http.GET[HttpResponse](s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType")
   }
 
-  def retrieveSubscriptionData(atedRefNumber: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def retrieveSubscriptionData(atedRefNumber: String)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""

@@ -16,32 +16,39 @@
 
 package utils
 
+import models.AtedSubscriptionAuthData
 import play.api.Logger
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{AgentAdmin, AgentAssistant}
+import uk.gov.hmrc.auth.core.{Admin, AffinityGroup, Assistant, User}
 
 object AuthUtils {
 
-  def isAgent(implicit user: AuthContext): Boolean = user.principal.accounts.agent.isDefined
+  def isAgent(implicit user: AtedSubscriptionAuthData): Boolean =
+    user.enrolments.getEnrolment("HMRC-AGENT-AGENT").isDefined || user.affinityGroup.contains(AffinityGroup.Agent)
 
-  def isAgentAssistant(implicit user: AuthContext): Boolean = user.principal.accounts.agent.map(_.agentUserRole).contains(AgentAssistant)
+  def isAgentAssistant(implicit user: AtedSubscriptionAuthData): Boolean = user.credentialRole.contains(Assistant)
 
-  def isAgentAdmin(implicit user: AuthContext): Boolean = user.principal.accounts.agent.map(_.agentUserRole).contains(AgentAdmin)
+  def isAgentAdmin(implicit user: AtedSubscriptionAuthData): Boolean =
+    isAgent && user.credentialRole.contains(User)
 
-  def agentLink(implicit user: AuthContext): String = {
-    user.principal.accounts.agent.map(_.link).getOrElse {
+  def agentLink(implicit user: AtedSubscriptionAuthData): String = {
+    user.agentCode.map(str => s"/agent/$str").getOrElse {
       Logger.warn(s"[AuthUtils][getAgentLink] Exception - User does not have the correct authorisation ")
       throw new RuntimeException("User is not agent")
     }
   }
 
-  def getAuthLink(implicit user: AuthContext): String = {
-    if (isAgent) agentLink
-    else user.principal.accounts.org.map(_.link).getOrElse(throw new RuntimeException("User is not org"))
+  def getAuthLink(implicit user: AtedSubscriptionAuthData): String = {
+    if (isAgent) {
+      agentLink
+    } else {
+      user.hashedCredId.map(str => s"/org/$str")
+        .getOrElse(throw new RuntimeException("User is not org"))
+    }
   }
 
-  def getArn(implicit user: AuthContext): String = {
-    user.principal.accounts.agent.flatMap(_.agentBusinessUtr).map(_.utr).getOrElse(throw new RuntimeException("ARN not found"))
+  def getArn(implicit user: AtedSubscriptionAuthData): String = {
+    user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
+      .getOrElse(throw new RuntimeException("[getArn] No ARN found"))
   }
 
 }

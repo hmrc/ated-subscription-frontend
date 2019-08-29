@@ -31,8 +31,8 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -56,13 +56,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
   "CorrespondenceAddressController" must {
 
     "editAddress" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(app, FakeRequest(GET, "/ated-subscription/correspondence-address"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
       "Authorised users" must {
 
         "respond with OK" in {
@@ -151,12 +144,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
     }
 
     "submit" must {
-
-      "not respond with NOT_FOUND" in {
-        val result = route(app, FakeRequest(POST, "/ated-subscription/correspondence-address"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
 
       "Authorised users" must {
 

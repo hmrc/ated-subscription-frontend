@@ -51,6 +51,11 @@ class AuthUtilsSpec extends PlaySpec {
       AuthUtils.isAgentAdmin must be(true)
     }
 
+    "return true if user is User Agent" in {
+      implicit val auth = builders.AuthBuilder.createAgentUserAuthContext("agentId", "Agent Bloggs")
+      AuthUtils.isAgentAdmin must be(true)
+    }
+
     "return false if user is Not Admin Agent" in {
       implicit val auth = builders.AuthBuilder.createAgentAssistantAuthContext("agentId", "Agent Bloggs")
       AuthUtils.isAgentAdmin must be(false)
@@ -72,11 +77,11 @@ class AuthUtilsSpec extends PlaySpec {
     }
     "return agent link, if user has agent account" in {
       implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-      AuthUtils.getAuthLink must be("agent/AGENT-123")
+      AuthUtils.getAuthLink must be("/agent/AGENT-123")
     }
     "return org link, if user has org account" in {
       implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-      AuthUtils.getAuthLink must be("org/1234")
+      AuthUtils.getAuthLink must be("/org/hashed")
     }
   }
 
@@ -88,7 +93,7 @@ class AuthUtilsSpec extends PlaySpec {
     "throw exception, if agent is not registered and doesn't have ARN in authContext" in {
       implicit val user = AuthBuilder.createNotRegisteredAgentAuthContext("userId", "joe bloggs")
       val thrown = the[RuntimeException] thrownBy AuthUtils.getArn
-      thrown.getMessage must be("ARN not found")
+      thrown.getMessage must be("[getArn] No ARN found")
     }
   }
 

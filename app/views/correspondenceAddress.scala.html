@@ -14,13 +14,15 @@
  * limitations under the License.
  *@
 
-@import models._
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
-@(correspondenceAddressForm: Form[Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+@import models.AtedSubscriptionAuthData
+@import uk.gov.hmrc.play.views.html._
+@import views.html.helpers._
+@import utils.AuthUtils._
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import utils.AuthUtils._
+
+@(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 

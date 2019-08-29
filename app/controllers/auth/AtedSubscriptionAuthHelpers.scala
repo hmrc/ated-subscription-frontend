@@ -16,37 +16,52 @@
 
 package controllers.auth
 
+import models.AtedSubscriptionAuthData
 import play.api.Play
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.i18n.Messages
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.RunMode
-import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, PageVisibilityPredicate, TaxRegime}
 import utils.AuthUtils._
 
-//scalastyle:off
-trait AtedSubscriptionAuthHelpers extends Actions with RunMode {
+import scala.concurrent.{ExecutionContext, Future}
+
+trait AtedSubscriptionAuthHelpers extends RunMode {
+  self: AuthFunctionality =>
 
   import play.api.Play.current
 
-  def AgentAction(taxRegime: TaxRegime, pageVisibility: PageVisibilityPredicate)(f: AuthContext => Request[AnyContent] => Result): Action[AnyContent] = {
-    AuthorisedFor(taxRegime = taxRegime, pageVisibility = pageVisibility) {
-      implicit authContext => implicit request =>
-        if (isAgentAdmin) f(authContext)(request)
-        else if (isAgentAssistant) Redirect(controllers.routes.ApplicationController.unauthorisedAssistant())
-        else Redirect(controllers.routes.ApplicationController.unauthorised())
+  def agentAction(f: AtedSubscriptionAuthData => Future[Result])
+                 (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Result] = {
+    authoriseFor {
+      implicit authContext =>
+        if (isAgentAdmin) {
+          f(authContext)
+        } else if (isAgentAssistant) {
+          Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistant()))
+        } else {
+          Future.successful(Redirect(controllers.routes.ApplicationController.unauthorised()))
+        }
     }
   }
 
-  def ClientAction(taxRegime: TaxRegime, pageVisibility: PageVisibilityPredicate)(f: AuthContext => Request[AnyContent] => Result): Action[AnyContent] = {
-    def redirectToSubscription(redirectName: String) = {
+  def clientAction(f: AtedSubscriptionAuthData => Future[Result])
+                  (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Result] = {
+    def redirectToSubscription(redirectName: String): Result = {
       val serviceRedirectUrl: String = Play.configuration.getString(redirectName).getOrElse("/business-customer/ATED")
       Redirect(serviceRedirectUrl)
     }
 
-    AuthorisedFor(taxRegime = taxRegime, pageVisibility = pageVisibility) {
-      implicit authContext => implicit request =>
-        if (isAgentAdmin) redirectToSubscription("microservice.services.business-customer.agentServiceRedirectUrl")
-        else if (isAgentAssistant) Redirect(controllers.routes.ApplicationController.unauthorisedAssistant())
-        else f(authContext)(request)
+    authoriseFor {
+      implicit authContext =>
+        if (isAgentAdmin) {
+          Future.successful(redirectToSubscription("microservice.services.business-customer.agentServiceRedirectUrl"))
+        } else if (isAgentAssistant) {
+          Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistant()))
+        } else {
+          f(authContext)
+        }
     }
   }
 

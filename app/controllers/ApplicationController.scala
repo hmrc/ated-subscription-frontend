@@ -16,23 +16,22 @@
 
 package controllers
 
-import config.FrontendAuthConnector
+import config.AuthClientConnector
 import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
-import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
+import controllers.auth.{AuthFunctionality, ExternalUrls}
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.DiscardingCookie
+import play.api.mvc.{Action, AnyContent, DiscardingCookie}
 import play.api.{Logger, Play}
-import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
 
 object ApplicationController extends ApplicationController {
   // $COVERAGE-OFF$
   val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  val authConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
   // $COVERAGE-ON$
 }
 
-trait ApplicationController extends FrontendController with Actions {
+trait ApplicationController extends FrontendController with AuthFunctionality {
 
   val dataCacheConnector: DataCacheConnector
 
@@ -70,18 +69,18 @@ trait ApplicationController extends FrontendController with Actions {
     implicit request => Ok(views.html.unauthorisedAssistant())
   }
 
-  def clearCache = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
+  def clearCache: Action[AnyContent] = Action.async { implicit request =>
+    authoriseFor { implicit auth =>
       dataCacheConnector.clearCache.map { x =>
         x.status match {
           case OK | NO_CONTENT =>
             Logger.info(s"session has been cleared")
             Ok
-          case errorStatus => {
+          case errorStatus =>
             Logger.error(s"session has not been cleared for ATED_SUBSCRIPTION. Status: $errorStatus, Error: ${x.body}")
             InternalServerError
-          }
         }
       }
+    }
   }
 }

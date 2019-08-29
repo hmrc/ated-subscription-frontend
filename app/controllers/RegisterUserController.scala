@@ -16,23 +16,22 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
+import config.AuthClientConnector
+import controllers.auth.{AuthFunctionality, ExternalUrls}
 import org.joda.time.LocalDate
+import play.api.Logger
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.{Logger, Play}
-import services.{RegisterUserService}
-import uk.gov.hmrc.play.frontend.auth.Actions
+import play.api.mvc.{Action, AnyContent}
+import services.RegisterUserService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 import utils.AuthUtils._
-import utils.ErrorMessageUtils._
 
 import scala.concurrent.Future
 
-trait RegisterUserController extends FrontendController with Actions {
+trait RegisterUserController extends FrontendController with AuthFunctionality {
 
 
   val registerUserService: RegisterUserService
@@ -40,43 +39,45 @@ trait RegisterUserController extends FrontendController with Actions {
   private val DuplicateUserError = "duplicate user error"
   private val WrongRoleUserError = "wrong role user error"
 
-  def registerUser = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user =>
-      implicit request =>
+  def registerUser: Action[AnyContent] = Action.async { implicit request =>
+      authoriseFor { implicit data =>
         if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
         else {
-            registerUserService.subscribeAted() map { registerResponse =>
-              val (etmpSuccesResponse, emacEnrolResponse) = registerResponse
-              emacEnrolResponse.status match {
-                case CREATED => Redirect(controllers.routes.RegisterUserController.confirmation())
-                case BAD_REQUEST | CONFLICT =>
-                  val errMessage = formatEmacErrorMessage(DuplicateUserError)
-                  Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
-                  Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
-                case FORBIDDEN =>
-                  val errMessage = formatEmacErrorMessage(WrongRoleUserError)
-                  Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
-                  Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
-                case _ =>
-                  Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - no definite reason found")
-                  throw new RuntimeException(Messages("ated.business-registration.error.other"))
-              }
+          registerUserService.subscribeAted() map { registerResponse =>
+            val (etmpSuccesResponse, emacEnrolResponse) = registerResponse
+            emacEnrolResponse.status match {
+              case CREATED => Redirect(controllers.routes.RegisterUserController.confirmation())
+              case BAD_REQUEST | CONFLICT =>
+                val errMessage = formatEmacErrorMessage(DuplicateUserError)
+                Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
+                Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
+              case FORBIDDEN =>
+                val errMessage = formatEmacErrorMessage(WrongRoleUserError)
+                Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
+                Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
+              case _ =>
+                Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - no definite reason found")
+                throw new RuntimeException(Messages("ated.business-registration.error.other"))
+            }
 
           }
         }
-        }
-
-
-  def confirmation = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user =>
-      implicit request =>
-          Future.successful(Ok(views.html.registerUserConfirmation(Dates.formatDate(LocalDate.now()))))
+      }
   }
 
-  def redirectToAted = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
-    implicit user =>
-      implicit request =>
-        Redirect(ExternalUrls.atedStartPath)
+
+  def confirmation: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        Future.successful(Ok(views.html.registerUserConfirmation(Dates.formatDate(LocalDate.now()))))
+      }
+  }
+
+  def redirectToAted: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        Future.successful(Redirect(ExternalUrls.atedStartPath))
+      }
   }
 
 
@@ -97,7 +98,7 @@ trait RegisterUserController extends FrontendController with Actions {
 
 object RegisterUserController extends RegisterUserController {
   // $COVERAGE-OFF$
-  val authConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
   val registerUserService = RegisterUserService
   // $COVERAGE-ON$
 }

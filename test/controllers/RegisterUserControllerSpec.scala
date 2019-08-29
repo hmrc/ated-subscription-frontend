@@ -26,13 +26,13 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{RegisterUserService}
+import services.RegisterUserService
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -57,13 +57,6 @@ class RegisterUserControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   "RegisterUserController" must {
 
     "enrolment through EMAC" when {
-
-      "not respond with NOT_FOUND for the GET" in {
-        val result = route(app, FakeRequest(POST, "/ated-subscription/register-user"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
 
       "registerUser" must {
         "unauthorised users" must {
