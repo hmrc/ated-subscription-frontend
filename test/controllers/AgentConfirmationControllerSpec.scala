@@ -33,8 +33,8 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.RegisterUserService
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.Future
@@ -59,11 +59,6 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
   "AgentConfirmationController" must {
 
     "view" must {
-      "not respond with NOT_FOUND" in {
-        val result = route(app, FakeRequest(GET, "/ated-subscription/agent-confirmation"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
 
       "unauthorised users" must {
         "respond with a redirect" in {
@@ -95,12 +90,6 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
     }
 
     "continue" must {
-      "not respond with NOT_FOUND" in {
-        val result = route(app, FakeRequest(GET, "/ated-subscription/agent-confirmation/continue/summary"))
-        result.isDefined must be(true)
-        status(result.get) must not be NOT_FOUND
-      }
-
       "unauthorised users" must {
         "respond with a redirect" in {
           continueWithUnAuthorisedUser { result =>
@@ -144,7 +133,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
       businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
       sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
 
-    when(mockBCConnector.getReviewDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+    when(mockBCConnector.getReviewDetails(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
     val result = TestAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 

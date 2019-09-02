@@ -16,41 +16,45 @@
 
 package controllers
 
-import config.FrontendAuthConnector
+import config.AuthClientConnector
 import connectors.BusinessCustomerFrontendConnector
-import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
+import controllers.auth.{AuthFunctionality, ExternalUrls}
 import models.ReviewDetails
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.play.frontend.auth.Actions
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.Future
 
 object AgentConfirmationController extends AgentConfirmationController {
-  override val authConnector = FrontendAuthConnector
+  override val authConnector = AuthClientConnector
   override val businessCustomerFEConnector: BusinessCustomerFrontendConnector = BusinessCustomerFrontendConnector
 }
 
-trait AgentConfirmationController extends FrontendController with Actions {
+trait AgentConfirmationController extends FrontendController with AuthFunctionality {
 
   val businessCustomerFEConnector: BusinessCustomerFrontendConnector
 
-  def view = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      businessCustomerFEConnector.getReviewDetails.map(respone =>
-        respone.status match {
-          case OK =>
-            val reviewDetails = respone.json.as[ReviewDetails]
-            Ok(views.html.agentConfirmation(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
-        }
-      )
+  def view: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        businessCustomerFEConnector.getReviewDetails.map(response =>
+          response.status match {
+            case OK =>
+              val reviewDetails = response.json.as[ReviewDetails]
+              Ok(views.html.agentConfirmation(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
+          }
+        )
+      }
   }
 
-  def continue = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      Future.successful(Redirect(ExternalUrls.agentAtedSummaryPath))
+  def continue: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        Future.successful(Redirect(ExternalUrls.agentAtedSummaryPath))
+      }
   }
 }

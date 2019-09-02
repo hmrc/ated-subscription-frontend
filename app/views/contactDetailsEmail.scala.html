@@ -16,7 +16,7 @@
 
 @import models._
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
-@(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+@(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._

@@ -15,10 +15,10 @@ private object AppDependencies {
   val compile = Seq(
     ws,
     "uk.gov.hmrc" %% "frontend-bootstrap" % "12.9.0",
-    "uk.gov.hmrc" %% "play-partials" % "6.5.0",
-    "uk.gov.hmrc" %% "domain" % "5.3.0",
-    "uk.gov.hmrc" %% "http-caching-client" % "8.3.0",
-    "uk.gov.hmrc" %% "auth-client" % "2.24.0-play-25"
+    "uk.gov.hmrc" %% "play-partials" % "6.9.0-play-25",
+    "uk.gov.hmrc" %% "domain" % "5.6.0-play-25",
+    "uk.gov.hmrc" %% "http-caching-client" % "8.5.0-play-25",
+    "uk.gov.hmrc" %% "auth-client" % "2.27.0-play-25"
   )
 
   trait TestDependencies {

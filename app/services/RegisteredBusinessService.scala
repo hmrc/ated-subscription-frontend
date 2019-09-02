@@ -21,7 +21,7 @@ import models.{SubscriptionData, _}
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import utils.AuthUtils
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,7 +32,7 @@ trait RegisteredBusinessService {
   val atedConnector: AtedConnector
   val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector
 
-  def getReviewBusinessDetails(implicit request: Request[_], user: AuthContext, hc: HeaderCarrier): Future[ReviewDetails] = {
+  def getReviewBusinessDetails(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[ReviewDetails] = {
     businessCustomerFrontendConnector.getReviewDetails flatMap  { response =>
       response.status match {
         case OK => Future.successful(response.json.as[ReviewDetails])
@@ -47,8 +47,9 @@ trait RegisteredBusinessService {
                   val address = Address(line_1 = addressData.addressDetails.addressLine1,
                     line_2 = addressData.addressDetails.addressLine2,
                     country = addressData.addressDetails.countryCode)
+                  val agentRefNo = user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
                   Future.successful(ReviewDetails(businessName = subscriptionData.organisationName,
-                    businessType = None, businessAddress = address, sapNumber = "", safeId = subscriptionData.safeId, agentReferenceNumber = user.principal.accounts.agent.flatMap(_.agentBusinessUtr.map(_.value))))
+                    businessType = None, businessAddress = address, sapNumber = "", safeId = subscriptionData.safeId, agentReferenceNumber = agentRefNo))
                 case status => throw new RuntimeException(s"Error while retrieving subscription data for ated ref no: $atedRefNumber  status:: $status")
               }
             }
@@ -58,7 +59,7 @@ trait RegisteredBusinessService {
     }
   }
 
-  def getDefaultCorrespondenceAddress(implicit request: Request[_], user: AuthContext, hc: HeaderCarrier): Future[Address] = {
+  def getDefaultCorrespondenceAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Address] = {
     for {
       agentAddress <- getAgentCorrespondenceAddress
       correspondenceAddress <-
@@ -71,14 +72,14 @@ trait RegisteredBusinessService {
     }
   }
 
-  def getBusinessAddress(implicit request: Request[_], user: AuthContext, hc: HeaderCarrier): Future[Address] = {
+  def getBusinessAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Address] = {
     getReviewBusinessDetails.map(_.businessAddress)
   }
 
 
-  private def getAgentCorrespondenceAddress(implicit request: Request[_], user: AuthContext, hc: HeaderCarrier): Future[Option[Address]] = {
+  private def getAgentCorrespondenceAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[Address]] = {
 
-    def getDetails(identifier: String, identifierType: String)(implicit user: AuthContext, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
+    def getDetails(identifier: String, identifierType: String)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
       atedConnector.getDetails(identifier = identifier, identifierType = identifierType) map {
         response =>
           response.status match {
@@ -88,7 +89,8 @@ trait RegisteredBusinessService {
       }
     }
 
-    val agentArn = user.principal.accounts.agent.flatMap(_.agentBusinessUtr.map(_.value))
+    val agentArn = user.enrolments.getEnrolment("HMRC-AGENT-AGENT")
+      .flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
     agentArn match {
       case Some(agentArnId) =>
         val IdentifierArn = "arn"

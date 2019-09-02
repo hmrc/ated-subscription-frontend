@@ -16,62 +16,74 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.{AtedSubscriptionAuthHelpers, AtedSubscriptionRegime}
+import config.AuthClientConnector
+import controllers.auth.{AtedSubscriptionAuthHelpers, AuthFunctionality}
 import forms.AtedForms._
 import play.api.Mode.Mode
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.AuthUtils
 
-trait SubscriptionController extends FrontendController with AtedSubscriptionAuthHelpers {
+import scala.concurrent.Future
+
+trait SubscriptionController extends FrontendController with AtedSubscriptionAuthHelpers with AuthFunctionality {
 
   import play.api.Play.current
 
-  def subscribe = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
-    implicit user => implicit request =>
-      AuthUtils.isAgent match {
-        case true => Redirect(controllers.routes.SubscriptionController.subscribeAgent())
-        case false => Ok(views.html.subscription(areYouAnAgentForm))
+  def subscribe: Action[AnyContent] = Action.async { implicit request =>
+    authoriseFor { implicit data =>
+      if (AuthUtils.isAgent) {
+        Future.successful(Redirect(controllers.routes.SubscriptionController.subscribeAgent()))
+      } else {
+        Future.successful(Ok(views.html.subscription(areYouAnAgentForm)))
+      }
+    }
+  }
+
+  def appoint: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        Future.successful(
+          Ok(views.html.appointAgent(appointAgentForm, Some(controllers.routes.SubscriptionController.subscribe().url)))
+        )
       }
   }
 
-  def appoint = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
-    implicit user => implicit request =>
-      Ok(views.html.appointAgent(appointAgentForm, Some(controllers.routes.SubscriptionController.subscribe().url)))
+  def subscribeAgent: Action[AnyContent] = Action.async { implicit req =>
+    agentAction { implicit user =>
+      Future.successful(Ok(views.html.agentSubscription()))
+    }
   }
 
-  def subscribeAgent = AgentAction(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
-    implicit user => implicit request =>
-      Ok(views.html.agentSubscription())
-  }
-
-  def continue = ClientAction(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
-    implicit user => implicit request =>
+  def continue: Action[AnyContent] = Action.async { implicit req =>
+    clientAction { implicit user =>
       areYouAnAgentForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.subscription(formWithErrors)),
-        areYouAnAgent => Redirect(controllers.routes.SubscriptionController.appoint())
+        formWithErrors => Future.successful(BadRequest(views.html.subscription(formWithErrors))),
+        areYouAnAgent => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint()))
       )
+    }
   }
 
-  def register = ClientAction(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence) {
-    implicit user => implicit request =>
+  def register: Action[AnyContent] = Action.async { implicit req =>
+    clientAction { implicit user =>
       appointAgentForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.appointAgent(formWithErrors)),
+        formWithErrors => Future.successful(BadRequest(views.html.appointAgent(formWithErrors))),
         appointAgent => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
       )
+    }
   }
 
   private def redirectToSubscription(redirectName: String) = {
     val serviceRedirectUrl: String = Play.configuration.getString(redirectName).getOrElse("/business-customer/ATED")
-    Redirect(serviceRedirectUrl)
+    Future.successful(Redirect(serviceRedirectUrl))
   }
 
 }
 
 object SubscriptionController extends SubscriptionController {
-  val authConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
 
   // $COVERAGE-OFF$
   override protected def mode: Mode = Play.current.mode

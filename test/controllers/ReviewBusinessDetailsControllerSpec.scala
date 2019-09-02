@@ -30,8 +30,8 @@ import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -74,12 +74,6 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
   }
 
   "ReviewDetailsController" must {
-
-    "not respond with NOT_FOUND for the GET" in {
-      val result = route(app, FakeRequest(GET, "/ated-subscription/review-business-details"))
-      result.isDefined must be(true)
-      status(result.get) must not be NOT_FOUND
-    }
 
     "reviewDetails" must {
 

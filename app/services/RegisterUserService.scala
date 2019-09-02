@@ -42,7 +42,7 @@ trait RegisterUserService extends AuthorisedFunctions {
   val taxEnrolmentsConnector : TaxEnrolmentsConnector
   val enrolmentType = "principal"
 
-  def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)(implicit user: AuthContext, hc: HeaderCarrier, request: Request[_]): Future[(SubscribeSuccessResponse, HttpResponse)] = {
+  def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, request: Request[_]): Future[(SubscribeSuccessResponse, HttpResponse)] = {
     for {
       businessDetails <- registeredBusinessService.getReviewBusinessDetails
       address <- dataCacheConnector.fetchCorrespondenceAddress

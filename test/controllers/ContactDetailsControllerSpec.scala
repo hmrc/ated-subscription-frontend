@@ -31,8 +31,8 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ContactDetailsService
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -54,12 +54,6 @@ class ContactDetailsControllerSpec extends PlaySpec with OneServerPerSuite with 
   }
 
   "ContactDetailsController" must {
-
-    "not respond with NOT_FOUND" in {
-      val result = route(app, FakeRequest(GET, "/ated-subscription/contact-details"))
-      result.isDefined must be(true)
-      status(result.get) must not be NOT_FOUND
-    }
 
     "Authorised users" must {
 

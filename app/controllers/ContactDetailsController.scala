@@ -16,59 +16,61 @@
 
 package controllers
 
-import config.FrontendAuthConnector
-import controllers.auth.AtedSubscriptionRegime
+import config.AuthClientConnector
+import controllers.auth.AuthFunctionality
 import forms.AtedForms._
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import services.ContactDetailsService
-import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-trait ContactDetailsController extends FrontendController with Actions {
+trait ContactDetailsController extends FrontendController with AuthFunctionality {
 
   val contactDetailsService: ContactDetailsService
 
-  def editDetails(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      contactDetailsService.fetchContactDetails map {
-        case Some(data) => Ok(views.html.contactDetails(contactDetailsForm.fill(data),mode, getBackLink(mode)))
-        case _ => Ok(views.html.contactDetails(contactDetailsForm,mode, getBackLink(mode)))
+  def editDetails(mode: Option[String]): Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit user =>
+        contactDetailsService.fetchContactDetails map {
+          case Some(data) => Ok(views.html.contactDetails(contactDetailsForm.fill(data), mode, getBackLink(mode)))
+          case _ => Ok(views.html.contactDetails(contactDetailsForm, mode, getBackLink(mode)))
+        }
       }
   }
 
-  def submit(mode: Option[String]) = AuthorisedFor(taxRegime = AtedSubscriptionRegime, pageVisibility = GGConfidence).async {
-    implicit user => implicit request =>
-      contactDetailsForm.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(views.html.contactDetails(formWithErrors, mode, getBackLink(mode))))
-        },
-        contactDetails => {
-          val telephoneWithoutSpaces = contactDetails.telephone.replaceAll(" ", "")
-          for {
-            contact <- contactDetailsService.saveContactDetails(contactDetails.copy(telephone = telephoneWithoutSpaces))
-          } yield {
-            mode match {
-              case Some(modeType) if (modeType == "edit") => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
-              case _ => Redirect(controllers.routes.ContactDetailsEmailController.view())
+  def submit(mode: Option[String]): Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        contactDetailsForm.bindFromRequest.fold(
+          formWithErrors => {
+            Future.successful(BadRequest(views.html.contactDetails(formWithErrors, mode, getBackLink(mode))))
+          },
+          contactDetails => {
+            val telephoneWithoutSpaces = contactDetails.telephone.replaceAll(" ", "")
+            contactDetailsService.saveContactDetails(contactDetails.copy(telephone = telephoneWithoutSpaces)) map {_ =>
+              mode match {
+                case Some(modeType) if (modeType == "edit") => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
+                case _ => Redirect(controllers.routes.ContactDetailsEmailController.view())
+              }
             }
           }
-        }
-      )
+        )
+      }
   }
 
-  def getBackLink(mode: Option[String]) = {
+  def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(modeType) if (modeType == "edit") => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
-      case Some(modeType) if (modeType == "skip") => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
+      case Some(modeType) if modeType == "edit" => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case Some(modeType) if modeType == "skip" => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
       case _ => Some(controllers.routes.CorrespondenceAddressController.editAddress().url)
     }
   }
 }
 
 object ContactDetailsController extends ContactDetailsController {
-  val authConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
   val contactDetailsService: ContactDetailsService = ContactDetailsService
 }

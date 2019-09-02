@@ -16,37 +16,43 @@
 
 package controllers.nonUKReg
 
-import config.FrontendAuthConnector
-import controllers.auth.{AtedSubscriptionRegime, ExternalUrls}
+import config.AuthClientConnector
+import controllers.auth.{AuthFunctionality, ExternalUrls}
 import org.joda.time.LocalDate
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import services.RegisteredBusinessService
-import uk.gov.hmrc.play.frontend.auth.Actions
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 
-trait ConfirmationController extends FrontendController with Actions {
+import scala.concurrent.Future
+
+trait ConfirmationController extends FrontendController with AuthFunctionality {
 
   def registeredBusinessService: RegisteredBusinessService
 
-  def view = AuthorisedFor(AtedSubscriptionRegime, GGConfidence).async {
-    implicit user => implicit request =>
-      registeredBusinessService.getReviewBusinessDetails.map(_.businessName) map { name =>
-        Ok(views.html.nonUKReg.confirmation(name, Dates.formatDate(LocalDate.now())))
+  def view: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        registeredBusinessService.getReviewBusinessDetails.map(_.businessName) map { name =>
+          Ok(views.html.nonUKReg.confirmation(name, Dates.formatDate(LocalDate.now())))
+        }
       }
   }
 
-  def continue = AuthorisedFor(AtedSubscriptionRegime, GGConfidence) {
-    implicit user => implicit request => Redirect(ExternalUrls.agentAtedSummaryPath)
+  def continue: Action[AnyContent] = Action.async {
+    implicit request =>
+      authoriseFor { implicit data =>
+        Future.successful(Redirect(ExternalUrls.agentAtedSummaryPath))
+      }
   }
 
 }
 
 object ConfirmationController extends ConfirmationController {
   // $COVERAGE-OFF$
-  val authConnector: AuthConnector = FrontendAuthConnector
+  val authConnector = AuthClientConnector
   val registeredBusinessService: RegisteredBusinessService = RegisteredBusinessService
   // $COVERAGE-ON$
 }

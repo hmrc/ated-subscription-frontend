@@ -17,7 +17,7 @@
 package connectors
 
 import config.WSHttp
-import models.NonUKClientDto
+import models.{AtedSubscriptionAuthData, NonUKClientDto}
 import play.api.Mode.Mode
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -47,7 +47,8 @@ trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
 
   val http: CoreGet with CorePost = WSHttp
 
-  def createMandateForNonUK(dto: NonUKClientDto)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def createMandateForNonUK(dto: NonUKClientDto)
+                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$createMandateURI"""
@@ -61,7 +62,8 @@ trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
     }
   }
 
-  def updateMandateForNonUK(dto: NonUKClientDto)(implicit user: AuthContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  def updateMandateForNonUK(dto: NonUKClientDto)
+                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$updateMandateURI"""

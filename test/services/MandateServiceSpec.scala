@@ -40,9 +40,9 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
       "return response, if mandate is created and status is CREATED" in {
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
         when(mockMandateConnector.createMandateForNonUK(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = TestMandateService.createMandateForNonUK("atedRefNum")
@@ -50,8 +50,8 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
       "return response, if mandate is created and status is CREATED but agent email and client display are are None" in {
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(None))
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockMandateConnector.createMandateForNonUK(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
@@ -60,8 +60,8 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
       "throw exception, if status is anything other than CREATED" in {
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockMandateConnector.createMandateForNonUK(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
@@ -75,9 +75,9 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
       "return response, if mandate is updated and status is CREATED" in {
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
         when(mockMandateConnector.updateMandateForNonUK(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = TestMandateService.updateMandateForNonUK("atedRefNum", "mandateId")
@@ -85,8 +85,8 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
       "return response, if mandate is created and status is CREATED but agent email and client display are are None" in {
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(None))
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockMandateConnector.updateMandateForNonUK(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
@@ -95,8 +95,8 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
       "throw exception, if status is anything other than CREATED" in {
         when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
         when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockMandateConnector.updateMandateForNonUK(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
@@ -107,7 +107,7 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
     "fetch email address from mandate for agent" must {
       "return the cached emailed address" in {
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(Some(testAgentEmail)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(TestMandateService.fetchEmailAddress)
         result must be (Some(testAgentEmail))
@@ -116,7 +116,7 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
     "don't fetch email address from mandate for client" must {
       "return the cached emailed address" in {
-        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getAgentEmail(Matchers.any())).thenReturn(Future.successful(None))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(TestMandateService.fetchEmailAddress)
         result must be (None)
@@ -125,7 +125,7 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
     "fetch client display name from mandate for agent" must {
       "return the cached client display name" in {
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(TestMandateService.fetchClientDisplayName)
         result must be (Some(testClientDisplayName))
@@ -134,7 +134,7 @@ class MandateServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSug
 
     "don't fetch client display name from mandate for client" must {
       "return the cached client display name" in {
-        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getClientDisplayName(Matchers.any())).thenReturn(Future.successful(None))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(TestMandateService.fetchClientDisplayName)
         result must be (None)

@@ -20,7 +20,7 @@
     pageScripts: Option[Html] = None,
     sidebarLinks: Option[Html] = None,
     sidebarClass: Option[String] = None
-)(mainContent: Html)(implicit request: Request[_], authContext: uk.gov.hmrc.play.frontend.auth.AuthContext, messages: Messages)
+)(mainContent: Html)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
 
 @linkElement = {
   <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/ated-subscription.css")'/>

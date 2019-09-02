@@ -32,8 +32,8 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, RegisteredBusinessService}
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -62,18 +62,6 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
   }
 
   "RegisteredBusinessController" must {
-
-    "not respond with NOT_FOUND for the GET" in {
-      val result = route(app, FakeRequest(GET, "/ated-subscription/registered-business-address"))
-      result.isDefined must be(true)
-      status(result.get) must not be NOT_FOUND
-    }
-
-    "not respond with NOT_FOUND for the POST" in {
-      val result = route(app, FakeRequest(POST, "/ated-subscription/registered-business-address"))
-      result.isDefined must be(true)
-      status(result.get) must not be NOT_FOUND
-    }
 
     "registeredBusinessAddress" must {
 

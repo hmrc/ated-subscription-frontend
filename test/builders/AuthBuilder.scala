@@ -16,80 +16,138 @@
 
 package builders
 
+import models.AtedSubscriptionAuthData
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import uk.gov.hmrc.domain._
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength, _}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
+import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
 
 object AuthBuilder {
 
-  def createUserAuthContext(userId: String, userName: String): AuthContext = {
-    val orgAuthority = Authority(userId, Accounts(org = Some(OrgAccount("org/1234", Org("1234")))), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, Some(""), Some(""), Some(""), "")
-    AuthContext(authority = orgAuthority, nameFromSession = Some(userName))
+  type RetrievalType = Option[CredentialRole] ~
+    Option[AffinityGroup] ~
+    Enrolments ~
+    Option[String] ~
+    Option[Credentials]
+
+  def buildRetrieval(atedSubscriptionAuthData: AtedSubscriptionAuthData): RetrievalType = {
+    new ~(
+      new ~(
+        new ~(
+          new ~(
+            atedSubscriptionAuthData.credentialRole,
+            atedSubscriptionAuthData.affinityGroup
+          ),
+          atedSubscriptionAuthData.enrolments
+        ),
+        atedSubscriptionAuthData.agentCode
+      ),
+      Some(Credentials("mockProvi", "type"))
+    )
   }
 
-  def createUserAuthContextWithoutOrg(userId: String, userName: String): AuthContext = {
-    val orgAuthority = Authority(userId, Accounts(org = None), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, Some(""), Some(""), Some(""), "")
-    AuthContext(authority = orgAuthority, nameFromSession = Some(userName))
+  def produceAgentEnrolment(agentRef: String): Enrolment = {
+    Enrolment("HMRC-AGENT-AGENT", Seq(EnrolmentIdentifier("AgentRefNumber", agentRef)), "Activated")
   }
 
-  def createAgentAuthContext(userId: String, userName: String): AuthContext = {
-    AuthContext(authority = createAgentAuthority(userId, agentRefNo = Some("JARN1234567")), nameFromSession = Some(userName))
+  def createUserAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+    val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
+      None,
+      Some(AffinityGroup.Organisation),
+      None,
+      Some("hashed"),
+      Enrolments(Set())
+    )
+
+    atedSubscriptionAuthData
   }
 
-  def createNotRegisteredAgentAuthContext(userId: String, userName: String): AuthContext = {
-    AuthContext(authority = createAgentAuthority(userId, agentRefNo = None), nameFromSession = Some(userName))
+  def createUserAuthContextWithoutOrg(userId: String, userName: String): AtedSubscriptionAuthData = {
+    val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
+      None,
+      None,
+      None,
+      None,
+      Enrolments(Set())
+    )
+
+    atedSubscriptionAuthData
   }
 
-  def createAgentAssistantAuthContext(userId: String, userName: String, agentRefNo: Option[String] = None): AuthContext = {
-    AuthContext(authority = createAgentAuthority(userId, AgentAssistant, agentRefNo), nameFromSession = Some(userName))
+  def createAgentAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+    createAgentAuthority(agentRefNo = Some("JARN1234567"))
+  }
+
+  def createAgentUserAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+    createAgentAuthority(agentRole = User, agentRefNo = Some("JARN1234567"))
+  }
+
+  def createNotRegisteredAgentAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+    createAgentAuthority(agentRefNo = None)
+  }
+
+  def createAgentAssistantAuthContext(userId: String, userName: String, agentRefNo: Option[String] = None): AtedSubscriptionAuthData = {
+    createAgentAuthority(Assistant, agentRefNo)
   }
 
   def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
-      val orgAuthority = Authority(userId, Accounts(org = Some(OrgAccount("org/1234", Org("1234")))), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, Some(""), Some(""), Some(""), "")
-      Future.successful(Some(orgAuthority))
-    }
+    val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
+      None,
+      Some(AffinityGroup.Organisation),
+      None,
+      Some("hashed"),
+      Enrolments(Set())
+    )
+
+    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
   def mockAuthorisedAgent(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
-      Future.successful(Some(createAgentAuthority(userId, agentRefNo = Some("JARN1234567"))))
-    }
+    val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(agentRefNo = Some("JARN1234567"))
+
+    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
   def mockAuthorisedAgentAssistant(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
-      Future.successful(Some(createAgentAuthority(userId, agentRole = AgentAssistant, agentRefNo = Some("JARN1234567"))))
-    }
+    val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(
+      agentRole = Assistant,
+      agentRefNo = Some("JARN1234567")
+    )
+
+    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
   def mockUnAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
-    val x = new Generator()
-    val nino = x.nextNino
-    when(mockAuthConnector.currentAuthority(Matchers.any(), Matchers.any())) thenReturn {
-      val payeAuthority = Authority(userId, Accounts(paye = Some(PayeAccount(s"paye/$nino", nino))), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, Some(""), Some(""), Some(""), "")
-      Future.successful(Some(payeAuthority))
-    }
+    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.failed(InvalidBearerToken("message")))
   }
 
-  private def createAgentAuthority(userId: String, agentRole: AgentRole = AgentAdmin, agentRefNo: Option[String] = None): Authority = {
+  def mockUnAuthorisedUserNotLogged(mockAuthConnector: AuthConnector) {
+    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.failed(MissingBearerToken("message")))
+  }
+
+  private def createAgentAuthority(agentRole: CredentialRole = User, agentRefNo: Option[String] = None): AtedSubscriptionAuthData = {
     val agentCode = "AGENT-123"
-    val agentBusinessUtr = agentRefNo.map { agentRef =>
-      AgentBusinessUtr(agentRef)
+
+    val agentEnrolment: Option[Enrolment] = agentRefNo.map { agentRef =>
+      produceAgentEnrolment(agentRef)
     }
 
-    val agentAccount = AgentAccount(link = s"agent/$agentCode",
-      agentCode = AgentCode(agentCode),
-      agentUserId = AgentUserId(userId),
-      agentUserRole = agentRole,
-      payeReference = None,
-      agentBusinessUtr = agentBusinessUtr)
-    Authority(userId, Accounts(agent = Some(agentAccount)), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, Some(""), Some(""), Some(""), "")
+    val authData = AtedSubscriptionAuthData(
+      Some(agentRole),
+      Some(AffinityGroup.Agent),
+      Some(agentCode),
+      Some("cred"),
+      Enrolments(Set(agentEnrolment).flatten)
+    )
+
+    authData
   }
 
 }

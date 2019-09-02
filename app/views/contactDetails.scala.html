@@ -20,11 +20,12 @@
 @import utils.AuthUtils._
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
 @import models._
+@import models.AtedSubscriptionAuthData
 
 @(contactDetailsForm: Form[ContactDetails],
     mode: Option[String],
     backLink: Option[String] = None
-)(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
 
 
 @implicitFormInstance = @{ Some(contactDetailsForm) }

@@ -29,7 +29,7 @@
   contactDetailsEmail: Option[ContactDetailsEmail],
   emailAddress: Option[AgentEmail],
   clientDisplayName: Option[ClientDisplayName],
-  backLink: Option[String])(implicit request: Request[_], authContext: AuthContext, messages: Messages)
+  backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
 
 @title = @{
   isAgent match {
