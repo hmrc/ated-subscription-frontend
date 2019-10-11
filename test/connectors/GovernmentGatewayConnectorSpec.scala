@@ -18,44 +18,40 @@ package connectors
 
 import java.util.UUID
 
-import builders.{AuthBuilder, TestAudit}
+import audit.Auditable
+import builders.AuthBuilder
+import com.codahale.metrics.{MetricRegistry, Timer}
+import config.AtedSubscriptionFrontendAuditConnector
 import metrics.Metrics
-import models.{EnrolRequest, EnrolResponse, Identifier}
+import models.{AtedSubscriptionAuthData, EnrolRequest, EnrolResponse, Identifier}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
-import uk.gov.hmrc.play.audit.model.Audit
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class GovernmentGatewayConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class GovernmentGatewayConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  trait MockedVerbs extends CoreGet with CorePost
-  val mockWSHttp = mock[MockedVerbs]
+  val mockAuditable: Auditable = mock[Auditable]
 
-  object TestGovernmentGatewayConnector extends GovernmentGatewayConnector {
-    override val http: CoreGet with CorePost = mockWSHttp
-    override val audit: Audit = new TestAudit
-    override val appName: String = "Test"
-
-    override def metrics = Metrics
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
+  override def beforeEach: Unit = {
+    reset(mockAppConfig)
+    reset(mockWSHttp)
+    reset(mockAuditable)
   }
 
-  override def beforeEach = {
-    reset(mockWSHttp)
+  val testGovernmentGatewayConnector: GovernmentGatewayConnector = new GovernmentGatewayConnector(mockAppConfig, mockAuditable, mockWSHttp, new Metrics){
+    override lazy val serviceURL: String = "test"
   }
 
   "GovernmentGatewayConnector" must {
@@ -64,20 +60,16 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with OneServerPerSuite wit
     val response = Json.toJson(EnrolResponse(serviceName = "ATED", state = "NotYetActivated", identifiers = List(Identifier("ATED", "Ated_Ref_No"))))
     val successfulSubscribeJson = HttpResponse(OK, Some(response))
     val subscribeFailureResponseJson = Json.parse( """{"reason" : "Error happened"}""")
-    implicit val hc = new HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-    implicit val user = AuthBuilder.createUserAuthContext("User-Id", "name")
+    implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+    implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("User-Id", "name")
 
-    "use correct metrics" in {
-      GovernmentGatewayConnector.metrics must be(Metrics)
-    }
 
     "enrol user" must {
       "works for a user" in {
-
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).
           thenReturn(Future.successful(successfulSubscribeJson))
 
-        val result = TestGovernmentGatewayConnector.enrol(request)
+        val result = testGovernmentGatewayConnector.enrol(request)
         val enrolResponse = await(result)
         enrolResponse.json must be(response)
       }
@@ -85,7 +77,7 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with OneServerPerSuite wit
       "return status as BAD_REQUEST, for bad data sent for enrol" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
-        val result = TestGovernmentGatewayConnector.enrol(request)
+        val result = testGovernmentGatewayConnector.enrol(request)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
@@ -93,7 +85,7 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with OneServerPerSuite wit
       "return status anything else, for bad data sent for enrol" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
-        val result = TestGovernmentGatewayConnector.enrol(request)
+        val result = testGovernmentGatewayConnector.enrol(request)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())

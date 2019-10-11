@@ -16,22 +16,29 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Action
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.AtedSubscriptionUtils
 
-trait ReviewBusinessDetailsController extends FrontendController with AuthFunctionality {
+import scala.concurrent.ExecutionContext
 
-  val registeredBusinessService: RegisteredBusinessService
-  val correspondenceAddressService: CorrespondenceAddressService
-  val contactDetailsService: ContactDetailsService
-  val mandateService: MandateService
+class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                                registeredBusinessService: RegisteredBusinessService,
+                                                correspondenceAddressService: CorrespondenceAddressService,
+                                                contactDetailsService: ContactDetailsService,
+                                                mandateService: MandateService,
+                                                val authConnector: DefaultAuthConnector,
+                                                implicit val appConfig: ApplicationConfig
+                                               ) extends FrontendController(mcc) with AuthFunctionality {
+  implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
+  implicit val ec: ExecutionContext = mcc.executionContext
 
-  def reviewDetails = Action.async { implicit request =>
+  def reviewDetails: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit auth =>
       for {
         businessDetails <- registeredBusinessService.getReviewBusinessDetails
@@ -54,12 +61,4 @@ trait ReviewBusinessDetailsController extends FrontendController with AuthFuncti
   }
 
 
-}
-
-object ReviewBusinessDetailsController extends ReviewBusinessDetailsController {
-  val authConnector = AuthClientConnector
-  val registeredBusinessService = RegisteredBusinessService
-  val correspondenceAddressService = CorrespondenceAddressService
-  val contactDetailsService = ContactDetailsService
-  val mandateService = MandateService
 }

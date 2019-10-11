@@ -16,20 +16,24 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ContactDetailsService
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ContactDetailsController extends FrontendController with AuthFunctionality {
+class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                         contactDetailsService: ContactDetailsService,
+                                         val authConnector: DefaultAuthConnector,
+                                         implicit val appConfig: ApplicationConfig
+                                        ) extends FrontendController(mcc) with AuthFunctionality {
 
-  val contactDetailsService: ContactDetailsService
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def editDetails(mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
@@ -52,7 +56,7 @@ trait ContactDetailsController extends FrontendController with AuthFunctionality
             val telephoneWithoutSpaces = contactDetails.telephone.replaceAll(" ", "")
             contactDetailsService.saveContactDetails(contactDetails.copy(telephone = telephoneWithoutSpaces)) map {_ =>
               mode match {
-                case Some(modeType) if (modeType == "edit") => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
+                case Some(modeType) if modeType == "edit" => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
                 case _ => Redirect(controllers.routes.ContactDetailsEmailController.view())
               }
             }
@@ -63,14 +67,9 @@ trait ContactDetailsController extends FrontendController with AuthFunctionality
 
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(modeType) if modeType == "edit" => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
-      case Some(modeType) if modeType == "skip" => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
+      case Some(modeType) if modeType == "edit" => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
+      case Some(modeType) if modeType == "skip" => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress().url)
       case _ => Some(controllers.routes.CorrespondenceAddressController.editAddress().url)
     }
   }
-}
-
-object ContactDetailsController extends ContactDetailsController {
-  val authConnector = AuthClientConnector
-  val contactDetailsService: ContactDetailsService = ContactDetailsService
 }

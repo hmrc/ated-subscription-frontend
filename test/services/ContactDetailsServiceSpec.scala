@@ -16,29 +16,29 @@
 
 package services
 
-import connectors.DataCacheConnector
+import connectors.AtedSubscriptionDataCacheConnector
 import models.{ContactDetails, ContactDetailsEmail}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ContactDetailsServiceSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class ContactDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  val mockDataCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val mockDataCacheConnector: AtedSubscriptionDataCacheConnector = mock[AtedSubscriptionDataCacheConnector]
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
 
-  object TestContactDetailsService extends ContactDetailsService {
-    val dataCacheConnector = mockDataCacheConnector
-  }
+  val testContactDetailsService: ContactDetailsService = new ContactDetailsService(mockDataCacheConnector)
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
     reset(mockDataCacheConnector)
   }
 
@@ -46,19 +46,19 @@ class ContactDetailsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
     "saveContactDetails" must {
       "save Contact details into keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockDataCacheConnector.saveContactDetails(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        val result = TestContactDetailsService.saveContactDetails(testContact)
+        when(mockDataCacheConnector.saveContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        val result = testContactDetailsService.saveContactDetails(testContact)
         await(result).get.toString must be(testContact.toString)
-        verify(mockDataCacheConnector, times(1)).saveContactDetails(Matchers.any())(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).saveContactDetails(Matchers.any())(Matchers.any(), Matchers.any())
       }
     }
     "saveContactDetailsEmail" must {
       "save Contact details email into keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockDataCacheConnector.saveContactDetailsEmail(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        val result = TestContactDetailsService.saveContactDetailsEmail(testContactEmail)
+        when(mockDataCacheConnector.saveContactDetailsEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        val result = testContactDetailsService.saveContactDetailsEmail(testContactEmail)
         await(result).get.toString must be(testContactEmail.toString)
-        verify(mockDataCacheConnector, times(1)).saveContactDetailsEmail(Matchers.any())(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).saveContactDetailsEmail(Matchers.any())(Matchers.any(), Matchers.any())
       }
     }
 
@@ -66,31 +66,31 @@ class ContactDetailsServiceSpec extends PlaySpec with OneServerPerSuite with Moc
       "return contact details, if found in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchContactDetailsForSession).thenReturn(Future.successful(Some(testContact)))
-        val result = TestContactDetailsService.fetchContactDetails
+        val result = testContactDetailsService.fetchContactDetails
         await(result) must be(Some(testContact))
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(Matchers.any(), Matchers.any())
       }
       "return None, if not found in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchContactDetailsForSession).thenReturn(Future.successful(None))
-        val result = TestContactDetailsService.fetchContactDetails
+        val result = testContactDetailsService.fetchContactDetails
         await(result) must be(None)
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(Matchers.any(), Matchers.any())
       }
 
       "return contact details email, if found in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession).thenReturn(Future.successful(Some(testContactEmail)))
-        val result = TestContactDetailsService.fetchContactDetailsEmail
+        val result = testContactDetailsService.fetchContactDetailsEmail
         await(result) must be(Some(testContactEmail))
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())
       }
       "return None, if not found email in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession).thenReturn(Future.successful(None))
-        val result = TestContactDetailsService.fetchContactDetailsEmail
+        val result = testContactDetailsService.fetchContactDetailsEmail
         await(result) must be(None)
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())
       }
     }
   }

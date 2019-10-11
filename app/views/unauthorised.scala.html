@@ -14,12 +14,13 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], messages: Messages)
+@import config.ApplicationConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @import uk.gov.hmrc.play.views.html._
 
-@atedNoAuthMain(title = Messages("unauthorised.title"), supportLinkEnabled = false, userLoggedIn=true) {
+@atedNoAuthMain(title = messages("unauthorised.title"), supportLinkEnabled = false, userLoggedIn=true) {
 
-  <h1>@Messages("unauthorised.header")</h1>
+  <h1>@messages("unauthorised.header")</h1>
 
 }

@@ -23,20 +23,32 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+
+  override def beforeEach: Unit = {
+    reset(mockAppConfig)
+    reset(mockWSHttp)
+  }
+
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+  implicit val request: Request[_] = FakeRequest(GET, "")
+
+  val testBusinessCustomerFrontendConnector: BusinessCustomerFrontendConnector = new BusinessCustomerFrontendConnector(mockAppConfig, mockWSHttp) {
+    override val serviceUrl: String = "test"
+  }
 
   "BusinessCustomerFrontendConnector" must {
     "getReviewDetails" in {
@@ -47,27 +59,10 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSu
         sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
       when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
-      val response = await(TestBusinessCustomerFrontendConnector.getReviewDetails)
+      val response = await(testBusinessCustomerFrontendConnector.getReviewDetails)
       response.status must be(OK)
     }
   }
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-  implicit val request: Request[_] = FakeRequest(GET, "")
 
-  val mockWSHttp = mock[CoreGet]
-
-  override def beforeEach = {
-    reset(mockWSHttp)
-  }
-
-  object TestBusinessCustomerFrontendConnector extends BusinessCustomerFrontendConnector {
-    override val http: CoreGet = mockWSHttp
-    override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
 }

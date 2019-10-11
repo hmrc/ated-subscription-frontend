@@ -16,34 +16,30 @@
 
 package services
 
-import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
+import connectors.AtedSubscriptionDataCacheConnector
+import javax.inject.Inject
 import models.{ContactDetails, ContactDetailsEmail}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ContactDetailsService {
+class ContactDetailsService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConnector) {
 
-  val dataCacheConnector: DataCacheConnector
-
-  def saveContactDetails(contactDetails: ContactDetails)(implicit hc: HeaderCarrier): Future[Option[ContactDetails]] = {
+  def saveContactDetails(contactDetails: ContactDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
     dataCacheConnector.saveContactDetails(contactDetails)
   }
 
-  def fetchContactDetails(implicit hc: HeaderCarrier): Future[Option[ContactDetails]] = {
+  def fetchContactDetails(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
     dataCacheConnector.fetchContactDetailsForSession
   }
 
-  def fetchContactDetailsEmail(implicit hc: HeaderCarrier): Future[Option[ContactDetailsEmail]] = {
+  def fetchContactDetailsEmail(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
     dataCacheConnector.fetchContactDetailsEmailForSession
   }
 
-  def saveContactDetailsEmail(contactDetailsEmail: ContactDetailsEmail)(implicit hc: HeaderCarrier): Future[Option[ContactDetailsEmail]] = {
+  def saveContactDetailsEmail(contactDetailsEmail: ContactDetailsEmail)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
     dataCacheConnector.saveContactDetailsEmail(contactDetailsEmail)
   }
 
-}
-
-object ContactDetailsService extends ContactDetailsService {
-  val dataCacheConnector: DataCacheConnector = AtedSubscriptionDataCacheConnector
 }

@@ -19,41 +19,39 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import connectors.DataCacheConnector
 import models.{Address, BusinessAddress}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, RegisteredBusinessService}
-import uk.gov.hmrc.auth.core.AuthConnector
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach{
+class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockRegisteredBusinessService = mock[RegisteredBusinessService]
-  val mockCorrespondenceAddressService = mock[CorrespondenceAddressService]
-  val mockdataCacheConnector= mock[DataCacheConnector]
-
+  val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
+  val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
   val testAddressForm = BusinessAddress(Some(true))
 
-
-  object TestRegisteredBusinessController extends RegisteredBusinessController {
-    override val authConnector = mockAuthConnector
-    override val registeredBusinessService = mockRegisteredBusinessService
-    override val correspondenceAddressService = mockCorrespondenceAddressService
-    override val dataCacheConnector = mockdataCacheConnector
-  }
+  val testRegisteredBusinessController = new RegisteredBusinessController(
+    mockMCC,
+    mockRegisteredBusinessService,
+    mockCorrespondenceAddressService,
+    mockDataCacheConnector,
+    mockAuthConnector,
+    mockAppConfig
+  )
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -100,7 +98,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
             bizAddress.text() must include("line_2")
             bizAddress.text() must include("United Kingdom")
 
-            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
           }
         }
 
@@ -165,7 +163,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
             redirectLocation(result).isDefined must be(true)
             redirectLocation(result).get must include("/ated-subscription/contact-details")
-            verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())
           }
         }
 
@@ -207,9 +205,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockdataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
-    val result = TestRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -218,9 +216,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockdataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
-    val result = TestRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -229,9 +227,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockdataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any())).thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
-    val result = TestRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -239,12 +237,12 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -252,9 +250,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
   def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
-    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-    val result = TestRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)
   }
@@ -262,12 +260,12 @@ class RegisteredBusinessControllerSpec extends PlaySpec with OneServerPerSuite w
   def continueWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def continueWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 

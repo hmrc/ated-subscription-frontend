@@ -16,21 +16,24 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
-import models.AtedSubscriptionAuthData
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ContactDetailsService
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait ContactDetailsEmailController extends FrontendController with AuthFunctionality {
+class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
+                                              contactDetailsService: ContactDetailsService,
+                                              val authConnector: DefaultAuthConnector,
+                                              implicit val appConfig: ApplicationConfig
+                                             ) extends FrontendController(mcc) with AuthFunctionality {
 
-  val contactDetailsService: ContactDetailsService
+ implicit val ec: ExecutionContext = mcc.executionContext
 
   def view: Action[AnyContent] = Action.async {
     implicit request =>
@@ -60,7 +63,7 @@ trait ContactDetailsEmailController extends FrontendController with AuthFunction
           },
           contactDetailsEmail => {
             for {
-              contact <- contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
+              _ <- contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
             } yield {
               Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
             }
@@ -71,13 +74,8 @@ trait ContactDetailsEmailController extends FrontendController with AuthFunction
 
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(edit) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case Some(edit) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
       case _ => Some(controllers.routes.ContactDetailsController.editDetails(None).url)
     }
   }
-}
-
-object ContactDetailsEmailController extends ContactDetailsEmailController {
-  val authConnector = AuthClientConnector
-  val contactDetailsService: ContactDetailsService = ContactDetailsService
 }

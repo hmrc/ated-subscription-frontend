@@ -16,35 +16,25 @@
 
 package connectors
 
-import config.WSHttp
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, SubscribeSuccessResponse}
-import play.api.Mode.Mode
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.JsValue
-import play.api.{Configuration, Logger, Play}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AuthUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-object AtedSubscriptionConnector extends AtedSubscriptionConnector {
-  // $COVERAGE-OFF$
-  override protected def mode: Mode = Play.current.mode
+class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
+                                          http: DefaultHttpClient) extends RawResponseReads {
 
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  // $COVERAGE-ON$
-}
+  lazy val serviceURL: String = appConfig.serviceUrlAtedSub
+  val subscriptionURI: String = "subscribe"
 
-trait AtedSubscriptionConnector extends ServicesConfig with RawResponseReads {
-
-  lazy val serviceURL = baseUrl("ated-subscription")
-  val subscriptionURI = "subscribe"
-
-  val http: CoreGet with CorePost = WSHttp
-
-  def subscribeAted(data: JsValue)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[SubscribeSuccessResponse] = {
+  def subscribeAted(data: JsValue)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
     val authLink = AuthUtils.getAuthLink
     val postURL = s"""$serviceURL$authLink/$subscriptionURI"""
     http.POST[JsValue, HttpResponse](postURL, data) map { response =>

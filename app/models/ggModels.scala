@@ -16,22 +16,22 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class EnrolRequest(portalId: String, serviceName: String, friendlyName: String,  knownFacts: Seq[String])
 
 object EnrolRequest {
-  implicit val formats = Json.format[EnrolRequest]
+  implicit val formats: OFormat[EnrolRequest] = Json.format[EnrolRequest]
 }
 
 case class Identifier(`type`: String, value: String)
 
 object Identifier {
-  implicit val formats = Json.format[Identifier]
+  implicit val formats: OFormat[Identifier] = Json.format[Identifier]
 }
 
 case class EnrolResponse(serviceName: String, state:String, identifiers: Seq[Identifier])
 
 object EnrolResponse {
-  implicit val formats = Json.format[EnrolResponse]
+  implicit val formats: OFormat[EnrolResponse] = Json.format[EnrolResponse]
 }

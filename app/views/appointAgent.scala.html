@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+@import config.ApplicationConfig
+@(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -23,7 +24,7 @@
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/show-hide-content.js")'></script>
+  <script src='@routes.Assets.at("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
       // Where .multiple-choice uses the data-target attribute
@@ -34,20 +35,20 @@
   </script>
 }
 
-@atedNoAuthMain(title = Messages("ated.client-startpage-appoint-title"),
+@atedNoAuthMain(title = messages("ated.client-startpage-appoint-title"),
                 userLoggedIn = true,
                 pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(backLink, "client-appoint-subheader", Messages("ated.registration-subheader"), "client-startpage-header", Messages("ated.client-startpage-appoint-header"),
+  @pageHeadersAndError(backLink, "client-appoint-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.client-startpage-appoint-header"),
     Some(atedErrorSummary(appointAgentForm, "ated.appoint-agent-error.general")))
 
   @form(action = controllers.routes.SubscriptionController.register) {
 
     <div class="form-group" id="appointAgent">
       @atedInputRadioGroupReveal(appointAgentForm("appointAgent"),
-        Seq("true" -> (Messages("ated.radio.yes.label"), Some("hidden-appointAgent-true")),
-            "false" -> (Messages("ated.radio.no.label"), Some("hidden-appointAgent-false"))),
-      '_legend -> Messages("ated.client-startpage-appoint-header"),
+        Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-appointAgent-true")),
+            "false" -> (messages("ated.radio.no.label"), Some("hidden-appointAgent-false"))),
+      '_legend -> messages("ated.client-startpage-appoint-header"),
       '_legendClass -> "visuallyhidden",
       '_groupClass -> "inline",
       '_labelClass -> "block-label",
@@ -56,22 +57,22 @@
 
         <div id="hidden-appointAgent-true" class="panel-indent js-hidden">
             <ul class="list list-bullet">
-                <li id="appoint-agent-text1">@Messages("ated.appoint-agent.question.true.info1")</li>
-                <li id="appoint-agent-text2">@Messages("ated.appoint-agent.question.true.info2")</li>
-                <li id="appoint-agent-text3">@Messages("ated.appoint-agent.question.true.info3")</li>
+                <li id="appoint-agent-text1">@messages("ated.appoint-agent.question.true.info1")</li>
+                <li id="appoint-agent-text2">@messages("ated.appoint-agent.question.true.info2")</li>
+                <li id="appoint-agent-text3">@messages("ated.appoint-agent.question.true.info3")</li>
             </ul>
         </div>
 
         <div id="hidden-appointAgent-false" class="panel-indent js-hidden">
             <ul class="list list-bullet">
-                <li id="appoint-agent-text5">@Messages("ated.appoint-agent.question.false.info1")</li>
-                <li id="appoint-agent-text6">@Messages("ated.appoint-agent.question.false.info2")</li>
-                <li id="appoint-agent-text7">@Messages("ated.appoint-agent.question.false.info3")</li>
+                <li id="appoint-agent-text5">@messages("ated.appoint-agent.question.false.info1")</li>
+                <li id="appoint-agent-text6">@messages("ated.appoint-agent.question.false.info2")</li>
+                <li id="appoint-agent-text7">@messages("ated.appoint-agent.question.false.info3")</li>
             </ul>
         </div>
     </div>
 
-    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-register")</button>
+    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@messages("ated.client-startpage-register")</button>
 
   }
 

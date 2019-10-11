@@ -16,41 +16,31 @@
 
 package connectors
 
-import config.WSHttp
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.AtedSubscriptionAuthData
-import play.api.Mode.Mode
-import play.api.{Configuration, Play}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AuthUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-object AtedConnector extends AtedConnector {
-  val serviceURL = baseUrl("ated")
-  val http = WSHttp
+class AtedConnector @Inject()(appConfig: ApplicationConfig,
+                              http: DefaultHttpClient) extends RawResponseReads {
 
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-trait AtedConnector extends ServicesConfig with RawResponseReads {
-
-  def serviceURL: String
+  val serviceURL: String = appConfig.serviceUrlAted
   val getDetailsURI = "details"
   val retrieveSubscriptionData = "subscription-data"
 
-  def http: CoreGet with CorePost
-
-  def getDetails(identifier: String, identifierType: String)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
+  def getDetails(identifier: String, identifierType: String)
+                (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     http.GET[HttpResponse](s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType")
   }
 
-  def retrieveSubscriptionData(atedRefNumber: String)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
+  def retrieveSubscriptionData(atedRefNumber: String)
+                              (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""

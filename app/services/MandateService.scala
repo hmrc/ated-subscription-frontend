@@ -17,43 +17,30 @@
 package services
 
 import connectors._
+import javax.inject.Inject
 import models._
 import play.api.http.Status._
 import play.api.mvc.Request
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
 import utils.AuthUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-object MandateService extends MandateService {
-  // $COVERAGE-OFF$
-  val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  val mandateConnector: AgentClientMandateConnector = AgentClientMandateConnector
-  val mandateFrontendConnector = AgentClientMandateFrontendConnector
-  val registeredBusinessService = RegisteredBusinessService
-  // $COVERAGE-ON$
-}
+class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConnector,
+                               mandateConnector: AgentClientMandateConnector,
+                               mandateFrontendConnector: AgentClientMandateFrontendConnector,
+                               registeredBusinessService: RegisteredBusinessService) {
 
-trait MandateService {
 
-  val dataCacheConnector: DataCacheConnector
-
-  def mandateConnector: AgentClientMandateConnector
-
-  def mandateFrontendConnector: AgentClientMandateFrontendConnector
-
-  def registeredBusinessService: RegisteredBusinessService
-
-  def createMandateForNonUK(atedRefNum: String)(implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_]): Future[HttpResponse] = {
+  def createMandateForNonUK(atedRefNum: String)
+                           (implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val contactDetailsFuture = dataCacheConnector.fetchContactDetailsForSession
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
     val clientDisplayNameFuture = fetchClientDisplayName
     val reviewDetailsFuture = registeredBusinessService.getReviewBusinessDetails
     for {
-      contactDetails <- contactDetailsFuture
+      _ <- contactDetailsFuture
       contactDetailsEmail <- contactDetailsEmailFuture
       mandateData <- mandateDataFuture
       reviewDetail <- reviewDetailsFuture
@@ -82,14 +69,15 @@ trait MandateService {
     }
   }
 
-  def updateMandateForNonUK(atedRefNum: String, mandateId: String)(implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_]): Future[HttpResponse] = {
+  def updateMandateForNonUK(atedRefNum: String, mandateId: String)
+                           (implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val contactDetailsFuture = dataCacheConnector.fetchContactDetailsForSession
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
     val clientDisplayNameFuture = fetchClientDisplayName
     val reviewDetailsFuture = registeredBusinessService.getReviewBusinessDetails
     for {
-      contactDetails <- contactDetailsFuture
+      _ <- contactDetailsFuture
       contactDetailsEmail <- contactDetailsEmailFuture
       mandateData <- mandateDataFuture
       reviewDetail <- reviewDetailsFuture
@@ -119,11 +107,11 @@ trait MandateService {
     }
   }
 
-  def fetchEmailAddress(implicit request: Request[_], user: AtedSubscriptionAuthData): Future[Option[AgentEmail]] = {
+  def fetchEmailAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AgentEmail]] = {
     if (AuthUtils.isAgent) mandateFrontendConnector.getAgentEmail else Future.successful(None)
   }
 
-  def fetchClientDisplayName(implicit request: Request[_], user: AtedSubscriptionAuthData): Future[Option[ClientDisplayName]] = {
+  def fetchClientDisplayName(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     if (AuthUtils.isAgent) mandateFrontendConnector.getClientDisplayName else Future.successful(None)
   }
 

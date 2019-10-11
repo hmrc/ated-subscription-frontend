@@ -12,13 +12,15 @@ private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
 
-  val compile = Seq(
+  val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "frontend-bootstrap" % "12.9.0",
-    "uk.gov.hmrc" %% "play-partials" % "6.9.0-play-25",
-    "uk.gov.hmrc" %% "domain" % "5.6.0-play-25",
-    "uk.gov.hmrc" %% "http-caching-client" % "8.5.0-play-25",
-    "uk.gov.hmrc" %% "auth-client" % "2.27.0-play-25"
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.0.0",
+    "uk.gov.hmrc" %% "govuk-template" % "5.40.0-play-26",
+    "uk.gov.hmrc" %% "play-ui" % "8.1.0-play-26",
+    "uk.gov.hmrc" %% "play-partials" % "6.9.0-play-26",
+    "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
+    "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
+    "uk.gov.hmrc" %% "auth-client" % "2.30.0-play-26"
   )
 
   trait TestDependencies {
@@ -27,19 +29,19 @@ private object AppDependencies {
   }
 
   object Test {
-    def apply() = new TestDependencies {
+    def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
-        "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % scope,
         "org.pegdown" % "pegdown" % "1.6.0",
         "org.jsoup" % "jsoup" % "1.9.2" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-25",
+        "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26",
         "org.mockito" % "mockito-all" % "1.10.19" % scope
       )
     }.test
   }
 
-  def apply() = compile ++ Test()
+  def apply(): Seq[ModuleID] = compile ++ Test()
 }
 
 

@@ -17,39 +17,39 @@
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@import utils.AuthUtils._
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import _root_.utils.AuthUtils.isAgent
 @import models._
 @import models.AtedSubscriptionAuthData
 
+@import config.ApplicationConfig
 @(contactDetailsForm: Form[ContactDetails],
     mode: Option[String],
     backLink: Option[String] = None
-)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 
 @implicitFormInstance = @{ Some(contactDetailsForm) }
 
 @subTitleText = @{
     isAgent match {
-        case true => Messages("ated.contact-details.agent.subheader")
-        case false => Messages("ated.contact-details.subheader")
+        case true => messages("ated.contact-details.agent.subheader")
+        case false => messages("ated.contact-details.subheader")
     }
 }
 
 @ledeText = @{
     isAgent match {
-        case true => Messages("ated.contact-details.agent.lede")
-        case false => Messages("ated.contact-details.lede")
+        case true => messages("ated.contact-details.agent.lede")
+        case false => messages("ated.contact-details.lede")
     }
 }
 
-@atedMain(title = Messages("ated.contact-details.title")) {
+@atedMain(title = messages("ated.contact-details.title")) {
 
     @pageHeadersAndError(
         backLink,
         "subtitle", subTitleText,
-        "contact-details.header", Messages("ated.contact-details.header"),
+        "contact-details.header", messages("ated.contact-details.header"),
         Some(atedErrorSummary(contactDetailsForm, "ated.contact-details-error.general"))
     )
 
@@ -58,23 +58,23 @@
     @form(action = controllers.routes.ContactDetailsController.submit(mode)) {
 
         @atedInput(contactDetailsForm("firstName"),
-            '_label ->  Messages("ated.contact-details.firstName"),
+            '_label ->  messages("ated.contact-details.firstName"),
             '_labelClass -> "form-label",
             '_showConstraints -> false
         )
 
         @atedInput(contactDetailsForm("lastName"),
-            '_label ->  Messages("ated.contact-details.lastName"),
+            '_label ->  messages("ated.contact-details.lastName"),
             '_labelClass -> "form-label",
             '_showConstraints -> false
         )
 
         @atedInput(contactDetailsForm("telephone"),
-            '_label ->  Messages("ated.contact-details.telephone"),
+            '_label ->  messages("ated.contact-details.telephone"),
             '_labelClass -> "form-label",
             '_showConstraints -> false
         )
 
-        <button id="submit" type="submit">@Messages("ated.contact-details.continue")</button>
+        <button id="submit" type="submit">@messages("ated.contact-details.continue")</button>
     }
 }

@@ -16,43 +16,37 @@
 
 package connectors
 
-
 import audit.Auditable
-import config.{AtedSubscriptionFrontendAuditConnector, WSHttp}
+import config.ApplicationConfig
+import javax.inject.Inject
 import metrics.{Metrics, MetricsEnum}
 import models.RequestEMACPayload
-import play.api.Mode.Mode
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import play.api.{Configuration, Logger, Play}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.audit.model.{Audit, EventTypes}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import utils.GovernmentGatewayConstants
+import uk.gov.hmrc.play.audit.model.EventTypes
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
-  val serviceURL = baseUrl("tax-enrolments")
-
-  val enrolURI = "enrol"
-  val http: CoreGet with CorePost = WSHttp
-
-  val enrolmentUrl = s"$serviceURL/tax-enrolments"
-
-  def metrics: Metrics
+class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
+                                       auditable: Auditable,
+                                       http: DefaultHttpClient,
+                                       metrics: Metrics
+                                      ) {
+  lazy val serviceURL: String = appConfig.serviceUrlTaxEnrol
+  val enrolURI: String = "enrol"
+  val enrolmentUrl: String = s"$serviceURL/tax-enrolments"
 
   def enrol(requestPayload: RequestEMACPayload,
             groupId: String,
-            atedRefNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+            atedRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+
     val timer = metrics.startTimer(MetricsEnum.API4Enrolment)
-
     val jsonData = Json.toJson(requestPayload)
-    val enrolmentKey = s"${GovernmentGatewayConstants.ATED_SERVICE_NAME}~ATEDRefNumber~$atedRefNumber"
-
+    val enrolmentKey = s"HMRC-ATED-ORG~ATEDRefNumber~$atedRefNumber"
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
-
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
 
     http.POST[JsValue, HttpResponse](postUrl, jsonData) map { response =>
@@ -68,7 +62,7 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
         case status =>
           metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
           Logger.warn(s"[TaxEnrolmentsConnector][enrol] - status: $status")
-          doFailedAudit("enrolFailed", jsonData.toString, response.body)
+          auditable.doFailedAudit("enrolFailed", jsonData.toString, response.body)
           response
       }
     }
@@ -76,31 +70,19 @@ trait TaxEnrolmentsConnector extends ServicesConfig with Auditable {
 
   private def auditEnrolUser(postUrl: String,
                              enrolRequest: RequestEMACPayload,
-                             response: HttpResponse)(implicit hc: HeaderCarrier) = {
+                             response: HttpResponse)(implicit hc: HeaderCarrier): Unit = {
     val eventType = response.status match {
       case CREATED => EventTypes.Succeeded
       case _ => EventTypes.Failed
     }
-    sendDataEvent(transactionName = "emacEnrolCall",
+    auditable.sendDataEvent(transactionName = "emacEnrolCall",
       detail = Map("txName" -> "emacEnrolCall",
         "userId" -> s"${enrolRequest.userId}",
-        "serviceName" -> s"${GovernmentGatewayConstants.ATED_SERVICE_NAME}",
+        "serviceName" -> "HMRC-ATED-ORG",
         "postUrl" -> s"$postUrl",
         "requestBody" -> s"${Json.prettyPrint(Json.toJson(enrolRequest))}",
         "responseStatus" -> s"${response.status}",
         "responseBody" -> s"${response.body}",
         "status" -> s"$eventType"))
   }
-}
-
-object TaxEnrolmentsConnector extends TaxEnrolmentsConnector {
-  // $COVERAGE-OFF$
-  val appName = AppName(Play.current.configuration).appName
-  override val metrics = Metrics
-  val audit: Audit = new Audit(appName, AtedSubscriptionFrontendAuditConnector)
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  // $COVERAGE-ON$
 }

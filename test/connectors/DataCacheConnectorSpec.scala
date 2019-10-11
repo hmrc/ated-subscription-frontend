@@ -22,18 +22,20 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  val mockBCSessionCache = mock[SessionCache]
-  val mockSessionCache = mock[SessionCache]
+class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+
+  val mockAtedSessionCache: AtedSessionCache = mock[AtedSessionCache]
   val testAddress = Address("line_1", "line_2", None, None, None, "U.K.")
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
   val testContactEmail = ContactDetailsEmail(Some(true),"aa@aa.com")
@@ -41,27 +43,15 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
   val clientDisplayName = ClientDisplayName("client display name")
   val testAddressForm = BusinessAddress(Some(true))
 
-
-  object TestBCDataCacheConnector extends DataCacheConnector {
-    val sessionCache: SessionCache = mockBCSessionCache
-  }
-
-  object TestDataCacheConnector extends DataCacheConnector {
-    val sessionCache: SessionCache = mockSessionCache
-  }
+  val testAtedSubscriptionDataCacheConnector = new AtedSubscriptionDataCacheConnector(mockAtedSessionCache)
 
   override def beforeEach(): Unit = {
-    reset(mockBCSessionCache)
-    reset(mockSessionCache)
+    reset(mockAtedSessionCache)
   }
 
   "DataCacheConnector" must {
 
     "fetchAndGetBusinessDetailsForSession" must {
-
-      "use the correct session cache for Ated" in {
-        AtedSubscriptionDataCacheConnector.sessionCache must be(AtedSessionCache)
-      }
 
       "fetch saved BusinessDetails from SessionCache" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -69,21 +59,17 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
           businessType = Some("corporate body"),
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-        when(mockBCSessionCache.fetchAndGetEntry[ReviewDetails](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reviewDetails)))
-        val result = TestBCDataCacheConnector.fetchAndGetReviewDetailsForSession
+        when(mockAtedSessionCache.fetchAndGetEntry[ReviewDetails](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reviewDetails)))
+        val result = testAtedSubscriptionDataCacheConnector.fetchAndGetReviewDetailsForSession
         await(result) must be(Some(reviewDetails))
       }
     }
     "fetchAndGetRegisteredBusinessDetailsForSession" must {
 
-      "use the correct session cache for Ated" in {
-        AtedSubscriptionDataCacheConnector.sessionCache must be(AtedSessionCache)
-      }
-
       "fetch saved BusinessDetails address form from SessionCache" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[BusinessAddress](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
-        val result = TestDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession
+        when(mockAtedSessionCache.fetchAndGetEntry[BusinessAddress](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
+        val result = testAtedSubscriptionDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession
         await(result).get must be (testAddressForm)
       }
     }
@@ -92,8 +78,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
       "save BusinessDetails address form from SessionCache" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_BusinessReg_Details" -> Json.toJson(testAddressForm)))
-        when(mockSessionCache.cache[BusinessAddress](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestDataCacheConnector.saveRegisteredBusinessDetails(testAddressForm)
+        when(mockAtedSessionCache.cache[BusinessAddress](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        val result = testAtedSubscriptionDataCacheConnector.saveRegisteredBusinessDetails(testAddressForm)
         await(result).get must be (testAddressForm)
       }
     }
@@ -107,8 +93,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
         val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_Business_Details" -> Json.toJson(reviewDetails)))
-        when(mockBCSessionCache.cache[ReviewDetails](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestBCDataCacheConnector.saveReviewDetails(reviewDetails)
+        when(mockAtedSessionCache.cache[ReviewDetails](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        val result = testAtedSubscriptionDataCacheConnector.saveReviewDetails(reviewDetails)
         await(result).get must be (reviewDetails)
       }
 
@@ -118,8 +104,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
       "save the correspondence address in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("Correspondence_Address" -> Json.toJson(testAddress)))
-        when(mockSessionCache.cache[Address](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestDataCacheConnector.saveCorrespondenceAddress(testAddress)
+        when(mockAtedSessionCache.cache[Address](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        val result = testAtedSubscriptionDataCacheConnector.saveCorrespondenceAddress(testAddress)
         await(result).get must be (testAddress)
       }
     }
@@ -127,8 +113,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
     "fetchCorrespondenceAddress" must {
       "fetch the saved correspondence address in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[Address](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        val result = TestDataCacheConnector.fetchCorrespondenceAddress
+        when(mockAtedSessionCache.fetchAndGetEntry[Address](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        val result = testAtedSubscriptionDataCacheConnector.fetchCorrespondenceAddress
         await(result).get must be (testAddress)
       }
     }
@@ -137,8 +123,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
       "save the contact details in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("Contact_Details" -> Json.toJson(testContact)))
-        when(mockSessionCache.cache[ContactDetails](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestDataCacheConnector.saveContactDetails(testContact)
+        when(mockAtedSessionCache.cache[ContactDetails](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        val result = testAtedSubscriptionDataCacheConnector.saveContactDetails(testContact)
         await(result).get must be (testContact)
       }
     }
@@ -146,8 +132,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
       "save the contact details email in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("Contact_Email_Details" -> Json.toJson(testContactEmail)))
-        when(mockSessionCache.cache[ContactDetailsEmail](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
-        val result = TestDataCacheConnector.saveContactDetailsEmail(testContactEmail)
+        when(mockAtedSessionCache.cache[ContactDetailsEmail](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        val result = testAtedSubscriptionDataCacheConnector.saveContactDetailsEmail(testContactEmail)
         await(result).get must be (testContactEmail)
       }
     }
@@ -155,16 +141,16 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
     "fetchContactDetailsForSession" must {
       "fetch the saved contact details in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[ContactDetails](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        val result = TestDataCacheConnector.fetchContactDetailsForSession
+        when(mockAtedSessionCache.fetchAndGetEntry[ContactDetails](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        val result = testAtedSubscriptionDataCacheConnector.fetchContactDetailsForSession
         await(result).get must be (testContact)
       }
     }
     "fetchContactDetailsEmailForSession" must {
       "fetch the saved contact details in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.fetchAndGetEntry[ContactDetailsEmail](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        val result = TestDataCacheConnector.fetchContactDetailsEmailForSession
+        when(mockAtedSessionCache.fetchAndGetEntry[ContactDetailsEmail](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        val result = testAtedSubscriptionDataCacheConnector.fetchContactDetailsEmailForSession
         await(result).get must be (testContactEmail)
       }
     }
@@ -172,8 +158,8 @@ class DataCacheConnectorSpec extends PlaySpec with OneServerPerSuite with Mockit
     "clearCache" must {
       "clear the local keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockSessionCache.remove()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
-        await(TestDataCacheConnector.clearCache).status must be(OK)
+        when(mockAtedSessionCache.remove()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        await(testAtedSubscriptionDataCacheConnector.clearCache).status must be(OK)
       }
     }
 

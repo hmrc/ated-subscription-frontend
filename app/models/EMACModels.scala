@@ -16,17 +16,17 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class Verifier(key: String, value: String)
 
 object Verifier {
-  implicit val formats = Json.format[Verifier]
+  implicit val formats: OFormat[Verifier] = Json.format[Verifier]
 }
 
 case class RequestEMACPayload(userId: String, friendlyName: String, `type`: String, verifiers: List[Verifier])
 
 
 object RequestEMACPayload {
-  implicit val formats = Json.format[RequestEMACPayload]
+  implicit val formats: OFormat[RequestEMACPayload] = Json.format[RequestEMACPayload]
 }

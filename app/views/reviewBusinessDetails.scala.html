@@ -15,13 +15,15 @@
  *@
 
 @import models._
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import utils._
-@import utils.AuthUtils._
-@import controllers.auth.ExternalUrls
+
+@import config.ApplicationConfig
+@import _root_.utils.AtedSubscriptionUtils
+@import _root_.utils.AuthUtils.isAgent
+
 
 @(businessDetails: ReviewDetails,
   correspondenceAddress: models.Address,
@@ -29,40 +31,44 @@
   contactDetailsEmail: Option[ContactDetailsEmail],
   emailAddress: Option[AgentEmail],
   clientDisplayName: Option[ClientDisplayName],
-  backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+  backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 
 @title = @{
-  isAgent match {
-    case true => Messages("ated.review-details.agent.title")
-    case false => Messages("ated.review-details.title")
+  if(isAgent) {
+    messages("ated.review-details.agent.title")
+  } else {
+    messages("ated.review-details.title")
   }
 }
 
 @subtitle = @{
-  isAgent match {
-    case true => Messages("ated.review-details.agent.subheader")
-    case false => Messages("ated.review-details.subheader")
+  if(isAgent) {
+    messages("ated.review-details.agent.subheader")
+  } else {
+    messages("ated.review-details.subheader")
   }
 }
 
 @header = @{
-  isAgent match {
-    case true => Messages("ated.review-details.agent.header")
-    case false => Messages("ated.review-details.header")
+  if(isAgent) {
+    messages("ated.review-details.agent.header")
+  } else {
+    messages("ated.review-details.header")
   }
 }
 
 @email = @{
   (contactDetailsEmail.isDefined, contactDetailsEmail.get.emailConsent) match {
     case (true, Some(true)) => contactDetailsEmail.get.email
-    case (_, _) => Messages("ated.review-details.contact-preference-not-provided")
+    case (_, _) => messages("ated.review-details.contact-preference-not-provided")
   }
 }
 
 @buttonText = @{
-  isAgent match {
-    case true => Messages("ated.confirm-and-continue")
-    case false => Messages("ated.confirm-and-register")
+  if(isAgent) {
+    messages("ated.confirm-and-continue")
+  } else {
+    messages("ated.confirm-and-register")
   }
 }
 
@@ -76,17 +82,17 @@
   <div class="form-group">
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="service-name-label" class="heading-small">@Messages("ated.review-details.service")</span>
+        <span id="service-name-label" class="heading-small">@messages("ated.review-details.service")</span>
       </div>
 
       <div class="grid grid-1-2 cya-answer">
-        <span id="service-name">@Messages("ated.review-details.service.ated")</span>
+        <span id="service-name">@messages("ated.review-details.service.ated")</span>
       </div>
     </div>
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="business-name-label" class="heading-small">@Messages("ated.review-details.business")</span>
+        <span id="business-name-label" class="heading-small">@messages("ated.review-details.business")</span>
       </div>
 
       <div class="grid grid-1-2 cya-answer">
@@ -95,8 +101,8 @@
 
       @if(businessDetails.isBusinessDetailsEditable){
         <div class="grid grid-1-6 cya-change">
-          <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="business-name-edit">@Messages("ated.review-details.edit")
-            <span class="visuallyhidden">@Messages("ated.review-details.business")</span>
+          <a href='@appConfig.businessNameAndAddressEditUrl' id="business-name-edit">@messages("ated.review-details.edit")
+            <span class="visuallyhidden">@messages("ated.review-details.business")</span>
           </a>
         </div>
       }
@@ -105,7 +111,7 @@
     @if(businessDetails.isBusinessDetailsEditable){
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
-          <span id="business-address-label" class="heading-small">@Messages("ated.review-details.registered-address")</span>
+          <span id="business-address-label" class="heading-small">@messages("ated.review-details.registered-address")</span>
         </div>
 
         <div id="registered-address" class="grid grid-1-2 cya-answer">
@@ -114,24 +120,24 @@
             @businessDetails.businessAddress.line_3.map {line_3 => @line_3<br> }
             @businessDetails.businessAddress.line_4.map {line_4 => @line_4<br> }
             @businessDetails.businessAddress.postcode.map {postcode => @postcode<br> }
-            @AtedSubscriptionUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
+            @atedSubUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
         </div>
 
         <div class="grid grid-1-6 cya-change">
-          <a href='@ExternalUrls.businessNameAndAddressEditUrl' id="register-address-edit">
-            @Messages("ated.review-details.edit")
-            <span class="visuallyhidden">@Messages("ated.review-details.registered-address")</span>
+          <a href='@appConfig.businessNameAndAddressEditUrl' id="register-address-edit">
+            @messages("ated.review-details.edit")
+            <span class="visuallyhidden">@messages("ated.review-details.registered-address")</span>
           </a>
         </div>
       </div>
 
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
-          <span id="overseas-tax-reference-label" class="heading-small">@Messages("ated.review-details.overseas-tax-reference")</span>
+          <span id="overseas-tax-reference-label" class="heading-small">@messages("ated.review-details.overseas-tax-reference")</span>
         </div>
         <div class="grid grid-1-2 cya-answer">
           @if(businessDetails.identification.isEmpty) {
-            <div id="overseas-not-provided">@Messages("ated.review-details.contact-preference-not-provided")</div>
+            <div id="overseas-not-provided">@messages("ated.review-details.contact-preference-not-provided")</div>
           } else {
             @businessDetails.identification.map { identification =>
               <div id="overseas-id-number">@identification.idNumber</div>
@@ -141,34 +147,34 @@
         </div>
 
         <div class="grid grid-1-6 cya-change">
-          <a href='@ExternalUrls.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit">
-            @Messages("ated.review-details.edit")
-            <span class="visuallyhidden">@Messages("ated.review-details.overseas-tax-reference")</span>
+          <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit">
+            @messages("ated.review-details.edit")
+            <span class="visuallyhidden">@messages("ated.review-details.overseas-tax-reference")</span>
           </a>
         </div>
       </div>
       @if(!businessDetails.identification.isEmpty) {
         <div class="grid-wrapper row-border">
           <div class="grid grid-2-6 cya-question">
-            <span id="overseas-issuing-country-label" class="heading-small">@Messages("ated.review-details.issuing-country")</span>
+            <span id="overseas-issuing-country-label" class="heading-small">@messages("ated.review-details.issuing-country")</span>
           </div>
           <div class="grid grid-1-2 cya-answer">
             @businessDetails.identification.map { identification =>
-              <div id="overseas-issuingCountryCode">@AtedSubscriptionUtils.getSelectedCountry(identification.issuingCountryCode)</div>
+              <div id="overseas-issuingCountryCode">@atedSubUtils.getSelectedCountry(identification.issuingCountryCode)</div>
             }
           </div>
 
           <div class="grid grid-1-6 cya-change">
-            <a href='@ExternalUrls.overseasTaxReferenceEditUrl' id="overseas-issuing-country-edit">
-              @Messages("ated.review-details.edit")
-              <span class="visuallyhidden">@Messages("ated.review-details.issuing-country")</span>
+            <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-country-edit">
+              @messages("ated.review-details.edit")
+              <span class="visuallyhidden">@messages("ated.review-details.issuing-country")</span>
             </a>
           </div>
         </div>
 
         <div class="grid-wrapper row-border">
           <div class="grid grid-2-6 cya-question">
-            <span id="overseas-issuing-institution-label" class="heading-small">@Messages("ated.review-details.issuing-institution")</span>
+            <span id="overseas-issuing-institution-label" class="heading-small">@messages("ated.review-details.issuing-institution")</span>
           </div>
           <div class="grid grid-1-2 cya-answer">
             @businessDetails.identification.map { identification =>
@@ -177,9 +183,9 @@
           </div>
 
           <div class="grid grid-1-6 cya-change">
-            <a href='@ExternalUrls.overseasTaxReferenceEditUrl' id="overseas-issuing-institution-edit">
-              @Messages("ated.review-details.edit")
-              <span class="visuallyhidden">@Messages("ated.review-details.issuing-institution")</span>
+            <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-institution-edit">
+              @messages("ated.review-details.edit")
+              <span class="visuallyhidden">@messages("ated.review-details.issuing-institution")</span>
             </a>
           </div>
         </div>
@@ -189,7 +195,7 @@
 
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
-          <span id="business-address-label" class="heading-small">@Messages("ated.review-details.registered-address")</span>
+          <span id="business-address-label" class="heading-small">@messages("ated.review-details.registered-address")</span>
         </div>
 
         <div id="business-address" class="grid grid-1-2 cya-answer">
@@ -198,7 +204,7 @@
           @businessDetails.businessAddress.line_3.map {line_3 => @line_3<br> }
           @businessDetails.businessAddress.line_4.map {line_4 => @line_4<br> }
           @businessDetails.businessAddress.postcode.map {postcode => @postcode<br> }
-          @AtedSubscriptionUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
+          @atedSubUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
         </div>
       </div>
 
@@ -206,7 +212,7 @@
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="correspondence-address-label" class="heading-small">@Messages("ated.review-details.correspondence-address")</span>
+        <span id="correspondence-address-label" class="heading-small">@messages("ated.review-details.correspondence-address")</span>
       </div>
 
       <div id="correspondence-address" class="grid grid-1-2 cya-answer">
@@ -215,22 +221,22 @@
         @correspondenceAddress.line_3.map {line_3 => @line_3<br> }
         @correspondenceAddress.line_4.map { line_4 => @line_4<br> }
         @correspondenceAddress.postcode.map {postcode => @postcode<br> }
-        @AtedSubscriptionUtils.getSelectedCountry(correspondenceAddress.country)<br>
+        @atedSubUtils.getSelectedCountry(correspondenceAddress.country)<br>
       </div>
 
       <div class="grid grid-1-6 cya-change">
         <a href="@controllers.routes.CorrespondenceAddressController.editAddress(Some("edit"))"
             id="correspondence-edit"
             data-journey-click="ated-subscription:click:correspondence-edit">
-          @Messages("ated.review-details.edit")
-          <span class="visuallyhidden">@Messages("ated.review-details.correspondence-address")</span>
+          @messages("ated.review-details.edit")
+          <span class="visuallyhidden">@messages("ated.review-details.correspondence-address")</span>
         </a>
       </div>
     </div>
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="contact-details-label" class="heading-small">@Messages("ated.review-details.contact-details")</span>
+        <span id="contact-details-label" class="heading-small">@messages("ated.review-details.contact-details")</span>
       </div>
 
       <div id="contact-details" class="grid grid-1-2 cya-answer">
@@ -242,15 +248,15 @@
         <a href="@controllers.routes.ContactDetailsController.editDetails(Some("edit"))"
             id="contact-edit"
             data-journey-click="ated-subscription:click:contact-edit">
-          @Messages("ated.review-details.edit")
-          <span class="visuallyhidden">@Messages("ated.review-details.contact-details")</span>
+          @messages("ated.review-details.edit")
+          <span class="visuallyhidden">@messages("ated.review-details.contact-details")</span>
         </a>
       </div>
     </div>
 
     <div class="grid-wrapper row-border">
       <div class="grid grid-2-6 cya-question">
-        <span id="contact-pref-label" class="heading-small">@Messages("ated.review-details.contact-preference")</span>
+        <span id="contact-pref-label" class="heading-small">@messages("ated.review-details.contact-preference")</span>
       </div>
 
       <div id="contact-pref" class="grid grid-1-2 cya-answer">
@@ -261,8 +267,8 @@
         <a href="@controllers.routes.ContactDetailsEmailController.editDetailsEmail"
             id="contact-pref-edit"
             data-journey-click="ated-subscription:click:contact-pref-edit">
-          @Messages("ated.review-details.edit")
-          <span class="visuallyhidden">@Messages("ated.review-details.contact-preference")</span>
+          @messages("ated.review-details.edit")
+          <span class="visuallyhidden">@messages("ated.review-details.contact-preference")</span>
         </a>
       </div>
     </div>
@@ -270,7 +276,7 @@
     @if(clientDisplayName.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
-          <span id="client-display-name-label" class="heading-small">@Messages("ated.review-details.display-name")</span>
+          <span id="client-display-name-label" class="heading-small">@messages("ated.review-details.display-name")</span>
         </div>
 
         <div id="client-display-name" class="grid grid-1-2 cya-answer">
@@ -278,11 +284,11 @@
         </div>
 
         <div class="grid grid-1-6 cya-change">
-          <a href="@ExternalUrls.clientDisplayNameEditPath"
+          <a href="@appConfig.clientDisplayNameEditPath"
               id="client-display-name-edit"
               data-journey-click="ated-subscription:click:client-display-name-edit">
-            @Messages("ated.review-details.edit")
-            <span class="visuallyhidden">@Messages("ated.review-details.display-name")</span>
+            @messages("ated.review-details.edit")
+            <span class="visuallyhidden">@messages("ated.review-details.display-name")</span>
           </a>
         </div>
       </div>
@@ -291,7 +297,7 @@
     @if(emailAddress.isDefined) {
       <div class="grid-wrapper row-border">
         <div class="grid grid-2-6 cya-question">
-          <span id="email-address-label" class="heading-small">@Messages("ated.review-details.email-address")</span>
+          <span id="email-address-label" class="heading-small">@messages("ated.review-details.email-address")</span>
         </div>
 
         <div id="email-address" class="grid grid-1-2 cya-answer">
@@ -299,11 +305,11 @@
         </div>
 
         <div class="grid grid-1-6 cya-change">
-          <a href="@ExternalUrls.agentEmailEditPath"
+          <a href="@appConfig.agentEmailEditPath"
               id="agent-email-address-edit"
               data-journey-click="ated-subscription:click:agent-email-address-edit">
-            @Messages("ated.review-details.edit")
-            <span class="visuallyhidden">@Messages("ated.review-details.email-address")</span>
+            @messages("ated.review-details.edit")
+            <span class="visuallyhidden">@messages("ated.review-details.email-address")</span>
           </a>
         </div>
       </div>

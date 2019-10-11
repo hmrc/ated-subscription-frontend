@@ -16,30 +16,33 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CorrespondenceAddressService
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import utils.AtedSubscriptionUtils
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait CorrespondenceAddressController extends FrontendController with AuthFunctionality {
+class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
+                                                correspondenceAddressService: CorrespondenceAddressService,
+                                                val authConnector: DefaultAuthConnector,
+                                                implicit val appConfig: ApplicationConfig
+                                               ) extends FrontendController(mcc)  with AuthFunctionality {
 
-  val correspondenceAddressService: CorrespondenceAddressService
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def editAddress(mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
         correspondenceAddressService.fetchCorrespondenceAddress map {
           case Some(formData) =>
-            Ok(views.html.correspondenceAddress(correspondenceAddressForm.fill(formData), mode, AtedSubscriptionUtils.getIsoCodeTupleList, getBackLink(mode))(implicitly, implicitly, implicitly))
+            Ok(views.html.correspondenceAddress(correspondenceAddressForm.fill(formData), mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
           case _ =>
-            Ok(views.html.correspondenceAddress(correspondenceAddressForm, mode, AtedSubscriptionUtils.getIsoCodeTupleList, getBackLink(mode))(implicitly, implicitly, implicitly))
+            Ok(views.html.correspondenceAddress(correspondenceAddressForm, mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
         }
       }
   }
@@ -48,15 +51,16 @@ trait CorrespondenceAddressController extends FrontendController with AuthFuncti
     implicit request =>
       authoriseFor { implicit data =>
         correspondenceAddressForm.bindFromRequest.fold(
-          formWithErrors => Future.successful(BadRequest(views.html.correspondenceAddress(formWithErrors, mode, AtedSubscriptionUtils.getIsoCodeTupleList, getBackLink(mode)))),
+          formWithErrors =>
+            Future.successful(BadRequest(views.html.correspondenceAddress(formWithErrors,mode,appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))),
           addressData => {
-            val trimmedPostCode = AtedSubscriptionUtils.formatPostCode(addressData.postcode)
+            val trimmedPostCode = appConfig.atedSubsUtils.formatPostCode(addressData.postcode)
             val trimmedAddress = addressData.copy(postcode = trimmedPostCode)
             for {
-              correspondenceAddress <- correspondenceAddressService.saveCorrespondenceAddress(address = trimmedAddress)
+              _ <- correspondenceAddressService.saveCorrespondenceAddress(address = trimmedAddress)
             } yield {
               mode match {
-                case Some(edit) => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
+                case Some(edit) => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
                 case _ => Redirect(controllers.routes.ContactDetailsController.editDetails())
               }
             }
@@ -67,13 +71,8 @@ trait CorrespondenceAddressController extends FrontendController with AuthFuncti
 
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(edit) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case Some(_) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
       case _ => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress().url)
     }
   }
-}
-
-object CorrespondenceAddressController extends CorrespondenceAddressController {
-  val authConnector = AuthClientConnector
-  val correspondenceAddressService = CorrespondenceAddressService
 }

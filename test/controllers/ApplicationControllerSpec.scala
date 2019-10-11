@@ -18,25 +18,46 @@ package controllers
 
 import java.util.UUID
 
-import connectors.DataCacheConnector
+import connectors.AtedSubscriptionDataCacheConnector
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.AuthConnector
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionKeys}
 
 import scala.concurrent.Future
 
-class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+
+  override def beforeEach: Unit = {
+    reset(mockDataCacheConnector)
+    reset(mockAuthConnector)
+  }
+
+  val testApplicationController = new ApplicationController(mockMCC, mockDataCacheConnector, mockAuthConnector, mockAppConfig)
+
+  private def fakeRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] = {
+    val sessionId = s"session-${UUID.randomUUID}"
+    FakeRequest().withSession(
+      SessionKeys.sessionId -> sessionId,
+      "token" -> "RANDOMTOKEN",
+      SessionKeys.userId -> userId)
+  }
+
+
 
   "ApplicationController" must {
 
     "unauthorised respond with an OK and load unauthorised page" in {
-      val result = controllers.ApplicationController.unauthorised().apply(FakeRequest())
+      val result = testApplicationController.unauthorised().apply(FakeRequest())
       status(result) must equal(OK)
       contentAsString(result) must include("UNAUTHORISED")
     }
@@ -44,12 +65,12 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     "Cancel" must {
 
       "respond with a redirect" in {
-        val result = controllers.ApplicationController.cancel().apply(FakeRequest())
+        val result = testApplicationController.cancel().apply(FakeRequest())
         status(result) must be(SEE_OTHER)
       }
 
       "be redirected to the login page" in {
-        val result = controllers.ApplicationController.cancel().apply(FakeRequest())
+        val result = testApplicationController.cancel().apply(FakeRequest())
         redirectLocation(result).get must include("https://www.gov.uk/")
       }
     }
@@ -57,12 +78,12 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     "Cancel redirect to start page" must {
 
       "respond with a redirect" in {
-        val result = controllers.ApplicationController.redirectToAtedStart().apply(FakeRequest())
+        val result = testApplicationController.redirectToAtedStart().apply(FakeRequest())
         status(result) must be(SEE_OTHER)
       }
 
       "be redirected to the ated start page " in {
-        val result = controllers.ApplicationController.redirectToAtedStart().apply(FakeRequest())
+        val result = testApplicationController.redirectToAtedStart().apply(FakeRequest())
         redirectLocation(result).get must include("/ated/home")
       }
     }
@@ -70,12 +91,12 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     "Logout" must {
 
       "respond with a redirect" in {
-        val result = controllers.ApplicationController.logout().apply(FakeRequest())
+        val result = testApplicationController.logout().apply(FakeRequest())
         status(result) must be(SEE_OTHER)
       }
 
       "be redirected to the logout page" in {
-        val result = controllers.ApplicationController.logout().apply(FakeRequest())
+        val result = testApplicationController.logout().apply(FakeRequest())
         redirectLocation(result).get must include("/ated/logout")
       }
 
@@ -84,7 +105,7 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     "Keep Alive" must {
 
       "respond with an OK" in {
-        val result = controllers.ApplicationController.keepAlive.apply(FakeRequest())
+        val result = testApplicationController.keepAlive.apply(FakeRequest())
 
         status(result) must be(OK)
       }
@@ -93,14 +114,14 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     "Ated Logout" must {
 
       "respond with a redirect" in {
-        val result = controllers.ApplicationController.redirectToLogout.apply(FakeRequest())
+        val result = testApplicationController.redirectToLogout.apply(FakeRequest())
         status(result) must be(SEE_OTHER)
         redirectLocation(result).get must include("/ated/logout")
       }
     }
 
     "unauthorisedAssistant returns OK and unauthorised agent page" in {
-      val result = controllers.ApplicationController.unauthorisedAssistant().apply(FakeRequest())
+      val result = testApplicationController.unauthorisedAssistant().apply(FakeRequest())
       status(result) must equal(OK)
       contentAsString(result) must include("Unauthorised Assistant Agent")
       contentAsString(result) must include("Only admin agents can enrol for the ATED service")
@@ -111,7 +132,7 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
         "respond with a redirect to unauthorized page" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-          val result = TestApplicationController.clearCache.apply(fakeRequestWithSession(userId))
+          val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get must include("/unauthorised")
@@ -122,8 +143,8 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
         "be able to clear cache successfully" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(Matchers.any())) thenReturn (Future.successful(HttpResponse(200)))
-          val result = TestApplicationController.clearCache.apply(fakeRequestWithSession(userId))
+          when(mockDataCacheConnector.clearCache(Matchers.any(), Matchers.any())) thenReturn Future.successful(HttpResponse(200))
+          val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(OK)
         }
@@ -131,36 +152,12 @@ class ApplicationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
         "handle error" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(Matchers.any())) thenReturn (Future.successful(HttpResponse(400)))
-          val result = TestApplicationController.clearCache.apply(fakeRequestWithSession(userId))
+          when(mockDataCacheConnector.clearCache(Matchers.any(), Matchers.any())) thenReturn Future.successful(HttpResponse(400))
+          val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(INTERNAL_SERVER_ERROR)
         }
       }
     }
   }
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-
-  val mockAuthConnector = mock[AuthConnector]
-  val mockDataCacheConnector = mock[DataCacheConnector]
-
-  override def beforeEach = {
-    reset(mockDataCacheConnector)
-    reset(mockAuthConnector)
-  }
-
-  object TestApplicationController extends ApplicationController {
-    override val authConnector = mockAuthConnector
-    override val dataCacheConnector = mockDataCacheConnector
-  }
-
-  private def fakeRequestWithSession(userId: String) = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
-      "token" -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
-  }
-
 }

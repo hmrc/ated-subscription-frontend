@@ -17,21 +17,19 @@
 package forms
 
 import models._
-import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError}
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 
 import scala.annotation.tailrec
+import scala.util.matching.Regex
 
 object AtedForms {
 
   // this is with respect to play 2.3.8 but it has been changed in play 2.4; when upgrade, look into play src to change this;
   // scalastyle:off line.size.limitgit diff
 
-  val emailRegex =
+  val emailRegex: Regex =
   """^(?!\.)("([^"\r\\]|\\["\r\\])*"|([-a-zA-Z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$""".r
   val addressLineLength = 35
   val PostcodeLength = 10
@@ -41,13 +39,15 @@ object AtedForms {
   val lengthZero = 0
   val nameLength = 35
   val phoneLength = 24
-  val telephoneRegex = """^[A-Z0-9)\/(\-*#]+$""".r
+  val telephoneRegex: Regex = """^[A-Z0-9)\/(\-*#]+$""".r
+
+
 
   val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
-    model.isAgent.isEmpty match {
-      case (false) if !model.isAgent.get => Valid
-      case (false) if model.isAgent.get => Invalid("ated.claim-relief.error.agent-claiming-true", "isAgent")
-      case (true) => Invalid("ated.claim-relief.error.agent-claiming", "isAgent")
+    model.isAgent match {
+      case Some(false) => Valid
+      case Some(true) => Invalid("ated.claim-relief.error.agent-claiming-true", "isAgent")
+      case _ => Invalid("ated.claim-relief.error.agent-claiming", "isAgent")
     }
   })
 
@@ -59,35 +59,35 @@ object AtedForms {
 
   val appointAgentForm = Form(mapping(
     "appointAgent" -> optional(boolean)
-      .verifying(Messages("ated.claim-relief.error.agent-appoint"), result => result.isDefined)
+      .verifying("ated.claim-relief.error.agent-appoint", result => result.isDefined)
   )(AppointAgentForm.apply)(AppointAgentForm.unapply))
 
 
   val businessAddressForm = Form(mapping(
     "isCorrespondenceAddress" -> optional(boolean)
-      .verifying(Messages("ated.registered-business-address-error.correspondenceAddress"), result => result.isDefined)
+      .verifying("ated.registered-business-address-error.correspondenceAddress", result => result.isDefined)
   )(BusinessAddress.apply)(BusinessAddress.unapply))
 
   val correspondenceAddressForm = Form(
     mapping(
       "line_1" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.line-1")), x => x.trim.length > lengthZero)
-        .verifying(Messages("ated.error.length", Messages("ated.address.line-1"), addressLineLength),
+        verifying("ated.error.mandatory.ated.address.line-1", x => x.trim.length > lengthZero)
+        .verifying("ated.error.length.ated.address.line-1",
           x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
       "line_2" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.line-2")), x => x.trim.length > lengthZero)
-        .verifying(Messages("ated.error.length", Messages("ated.address.line-2"), addressLineLength),
+        verifying("ated.error.mandatory.ated.address.line-2", x => x.trim.length > lengthZero)
+        .verifying("ated.error.length.ated.address.line-2",
           x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
       "line_3" -> optional(text)
-        .verifying(Messages("ated.error.length", Messages("ated.address.line-3"), addressLineLength),
+        .verifying("ated.error.length.ated.address.line-3",
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "line_4" -> optional(text)
-        .verifying(Messages("ated.error.length", Messages("ated.address.line-4"), addressLineLength),
+        .verifying("ated.error.length.ated.address.line-4",
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "postcode" -> optional(text)
-        .verifying(Messages("ated.error.address.postalcode.format"), x => x.fold(true)(v => v.isEmpty || v.matches(PostCodeRegex))),
+        .verifying("ated.error.address.postalcode.format", x => x.fold(true)(v => v.isEmpty || v.matches(PostCodeRegex))),
       "country" -> text.
-        verifying(Messages("ated.error.mandatory", Messages("ated.address.country")), x => x.length > lengthZero)
+        verifying("ated.error.mandatory.ated.address.country", x => x.length > lengthZero)
 
     )(Address.apply)(Address.unapply))
 
@@ -108,16 +108,16 @@ object AtedForms {
 
   val contactDetailsForm = Form(mapping(
     "firstName" -> text
-      .verifying(Messages("ated.contact-details-first-name.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-first-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+      .verifying("ated.contact-details-first-name.error", x => x.trim.length > lengthZero)
+      .verifying("ated.contact-details-first-name.length", x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
     "lastName" -> text
-      .verifying(Messages("ated.contact-details-last-name.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-last-name.length"), x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
+      .verifying("ated.contact-details-last-name.error", x => x.trim.length > lengthZero)
+      .verifying("ated.contact-details-last-name.length", x => x.isEmpty || (x.nonEmpty && x.length <= nameLength)),
     "telephone" -> text
-      .verifying(Messages("ated.contact-details-telephone.error"), x => x.trim.length > lengthZero)
-      .verifying(Messages("ated.contact-details-telephone.length"), x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
-      .verifying(Messages("ated.contact-details-telephone.invalidText"), x => x.isEmpty || {
-        val p = telephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).exists(_ => true)
+      .verifying("ated.contact-details-telephone.error", x => x.trim.length > lengthZero)
+      .verifying("ated.contact-details-telephone.length", x => x.isEmpty || (x.nonEmpty && x.length <= phoneLength))
+      .verifying("ated.contact-details-telephone.invalidText", x => x.isEmpty || {
+        val p = telephoneRegex.findFirstMatchIn(x.replaceAll(" ", "")).isDefined
         val z = x.length > phoneLength
         p || z})
 
@@ -126,7 +126,7 @@ object AtedForms {
 
   val contactDetailsEmailForm = Form(mapping(
     "emailConsent" -> optional(boolean)
-      .verifying(Messages("ated.contact-details.email.error"), result => result.isDefined),
+      .verifying("ated.contact-details.email.error", result => result.isDefined),
     "email" -> text
   )(ContactDetailsEmail.apply)(ContactDetailsEmail.unapply))
 
@@ -137,16 +137,16 @@ object AtedForms {
         case Some("true") => {
           val email = f.data.getOrElse("email", "")
           if (email.isEmpty || (email.nonEmpty && email.trim.length == lengthZero)){
-            Seq(FormError("email", Messages("ated.contact-details-email.error")))
+            Seq(FormError("email", "ated.contact-details-email.error"))
           } else if (email.length > emailLength){
-            Seq(FormError("email", Messages("ated.contact-details-email.length")))
+            Seq(FormError("email", "ated.contact-details-email.length"))
           } else {
-            val x = emailRegex.findFirstMatchIn(email).exists(_ => true)
+            val x = emailRegex.findFirstMatchIn(email).isDefined
             val y = email.length == lengthZero
             if (x || y) {
               Nil
             } else {
-              Seq(FormError("email", Messages("ated.contact-details-emailx.error")))
+              Seq(FormError("email", "ated.contact-details-emailx.error"))
             }
           }
         }

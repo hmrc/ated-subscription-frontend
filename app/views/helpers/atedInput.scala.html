@@ -47,9 +47,9 @@
 
         </label>
 
-        @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+        @elements.errors.map { error => <span class="error-notification">@messages(error)</span>}
         @if(parentElements.isDefined) {
-        @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+        @parentElements.get.errors.map { error => <span class="error-notification">@messages(error)</span>}
         }
 
         @if(elements.args.contains('_symbol)) { <span class="inline-fields">@elements.args.get('_symbol)</span> }

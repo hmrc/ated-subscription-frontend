@@ -16,26 +16,21 @@
 
 package services
 
-import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
+import connectors.AtedSubscriptionDataCacheConnector
+import javax.inject.Inject
 import models.Address
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait CorrespondenceAddressService {
+class CorrespondenceAddressService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConnector) {
 
-  val dataCacheConnector: DataCacheConnector
-
-  def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier): Future[Option[Address]] = {
+  def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
     dataCacheConnector.saveCorrespondenceAddress(address)
   }
 
-  def fetchCorrespondenceAddress(implicit hc: HeaderCarrier): Future[Option[Address]] = {
+  def fetchCorrespondenceAddress(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
     dataCacheConnector.fetchCorrespondenceAddress
   }
 
-}
-
-object CorrespondenceAddressService extends CorrespondenceAddressService {
-  override val dataCacheConnector: DataCacheConnector = AtedSubscriptionDataCacheConnector
 }

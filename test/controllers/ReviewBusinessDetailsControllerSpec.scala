@@ -25,23 +25,22 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
-import uk.gov.hmrc.auth.core.AuthConnector
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockRegisteredBusinessService = mock[RegisteredBusinessService]
-  val mockCorrespondenceAddressService = mock[CorrespondenceAddressService]
-  val mockContactDetailsService = mock[ContactDetailsService]
-  val mockMandateService = mock[MandateService]
+  val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
+  val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
+  val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
+  val mockMandateService: MandateService = mock[MandateService]
 
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
   val testAddress2 = Address("line_1", "line_2", Some("line_3"), Some("line_3"), Some("NE1 1AB"), "GB")
@@ -57,13 +56,15 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
   val emailAddress = AgentEmail("test@mail.com")
   val clientDisplayName = ClientDisplayName("client display name")
 
-  object TestReviewDetailsController extends ReviewBusinessDetailsController {
-    override val authConnector = mockAuthConnector
-    override val registeredBusinessService = mockRegisteredBusinessService
-    override val correspondenceAddressService = mockCorrespondenceAddressService
-    override val contactDetailsService = mockContactDetailsService
-    override val mandateService = mockMandateService
-  }
+  val testReviewDetailsController = new ReviewBusinessDetailsController(
+    mockMCC,
+    mockRegisteredBusinessService,
+    mockCorrespondenceAddressService,
+    mockContactDetailsService,
+    mockMandateService,
+    mockAuthConnector,
+    mockAppConfig
+  )
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -168,11 +169,11 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-edit").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("register-address-edit").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
 
-            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())
-            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any())
-            verify(mockMandateService, times(1)).fetchClientDisplayName(Matchers.any(), Matchers.any())
-            verify(mockMandateService, times(1)).fetchEmailAddress(Matchers.any(), Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any(), Matchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any(), Matchers.any())
+            verify(mockMandateService, times(1)).fetchClientDisplayName(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockMandateService, times(1)).fetchEmailAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
           }
         }
 
@@ -184,12 +185,12 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
             document.getElementById("business-name-edit") must be(null)
             document.getElementById("register-address-edit") must be(null)
 
-            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())
-            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetailsEmail(Matchers.any())
-            verify(mockMandateService, times(1)).fetchClientDisplayName(Matchers.any(), Matchers.any())
-            verify(mockMandateService, times(1)).fetchEmailAddress(Matchers.any(), Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any(), Matchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any(), Matchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetailsEmail(Matchers.any(), Matchers.any())
+            verify(mockMandateService, times(1)).fetchClientDisplayName(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockMandateService, times(1)).fetchEmailAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
           }
         }
 
@@ -205,9 +206,9 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
 
             document.getElementById("contact-pref").text() must be("Not provided")
 
-            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())
-            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(Matchers.any(), Matchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetails(Matchers.any(), Matchers.any())
           }
         }
         "not contain correspondence address" in {
@@ -231,13 +232,13 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(reviewDetails))
-    when(mockContactDetailsService.fetchContactDetails(Matchers.any())).thenReturn(Future.successful(contactDetails))
-    when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any())).thenReturn(Future.successful(contactDetailsEmail))
-    when(mockMandateService.fetchEmailAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(emailAddress)))
-    when(mockMandateService.fetchClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(clientDisplayName)))
-    val result = TestReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(reviewDetails))
+    when(mockContactDetailsService.fetchContactDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(contactDetails))
+    when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(contactDetailsEmail))
+    when(mockMandateService.fetchEmailAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(emailAddress)))
+    when(mockMandateService.fetchClientDisplayName(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(clientDisplayName)))
+    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -245,12 +246,12 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -258,13 +259,13 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with OneServerPerSuit
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockContactDetailsService.fetchContactDetails(Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-    when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-    when(mockMandateService.fetchEmailAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(emailAddress)))
-    when(mockMandateService.fetchClientDisplayName(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(clientDisplayName)))
-    val result = TestReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockContactDetailsService.fetchContactDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+    when(mockMandateService.fetchEmailAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(emailAddress)))
+    when(mockMandateService.fetchClientDisplayName(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(clientDisplayName)))
+    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }

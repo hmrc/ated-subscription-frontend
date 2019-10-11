@@ -22,43 +22,38 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AtedSubscriptionConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  trait MockedVerbs extends CoreGet with CorePost
-  val mockWSHttp = mock[MockedVerbs]
-
-  override def beforeEach = {
+  override def beforeEach: Unit = {
+    reset(mockAppConfig)
     reset(mockWSHttp)
   }
 
-  object TestAtedSubscriptionConnector extends AtedSubscriptionConnector {
-    override val http: CoreGet with CorePost = mockWSHttp
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
+  val testAtedSubscriptionConnector: AtedSubscriptionConnector = new AtedSubscriptionConnector(mockAppConfig, mockWSHttp) {
+    override lazy val serviceURL: String = "test"
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val subscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
-  val subscribeFailureResponseJson = Json.parse( """{"reason" : "Error happened"}""")
-  val subscribeSuccessResponseJson = Json.toJson(subscribeSuccessResponse)
+  val subscribeFailureResponseJson: JsValue = Json.parse( """{"reason" : "Error happened"}""")
+  val subscribeSuccessResponseJson: JsValue = Json.toJson(subscribeSuccessResponse)
   val subscribeData = SubscribeData(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
     address = List(EtmpCorrespondence(name1 = "Joe", name2 = "Bloggs",
       addressDetails = EtmpAddressDetails("Correspondence", "line1", "line2", None, None, None, "GB"),
       contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true, utr = "1234567890", isNonUKClientRegisteredByAgent = false, knownFactPostcode=Some("AA1 1AA"))
-  val subscribeDataJson = Json.toJson(subscribeData)
+  val subscribeDataJson: JsValue = Json.toJson(subscribeData)
 
   "AtedSubscriptionConnector" must {
     "subscribeAted" must {
@@ -66,7 +61,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with OneServerPerSuite with
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
-        val result = TestAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
+        val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         await(result) must be(subscribeSuccessResponse)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       }
@@ -74,7 +69,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with OneServerPerSuite with
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
-        val result = TestAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
+        val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
@@ -83,7 +78,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with OneServerPerSuite with
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
-        val result = TestAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
+        val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())

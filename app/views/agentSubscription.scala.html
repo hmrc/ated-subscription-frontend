@@ -15,32 +15,33 @@
  *@
 
 @import models.AtedSubscriptionAuthData
-@()(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+@import config.ApplicationConfig
+@()(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import utils._
 
-@atedNoAuthMain(title = Messages("ated.agent-startpage-title"), userLoggedIn = true) {
+@atedNoAuthMain(title = messages("ated.agent-startpage-title"), userLoggedIn = true) {
 
     @pageHeadersAndError(
         None,
         "subtitle",
-        Messages("ated.agent-startpage-subheader"),
+        messages("ated.agent-startpage-subheader"),
         "agent-startpage-header",
-        Messages("ated.agent-startpage-header")
+        messages("ated.agent-startpage-header")
     )
 
-    <p id="lede-paragraph">@Messages("ated.agent-startpage-lede")</p>
+    <p id="lede-paragraph">@messages("ated.agent-startpage-lede")</p>
 
-    <p id="agent-startpage-text1">@Messages("ated.agent-startpage-text1")</p>
-    <p id="agent-startpage-text2" class="margin-bottom-default">@Messages("ated.agent-startpage-text2")</p>
+    <p id="agent-startpage-text1">@messages("ated.agent-startpage-text1")</p>
+    <p id="agent-startpage-text2" class="margin-bottom-default">@messages("ated.agent-startpage-text2")</p>
 
     <a href="@controllers.routes.SubscriptionController.continue.url"
         class="button"
         id="submit"
         role="button"
         onclick="ga('send', 'event', 'Agent - registration - start', 'button clicked')">
-            @Messages("ated.agent-startpage-continue")
+            @messages("ated.agent-startpage-continue")
     </a>
 }

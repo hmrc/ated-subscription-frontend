@@ -17,42 +17,42 @@
 package connectors
 
 import builders.AuthBuilder
-import models.{AgentEmail, ClientDisplayName, OldMandateReference}
+import models.{AgentEmail, AtedSubscriptionAuthData, ClientDisplayName, OldMandateReference}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.{CoreGet, HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
   implicit val request: Request[_] = FakeRequest(GET, "")
-  val mockWSHttp = mock[CoreGet]
 
-  override def beforeEach = {
+  override def beforeEach: Unit = {
+    reset(mockAppConfig)
     reset(mockWSHttp)
   }
 
-  object TestAgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
-    override val http: CoreGet = mockWSHttp
-    override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
+  when(mockAppConfig.servicesConfig).thenReturn(mockServicesConfig)
 
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
+  val testAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = new AgentClientMandateFrontendConnector(
+    mockAppConfig,
+    mockWSHttp
+  ){
+    override val serviceUrl: String = "test"
   }
 
   "AgentClientMandateFrontendConnector" must {
@@ -60,7 +60,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
       val agentEmail = AgentEmail("aaa@bbb.com")
       when(mockWSHttp.GET[Option[AgentEmail]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(agentEmail)))
 
-      val response = await(TestAgentClientMandateFrontendConnector.getAgentEmail)
+      val response = await(testAgentClientMandateFrontendConnector.getAgentEmail)
       response.get.email must be("aaa@bbb.com")
     }
 
@@ -68,7 +68,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
       val displayName = ClientDisplayName("client display name")
       when(mockWSHttp.GET[Option[ClientDisplayName]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(displayName)))
 
-      val response = await(TestAgentClientMandateFrontendConnector.getClientDisplayName)
+      val response = await(testAgentClientMandateFrontendConnector.getClientDisplayName)
       response.get.name must be("client display name")
     }
 
@@ -76,7 +76,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with OneServerPer
       val oldMandateDetails = OldMandateReference("mandateId", "atedRef")
       when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(oldMandateDetails)))))
 
-      val response = await(TestAgentClientMandateFrontendConnector.getOldMandateDetails)
+      val response = await(testAgentClientMandateFrontendConnector.getOldMandateDetails)
       response.get.atedRefNumber must be("atedRef")
     }
   }

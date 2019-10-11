@@ -31,10 +31,10 @@
 
 <span class="field-wrapper @if( elements.args.get('_divClass) ){ @elements.args.get('_divClass) }">
     <label for="@elements.field.name" class="@if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}" @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)}>
-    @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+    @elements.errors.map { error => <span class="error-notification">@messages(error)</span>}
 
     @if(parentElements.isDefined) {
-        @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error)</span>}
+        @parentElements.get.errors.map { error => <span class="error-notification">@messages(error)</span>}
     }
 
     @if(labelHighlight){<strong>}
