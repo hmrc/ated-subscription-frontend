@@ -27,28 +27,21 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.RegisterUserService
-import uk.gov.hmrc.auth.core.AuthConnector
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.Future
 
-class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockRegisterUserService = mock[RegisterUserService]
-  val mockBCConnector = mock[BusinessCustomerFrontendConnector]
-
-  object TestAgentConfirmationController extends AgentConfirmationController {
-    override val authConnector = mockAuthConnector
-    override val businessCustomerFEConnector = mockBCConnector
-  }
+  val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
+  val testAgentConfirmationController: AgentConfirmationController = new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -114,12 +107,12 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -131,11 +124,11 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
     val reviewDetails = ReviewDetails(businessName = businessName,
       businessType = Some("corporate body"),
       businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
-      sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
+      sapNumber = "1234567890", safeId = "XW0001234567890",isAGroup = false, agentReferenceNumber = Some("JARN1234567"))
 
-    when(mockBCConnector.getReviewDetails(Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+    when(mockBCConnector.getReviewDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
-    val result = TestAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -143,12 +136,12 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
   def continueWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def continueWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -157,7 +150,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with OneServerPerSuite wi
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    val result = TestAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }

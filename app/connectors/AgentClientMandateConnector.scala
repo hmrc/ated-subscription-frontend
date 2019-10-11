@@ -16,39 +16,28 @@
 
 package connectors
 
-import config.WSHttp
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, NonUKClientDto}
-import play.api.Mode.Mode
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import play.api.{Configuration, Logger, Play}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AuthUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-object AgentClientMandateConnector extends AgentClientMandateConnector {
-  // $COVERAGE-OFF$
-  override protected def mode: Mode = Play.current.mode
+class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
+                                            http: DefaultHttpClient
+                                           ) extends RawResponseReads {
 
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  // $COVERAGE-ON$
-}
-
-trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
-
-  lazy val serviceURL = baseUrl("agent-client-mandate")
+  lazy val serviceURL: String = appConfig.serviceUrlACM
   val createMandateURI = "mandate/non-uk"
   val updateMandateURI = "mandate/non-uk/update"
 
-
-  val http: CoreGet with CorePost = WSHttp
-
   def createMandateForNonUK(dto: NonUKClientDto)
-                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
+                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$createMandateURI"""
@@ -63,7 +52,7 @@ trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
   }
 
   def updateMandateForNonUK(dto: NonUKClientDto)
-                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[HttpResponse] = {
+                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$updateMandateURI"""
@@ -71,7 +60,7 @@ trait AgentClientMandateConnector extends ServicesConfig with RawResponseReads {
       response.status match {
         case CREATED => response
         case status =>
-          Logger.warn(s"[AgentClientMandateConnector][updateMandateForNonUK]- Exception occured - status:: $status response:: ${response.body}")
+          Logger.warn(s"[AgentClientMandateConnector][updateMandateForNonUK]- Exception occurred - status:: $status response:: ${response.body}")
           throw new InternalServerException(response.body)
       }
     }

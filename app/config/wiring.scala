@@ -16,73 +16,24 @@
 
 package config
 
-import akka.actor.ActorSystem
-import com.typesafe.config.Config
-import play.api.Mode.Mode
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.auth.core.{AuthConnector, PlayAuthConnector}
+import javax.inject.Inject
 import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.http.hooks.HttpHooks
-import uk.gov.hmrc.http.{HttpDelete, HttpGet, HttpPost, HttpPut}
-import uk.gov.hmrc.play.audit.http.HttpAuditing
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
-import uk.gov.hmrc.play.http.ws._
+import uk.gov.hmrc.play.audit.http.config.AuditingConfig
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.bootstrap.config.{AuditingConfigProvider, ServicesConfig}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 
-object AtedSubscriptionFrontendAuditConnector extends Auditing with AppName {
-
-  override lazy val auditingConfig = LoadAuditingConfig("auditing")
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
+class AtedSubscriptionFrontendAuditConnector @Inject()(conf: ServicesConfig,
+                                                       auditConf: AuditingConfigProvider) extends AuditConnector {
+  override lazy val auditingConfig: AuditingConfig = auditConf.get()
 }
 
-trait WSHttp extends HttpGet with WSGet with HttpPut with WSPut with HttpPost with WSPost with HttpDelete with WSDelete with AppName
+class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) extends CachedStaticHtmlPartialRetriever
 
-object WSHttp extends WSHttp {
-  override val hooks = NoneRequired
-
-  override protected def actorSystem: ActorSystem = Play.current.actorSystem
-
-  override protected def configuration: Option[Config] = Some(Play.current.configuration.underlying)
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
-}
-
-object WSHttpWithAudit extends WSHttp with HttpHooks with HttpAuditing {
-  override val hooks = Seq(AuditingHook)
-  override lazy val auditConnector: Auditing = AtedSubscriptionFrontendAuditConnector
-
-  override protected def actorSystem: ActorSystem = Play.current.actorSystem
-
-  override protected def configuration: Option[Config] = Some(Play.current.configuration.underlying)
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
-}
-
-object CachedStaticHtmlPartialProvider extends CachedStaticHtmlPartialRetriever {
-  override val httpGet = WSHttp
-}
-
-object AtedSessionCache extends SessionCache with AppName with ServicesConfig {
-  override lazy val http = WSHttp
-  override lazy val defaultSource = appName
-  override lazy val baseUri = baseUrl("cachable.session-cache")
-  override lazy val domain = getConfString("cachable.session-cache.domain", throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
-
-  override protected def appNameConfiguration: Configuration = Play.current.configuration
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-}
-
-object AuthClientConnector extends PlayAuthConnector with ServicesConfig {
-    val serviceUrl: String = baseUrl("auth")
-    lazy val http = WSHttp
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
+class AtedSessionCache @Inject()(val conf: ServicesConfig,
+                                 val http: DefaultHttpClient) extends SessionCache {
+  lazy val defaultSource: String = conf.getConfString("appName", "ated-subscription-frontend")
+  lazy val baseUri: String = conf.baseUrl("cachable.session-cache")
+  lazy val domain: String = conf.getString("microservice.services.cachable.session-cache.domain")
 }

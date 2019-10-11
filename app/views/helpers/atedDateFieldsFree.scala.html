@@ -23,7 +23,7 @@
 @import uk.gov.hmrc.play.mappers.DateFields._
 @import views.html.helper._
 
-@elements = @{ new FieldElements(formItem(fieldName).id, formItem(fieldName), null, args.toMap, messages) }
+@elements = @{ FieldElements(formItem(fieldName).id, formItem(fieldName), null, args.toMap, messages) }
 
 @if(elements.hasErrors) {
 <div class="form-group">
@@ -35,13 +35,13 @@
         <div class="form-hint">@elements.args.get('_hintText)</div>
         }
         <div>
-            @isOptional = {@if(elements.args.contains('_isRequired)) @{ if(elements.args.get('_isRequired).get == true) {true} else {false}} else {false}}
+            @isOptional = {@if(elements.args.contains('_isRequired)) @{ elements.args.get('_isRequired).get == true} else {false}}
 
             @dayElem = @{fieldName + "." + day}
 
             @dateInput(
             formItem(dayElem),
-            '_label -> Messages("date.fields.day"),
+            '_label -> messages("date.fields.day"),
             '_inputClass -> "text day validate",
             '_divClass -> "form-group day inline-fields",
             '_emptyValueText -> " ",
@@ -53,7 +53,7 @@
             @monthElem = @{fieldName + "." + month}
             @dateInput(
             formItem(monthElem),
-            '_label -> Messages("date.fields.month"),
+            '_label -> messages("date.fields.month"),
             '_inputClass -> "text month validate",
             '_divClass -> "form-group month inline-fields",
             '_emptyValueText -> " ",
@@ -65,7 +65,7 @@
             @yearElem = @{fieldName + "." + year}
             @dateInput(
             formItem(yearElem),
-            '_label -> Messages("date.fields.year"),
+            '_label -> messages("date.fields.year"),
             '_inputClass -> "text year validate",
             '_divClass -> "form-group year form-group-year inline-fields",
             '_emptyValueText -> " ",

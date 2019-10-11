@@ -12,9 +12,16 @@ ated.confirm-and-continue = Confirm and continue
 ated.screen-reader.section = This section is:
 
 ##### VALIDATION FAILED TEMPLATE
-
 ated.error.summaryHeader = There is a problem with the form
 ated.error.mandatory = You must enter {0}
+ated.error.mandatory.ated.address.country = You must enter Country
+ated.error.mandatory.ated.address.line-1 = You must enter Address line 1
+ated.error.mandatory.ated.address.line-2 = You must enter Address line 2
+ated.error.length.ated.address.line-1 = Address line 1 must not be more than 35 characters
+ated.error.length.ated.address.line-2 = Address line 2 must not be more than 35 characters
+ated.error.length.ated.address.line-3 = Address line 3 (optional) must not be more than 35 characters
+ated.error.length.ated.address.line-4 = Address line 4 (optional) must not be more than 35 characters
+
 ated.error.length = {0} must not be more than {1} characters
 
 unauthorised.title = UNAUTHORISED
@@ -126,7 +133,7 @@ ated.address.line-3 = Address line 3 (optional)
 ated.address.line-4 = Address line 4 (optional)
 ated.address.postcode = Postcode (optional)
 ated.address.postcode.field = Postcode
-ated.address.country = ISO country code
+#ated.address.country = ISO country code
 ated.address.country = Country
 ated.correspondence-address.continue = Continue
 
@@ -242,6 +249,5 @@ ated.business-registration-error.duplicate.identifier.message = If you require a
 ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.title = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
-
+ated.business-address-error.general.isCorrespondenceAddress = Select an option for the correspondence address
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
-ated.business-registration.error.other = EMAC Allocate an Enrolment to a Group failed for no definite reason

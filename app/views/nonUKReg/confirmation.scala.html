@@ -14,26 +14,26 @@
  * limitations under the License.
  *@
 
-@(clientName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+@import config.ApplicationConfig
+@(clientName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-
-@atedMain(title = Messages("ated.nonUKReg.confirmation.title", clientName)) {
+@atedMain(title = messages("ated.nonUKReg.confirmation.title")) {
 
   <div id="banner" class="transaction-banner--complete">
     <h1 id="confirmation-message">
-      @Messages("ated.nonUKReg.confirmation.header", clientName, date)
+      @messages("ated.nonUKReg.confirmation.header", clientName, date)
     </h1>
      </div>
 
-    <h2 id="what-happens-next">@Messages("ated.nonUKReg.confirmation.what-next")</h2>
-    <p id="happens-next-message">@Messages("ated.nonUKReg.confirmation.what-next.text")</p>
+    <h2 id="what-happens-next">@messages("ated.nonUKReg.confirmation.what-next")</h2>
+    <p id="happens-next-message">@messages("ated.nonUKReg.confirmation.what-next.text")</p>
 
     @form(action = controllers.nonUKReg.routes.ConfirmationController.continue) {
       <button class="button" id="submit" type="submit">
-        @Messages("ated.nonUKReg.confirmation.view-client.button")
+        @messages("ated.nonUKReg.confirmation.view-client.button")
       </button>
     }
 

@@ -17,17 +17,14 @@
 package connectors
 
 import config.AtedSessionCache
+import javax.inject.Inject
 import models._
-import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait DataCacheConnector {
 
-  val sessionCache: SessionCache
-
+class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: AtedSessionCache) {
   val bcSourceId: String = "BC_Business_Details"
   val bcRegDetailseId: String = "BC_BusinessReg_Details"
   val addressFormId: String = "Correspondence_Address"
@@ -36,56 +33,55 @@ trait DataCacheConnector {
   val clientDisplayNameFormId = "client-display-name-form-id"
   val contactEmailFormId: String = "Contact_Email_Details"
 
-
-
-  def fetchAndGetRegisteredBusinessDetailsForSession(implicit hc: HeaderCarrier): Future[Option[BusinessAddress]] = {
+  def fetchAndGetRegisteredBusinessDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessAddress]] = {
     sessionCache.fetchAndGetEntry[BusinessAddress](bcRegDetailseId)
   }
 
-  def saveRegisteredBusinessDetails(businessAddress: BusinessAddress)(implicit hc: HeaderCarrier): Future[Option[BusinessAddress]] = {
+  def saveRegisteredBusinessDetails(businessAddress: BusinessAddress)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessAddress]] = {
      sessionCache.cache[BusinessAddress](bcRegDetailseId, businessAddress) map {
          data => data.getEntry[BusinessAddress](bcRegDetailseId)
        }
   }
 
-  def fetchAndGetReviewDetailsForSession(implicit hc: HeaderCarrier): Future[Option[ReviewDetails]] = {
+  def fetchAndGetReviewDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ReviewDetails]] = {
     sessionCache.fetchAndGetEntry[ReviewDetails](bcSourceId)
   }
 
-  def saveReviewDetails(reviewDetails: ReviewDetails)(implicit hc: HeaderCarrier): Future[Option[ReviewDetails]] = {
+  def saveReviewDetails(reviewDetails: ReviewDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ReviewDetails]] = {
     sessionCache.cache[ReviewDetails](bcSourceId, reviewDetails) map  {
       data => data.getEntry[ReviewDetails](bcSourceId) }
   }
 
-  def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier): Future[Option[Address]] = {
+  def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
     sessionCache.cache[Address](addressFormId, address) map { cachedData =>
       cachedData.getEntry[Address](addressFormId)
     }
   }
 
-  def fetchCorrespondenceAddress(implicit hc: HeaderCarrier): Future[Option[Address]] = {
+  def fetchCorrespondenceAddress(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
     sessionCache.fetchAndGetEntry[Address](addressFormId)
   }
 
-  def saveContactDetails(contactDetails: ContactDetails)(implicit hc: HeaderCarrier): Future[Option[ContactDetails]] = {
+  def saveContactDetails(contactDetails: ContactDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
     sessionCache.cache[ContactDetails](contactFormId, contactDetails) map { cachedData =>
       cachedData.getEntry[ContactDetails](contactFormId)
     }
   }
 
-  def fetchContactDetailsForSession(implicit hc: HeaderCarrier): Future[Option[ContactDetails]] = {
+  def fetchContactDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
     sessionCache.fetchAndGetEntry[ContactDetails](contactFormId)
   }
 
-  def fetchContactDetailsEmailForSession(implicit hc: HeaderCarrier): Future[Option[ContactDetailsEmail]] = {
+  def fetchContactDetailsEmailForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
     sessionCache.fetchAndGetEntry[ContactDetailsEmail](contactEmailFormId)
   }
 
-  def clearCache(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def clearCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     sessionCache.remove()
   }
 
-  def saveContactDetailsEmail(contactDetailsEmail: ContactDetailsEmail)(implicit hc: HeaderCarrier): Future[Option[ContactDetailsEmail]] = {
+  def saveContactDetailsEmail(contactDetailsEmail: ContactDetailsEmail)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
     sessionCache.cache[ContactDetailsEmail](contactEmailFormId, contactDetailsEmail) map { cachedData =>
       cachedData.getEntry[ContactDetailsEmail](contactEmailFormId)
     }
@@ -93,6 +89,4 @@ trait DataCacheConnector {
 
 }
 
-object AtedSubscriptionDataCacheConnector extends DataCacheConnector {
-  val sessionCache: SessionCache = AtedSessionCache
-}
+

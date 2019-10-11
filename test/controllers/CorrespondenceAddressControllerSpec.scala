@@ -25,28 +25,25 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
-import uk.gov.hmrc.auth.core.AuthConnector
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 
-class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockCorrespondenceAddressService = mock[CorrespondenceAddressService]
+  val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
 
-  object TestCorrespondenceAddressController extends CorrespondenceAddressController {
-    val authConnector = mockAuthConnector
-    val correspondenceAddressService = mockCorrespondenceAddressService
-  }
+  val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(mockMCC, mockCorrespondenceAddressService, mockAuthConnector, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -245,7 +242,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include(s"/ated-subscription/contact-details")
-                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any())
+                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())
             }
           }
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is edit" in {
@@ -255,7 +252,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated-subscription/review-business-details")
-                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any())
+                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())
             }
           }
         }
@@ -281,8 +278,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
   def getWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -290,8 +287,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
   def getWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(None))
-    val result = TestCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -299,20 +296,20 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
   def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-    val result = TestCorrespondenceAddressController.submit(None).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    val result = testCorrespondenceAddressController.submit(None).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)
   }
@@ -320,20 +317,20 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
   def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestCorrespondenceAddressController.submit(None).apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testCorrespondenceAddressController.submit(None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def submitWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = TestCorrespondenceAddressController.submit(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testCorrespondenceAddressController.submit(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
   def editWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-    val result = TestCorrespondenceAddressController.editAddress(mode = Some("edit")).apply(SessionBuilder.buildRequestWithSession(userId))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    val result = testCorrespondenceAddressController.editAddress(mode = Some("edit")).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -341,8 +338,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with OneServerPerSuit
   def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-    val result = TestCorrespondenceAddressController.submit(mode = Some("edit")).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    val result = testCorrespondenceAddressController.submit(mode = Some("edit")).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)
   }

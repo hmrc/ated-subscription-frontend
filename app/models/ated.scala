@@ -16,18 +16,18 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class AreYouAnAgent(isAgent: Option[Boolean] = None)
 
 object AreYouAnAgent {
-  implicit val formats = Json.format[AreYouAnAgent]
+  implicit val formats: OFormat[AreYouAnAgent] = Json.format[AreYouAnAgent]
 }
 
 case class AppointAgentForm(isAgent: Option[Boolean] = None)
 
 object AppointAgentForm {
-  implicit val formats = Json.format[AppointAgentForm]
+  implicit val formats: OFormat[AppointAgentForm] = Json.format[AppointAgentForm]
 }
 
 case class Address(
@@ -38,7 +38,7 @@ case class Address(
                     postcode: Option[String] = None,
                     country: String) {
 
-  override def toString = {
+  override def toString: String = {
     val line3display = line_3.map(line3 => s"$line3, ").getOrElse("")
     val line4display = line_4.map(line4 => s"$line4, ").getOrElse("")
     val postcodeDisplay = postcode.map(postcode1 => s"$postcode1, ").getOrElse("")
@@ -48,13 +48,13 @@ case class Address(
 
 
 object Address {
-  implicit val formats = Json.format[Address]
+  implicit val formats: OFormat[Address] = Json.format[Address]
 }
 
 case class Identification(idNumber: String, issuingInstitution: String, issuingCountryCode: String)
 
 object Identification {
-  implicit val formats = Json.format[Identification]
+  implicit val formats: OFormat[Identification] = Json.format[Identification]
 }
 
 case class ReviewDetails(businessName: String,
@@ -72,13 +72,13 @@ case class ReviewDetails(businessName: String,
                          isBusinessDetailsEditable: Boolean = false)
 
 object ReviewDetails {
-  implicit val formats = Json.format[ReviewDetails]
+  implicit val formats: OFormat[ReviewDetails] = Json.format[ReviewDetails]
 }
 
 case class BusinessAddress(isCorrespondenceAddress: Option[Boolean] = None)
 
 object BusinessAddress {
-  implicit val formats = Json.format[BusinessAddress]
+  implicit val formats: OFormat[BusinessAddress] = Json.format[BusinessAddress]
 }
 
 case class ContactDetails(firstName: String,
@@ -86,7 +86,7 @@ case class ContactDetails(firstName: String,
                           telephone: String)
 
 object ContactDetails {
-  implicit val formats = Json.format[ContactDetails]
+  implicit val formats: OFormat[ContactDetails] = Json.format[ContactDetails]
 }
 
 case class ContactDetailsEmail(emailConsent: Option[Boolean] = None,
@@ -94,7 +94,7 @@ case class ContactDetailsEmail(emailConsent: Option[Boolean] = None,
                           )
 
 object ContactDetailsEmail {
-  implicit val formats = Json.format[ContactDetailsEmail]
+  implicit val formats: OFormat[ContactDetailsEmail] = Json.format[ContactDetailsEmail]
 }
 
 case class NonUKClientDto(
@@ -109,17 +109,17 @@ case class NonUKClientDto(
                          )
 
 object NonUKClientDto {
-  implicit val formats = Json.format[NonUKClientDto]
+  implicit val formats: OFormat[NonUKClientDto] = Json.format[NonUKClientDto]
 }
 
 case class AgentEmail(email: String)
 
 object AgentEmail {
-  implicit val formats = Json.format[AgentEmail]
+  implicit val formats: OFormat[AgentEmail] = Json.format[AgentEmail]
 }
 
 case class ClientDisplayName(name: String)
 
 object ClientDisplayName {
-  implicit val formats = Json.format[ClientDisplayName]
+  implicit val formats: OFormat[ClientDisplayName] = Json.format[ClientDisplayName]
 }

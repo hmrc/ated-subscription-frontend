@@ -16,54 +16,39 @@
 
 package connectors
 
-import config.WSHttp
+import config.ApplicationConfig
+import javax.inject.Inject
 import models.{AgentEmail, ClientDisplayName, OldMandateReference}
-import play.api.Mode.Mode
 import play.api.mvc.Request
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.CoreGet
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait AgentClientMandateFrontendConnector extends ServicesConfig with RawResponseReads with HeaderCarrierForPartialsConverter {
+class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig,
+                                                    http: DefaultHttpClient
+                                                   ) extends RawResponseReads {
 
-  def serviceUrl = baseUrl("agent-client-mandate-frontend")
+  val serviceUrl: String = appConfig.serviceUrlACM
   val emailUri = "mandate/agent/email-session"
   val displayNameUri = "mandate/agent/client-display-name-session"
   val mandateDetails = "mandate/agent/old-nonuk-mandate-from-session"
   val service = "ATED"
-  val http: CoreGet
 
-  def getAgentEmail(implicit request: Request[_]): Future[Option[AgentEmail]] = {
+
+  def getAgentEmail(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AgentEmail]] = {
     val getUrl = s"$serviceUrl/$emailUri/"
     http.GET[Option[AgentEmail]](getUrl)
   }
 
-  def getClientDisplayName(implicit request: Request[_]): Future[Option[ClientDisplayName]] = {
+  def getClientDisplayName(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     val getUrl = s"$serviceUrl/$displayNameUri/"
     http.GET[Option[ClientDisplayName]](getUrl)
   }
 
-  def getOldMandateDetails(implicit request: Request[_]): Future[Option[OldMandateReference]] = {
+  def getOldMandateDetails(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Option[OldMandateReference]] = {
     val getUrl = s"$serviceUrl/$mandateDetails/"
     http.GET(getUrl) map { response => response.json.asOpt[OldMandateReference]}
   }
 
-}
-
-object AgentClientMandateFrontendConnector extends AgentClientMandateFrontendConnector {
-  // $COVERAGE-OFF$
-  val http = WSHttp
-  override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  // $COVERAGE-ON$
 }

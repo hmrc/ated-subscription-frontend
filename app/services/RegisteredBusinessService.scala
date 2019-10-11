@@ -17,23 +17,21 @@
 package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessCustomerFrontendConnector}
+import javax.inject.Inject
 import models.{SubscriptionData, _}
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.AuthUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait RegisteredBusinessService {
+class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: BusinessCustomerFrontendConnector,
+                                          atedConnector: AtedConnector,
+                                          agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector
+                                         )  {
 
-  val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector
-  val atedConnector: AtedConnector
-  val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector
-
-  def getReviewBusinessDetails(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[ReviewDetails] = {
-    businessCustomerFrontendConnector.getReviewDetails flatMap  { response =>
+  def getReviewBusinessDetails(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[ReviewDetails] = {
+    businessCustomerFrontendConnector.getReviewDetails flatMap { response =>
       response.status match {
         case OK => Future.successful(response.json.as[ReviewDetails])
         case NOT_FOUND =>
@@ -54,12 +52,13 @@ trait RegisteredBusinessService {
               }
             }
           }
-        case _ => throw new RuntimeException(s"Error while retrieving review details from business-customer keystore")
+        case status => throw new RuntimeException(s"Error while retrieving review details from business-customer keystore with status:$status")
       }
     }
   }
 
-  def getDefaultCorrespondenceAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Address] = {
+  def getDefaultCorrespondenceAddress(implicit request: Request[_],
+                                      user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
     for {
       agentAddress <- getAgentCorrespondenceAddress
       correspondenceAddress <-
@@ -72,14 +71,16 @@ trait RegisteredBusinessService {
     }
   }
 
-  def getBusinessAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Address] = {
+  def getBusinessAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
     getReviewBusinessDetails.map(_.businessAddress)
   }
 
 
-  private def getAgentCorrespondenceAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[Address]] = {
+  private def getAgentCorrespondenceAddress(implicit request: Request[_],
+                                            user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
 
-    def getDetails(identifier: String, identifierType: String)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
+    def getDetails(identifier: String, identifierType: String)
+                  (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
       atedConnector.getDetails(identifier = identifier, identifierType = identifierType) map {
         response =>
           response.status match {
@@ -107,10 +108,4 @@ trait RegisteredBusinessService {
       case None => Future.successful(None)
     }
   }
-}
-
-object RegisteredBusinessService extends RegisteredBusinessService {
-  val agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
-  val businessCustomerFrontendConnector: BusinessCustomerFrontendConnector = BusinessCustomerFrontendConnector
-  val atedConnector: AtedConnector = AtedConnector
 }

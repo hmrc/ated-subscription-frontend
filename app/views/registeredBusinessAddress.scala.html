@@ -14,28 +14,29 @@
  * limitations under the License.
  *@
 
-@import models._
-@import uk.gov.hmrc.play.frontend.auth.AuthContext
-@(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+@import _root_.models.Address
+@import _root_.utils.AtedSubscriptionUtils
+@import config.ApplicationConfig
+@(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import utils._
-@import utils.AuthUtils._
+@import _root_.utils.AuthUtils.isAgent
 @import controllers.auth._
 
 @implicitFormInstance = @{ Some(businessAddressForm) }
 
-@header = @{if(isAgent) {Messages("ated.registered-business-address.agent.header")} else {Messages("ated.registered-business-address.header")}}
+@header = @{if(isAgent) {messages("ated.registered-business-address.agent.header")} else {messages("ated.registered-business-address.header")}}
 
-@atedMain(title = if(isAgent) { Messages("ated.registered-business-address.agent.title") } else { Messages("ated.registered-business-address.title") }) {
-  @pageHeadersAndError(backLink, "business-registered-text", if(isAgent) {Messages("ated.registered-business-address.agent.sub-header")} else {Messages("ated.registered-business-address.sub-header")},
+@atedMain(title = if(isAgent) { messages("ated.registered-business-address.agent.title") } else { messages("ated.registered-business-address.title") }) {
+  @pageHeadersAndError(backLink, "business-registered-text", if(isAgent) {messages("ated.registered-business-address.agent.sub-header")} else {messages("ated.registered-business-address.sub-header")},
     "registered-business-address-header", header,
     Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
 
   @if(isAgent) {
 
-      <p id="lede-agent-text">@Messages("ated.registered-business-address.agent.lede-text") </p>
+      <p id="lede-agent-text">@messages("ated.registered-business-address.agent.lede-text") </p>
 
   }
 
@@ -51,7 +52,7 @@
     @businessAddress.postcode.map {postcode =>
       @postcode <br>
     }
-    @AtedSubscriptionUtils.getSelectedCountry(businessAddress.country)
+    @atedSubUtils.getSelectedCountry(businessAddress.country)
   </p>
 
   @form(action = controllers.routes.RegisteredBusinessController.continue) {
@@ -60,8 +61,8 @@
 
       @atedInputRadioGroupNew(
       businessAddressForm("isCorrespondenceAddress"),
-      Seq("true" -> Messages("ated.registered-business-address.correspondence-address.yes"),
-      "false" -> Messages("ated.registered-business-address.correspondence-address.no")),
+      Seq("true" -> messages("ated.registered-business-address.correspondence-address.yes"),
+      "false" -> messages("ated.registered-business-address.correspondence-address.no")),
       '_groupClass -> "form-group form-group-compound inline",
       '_labelClass -> "block-label",
       '_legend -> header,
@@ -72,7 +73,7 @@
 
     </div>
 
-    <button class="button" id="submit" type="submit">@Messages("ated.registered-business-address.continue")</button>
+    <button class="button" id="submit" type="submit">@messages("ated.registered-business-address.continue")</button>
 
   }
 

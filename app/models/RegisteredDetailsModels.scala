@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class RegisteredAddressDetails(addressLine1: String,
                                     addressLine2: String,
@@ -26,7 +26,7 @@ case class RegisteredAddressDetails(addressLine1: String,
                                     countryCode: String)
 
 object RegisteredAddressDetails {
-  implicit val formats = Json.format[RegisteredAddressDetails]
+  implicit val formats: OFormat[RegisteredAddressDetails] = Json.format[RegisteredAddressDetails]
 }
 
 case class EtmpRegistrationDetails(sapNumber: String,
@@ -36,5 +36,5 @@ case class EtmpRegistrationDetails(sapNumber: String,
 }
 
 object EtmpRegistrationDetails {
-  implicit val formats = Json.format[EtmpRegistrationDetails]
+  implicit val formats: OFormat[EtmpRegistrationDetails] = Json.format[EtmpRegistrationDetails]
 }

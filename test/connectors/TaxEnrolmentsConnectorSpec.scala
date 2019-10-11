@@ -37,45 +37,38 @@ package connectors
 
 import java.util.UUID
 
-import builders.{AuthBuilder, TestAudit}
+import audit.Auditable
+import builders.AuthBuilder
+import com.codahale.metrics.MetricRegistry
 import metrics.Metrics
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
-import uk.gov.hmrc.play.audit.model.Audit
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class TaxEnrolmentsConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  trait MockedVerbs extends CoreGet with CorePost
-  val mockWSHttp = mock[MockedVerbs]
+  val mockAuditable: Auditable = mock[Auditable]
 
-  object TestTaxEnrolmentsConnector extends TaxEnrolmentsConnector {
-    override val http: CoreGet with CorePost = mockWSHttp
-    override val audit: Audit = new TestAudit
-    override val appName: String = "Test"
-
-    override def metrics = Metrics
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
-
-  override def beforeEach = {
+  override def beforeEach: Unit = {
+    reset(mockAppConfig)
     reset(mockWSHttp)
+    reset(mockAuditable)
   }
+
+  val testTaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockAppConfig, mockAuditable, mockWSHttp, new Metrics)
 
   "TaxEnrolmentsConnector" must {
 
@@ -83,18 +76,14 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
     val groupId = "groupId"
     val atedRefNo = "atedRefNo"
     val subscribeFailureResponseJson = Json.parse( """{"reason" : "Error happened"}""")
-    implicit val hc = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-    implicit val user = AuthBuilder.createUserAuthContext("User-Id", "name")
-
-    "use correct metrics" in {
-      TestTaxEnrolmentsConnector.metrics must be(Metrics)
-    }
+    implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+    implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("User-Id", "name")
 
     "enrol user" must {
       "works for a user" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).
           thenReturn(Future.successful(HttpResponse(CREATED)))
-        val result = TestTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
+        val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(CREATED)
       }
@@ -102,7 +91,7 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with OneServerPerSuite with Mo
       "return status anything else, for bad data sent for enrol" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
-        val result = TestTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
+        val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(INTERNAL_SERVER_ERROR)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())

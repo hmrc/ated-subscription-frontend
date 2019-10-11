@@ -16,21 +16,23 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import controllers.auth.{AtedSubscriptionAuthHelpers, AuthFunctionality}
 import forms.AtedForms._
-import play.api.Mode.Mode
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AuthUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait SubscriptionController extends FrontendController with AtedSubscriptionAuthHelpers with AuthFunctionality {
+class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
+                                       val authConnector: DefaultAuthConnector,
+                                       implicit val appConfig: ApplicationConfig
+                                      ) extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality {
 
-  import play.api.Play.current
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def subscribe: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit data =>
@@ -61,7 +63,7 @@ trait SubscriptionController extends FrontendController with AtedSubscriptionAut
     clientAction { implicit user =>
       areYouAnAgentForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.subscription(formWithErrors))),
-        areYouAnAgent => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint()))
+        _ => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint()))
       )
     }
   }
@@ -70,24 +72,13 @@ trait SubscriptionController extends FrontendController with AtedSubscriptionAut
     clientAction { implicit user =>
       appointAgentForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(views.html.appointAgent(formWithErrors))),
-        appointAgent => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
+        _ => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
       )
     }
   }
 
-  private def redirectToSubscription(redirectName: String) = {
-    val serviceRedirectUrl: String = Play.configuration.getString(redirectName).getOrElse("/business-customer/ATED")
-    Future.successful(Redirect(serviceRedirectUrl))
+  private def redirectToSubscription(redirectName: String): Future[Result] = {
+    Future.successful(Redirect(appConfig.serviceRedirectUrl(redirectName)))
   }
 
-}
-
-object SubscriptionController extends SubscriptionController {
-  val authConnector = AuthClientConnector
-
-  // $COVERAGE-OFF$
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  // $COVERAGE-ON$
 }

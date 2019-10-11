@@ -16,56 +16,52 @@
 
 package controllers
 
-import config.AuthClientConnector
-import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
-import controllers.auth.{AuthFunctionality, ExternalUrls}
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, DiscardingCookie}
-import play.api.{Logger, Play}
-import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
+import config.ApplicationConfig
+import connectors.AtedSubscriptionDataCacheConnector
+import controllers.auth.AuthFunctionality
+import javax.inject.Inject
+import play.api.Logger
+import play.api.mvc.{Action, AnyContent, DiscardingCookie, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-object ApplicationController extends ApplicationController {
-  // $COVERAGE-OFF$
-  val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  val authConnector = AuthClientConnector
-  // $COVERAGE-ON$
-}
+import scala.concurrent.ExecutionContext
 
-trait ApplicationController extends FrontendController with AuthFunctionality {
+class ApplicationController @Inject()(mcc: MessagesControllerComponents,
+                                      dataCacheConnector: AtedSubscriptionDataCacheConnector,
+                                      val authConnector: DefaultAuthConnector,
+                                      implicit val appConfig: ApplicationConfig
+                                     ) extends FrontendController(mcc) with AuthFunctionality {
 
-  val dataCacheConnector: DataCacheConnector
+  implicit val ec: ExecutionContext = mcc.executionContext
 
-  import play.api.Play.current
-
-  def unauthorised() = UnauthorisedAction { implicit request =>
+  def unauthorised(): Action[AnyContent] = Action { implicit request =>
     Ok(views.html.unauthorised())
   }
 
-  def cancel() = UnauthorisedAction { implicit request =>
-
-    val serviceRedirectUrl: Option[String] = Play.configuration.getString(s"cancelRedirectUrl")
-    Redirect(serviceRedirectUrl.getOrElse("https://www.gov.uk/"))
+  def cancel(): Action[AnyContent] = Action { implicit request =>
+    Redirect(appConfig.cancelRedirectUrl)
   }
 
-  def logout = UnauthorisedAction { implicit request =>
-    Redirect(ExternalUrls.logoutPath)
+  def logout: Action[AnyContent] = Action { implicit request =>
+    Redirect(appConfig.logoutPath)
   }
 
-  def keepAlive = UnauthorisedAction { implicit request =>
+  def keepAlive: Action[AnyContent] = Action { implicit request =>
     Ok("OK")
   }
 
-  def redirectToAtedStart = UnauthorisedAction {
+  def redirectToAtedStart: Action[AnyContent] = Action {
     implicit request =>
-      Redirect(ExternalUrls.atedStartPath).discardingCookies(DiscardingCookie("mdtp"))
+      Redirect(appConfig.atedStartPath).discardingCookies(DiscardingCookie("mdtp"))
   }
 
-  def redirectToLogout = UnauthorisedAction {
+  def redirectToLogout: Action[AnyContent] = Action {
     implicit request =>
-      Redirect(ExternalUrls.logoutPath)
+      Redirect(appConfig.logoutPath)
   }
 
-  def unauthorisedAssistant = UnauthorisedAction {
+  def unauthorisedAssistant: Action[AnyContent] = Action {
     implicit request => Ok(views.html.unauthorisedAssistant())
   }
 
@@ -74,7 +70,7 @@ trait ApplicationController extends FrontendController with AuthFunctionality {
       dataCacheConnector.clearCache.map { x =>
         x.status match {
           case OK | NO_CONTENT =>
-            Logger.info(s"session has been cleared")
+            Logger.info("session has been cleared")
             Ok
           case errorStatus =>
             Logger.error(s"session has not been cleared for ATED_SUBSCRIPTION. Status: $errorStatus, Error: ${x.body}")

@@ -16,27 +16,26 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import connectors.BusinessCustomerFrontendConnector
-import controllers.auth.{AuthFunctionality, ExternalUrls}
+import controllers.auth.AuthFunctionality
+import javax.inject.Inject
 import models.ReviewDetails
 import org.joda.time.LocalDate
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-object AgentConfirmationController extends AgentConfirmationController {
-  override val authConnector = AuthClientConnector
-  override val businessCustomerFEConnector: BusinessCustomerFrontendConnector = BusinessCustomerFrontendConnector
-}
+class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
+                                            businessCustomerFEConnector: BusinessCustomerFrontendConnector,
+                                            val authConnector: DefaultAuthConnector,
+                                            implicit val appConfig: ApplicationConfig
+                                           ) extends FrontendController(mcc) with AuthFunctionality {
 
-trait AgentConfirmationController extends FrontendController with AuthFunctionality {
-
-  val businessCustomerFEConnector: BusinessCustomerFrontendConnector
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view: Action[AnyContent] = Action.async {
     implicit request =>
@@ -54,7 +53,7 @@ trait AgentConfirmationController extends FrontendController with AuthFunctional
   def continue: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Redirect(ExternalUrls.agentAtedSummaryPath))
+        Future.successful(Redirect(appConfig.agentAtedSummaryPath))
       }
   }
 }

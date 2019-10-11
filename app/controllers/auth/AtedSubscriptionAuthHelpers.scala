@@ -16,21 +16,18 @@
 
 package controllers.auth
 
+import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
-import play.api.Play
 import play.api.i18n.Messages
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.RunMode
 import utils.AuthUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AtedSubscriptionAuthHelpers extends RunMode {
+trait AtedSubscriptionAuthHelpers {
   self: AuthFunctionality =>
-
-  import play.api.Play.current
 
   def agentAction(f: AtedSubscriptionAuthData => Future[Result])
                  (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Result] = {
@@ -47,9 +44,9 @@ trait AtedSubscriptionAuthHelpers extends RunMode {
   }
 
   def clientAction(f: AtedSubscriptionAuthData => Future[Result])
-                  (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Result] = {
+                  (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
     def redirectToSubscription(redirectName: String): Result = {
-      val serviceRedirectUrl: String = Play.configuration.getString(redirectName).getOrElse("/business-customer/ATED")
+      val serviceRedirectUrl: String = appConfig.serviceRedirectUrl(redirectName)
       Redirect(serviceRedirectUrl)
     }
 

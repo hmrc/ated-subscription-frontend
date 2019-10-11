@@ -14,7 +14,8 @@
  * limitations under the License.
  *@
 
-@(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+@import config.ApplicationConfig
+@(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
@@ -24,8 +25,8 @@
 @implicitFormInstance = @{ Some(areYouAnAgentForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/subscription.js")'></script>
-  <script src='@controllers.routes.AssetsController.at("javascript/show-hide-content.js")'></script>
+  <script src='@controllers.routes.Assets.at("javascript/subscription.js")'></script>
+  <script src='@controllers.routes.Assets.at("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
 
@@ -40,18 +41,18 @@
   </script>
 }
 
-@atedNoAuthMain(title = Messages("ated.client-startpage-title"), userLoggedIn = true, pageScripts = Some(pageScripts)) {
+@atedNoAuthMain(title = messages("ated.client-startpage-title"), userLoggedIn = true, pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(None, "client-startpage-subheader", Messages("ated.registration-subheader"), "client-startpage-header", Messages("ated.client-startpage-header"),
+  @pageHeadersAndError(None, "client-startpage-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.client-startpage-header"),
 Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general")))
 
   @form(action = controllers.routes.SubscriptionController.continue) {
 
     <div class="form-group" id="isAgent">
       @atedInputRadioGroupReveal(areYouAnAgentForm("isAgent"),
-        Seq("true" -> (Messages("ated.radio.yes.label"), Some("hidden-isAnAgent")),
-            "false" -> (Messages("ated.radio.no.label"), None)),
-        '_legend -> Messages("ated.client-startpage-header"),
+        Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-isAnAgent")),
+            "false" -> (messages("ated.radio.no.label"), None)),
+        '_legend -> messages("ated.client-startpage-header"),
         '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
@@ -59,13 +60,13 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
         '_trackGA -> true)
 
         <div id="hidden-isAnAgent" class="panel-indent js-hidden">
-          @Html(Messages("ated.claim-relief.agent-claiming-true.info", ExternalUrls.signIn))
+          @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
         </div>
     </div>
-    <button id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@Messages("ated.client-startpage-continue")</button>
+    <button id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@messages("ated.client-startpage-continue")</button>
 
   }
   <div class="form-group">
-    <a class="button" role="button" id="signOut" href="@routes.ApplicationController.logout()" onkeyup='spaceBarHandler(event,"@routes.ApplicationController.logout()")'>@Messages("ated.sign-out")</a>
+    <a class="button" role="button" id="signOut" href="@controllers.routes.ApplicationController.logout()" onkeyup='spaceBarHandler(event,"@controllers.routes.ApplicationController.logout()")'>@messages("ated.sign-out")</a>
   </div>
 }

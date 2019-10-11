@@ -16,27 +16,25 @@
 
 package controllers.nonUKReg
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import connectors.AgentClientMandateFrontendConnector
 import controllers.auth.AuthFunctionality
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import javax.inject.Inject
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{MandateService, RegisterUserService}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait DeclarationController extends FrontendController with AuthFunctionality {
-
-
-
-  def registerEmacUserService: RegisterUserService
-
-  def mandateService: MandateService
-
-  def agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector
+class DeclarationController @Inject()(mcc: MessagesControllerComponents,
+                                      registerEmacUserService: RegisterUserService,
+                                      mandateService: MandateService,
+                                      agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector,
+                                      val authConnector: DefaultAuthConnector,
+                                      implicit val appConfig: ApplicationConfig
+                                     ) extends FrontendController(mcc)  with AuthFunctionality {
+  implicit val ec: ExecutionContext = mcc.executionContext
 
   def view: Action[AnyContent] = Action.async {
     implicit request =>
@@ -50,14 +48,14 @@ trait DeclarationController extends FrontendController with AuthFunctionality {
       authoriseFor { implicit data =>
         agentClientFrontendMandateConnector.getOldMandateDetails flatMap {
           case Some(mandateFound) =>
-            mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { mandateResponse =>
+            mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { _ =>
               Future.successful(Redirect(routes.ConfirmationController.view()))
             }
           case None =>
             registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
-              val (etmpSubscriptionResponse, emacEnrolResponse) = response
+              val (etmpSubscriptionResponse, _) = response
               val atedRefNo = etmpSubscriptionResponse.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
-              mandateService.createMandateForNonUK(atedRefNo) flatMap { mandateResponse =>
+              mandateService.createMandateForNonUK(atedRefNo) flatMap { _ =>
                 Future.successful(Redirect(routes.ConfirmationController.view()))
               }
             }
@@ -68,13 +66,4 @@ trait DeclarationController extends FrontendController with AuthFunctionality {
   def getBackLink: Some[String] = {
     Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
   }
-}
-
-object DeclarationController extends DeclarationController {
-  // $COVERAGE-OFF$
-  val authConnector = AuthClientConnector
-  val registerEmacUserService: RegisterUserService = RegisterUserService
-  val mandateService: MandateService = MandateService
-  val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = AgentClientMandateFrontendConnector
-  // $COVERAGE-ON$
 }

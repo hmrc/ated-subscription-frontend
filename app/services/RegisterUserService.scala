@@ -16,8 +16,9 @@
 
 package services
 
-import config.AuthClientConnector
+import config.ApplicationConfig
 import connectors._
+import javax.inject.Inject
 import models._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
@@ -26,23 +27,25 @@ import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import utils.AtedSubscriptionUtils.validateGroupId
-import utils.{AtedSubscriptionUtils, GovernmentGatewayConstants, SessionUtils}
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import utils.SessionUtils
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
+class RegisterUserService @Inject()(appConfig: ApplicationConfig,
+                                    atedSubscriptionConnector: AtedSubscriptionConnector,
+                                    dataCacheConnector: AtedSubscriptionDataCacheConnector,
+                                    registeredBusinessService: RegisteredBusinessService,
+                                    taxEnrolmentsConnector: TaxEnrolmentsConnector,
+                                    val authConnector: DefaultAuthConnector
+                                   ) extends AuthorisedFunctions {
 
-trait RegisterUserService extends AuthorisedFunctions {
-
-  val atedSubscriptionConnector: AtedSubscriptionConnector
-  val dataCacheConnector: DataCacheConnector
-  val registeredBusinessService: RegisteredBusinessService
-  val taxEnrolmentsConnector : TaxEnrolmentsConnector
   val enrolmentType = "principal"
 
-  def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, request: Request[_]): Future[(SubscribeSuccessResponse, HttpResponse)] = {
+  def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)
+                   (implicit user: AtedSubscriptionAuthData,
+                    hc: HeaderCarrier, request: Request[_],
+                    ec: ExecutionContext): Future[(SubscribeSuccessResponse, HttpResponse)] = {
     for {
       businessDetails <- registeredBusinessService.getReviewBusinessDetails
       address <- dataCacheConnector.fetchCorrespondenceAddress
@@ -75,7 +78,7 @@ trait RegisterUserService extends AuthorisedFunctions {
         } else {
               authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
               case Credentials(ggCred, _) ~ Some(groupId) =>
-                val grpId = validateGroupId(groupId)
+                val grpId = appConfig.atedSubsUtils.validateGroupId(groupId)
                 val requestPayload = createEMACEnrolRequest(atedSubscriptionSuccess,ggCred,
                   businessDetails.utr, businessDetails.businessAddress.postcode,
                   businessDetails.safeId)
@@ -98,9 +101,10 @@ trait RegisterUserService extends AuthorisedFunctions {
 
     def verifiers = (utr, postcode) match {
       case (Some(uniqueTaxRef), Some(ukClientPostCode)) =>
-        List(Verifier(GovernmentGatewayConstants.VerifierPostalCode, ukClientPostCode), Verifier(GovernmentGatewayConstants.VerifierCtUtr, uniqueTaxRef))
+        List(Verifier("Postcode", ukClientPostCode), Verifier("CTUTR", uniqueTaxRef))
       case (None, Some(nonUkClientPostCode)) =>
-        List(Verifier(GovernmentGatewayConstants.VerifierNonUKPostalCode, nonUkClientPostCode)) //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
+        List(Verifier("NonUKPostalCode", nonUkClientPostCode))
+      //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
       case (Some(uniqueTaxRef), None) =>
         throw new RuntimeException(s"[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode must be supplied")
       case (None, None) =>
@@ -108,7 +112,7 @@ trait RegisterUserService extends AuthorisedFunctions {
     }
 
     RequestEMACPayload(userId = gGCredId,
-      friendlyName = GovernmentGatewayConstants.FRIENDLY_NAME,
+      friendlyName = "ATED Enrolment",
       `type` = enrolmentType,
       verifiers = verifiers)
   }
@@ -119,7 +123,7 @@ trait RegisterUserService extends AuthorisedFunctions {
       addressLine2 = address.line_2,
       addressLine3 = address.line_3,
       addressLine4 = address.line_4,
-      postalCode = AtedSubscriptionUtils.formatPostCode(address.postcode),
+      postalCode = appConfig.atedSubsUtils.formatPostCode(address.postcode),
       countryCode = address.country)
     etmpAddress
   }
@@ -135,14 +139,4 @@ trait RegisterUserService extends AuthorisedFunctions {
       emailAddress = email)
   }
 
-}
-
-object RegisterUserService extends RegisterUserService {
-  // $COVERAGE-OFF$
-  val registeredBusinessService = RegisteredBusinessService
-  val atedSubscriptionConnector = AtedSubscriptionConnector
-  val dataCacheConnector = AtedSubscriptionDataCacheConnector
-  override val authConnector = AuthClientConnector
-  val taxEnrolmentsConnector: TaxEnrolmentsConnector = TaxEnrolmentsConnector
-  // $COVERAGE-ON$
 }

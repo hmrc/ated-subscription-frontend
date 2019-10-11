@@ -16,54 +16,51 @@
 
 package controllers
 
-import config.AuthClientConnector
-import connectors.{AtedSubscriptionDataCacheConnector, DataCacheConnector}
-import controllers.auth.{AuthFunctionality, ExternalUrls}
+import config.ApplicationConfig
+import connectors.AtedSubscriptionDataCacheConnector
+import controllers.auth.AuthFunctionality
 import forms.AtedForms._
+import javax.inject.Inject
 import models.BusinessAddress
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{CorrespondenceAddressService, RegisteredBusinessService}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.AtedSubscriptionUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
+class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
+                                             registeredBusinessService: RegisteredBusinessService,
+                                             correspondenceAddressService: CorrespondenceAddressService,
+                                             dataCacheConnector: AtedSubscriptionDataCacheConnector,
+                                             val authConnector: DefaultAuthConnector,
+                                             implicit val appConfig: ApplicationConfig
+                                            ) extends FrontendController(mcc) with AuthFunctionality {
 
-object RegisteredBusinessController extends RegisteredBusinessController {
-  val authConnector = AuthClientConnector
-  val registeredBusinessService = RegisteredBusinessService
-  val correspondenceAddressService = CorrespondenceAddressService
-  val dataCacheConnector = AtedSubscriptionDataCacheConnector
-}
+  implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
+  implicit val ec: ExecutionContext = mcc.executionContext
 
-
-trait RegisteredBusinessController extends FrontendController with AuthFunctionality {
-
-  val registeredBusinessService: RegisteredBusinessService
-  val correspondenceAddressService: CorrespondenceAddressService
-  val dataCacheConnector: DataCacheConnector
-
-  def registeredBusinessAddress = Action.async {
+  def registeredBusinessAddress: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
         for {
           businessReg <- dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession
           address <- registeredBusinessService.getDefaultCorrespondenceAddress
         }
-          yield Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(businessReg.getOrElse(BusinessAddress())), address, Some(ExternalUrls.backToBusinessCustomerUrl)))
+          yield Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl)))
       }
   }
 
 
 
-  def continue = Action.async {
+  def continue: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
         businessAddressForm.bindFromRequest.fold(
           formWithErrors => {
             registeredBusinessService.getDefaultCorrespondenceAddress map { address =>
-              BadRequest(views.html.registeredBusinessAddress(formWithErrors, address, Some(ExternalUrls.backToBusinessCustomerUrl)))
+              BadRequest(views.html.registeredBusinessAddress(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
             }
           },
           businessAddressData => {
@@ -72,7 +69,7 @@ trait RegisteredBusinessController extends FrontendController with AuthFunctiona
             if (isCorrespondenceAddress) {
               for {
                 address <- registeredBusinessService.getDefaultCorrespondenceAddress
-                correspondenceAddress <- correspondenceAddressService.saveCorrespondenceAddress(address)
+                _ <- correspondenceAddressService.saveCorrespondenceAddress(address)
               } yield {
                 Redirect(controllers.routes.ContactDetailsController.editDetails(Some("skip")))
               }

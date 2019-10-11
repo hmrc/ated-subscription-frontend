@@ -16,12 +16,12 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class SubscribeSuccessResponse(processingDate: Option[String], atedRefNumber: Option[String], formBundleNumber: Option[String])
 
 object SubscribeSuccessResponse {
-  implicit val formats = Json.format[SubscribeSuccessResponse]
+  implicit val formats: OFormat[SubscribeSuccessResponse] = Json.format[SubscribeSuccessResponse]
 }
 
 case class EtmpAddressDetails(addressType: String,
@@ -33,7 +33,7 @@ case class EtmpAddressDetails(addressType: String,
                        countryCode: String)
 
 object EtmpAddressDetails {
-  implicit val formats = Json.format[EtmpAddressDetails]
+  implicit val formats: OFormat[EtmpAddressDetails] = Json.format[EtmpAddressDetails]
 }
 
 case class EtmpContactDetails(phoneNumber: Option[String],
@@ -42,7 +42,7 @@ case class EtmpContactDetails(phoneNumber: Option[String],
                               emailAddress: Option[String])
 
 object EtmpContactDetails {
-  implicit val formats = Json.format[EtmpContactDetails]
+  implicit val formats: OFormat[EtmpContactDetails] = Json.format[EtmpContactDetails]
 }
 
 case class EtmpCorrespondence(name1: String,
@@ -51,7 +51,7 @@ case class EtmpCorrespondence(name1: String,
                               contactDetails: EtmpContactDetails)
 
 object EtmpCorrespondence {
-  implicit val formats = Json.format[EtmpCorrespondence]
+  implicit val formats: OFormat[EtmpCorrespondence] = Json.format[EtmpCorrespondence]
 }
 
 case class SubscribeData(acknowledgementReference: String,
@@ -63,5 +63,5 @@ case class SubscribeData(acknowledgementReference: String,
                          knownFactPostcode: Option[String])
 
 object SubscribeData {
-  implicit val formats = Json.format[SubscribeData]
+  implicit val formats: OFormat[SubscribeData] = Json.format[SubscribeData]
 }

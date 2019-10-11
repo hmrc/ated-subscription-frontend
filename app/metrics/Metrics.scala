@@ -16,44 +16,36 @@
 
 package metrics
 
-import com.codahale.metrics.Timer
+import com.codahale.metrics.{Counter, MetricRegistry, Timer}
 import com.codahale.metrics.Timer.Context
+import javax.inject.Inject
 import metrics.MetricsEnum.MetricsEnum
-import uk.gov.hmrc.play.graphite.MicroserviceMetrics
 
-trait Metrics {
+class Metrics {
 
-  def startTimer(api: MetricsEnum): Timer.Context
-  def incrementSuccessCounter(api: MetricsEnum): Unit
-  def incrementFailedCounter(api: MetricsEnum): Unit
+  val registry = new MetricRegistry
 
-}
-
-object Metrics extends Metrics with MicroserviceMetrics{
-
-  val registry = metrics.defaultRegistry
-  val timers = Map(
+  val timers: Map[metrics.MetricsEnum.Value, Timer] = Map(
       MetricsEnum.GG_CLIENT_ENROL -> registry.timer("gg-enrol-client-ated-response-timer"),
       MetricsEnum.API4Enrolment -> registry.timer("api4-enrolment-response-timer"),
-      MetricsEnum.API10DeEnrolment -> metrics.defaultRegistry.timer("api10-de-enrolment-response-timer")
+      MetricsEnum.API10DeEnrolment -> registry.timer("api10-de-enrolment-response-timer")
   )
 
-  val successCounters = Map(
+  val successCounters: Map[metrics.MetricsEnum.Value, Counter] = Map(
     MetricsEnum.GG_CLIENT_ENROL -> registry.counter("gg-enrol-client-ated-success-counter"),
-    MetricsEnum.API4Enrolment -> metrics.defaultRegistry.counter("api4-enrolment-success"),
-    MetricsEnum.API10DeEnrolment -> metrics.defaultRegistry.counter("api10-de-enrolment-success")
+    MetricsEnum.API4Enrolment -> registry.counter("api4-enrolment-success"),
+    MetricsEnum.API10DeEnrolment -> registry.counter("api10-de-enrolment-success")
   )
 
-  val failedCounters = Map(
+  val failedCounters: Map[metrics.MetricsEnum.Value, Counter] = Map(
     MetricsEnum.GG_CLIENT_ENROL -> registry.counter("gg-enrol-client-ated-failed-counter"),
-    MetricsEnum.API4Enrolment -> metrics.defaultRegistry.counter("api4-enrolment-failed"),
-    MetricsEnum.API10DeEnrolment -> metrics.defaultRegistry.counter("api10-de-enrolment-failed")
+    MetricsEnum.API4Enrolment -> registry.counter("api4-enrolment-failed"),
+    MetricsEnum.API10DeEnrolment -> registry.counter("api10-de-enrolment-failed")
   )
 
-  override def startTimer(api: MetricsEnum): Context = timers(api).time()
+  def startTimer(api: MetricsEnum): Context = timers(api).time()
 
-  override def incrementSuccessCounter(api: MetricsEnum): Unit = successCounters(api).inc()
+  def incrementSuccessCounter(api: MetricsEnum): Unit = successCounters(api).inc()
 
-  override def incrementFailedCounter(api: MetricsEnum): Unit = failedCounters(api).inc()
-
+  def incrementFailedCounter(api: MetricsEnum): Unit = failedCounters(api).inc()
 }

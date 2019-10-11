@@ -16,6 +16,7 @@
 
 package controllers.auth
 
+import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
 import org.apache.commons.codec.binary.Base64.encodeBase64String
 import org.apache.commons.codec.digest.DigestUtils
@@ -33,10 +34,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait AuthFunctionality extends AuthorisedFunctions {
 
+  val appConfig: ApplicationConfig
+
   val agentEnrolment = "HMRC-AGENT-AGENT"
   val atedEnrolment = "HMRC-ATED-ORG"
 
-  lazy val signInUrl: String = ExternalUrls.loginURL
+  lazy val signInUrl: String = appConfig.loginURL
   val origin: String = "ated-subscription-frontend"
 
   def loginParams: Map[String, Seq[String]] = Map(
@@ -70,9 +73,9 @@ trait AuthFunctionality extends AuthorisedFunctions {
           ))
       } recover {
         case _: MissingBearerToken =>
-          Redirect(ExternalUrls.loginURL, loginParams)
+          Redirect(appConfig.loginURL, loginParams)
         case er: AuthorisationException =>
-          Logger.error(s"[recoverAuthorisedCalls] Auth exception: $er")
+          Logger.error(s"[authoriseFor] Auth exception: $er")
           Redirect(controllers.routes.ApplicationController.unauthorised().url)
       }
   }

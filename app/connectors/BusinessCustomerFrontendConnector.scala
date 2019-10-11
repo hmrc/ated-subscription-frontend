@@ -16,41 +16,25 @@
 
 package connectors
 
-import config.WSHttp
-import play.api.Mode.Mode
+import config.ApplicationConfig
+import javax.inject.Inject
 import play.api.mvc.Request
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.{CoreGet, HttpResponse}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait BusinessCustomerFrontendConnector extends ServicesConfig  with RawResponseReads with HeaderCarrierForPartialsConverter {
+class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
+                                                   http: DefaultHttpClient)
+  extends RawResponseReads {
 
-  def serviceUrl: String = baseUrl("business-customer-frontend")
+  val serviceUrl: String = appConfig.serviceUrlBC
   val businessCustomerUri = "business-customer"
   val reviewDetailsUri = "fetch-review-details"
   val service = "ATED"
-  val http: CoreGet
 
-  def getReviewDetails(implicit request: Request[_]): Future[HttpResponse] = {
+  def getReviewDetails(implicit request: Request[_], ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
     http.GET(getUrl)
   }
-}
-
-object BusinessCustomerFrontendConnector extends BusinessCustomerFrontendConnector {
-  // $COVERAGE-OFF$
-  val http = WSHttp
-  override def crypto: (String) => String = new SessionCookieCryptoFilter(new ApplicationCrypto(Play.current.configuration.underlying)).encrypt _
-
-
-  override protected def mode: Mode = Play.current.mode
-
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  // $COVERAGE-ON$
 }

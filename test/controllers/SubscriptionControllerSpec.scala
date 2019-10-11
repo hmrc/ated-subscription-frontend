@@ -23,36 +23,18 @@ import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.Mode.Mode
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.auth.core.AuthConnector
+import testHelpers.AtedTestHelper
 
 import scala.concurrent.Future
 
 
-class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val mockAuthConnector = mock[AuthConnector]
-
-  object TestSubscriptionController extends SubscriptionController {
-    val authConnector = mockAuthConnector
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
-
-  object TestSubscriptionControllerWhiteListing extends SubscriptionController {
-    val authConnector = mockAuthConnector
-
-    override protected def mode: Mode = Play.current.mode
-
-    override protected def runModeConfiguration: Configuration = Play.current.configuration
-  }
+  val testSubscriptionController = new SubscriptionController(mockMCC, mockAuthConnector, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -290,7 +272,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def getWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -298,7 +280,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def getWithAuthorisedAgentThroughUserLink(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    val result = TestSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -306,21 +288,21 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def getWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = TestSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    val result = TestSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -328,7 +310,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def getWithAuthorisedAgentAssistant(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgentAssistant(userId, mockAuthConnector)
-    val result = TestSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -336,7 +318,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def subscribeAgentWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -344,7 +326,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def submitWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
+    val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
 
     test(result)
   }
@@ -352,21 +334,21 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def submitWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    val result = TestSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
   def submitWithUnAuthenticated(test: Future[Result] => Any) {
     AuthBuilder.mockUnAuthorisedUserNotLogged(mockAuthConnector)
-    val result = TestSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
   def appointWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestSubscriptionController.appoint.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.appoint.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -374,7 +356,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def registerWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
+    val result = testSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
 
     test(result)
   }
@@ -382,7 +364,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def registerWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    val result = TestSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -390,7 +372,7 @@ class SubscriptionControllerSpec extends PlaySpec with OneServerPerSuite with Mo
   def registerWithAuthorisedAgentAssistant(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgentAssistant(userId, mockAuthConnector)
-    val result = TestSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }

@@ -16,6 +16,7 @@
 
 package controllers.auth
 
+import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -35,12 +36,14 @@ import scala.concurrent.Future
 class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite {
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   class Setup {
     val controllerHarness: AuthFunctionality = new AuthFunctionality {
       override val authConnector: AuthConnector = mockAuthConnector
+      override val appConfig: ApplicationConfig = mockAppConfig
     }
   }
 

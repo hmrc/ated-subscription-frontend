@@ -19,7 +19,7 @@ package metrics
 object MetricsEnum extends Enumeration {
 
   type MetricsEnum = Value
-  val GG_CLIENT_ENROL = Value
-  val API4Enrolment = Value
-  val API10DeEnrolment = Value
+  val GG_CLIENT_ENROL: metrics.MetricsEnum.Value = Value
+  val API4Enrolment: metrics.MetricsEnum.Value = Value
+  val API10DeEnrolment: metrics.MetricsEnum.Value = Value
 }

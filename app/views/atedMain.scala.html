@@ -14,22 +14,23 @@
  * limitations under the License.
  *@
 
+@import config.ApplicationConfig
 @(title: String,
     userLoggedIn: Boolean = true,
     supportLinkEnabled: Boolean = true,
     pageScripts: Option[Html] = None,
     sidebarLinks: Option[Html] = None,
     sidebarClass: Option[String] = None
-)(mainContent: Html)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+)(mainContent: Html)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @linkElement = {
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("stylesheets/ated-subscription.css")'/>
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.min.css")'/>
-  <link rel="stylesheet" href='@controllers.routes.AssetsController.at("jquery/jquery-ui.structure.min.css")'/>
+  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/ated-subscription.css")'/>
+  <link rel="stylesheet" href='@routes.Assets.at("jquery/jquery-ui.min.css")'/>
+  <link rel="stylesheet" href='@routes.Assets.at("jquery/jquery-ui.structure.min.css")'/>
 }
 
 @main(
-    applicationConfig = config.ApplicationConfig,
+    applicationConfig = appConfig,
     supportLinkEnabled = supportLinkEnabled,
     title = title,
     sidebarLinks = sidebarLinks,

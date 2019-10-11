@@ -16,46 +16,69 @@
 
 package config
 
-import play.api.Mode.Mode
-import play.api.Play._
-import play.api.{Configuration, Play}
-import uk.gov.hmrc.play.config.ServicesConfig
+import javax.inject.Inject
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import utils.AtedSubscriptionUtils
 
-trait ApplicationConfig {
+import scala.util.Try
 
-  val defaultBetaFeedbackUrl: String
-  def betaFeedbackUrl(returnUri: String): String
-  val betaFeedbackUnauthenticatedUrl: String
-  val analyticsToken: Option[String]
-  val analyticsHost: String
-  val reportAProblemPartialUrl: String
-  val reportAProblemNonJSUrl: String
-  val defaultTimeoutSeconds: Int
-  val timeoutCountdown: Int
-}
+class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
+                                  val atedSubsUtils: AtedSubscriptionUtils) {
 
-object ApplicationConfig extends ApplicationConfig with ServicesConfig {
+  lazy val appName: String = servicesConfig.getConfString("appName", "ated-subscription-frontend")
+  lazy val serviceUrlACMFrontend: String = servicesConfig.baseUrl("agent-client-mandate-frontend")
+  lazy val serviceUrlACM: String = servicesConfig.baseUrl("agent-client-mandate")
+  lazy val serviceUrlAted: String = servicesConfig.baseUrl("ated")
+  lazy val serviceUrlAtedSub: String = servicesConfig.baseUrl("ated-subscription")
+  lazy val serviceUrlGG: String = servicesConfig.baseUrl("government-gateway")
+  lazy val serviceUrlTaxEnrol: String = servicesConfig.baseUrl("tax-enrolments")
+  lazy val serviceUrlBC: String = servicesConfig.baseUrl("business-customer-frontend")
+  
+  private val contactFormServiceIdentifier: String = "ATED"
+  private val contactHost: String = servicesConfig.getConfString("contact-frontend.host", "")
+  def betaFeedbackUrl(returnUri: String): String = servicesConfig.getConfString("beta-feedback-url", defaultBetaFeedbackUrl) + "?return=" + returnUri
 
-  override protected def mode: Mode = Play.current.mode
+  lazy val defaultBetaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
+  lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
+  lazy val analyticsToken: Option[String] = Try(servicesConfig.getString("google-analytics.token")).toOption
+  lazy val analyticsHost: String = servicesConfig.getConfString("google-analytics.host","auto")
+  lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  lazy val defaultTimeoutSeconds: Int = servicesConfig.getInt("defaultTimeoutSeconds")
+  lazy val timeoutCountdown: Int = servicesConfig.getInt("timeoutCountdown")
 
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
 
-  private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing key: $key"))
+  //ExternalUrls
+  def serviceRedirectUrl(redirectName: String): String = servicesConfig.getString(redirectName)
 
-  private val contactHost = configuration.getString("contact-frontend.host").getOrElse("")
+  lazy val cancelRedirectUrl: String = servicesConfig.getConfString("cancelRedirectUrl", "https://www.gov.uk/")
+  lazy val companyAuthHost: String = s"${servicesConfig.getConfString("auth.company-auth.host", "")}"
+  lazy val loginCallback: String = servicesConfig.getConfString("auth.login-callback.url", "/ated-subscription/start")
+  lazy val loginPath: String = s"${servicesConfig.getConfString("auth.login-path", "")}"
+  lazy val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
+  lazy val loginURL: String = s"$companyAuthHost/gg/$loginPath"
+  lazy val signOut: String = s"$companyAuthHost/gg/sign-out"
 
-  val contactFormServiceIdentifier = "ATED"
+  lazy val logoutPath: String = servicesConfig.getConfString("ated-frontend.logoutUrl", "/ated/logout")
+  lazy val atedStartPath: String = servicesConfig.getConfString("ated-frontend.atedStartRedirectUrl", "/ated/home")
 
-  override lazy val defaultBetaFeedbackUrl = s"$contactHost/contact/beta-feedback"
-  override def betaFeedbackUrl(returnUri: String) = {
-    configuration.getString("beta-feedback-url").getOrElse(defaultBetaFeedbackUrl) + "?return=" + returnUri
-  }
+  lazy val reviewDetailsPath: String = servicesConfig.getConfString(
+    "business-customer.reviewDetailsUrl","/business-customer/review-details/ATED")
+  lazy val agentAtedSummaryPath: String = servicesConfig.getConfString(
+    "agent-client-mandate-frontend.agentAtedSummaryUrl", "/mandate/agent/summary")
+  lazy val clientDisplayNameEditPath: String = servicesConfig.getConfString(
+    "agent-client-mandate-frontend.clientDisplayNameEditUrl", "/mandate/agent/client-display-name/edit")
+  lazy val agentEmailEditPath: String = servicesConfig.getConfString(
+    "agent-client-mandate-frontend.agentEmailEditUrl", "/mandate/agent/email/edit")
 
-  override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
-  override lazy val analyticsToken: Option[String] = configuration.getString("google-analytics.token")
-  override lazy val analyticsHost: String = configuration.getString("google-analytics.host").getOrElse("auto")
-  override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val defaultTimeoutSeconds: Int = loadConfig("defaultTimeoutSeconds").toInt
-  override lazy val timeoutCountdown: Int = loadConfig("timeoutCountdown").toInt
+  lazy val businessNameAndAddressEditUrl: String = servicesConfig.getConfString(
+    "business-customer.businessNameAndAddressEditUrl",
+    "/business-customer/non-uk-client/ATED/edit?redirectUrl=/ated-subscription/review-business-details")
+
+  lazy val overseasTaxReferenceEditUrl: String = servicesConfig.getConfString("business-customer.overseasTaxReferenceEditUrl",
+    "/business-customer/register/non-uk-client/edit-overseas-company/ATED/true?redirectUrl=/ated-subscription/review-business-details")
+
+  lazy val backToBusinessCustomerUrl: String = servicesConfig.getConfString("business-customer.backLinkUrl",
+    "/business-customer/back-link/ATED")
+
 }

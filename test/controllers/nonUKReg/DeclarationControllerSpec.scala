@@ -26,18 +26,58 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.libs.json.Json
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{MandateService, RegisterUserService}
-import uk.gov.hmrc.auth.core.AuthConnector
+import services.MandateService
+import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 
-class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
+class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+
+  val mockMandateService: MandateService = mock[MandateService]
+  val mockAgentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
+
+  val testDeclarationControllerWithEMAC: DeclarationController =
+    new DeclarationController(mockMCC, mockRegisterUserService, mockMandateService, mockAgentClientFrontendMandateConnector, mockAuthConnector, mockAppConfig)
+
+  override def beforeEach(): Unit = {
+    reset(mockAuthConnector)
+    reset(mockRegisterUserService)
+    reset(mockMandateService)
+    reset(mockAgentClientFrontendMandateConnector)
+  }
+
+  def viewWithAuthorisedUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val result = testDeclarationControllerWithEMAC.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def succResp(ated: Option[String] = None) = SubscribeSuccessResponse(None, ated, Some("formBundleNo"))
+  val enrolResp: JsValue = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
+
+  def submitWithAuthorisedUserForEmac(request: FakeRequest[AnyContentAsFormUrlEncoded], ated: Option[String] = None,
+                                      oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(oldMandateRef))
+    when(mockRegisterUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(succResp(ated), HttpResponse(CREATED, Some(enrolResp))))
+    when(mockMandateService.createMandateForNonUK(Matchers.eq("atedRefNum"))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(HttpResponse(CREATED)))
+    when(mockMandateService.updateMandateForNonUK(Matchers.eq("atedRefNum"), Matchers.eq("mandateId"))
+    (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
+    val result = testDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
+    test(result)
+  }
+
 
   "DeclarationController" must {
     "view" must {
@@ -55,8 +95,6 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     }
 
     "submit" must {
-
-
 
       "enrolling to EMAC" when {
 
@@ -88,49 +126,5 @@ class DeclarationControllerSpec extends PlaySpec with OneServerPerSuite with Moc
     }
   }
 
-  val mockAuthConnector = mock[AuthConnector]
-  val mockRegisterUserService = mock[RegisterUserService]
-  val mockMandateService = mock[MandateService]
-  val mockAgentClientFrontendMandateConnector = mock[AgentClientMandateFrontendConnector]
-  val mockRegisterEmacUserService = mock[RegisterUserService]
-
-  object TestDeclarationControllerWithEMAC extends DeclarationController {
-    override val authConnector = mockAuthConnector
-    override val mandateService = mockMandateService
-    override val agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mockAgentClientFrontendMandateConnector
-    override val registerEmacUserService = mockRegisterEmacUserService
-  }
-
-
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockRegisterUserService)
-    reset(mockMandateService)
-    reset(mockAgentClientFrontendMandateConnector)
-  }
-
-  def viewWithAuthorisedUser(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = TestDeclarationControllerWithEMAC.view().apply(SessionBuilder.buildRequestWithSession(userId))
-    test(result)
-  }
-
-  def succResp(ated: Option[String] = None) = SubscribeSuccessResponse(None, ated, Some("formBundleNo"))
-
-  val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
-
-
-  def submitWithAuthorisedUserForEmac(request: FakeRequest[AnyContentAsFormUrlEncoded], ated: Option[String] = None,
-                                      oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any())).thenReturn(Future.successful(oldMandateRef))
-    when(mockRegisterEmacUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(succResp(ated), HttpResponse(CREATED, Some(enrolResp))))
-    when(mockMandateService.createMandateForNonUK(Matchers.eq("atedRefNum"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
-    when(mockMandateService.updateMandateForNonUK(Matchers.eq("atedRefNum"), Matchers.eq("mandateId"))(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
-    val result = TestDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
-    test(result)
-  }
 
 }

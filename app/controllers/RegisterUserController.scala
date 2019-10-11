@@ -16,26 +16,28 @@
 
 package controllers
 
-import config.AuthClientConnector
-import controllers.auth.{AuthFunctionality, ExternalUrls}
+import config.ApplicationConfig
+import controllers.auth.AuthFunctionality
+import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.Logger
-import play.api.Play.current
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.RegisterUserService
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 import utils.AuthUtils._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait RegisterUserController extends FrontendController with AuthFunctionality {
+class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
+                                       registerUserService: RegisterUserService,
+                                       val authConnector: DefaultAuthConnector,
+                                       implicit val appConfig: ApplicationConfig
+                                      ) extends FrontendController(mcc) with AuthFunctionality {
 
 
-  val registerUserService: RegisterUserService
-
+  implicit val ec: ExecutionContext = mcc.executionContext
   private val DuplicateUserError = "duplicate user error"
   private val WrongRoleUserError = "wrong role user error"
 
@@ -44,20 +46,20 @@ trait RegisterUserController extends FrontendController with AuthFunctionality {
         if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
         else {
           registerUserService.subscribeAted() map { registerResponse =>
-            val (etmpSuccesResponse, emacEnrolResponse) = registerResponse
+            val (_, emacEnrolResponse) = registerResponse
             emacEnrolResponse.status match {
               case CREATED => Redirect(controllers.routes.RegisterUserController.confirmation())
               case BAD_REQUEST | CONFLICT =>
-                val errMessage = formatEmacErrorMessage(DuplicateUserError)
+                val (pageTitle, heading, message) = formatEmacErrorMessage(DuplicateUserError)
                 Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
-                Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
+                Ok(views.html.global_error(pageTitle, heading, message))
               case FORBIDDEN =>
-                val errMessage = formatEmacErrorMessage(WrongRoleUserError)
+                val (pageTitle, heading, message) = formatEmacErrorMessage(WrongRoleUserError)
                 Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
-                Ok(views.html.global_error(errMessage._1, errMessage._2, errMessage._3))
+                Ok(views.html.global_error(pageTitle, heading, message))
               case _ =>
-                Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - no definite reason found")
-                throw new RuntimeException(Messages("ated.business-registration.error.other"))
+                Logger.warn("[RegisterUserController][registerUser] - allocation failed - no definite reason found")
+                throw new RuntimeException("EMAC Allocate an Enrolment to a Group failed for no definite reason")
             }
 
           }
@@ -76,29 +78,21 @@ trait RegisterUserController extends FrontendController with AuthFunctionality {
   def redirectToAted: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Redirect(ExternalUrls.atedStartPath))
+        Future.successful(Redirect(appConfig.atedStartPath))
       }
   }
 
 
-  private def formatEmacErrorMessage(str: String) =
+  private def formatEmacErrorMessage(str: String): (String, String, String) =
     str match {
       case DuplicateUserError =>
-        (Messages("ated.business-registration-error.duplicate.identifier.header"),
-          Messages("ated.business-registration-error.duplicate.identifier.title"),
-          Messages("ated.business-registration-error.duplicate.identifier.message"))
+        ("ated.business-registration-error.duplicate.identifier.header",
+          "ated.business-registration-error.duplicate.identifier.title",
+          "ated.business-registration-error.duplicate.identifier.message")
       case WrongRoleUserError =>
-        (Messages("ated.business-registration-error.wrong.role.header"),
-          Messages("ated.business-registration-error.wrong.role.title"),
-          Messages("ated.business-registration-error.wrong.role.message"))
+        ("ated.business-registration-error.wrong.role.header",
+          "ated.business-registration-error.wrong.role.title",
+          "ated.business-registration-error.wrong.role.message")
     }
 
-}
-
-
-object RegisterUserController extends RegisterUserController {
-  // $COVERAGE-OFF$
-  val authConnector = AuthClientConnector
-  val registerUserService = RegisterUserService
-  // $COVERAGE-ON$
 }

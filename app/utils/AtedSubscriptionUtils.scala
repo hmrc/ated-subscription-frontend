@@ -18,16 +18,27 @@ package utils
 
 import java.util.Properties
 
-import play.api.Play
+import javax.inject.Inject
+import play.api.Environment
 
 import scala.collection.JavaConverters
 import scala.io.Source
 
+class AtedSubscriptionUtilsImpl @Inject()(val environment: Environment) extends AtedSubscriptionUtils
 
-object AtedSubscriptionUtils {
+trait AtedSubscriptionUtils {
+
+  def environment: Environment
+
+  private[utils] val readJson = {
+    environment.resourceAsStream("country-code.properties") match {
+      case Some(inputStream) => Source.fromInputStream(inputStream, "UTF-8").bufferedReader()
+      case _                 => throw new Exception("Country codes file not found")
+    }
+  }
 
   lazy val p = new Properties
-  p.load(Source.fromInputStream(Play.classloader(Play.current).getResourceAsStream("country-code.properties"), "UTF-8").bufferedReader())
+  p.load(readJson)
 
   def getIsoCodeTupleList: List[(String, String)] = {
     JavaConverters.propertiesAsScalaMapConverter(p).asScala.toList.sortBy(_._2)
@@ -48,7 +59,7 @@ object AtedSubscriptionUtils {
     getCountry(isoCode.toUpperCase).fold(isoCode) { x => x }
   }
 
-  def formatPostCode(postCode: Option[String]) = {
+  def formatPostCode(postCode: Option[String]): Option[String] = {
     postCode.map { foundPostCode =>
       val trimmedPostcode = foundPostCode.replaceAll(" ", "").toUpperCase()
       val postCodeSplit = trimmedPostcode splitAt (trimmedPostcode.length - 3)
@@ -56,7 +67,7 @@ object AtedSubscriptionUtils {
     }
   }
 
-  def validateGroupId(str: String) = if(str.trim.length != 36) {
+  def validateGroupId(str: String): String = if(str.trim.length != 36) {
     if(str.contains("testGroupId-")) str.replace("testGroupId-", "")
     else throw new RuntimeException("Invalid groupId from auth")
   } else str.trim

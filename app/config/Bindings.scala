@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package controllers.auth
+package config
 
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
-import uk.gov.hmrc.play.frontend.auth.{AuthenticationProvider, TaxRegime}
+import play.api.{Configuration, Environment}
+import play.api.inject.{Binding, Module}
+import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
+import utils.{AtedSubscriptionUtils, AtedSubscriptionUtilsImpl}
 
-object AtedSubscriptionRegime extends TaxRegime {
+class Bindings extends Module {
+	override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
+		bindDeps()
+	}
 
-  override def isAuthorised(accounts: Accounts): Boolean = accounts.agent.isDefined || accounts.org.isDefined
+	private def bindDeps() = Seq(
+		bind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
+		bind(classOf[AtedSubscriptionUtils]).to(classOf[AtedSubscriptionUtilsImpl])
 
-  override def authenticationType: AuthenticationProvider = AtedSubscriptionGovernmentGateway
-
-  override def unauthorisedLandingPage: Option[String] = Some(controllers.routes.ApplicationController.unauthorised().url)
+	)
 
 }

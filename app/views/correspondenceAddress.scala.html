@@ -22,12 +22,13 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 
-@(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages)
+@import config.ApplicationConfig
+@(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.AssetsController.at("javascript/accessible-autocomplete.min.js")'></script>
+  <script src='@routes.Assets.at("javascript/accessible-autocomplete.min.js")'></script>
   <script>
     $(document).ready(function() {
       accessibleAutocomplete.enhanceSelectElement({
@@ -37,17 +38,17 @@
   </script>
 }
 
-@atedMain(title = if(isAgent) { Messages("ated.correspondence-address.agent.title") } else { Messages("ated.correspondence-address.title") }, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {Messages("ated.correspondence-address.agent.subheader")} else {Messages("ated.correspondence-address.subheader")},
-  "correspondence-address-header", if(isAgent) {Messages("ated.correspondence-address.agent.header")} else {Messages("ated.correspondence-address.header")},
+@atedMain(title = if(isAgent) { messages("ated.correspondence-address.agent.title") } else { messages("ated.correspondence-address.title") }, pageScripts = Some(pageScripts)) {
+  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {messages("ated.correspondence-address.agent.subheader")} else {messages("ated.correspondence-address.subheader")},
+  "correspondence-address-header", if(isAgent) {messages("ated.correspondence-address.agent.header")} else {messages("ated.correspondence-address.header")},
     Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address-error.general")))
 
   <div class="form-group">
     <p id="correspondence-address-lede">
     @if(isAgent) {
-      @Messages("ated.correspondence-address.agent.lede")
+      @messages("ated.correspondence-address.agent.lede")
     } else {
-      @Messages("ated.correspondence-address.lede")
+      @messages("ated.correspondence-address.lede")
     }
     </p>
   </div>
@@ -57,34 +58,34 @@
       <fieldset id="correspondence-address-form">
         <legend class="visuallyhidden">
           @if(isAgent) {
-          @Messages("ated.correspondence-address.agent.header")
+          @messages("ated.correspondence-address.agent.header")
           } else {
-          @Messages("ated.correspondence-address.header")
+          @messages("ated.correspondence-address.header")
           }
         </legend>
 
         @atedInput(correspondenceAddressForm("line_1"),
-        '_label ->  Html(Messages("ated.address.line-1")),
+        '_label ->  Html(messages("ated.address.line-1")),
           '_labelClass -> "form-label",
         '_showConstraints -> false)
 
         @atedInput(correspondenceAddressForm("line_2"),
-        '_label ->  Html(Messages("ated.address.line-2")),
+        '_label ->  Html(messages("ated.address.line-2")),
         '_labelClass ->  "form-label",
         '_showConstraints -> false)
 
         @atedInput(correspondenceAddressForm("line_3"),
-        '_label ->  Html(Messages("ated.address.line-3")),
+        '_label ->  Html(messages("ated.address.line-3")),
         '_labelClass ->  "form-label",
         '_showConstraints -> false)
 
         @atedInput(correspondenceAddressForm("line_4"),
-        '_label ->  Html(Messages("ated.address.line-4")),
+        '_label ->  Html(messages("ated.address.line-4")),
         '_labelClass ->  "form-label",
         '_showConstraints -> false)
 
         @atedInput(correspondenceAddressForm("postcode"),
-        '_label ->  Html(Messages("ated.address.postcode")),
+        '_label ->  Html(messages("ated.address.postcode")),
         '_size ->  "10",
         '_labelClass ->  "form-label",
         '_inputClass -> "field-1-4",
@@ -94,13 +95,14 @@
         elementOptions = isoCodeList,
         displayEmptyValue = true,
         '_emptyValueText -> "",
-        '_label -> Html(Messages("ated.address.country")),
-        '_labelClass -> ("form-label"))
+        '_label -> Html(messages("ated.address.country")),
+        '_labelClass -> "form-label"
+        )
 
       </fieldset>
 
 
-      <button class="button" id="submit" type="submit">@Messages("ated.correspondence-address.continue")</button>
+      <button class="button" id="submit" type="submit">@messages("ated.correspondence-address.continue")</button>
 
   }
 }
