@@ -29,7 +29,7 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
                                                     http: DefaultHttpClient
                                                    ) extends RawResponseReads {
 
-  val serviceUrl: String = appConfig.serviceUrlACM
+  val serviceUrl: String = appConfig.serviceUrlACMFrontend
   val emailUri = "mandate/agent/email-session"
   val displayNameUri = "mandate/agent/client-display-name-session"
   val mandateDetails = "mandate/agent/old-nonuk-mandate-from-session"
