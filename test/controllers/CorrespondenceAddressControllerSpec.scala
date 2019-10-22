@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import models.Address
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -242,7 +242,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include(s"/ated-subscription/contact-details")
-                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())
+                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
             }
           }
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is edit" in {
@@ -252,7 +252,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated-subscription/review-business-details")
-                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())
+                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
             }
           }
         }
@@ -278,7 +278,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   def getWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -287,7 +287,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   def getWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -308,7 +308,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
     val result = testCorrespondenceAddressController.submit(None).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)
@@ -329,7 +329,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   def editWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
     val result = testCorrespondenceAddressController.editAddress(mode = Some("edit")).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -338,7 +338,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
     val result = testCorrespondenceAddressController.submit(mode = Some("edit")).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)

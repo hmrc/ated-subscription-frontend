@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import connectors.AtedSubscriptionDataCacheConnector
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -143,7 +143,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
         "be able to clear cache successfully" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(Matchers.any(), Matchers.any())) thenReturn Future.successful(HttpResponse(200))
+          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse(200))
           val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(OK)
@@ -152,7 +152,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
         "handle error" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(Matchers.any(), Matchers.any())) thenReturn Future.successful(HttpResponse(400))
+          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse(400))
           val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(INTERNAL_SERVER_ERROR)

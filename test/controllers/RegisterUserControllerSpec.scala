@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import models.{EnrolResponse, SubscribeSuccessResponse}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -158,7 +158,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(CREATED, Some(enrolResp))))
+    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(CREATED, Some(enrolResp))))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -168,7 +168,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_REQUEST)))
+    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_REQUEST)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -178,7 +178,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(FORBIDDEN)))
+    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(FORBIDDEN)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -188,7 +188,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(false))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(INTERNAL_SERVER_ERROR)))
+    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(INTERNAL_SERVER_ERROR)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

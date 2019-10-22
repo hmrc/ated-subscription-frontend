@@ -18,7 +18,7 @@ package testHelpers
 
 import config.ApplicationConfig
 import connectors.AtedSubscriptionDataCacheConnector
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatest.TestSuite
 import org.scalatest.mockito.MockitoSugar
@@ -47,9 +47,9 @@ trait AtedTestHelper extends MockitoSugar  with GuiceOneServerPerSuite { this: T
     .thenReturn("http://localhost:9959/mandate/agent/client-display-name/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
   when(mockAppConfig.businessNameAndAddressEditUrl)
     .thenReturn("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
-  when(mockAppConfig.serviceRedirectUrl(Matchers.eq("microservice.services.business-customer.serviceRedirectUrl")))
+  when(mockAppConfig.serviceRedirectUrl(ArgumentMatchers.eq("microservice.services.business-customer.serviceRedirectUrl")))
     .thenReturn("http://localhost:9923/business-customer/ATED?backLinkUrl=http://localhost:9933/ated-subscription/appoint-agent")
-  when(mockAppConfig.serviceRedirectUrl(Matchers.eq("microservice.services.business-customer.agentServiceRedirectUrl")))
+  when(mockAppConfig.serviceRedirectUrl(ArgumentMatchers.eq("microservice.services.business-customer.agentServiceRedirectUrl")))
     .thenReturn("http://localhost:9923/business-customer/agent/ATED?backLinkUrl=http://localhost:9933/ated-subscription/start-agent-subscription")
 
   when(mockAppConfig.signIn).thenReturn("http://localhost:9025/gg/sign-in?continue=http://localhost:9933/ated-subscription/start-subscription")

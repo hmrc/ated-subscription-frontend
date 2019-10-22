@@ -19,8 +19,8 @@ package services
 import builders.AuthBuilder
 import connectors._
 import models._
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -80,24 +80,24 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
 
     "subscribeAted" must {
       "if successful, should return subscribe success response for company user" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(testRegisterUserService.subscribeAted())
         result._1 must be(subscribeSuccessResponse)
       }
       "if successful, should return subscribe success response for sole user" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsforSOP))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsforSOP))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(testRegisterUserService.subscribeAted())
@@ -105,12 +105,12 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       }
 
       "if successful, should return subscribe success response for Non-UK Clients" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtr))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtr))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(testRegisterUserService.subscribeAted())
@@ -118,24 +118,24 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       }
 
       "when called by agent to register non-uk client, if successful, should return subscribe success response and not enrol current credential" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(testRegisterUserService.subscribeAted(true))
         result._2.json must be(enrolSuccessResponse)
       }
 
       "throw exception for invalid users" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), None)))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = testRegisterUserService.subscribeAted()
@@ -144,12 +144,12 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       }
 
       "throw exception when utr and postcode not present" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtrPostCode))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoUtrPostCode))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = testRegisterUserService.subscribeAted()
@@ -158,12 +158,12 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       }
 
       "throw exception when postcode not present" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoPostCode))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddressNoPOstCode)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoPostCode))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddressNoPOstCode)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = testRegisterUserService.subscribeAted()
@@ -174,12 +174,12 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       "should handle invalid data in the subscribe success response" in {
         val invalidSuccessResponse = SubscribeSuccessResponse(None, None, None)
 
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(invalidSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(invalidSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = testRegisterUserService.subscribeAted()
@@ -188,36 +188,36 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       }
 
       "if unsuccessful, should throw runtime exception - cause address is not in keystore" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = testRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)
         thrown.getMessage must include("data not found")
       }
       "if unsuccessful, should throw runtime exception - cause contact details is not in keystore" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = testRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)
         thrown.getMessage must include("data not found")
       }
       "if unsuccessful, should throw runtime exception - cause contact details email is not in keystore" in {
-        when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockDataCacheConnector.fetchCorrespondenceAddress(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
-        when(mockDataCacheConnector.fetchContactDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(mockAtedSubscriptionConnector.subscribeAted(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
-        when(mockTaxEnrolmentConnector.enrol(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+        when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+        when(mockAtedSubscriptionConnector.subscribeAted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(subscribeSuccessResponse))
+        when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = testRegisterUserService.subscribeAted()
         val thrown = the[RuntimeException] thrownBy await(result)

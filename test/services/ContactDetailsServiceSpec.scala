@@ -18,7 +18,7 @@ package services
 
 import connectors.AtedSubscriptionDataCacheConnector
 import models.{ContactDetails, ContactDetailsEmail}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -46,19 +46,19 @@ class ContactDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wit
     "saveContactDetails" must {
       "save Contact details into keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockDataCacheConnector.saveContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
         val result = testContactDetailsService.saveContactDetails(testContact)
         await(result).get.toString must be(testContact.toString)
-        verify(mockDataCacheConnector, times(1)).saveContactDetails(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "saveContactDetailsEmail" must {
       "save Contact details email into keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockDataCacheConnector.saveContactDetailsEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockDataCacheConnector.saveContactDetailsEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         val result = testContactDetailsService.saveContactDetailsEmail(testContactEmail)
         await(result).get.toString must be(testContactEmail.toString)
-        verify(mockDataCacheConnector, times(1)).saveContactDetailsEmail(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).saveContactDetailsEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -68,14 +68,14 @@ class ContactDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wit
         when(mockDataCacheConnector.fetchContactDetailsForSession).thenReturn(Future.successful(Some(testContact)))
         val result = testContactDetailsService.fetchContactDetails
         await(result) must be(Some(testContact))
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
       "return None, if not found in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchContactDetailsForSession).thenReturn(Future.successful(None))
         val result = testContactDetailsService.fetchContactDetails
         await(result) must be(None)
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
 
       "return contact details email, if found in keystore" in {
@@ -83,14 +83,14 @@ class ContactDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite wit
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession).thenReturn(Future.successful(Some(testContactEmail)))
         val result = testContactDetailsService.fetchContactDetailsEmail
         await(result) must be(Some(testContactEmail))
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
       "return None, if not found email in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchContactDetailsEmailForSession).thenReturn(Future.successful(None))
         val result = testContactDetailsService.fetchContactDetailsEmail
         await(result) must be(None)
-        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
   }

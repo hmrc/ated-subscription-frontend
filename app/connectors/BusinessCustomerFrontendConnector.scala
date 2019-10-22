@@ -21,19 +21,22 @@ import javax.inject.Inject
 import play.api.mvc.Request
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
                                                    http: DefaultHttpClient)
-  extends RawResponseReads {
+  extends RawResponseReads with HeaderCarrierForPartialsConverter {
 
   val serviceUrl: String = appConfig.serviceUrlBC
   val businessCustomerUri = "business-customer"
   val reviewDetailsUri = "fetch-review-details"
   val service = "ATED"
 
-  def getReviewDetails(implicit request: Request[_], ec: ExecutionContext, hc: HeaderCarrier): Future[HttpResponse] = {
+  override def crypto: String => String = identity
+
+  def getReviewDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
     http.GET(getUrl)
   }
