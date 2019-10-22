@@ -17,7 +17,7 @@
 package builders
 
 import models.AtedSubscriptionAuthData
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core._
@@ -101,14 +101,14 @@ object AuthBuilder {
       Enrolments(Set())
     )
 
-    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
   def mockAuthorisedAgent(userId: String, mockAuthConnector: AuthConnector) {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(agentRefNo = Some("JARN1234567"))
 
-    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
@@ -118,17 +118,17 @@ object AuthBuilder {
       agentRefNo = Some("JARN1234567")
     )
 
-    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
   def mockUnAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.failed(InvalidBearerToken("message")))
   }
 
   def mockUnAuthorisedUserNotLogged(mockAuthConnector: AuthConnector) {
-    when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.failed(MissingBearerToken("message")))
   }
 

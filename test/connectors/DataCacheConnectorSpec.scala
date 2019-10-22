@@ -18,7 +18,7 @@ package connectors
 
 import config.AtedSessionCache
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -59,7 +59,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
           businessType = Some("corporate body"),
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-        when(mockAtedSessionCache.fetchAndGetEntry[ReviewDetails](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(reviewDetails)))
+        when(mockAtedSessionCache.fetchAndGetEntry[ReviewDetails](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(reviewDetails)))
         val result = testAtedSubscriptionDataCacheConnector.fetchAndGetReviewDetailsForSession
         await(result) must be(Some(reviewDetails))
       }
@@ -68,7 +68,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
 
       "fetch saved BusinessDetails address form from SessionCache" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockAtedSessionCache.fetchAndGetEntry[BusinessAddress](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
+        when(mockAtedSessionCache.fetchAndGetEntry[BusinessAddress](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
         val result = testAtedSubscriptionDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession
         await(result).get must be (testAddressForm)
       }
@@ -78,7 +78,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
       "save BusinessDetails address form from SessionCache" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_BusinessReg_Details" -> Json.toJson(testAddressForm)))
-        when(mockAtedSessionCache.cache[BusinessAddress](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockAtedSessionCache.cache[BusinessAddress](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
         val result = testAtedSubscriptionDataCacheConnector.saveRegisteredBusinessDetails(testAddressForm)
         await(result).get must be (testAddressForm)
       }
@@ -93,7 +93,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
         val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_Business_Details" -> Json.toJson(reviewDetails)))
-        when(mockAtedSessionCache.cache[ReviewDetails](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockAtedSessionCache.cache[ReviewDetails](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
         val result = testAtedSubscriptionDataCacheConnector.saveReviewDetails(reviewDetails)
         await(result).get must be (reviewDetails)
       }
@@ -104,7 +104,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
       "save the correspondence address in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("Correspondence_Address" -> Json.toJson(testAddress)))
-        when(mockAtedSessionCache.cache[Address](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockAtedSessionCache.cache[Address](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
         val result = testAtedSubscriptionDataCacheConnector.saveCorrespondenceAddress(testAddress)
         await(result).get must be (testAddress)
       }
@@ -113,7 +113,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
     "fetchCorrespondenceAddress" must {
       "fetch the saved correspondence address in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockAtedSessionCache.fetchAndGetEntry[Address](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockAtedSessionCache.fetchAndGetEntry[Address](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
         val result = testAtedSubscriptionDataCacheConnector.fetchCorrespondenceAddress
         await(result).get must be (testAddress)
       }
@@ -123,7 +123,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
       "save the contact details in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("Contact_Details" -> Json.toJson(testContact)))
-        when(mockAtedSessionCache.cache[ContactDetails](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockAtedSessionCache.cache[ContactDetails](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
         val result = testAtedSubscriptionDataCacheConnector.saveContactDetails(testContact)
         await(result).get must be (testContact)
       }
@@ -132,7 +132,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
       "save the contact details email in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         val returnedCacheMap: CacheMap = CacheMap("data", Map("Contact_Email_Details" -> Json.toJson(testContactEmail)))
-        when(mockAtedSessionCache.cache[ContactDetailsEmail](Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockAtedSessionCache.cache[ContactDetailsEmail](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
         val result = testAtedSubscriptionDataCacheConnector.saveContactDetailsEmail(testContactEmail)
         await(result).get must be (testContactEmail)
       }
@@ -141,7 +141,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
     "fetchContactDetailsForSession" must {
       "fetch the saved contact details in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockAtedSessionCache.fetchAndGetEntry[ContactDetails](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockAtedSessionCache.fetchAndGetEntry[ContactDetails](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
         val result = testAtedSubscriptionDataCacheConnector.fetchContactDetailsForSession
         await(result).get must be (testContact)
       }
@@ -149,7 +149,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
     "fetchContactDetailsEmailForSession" must {
       "fetch the saved contact details in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockAtedSessionCache.fetchAndGetEntry[ContactDetailsEmail](Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockAtedSessionCache.fetchAndGetEntry[ContactDetailsEmail](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         val result = testAtedSubscriptionDataCacheConnector.fetchContactDetailsEmailForSession
         await(result).get must be (testContactEmail)
       }
@@ -158,7 +158,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
     "clearCache" must {
       "clear the local keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockAtedSessionCache.remove()(Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(mockAtedSessionCache.remove()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         await(testAtedSubscriptionDataCacheConnector.clearCache).status must be(OK)
       }
     }

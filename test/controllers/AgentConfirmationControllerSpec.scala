@@ -23,7 +23,7 @@ import connectors.BusinessCustomerFrontendConnector
 import models.{Address, ReviewDetails}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -126,7 +126,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
       sapNumber = "1234567890", safeId = "XW0001234567890",isAGroup = false, agentReferenceNumber = Some("JARN1234567"))
 
-    when(mockBCConnector.getReviewDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+    when(mockBCConnector.getReviewDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
     val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 

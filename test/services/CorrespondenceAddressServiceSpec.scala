@@ -18,7 +18,7 @@ package services
 
 import connectors.AtedSubscriptionDataCacheConnector
 import models.Address
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -47,10 +47,10 @@ class CorrespondenceAddressServiceSpec extends PlaySpec with GuiceOneServerPerSu
     "saveCorrespondenceAddress" must {
       "save correspondence address in Keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockDataCacheConnector.saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+        when(mockDataCacheConnector.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
         val result = testCorrespondenceAddressService.saveCorrespondenceAddress(testAddress)
         await(result).get.toString must be(testAddress.toString)
-        verify(mockDataCacheConnector, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "fetchCorrespondenceAddress" must {
@@ -59,14 +59,14 @@ class CorrespondenceAddressServiceSpec extends PlaySpec with GuiceOneServerPerSu
         when(mockDataCacheConnector.fetchCorrespondenceAddress).thenReturn(Future.successful(Some(testAddress)))
         val result = testCorrespondenceAddressService.fetchCorrespondenceAddress
         await(result) must be(Some(testAddress))
-        verify(mockDataCacheConnector, times(1)).fetchCorrespondenceAddress(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
       "return None, if not found in keystore" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchCorrespondenceAddress).thenReturn(Future.successful(None))
         val result = testCorrespondenceAddressService.fetchCorrespondenceAddress
         await(result) must be(None)
-        verify(mockDataCacheConnector, times(1)).fetchCorrespondenceAddress(Matchers.any(), Matchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
   }

@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import models.ContactDetails
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -228,7 +228,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/ated-subscription/review-business-details")
-              verify(mockContactDetailsService, times(1)).saveContactDetails(Matchers.any())(Matchers.any(), Matchers.any())
+              verify(mockContactDetailsService, times(1)).saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
 
@@ -239,7 +239,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   def getWithAuthorisedUser(mode:Option[String])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsController.editDetails(mode).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -248,7 +248,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   def getWithAuthorisedAgent(mode:Option[String])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsController.editDetails(mode).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -271,7 +271,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     val userId = s"user-${UUID.randomUUID}"
 
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(None).apply(fakeRequest.withSession(
       SessionKeys.sessionId -> sessionId,
@@ -286,7 +286,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     val userId = s"user-${UUID.randomUUID}"
 
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(mode = Some("edit")).apply(fakeRequest.withSession(
       SessionKeys.sessionId -> sessionId,
@@ -299,7 +299,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   def getEditWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
     val result = testContactDetailsController.editDetails(mode = Some("edit")).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)

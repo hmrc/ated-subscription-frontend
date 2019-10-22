@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import models.{Address, BusinessAddress}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -98,7 +98,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
             bizAddress.text() must include("line_2")
             bizAddress.text() must include("United Kingdom")
 
-            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
 
@@ -163,7 +163,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
             redirectLocation(result).isDefined must be(true)
             redirectLocation(result).get must include("/ated-subscription/contact-details")
-            verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
 
@@ -205,8 +205,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -216,8 +216,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -227,8 +227,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -250,8 +250,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(testAddress))
-    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
     val result = testRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)

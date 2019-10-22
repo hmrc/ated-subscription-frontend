@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import models.ContactDetailsEmail
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -166,7 +166,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
   def getWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -175,7 +175,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
   def getWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -184,7 +184,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
   def getWithAuthorisedAgentEdit(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
     val result = testContactDetailsEmailController.editDetailsEmail().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -192,7 +192,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
   def getWithAuthorisedAgentEditNoData(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsEmailController.editDetailsEmail().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -215,7 +215,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
     val userId = s"user-${UUID.randomUUID}"
 
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetailsEmail(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+    when(mockContactDetailsService.saveContactDetailsEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
 
     val result = testContactDetailsEmailController.submit(None).apply(fakeRequest.withSession(
       SessionKeys.sessionId -> sessionId,
@@ -228,7 +228,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
   def getEditWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetailsEmail(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
+    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
     val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)

@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import models.{Address, ReviewDetails}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -50,7 +50,7 @@ class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeA
   def viewWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getReviewBusinessDetails(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+    when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
     val result = testConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

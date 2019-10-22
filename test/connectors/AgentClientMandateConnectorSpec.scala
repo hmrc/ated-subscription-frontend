@@ -19,7 +19,7 @@ package connectors
 import builders.AuthBuilder
 import config.ApplicationConfig
 import models.{AtedSubscriptionAuthData, NonUKClientDto}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -55,14 +55,14 @@ class AgentClientMandateConnectorSpec extends PlaySpec with GuiceOneServerPerSui
     "createMandateForNonUK" must {
 
       "return response, if status is CREATED" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(CREATED, Some(Json.parse("""{ "reason": "wrong data" }""")))))
         val result = await(testAgentClientMandateConnector.createMandateForNonUK(dto))
         result.status must be(CREATED)
       }
 
       "throw exception, if response status is anything else" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
         val thrown = the[InternalServerException] thrownBy await(testAgentClientMandateConnector.createMandateForNonUK(dto))
         thrown.getMessage must be(null)
@@ -73,14 +73,14 @@ class AgentClientMandateConnectorSpec extends PlaySpec with GuiceOneServerPerSui
     "updateMandateForNonUK" must {
 
       "return response, if status is CREATED" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(CREATED, Some(Json.parse("""{ "reason": "wrong data" }""")))))
         val result = await(testAgentClientMandateConnector.updateMandateForNonUK(dto))
         result.status must be(CREATED)
       }
 
       "throw exception, if response status is anything else" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
         val thrown = the[InternalServerException] thrownBy await(testAgentClientMandateConnector.updateMandateForNonUK(dto))
         thrown.getMessage must be(null)

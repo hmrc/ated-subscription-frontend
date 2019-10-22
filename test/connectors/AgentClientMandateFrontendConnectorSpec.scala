@@ -18,7 +18,7 @@ package connectors
 
 import builders.AuthBuilder
 import models.{AgentEmail, AtedSubscriptionAuthData, ClientDisplayName, OldMandateReference}
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -58,7 +58,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServ
   "AgentClientMandateFrontendConnector" must {
     "get agent email" in {
       val agentEmail = AgentEmail("aaa@bbb.com")
-      when(mockWSHttp.GET[Option[AgentEmail]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(agentEmail)))
+      when(mockWSHttp.GET[Option[AgentEmail]](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(agentEmail)))
 
       val response = await(testAgentClientMandateFrontendConnector.getAgentEmail)
       response.get.email must be("aaa@bbb.com")
@@ -66,7 +66,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServ
 
     "get client display name" in {
       val displayName = ClientDisplayName("client display name")
-      when(mockWSHttp.GET[Option[ClientDisplayName]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(displayName)))
+      when(mockWSHttp.GET[Option[ClientDisplayName]](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(displayName)))
 
       val response = await(testAgentClientMandateFrontendConnector.getClientDisplayName)
       response.get.name must be("client display name")
@@ -74,7 +74,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServ
 
     "get old mandate details" in {
       val oldMandateDetails = OldMandateReference("mandateId", "atedRef")
-      when(mockWSHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(oldMandateDetails)))))
+      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(oldMandateDetails)))))
 
       val response = await(testAgentClientMandateFrontendConnector.getOldMandateDetails)
       response.get.atedRefNumber must be("atedRef")

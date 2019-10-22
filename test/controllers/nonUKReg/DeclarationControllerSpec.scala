@@ -22,7 +22,7 @@ import builders.{AuthBuilder, SessionBuilder}
 import connectors.AgentClientMandateFrontendConnector
 import models.{EnrolResponse, OldMandateReference, SubscribeSuccessResponse}
 import org.jsoup.Jsoup
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -67,13 +67,13 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
                                       oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(oldMandateRef))
-    when(mockRegisterUserService.subscribeAted(Matchers.eq(true))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(oldMandateRef))
+    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(true))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(succResp(ated), HttpResponse(CREATED, Some(enrolResp))))
-    when(mockMandateService.createMandateForNonUK(Matchers.eq("atedRefNum"))(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+    when(mockMandateService.createMandateForNonUK(ArgumentMatchers.eq("atedRefNum"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(CREATED)))
-    when(mockMandateService.updateMandateForNonUK(Matchers.eq("atedRefNum"), Matchers.eq("mandateId"))
-    (Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
+    when(mockMandateService.updateMandateForNonUK(ArgumentMatchers.eq("atedRefNum"), ArgumentMatchers.eq("mandateId"))
+    (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
     val result = testDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
     test(result)
   }

@@ -18,7 +18,7 @@ package controllers.auth
 
 import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -80,7 +80,7 @@ class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with GuiceOneAppP
           Enrolments(Set(Enrolment(controllerHarness.atedEnrolment)))
         )
 
-        when(mockAuthConnector.authorise[RetrievalType](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
 
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
