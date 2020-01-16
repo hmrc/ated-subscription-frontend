@@ -46,6 +46,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
                    (implicit user: AtedSubscriptionAuthData,
                     hc: HeaderCarrier, request: Request[_],
                     ec: ExecutionContext): Future[(SubscribeSuccessResponse, HttpResponse)] = {
+
     for {
       businessDetails <- registeredBusinessService.getReviewBusinessDetails
       address <- dataCacheConnector.fetchCorrespondenceAddress
@@ -76,7 +77,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
           val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
           Future.successful(HttpResponse(OK, responseJson = Some(enrolResp)))
         } else {
-              authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
+          authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
               case Credentials(ggCred, _) ~ Some(groupId) =>
                 val grpId = appConfig.atedSubsUtils.validateGroupId(groupId)
                 val requestPayload = createEMACEnrolRequest(atedSubscriptionSuccess,ggCred,
@@ -96,6 +97,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
   private def createEMACEnrolRequest(atedSubscriptionSuccess: SubscribeSuccessResponse,
                                      gGCredId: String, utr: Option[String], postcode: Option[String],
                                      safeId : String): RequestEMACPayload = {
+
     val atedRef = atedSubscriptionSuccess.atedRefNumber
       .getOrElse(throw new RuntimeException("[RegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe"))
 

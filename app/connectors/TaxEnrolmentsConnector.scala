@@ -52,7 +52,6 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
     http.POST[JsValue, HttpResponse](postUrl, jsonData) map { response =>
       timerContext.stop()
       auditEnrolUser(postUrl, requestPayload, response)
-
       Logger.debug(s"PostUrl::$postUrl ---- requestBody:: $jsonData --- responseBody::${response.body} --- responseStatus:: ${response.status}")
 
       response.status match {
@@ -66,6 +65,16 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
           response
       }
     }
+  } recover handleErrorResponse
+
+  private def handleErrorResponse: PartialFunction[Throwable, HttpResponse] = {
+    PartialFunction[Throwable, HttpResponse] { throwable: Throwable => {
+      throwable match {
+        case ex: BadRequestException => HttpResponse(CONFLICT, Some(Json.parse(ex.getMessage)))
+        case ex: UpstreamErrorResponse => HttpResponse  (ex.upstreamResponseCode, responseString = Some(ex.getMessage))
+        case ex: Exception => HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.parse(ex.getMessage)))
+      }
+    }}
   }
 
   private def auditEnrolUser(postUrl: String,

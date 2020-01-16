@@ -251,3 +251,24 @@ ated.business-registration-error.wrong.role.title = You must be logged in as an 
 ated.business-registration-error.wrong.role.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
 ated.business-address-error.general.isCorrespondenceAddress = Select an option for the correspondence address
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
+
+ated.business-registration.generic.error.header = Sorry, we’re experiencing technical difficulties
+ated.business-registration.generic.error.title = Sorry, we’re experiencing technical difficulties
+ated.business-registration.generic.error.message = Please try again in a few minutes.
+
+ated.already-registered-error.title = Somebody has already registered from your organisation
+ated.already-registered-error.header = Somebody has already registered from your organisation
+ated.already-registered-error.p1 = The account you used to sign in does not have access to your organisation’s ATED account.
+ated.already-registered-error.p2 = The person in your organisation who originally registered for ATED needs to sign in using the Gateway ID that they used to set up the account. They can then add you by going to
+ated.already-registered-error.p2.1 = www.tax.service.gov.uk/business-account
+ated.already-registered-error.p2.2 = and selecting:
+ated.already-registered-error.p3.1 = Manage users
+ated.already-registered-error.p3.2 = Add users (process to add you to the account)
+ated.already-registered-error.p3.3 = Manage who can access taxes and schemes
+ated.already-registered-error.p3.4 = Select on the link next to your name
+ated.already-registered-error.p3.5 = Tick the ‘ATED’ box to give you access
+ated.already-registered-error.p3.6 = If you have an administrator account already with access to the account where ATED is listed, you can tick the box next to your own name
+ated.already-registered-error.p4.1 = If your administrator does not see ATED on the list enrolled taxes and schemes, and you do not know who registered for ATED, you will need to
+ated.already-registered-error.p4.2 = contact the Online Services Helpdesk
+ated.already-registered-error.p4.3 = to recover or reset these sign-in details for your organisation.
+ated.already-registered-error.p5 = If you cannot get past this page again, or if you are the only person in your organisation who has registered for ATED, please use the ‘Get help with this service’ link to tell us what seems to be the problem.
