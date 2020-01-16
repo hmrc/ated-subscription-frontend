@@ -38,35 +38,33 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
 
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  private val DuplicateUserError = "duplicate user error"
   private val WrongRoleUserError = "wrong role user error"
+  private val GenericError = "generic user error"
 
   def registerUser: Action[AnyContent] = Action.async { implicit request =>
-      authoriseFor { implicit data =>
+     authoriseFor { implicit data =>
         if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
         else {
           registerUserService.subscribeAted() map { registerResponse =>
             val (_, emacEnrolResponse) = registerResponse
             emacEnrolResponse.status match {
               case CREATED => Redirect(controllers.routes.RegisterUserController.confirmation())
-              case BAD_REQUEST | CONFLICT =>
-                val (pageTitle, heading, message) = formatEmacErrorMessage(DuplicateUserError)
+              case CONFLICT =>
                 Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
-                Ok(views.html.global_error(pageTitle, heading, message))
+                Ok(views.html.alreadyRegistered())
               case FORBIDDEN =>
                 val (pageTitle, heading, message) = formatEmacErrorMessage(WrongRoleUserError)
                 Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
                 Ok(views.html.global_error(pageTitle, heading, message))
               case _ =>
+                val (pageTitle, heading, message) = formatEmacErrorMessage(GenericError)
                 Logger.warn("[RegisterUserController][registerUser] - allocation failed - no definite reason found")
-                throw new RuntimeException("EMAC Allocate an Enrolment to a Group failed for no definite reason")
+                Ok(views.html.global_error(pageTitle, heading, message))
             }
-
           }
         }
       }
   }
-
 
   def confirmation: Action[AnyContent] = Action.async {
     implicit request =>
@@ -85,14 +83,14 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
 
   private def formatEmacErrorMessage(str: String): (String, String, String) =
     str match {
-      case DuplicateUserError =>
-        ("ated.business-registration-error.duplicate.identifier.header",
-          "ated.business-registration-error.duplicate.identifier.title",
-          "ated.business-registration-error.duplicate.identifier.message")
       case WrongRoleUserError =>
         ("ated.business-registration-error.wrong.role.header",
           "ated.business-registration-error.wrong.role.title",
           "ated.business-registration-error.wrong.role.message")
+      case GenericError =>
+        ("ated.business-registration.generic.error.header",
+          "ated.business-registration.generic.error.title",
+          "ated.business-registration.generic.error.message")
     }
 
 }

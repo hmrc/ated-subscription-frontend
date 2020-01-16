@@ -16,7 +16,7 @@ private object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "bootstrap-play-26" % "1.3.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.40.0-play-26",
-    "uk.gov.hmrc" %% "play-ui" % "8.5.0-play-26",
+    "uk.gov.hmrc" %% "play-ui" % "8.6.0-play-26",
     "uk.gov.hmrc" %% "play-partials" % "6.9.0-play-26",
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
     "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
@@ -24,7 +24,7 @@ private object AppDependencies {
   )
 
   trait TestDependencies {
-    lazy val scope: String = "test"
+    lazy val scope: String = "it,test"
     lazy val test: Seq[ModuleID] = ???
   }
 
@@ -36,7 +36,8 @@ private object AppDependencies {
         "org.jsoup" % "jsoup" % "1.9.2" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26",
-        "org.mockito" % "mockito-core" % "3.1.0" % scope
+        "org.mockito" % "mockito-core" % "3.1.0" % scope,
+        "com.github.tomakehurst" % "wiremock-jre8" % "2.21.0" % "test,it"
       )
     }.test
   }

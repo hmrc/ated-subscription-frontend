@@ -77,6 +77,15 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             }
           }
 
+          "return to generic error page" in {
+            registerWithBadRequest {
+              result =>
+                status(result) must be(OK)
+                val document = Jsoup.parse(contentAsString(result))
+                document.title() must be("Sorry, we’re experiencing technical difficulties - GOV.UK")
+            }
+          }
+
           "return to error page for duplicate users" in {
             registerWithDuplicateUser {
               result =>
@@ -92,14 +101,6 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
                 document.title() must be("You must be logged in as an administrator to submit an ATED return - GOV.UK")
-            }
-          }
-
-          "throw exeception for invalid users" in {
-            registerWithInvalidUser {
-              result =>
-                val thrown = the[RuntimeException] thrownBy redirectLocation(result).get
-                thrown.getMessage must include("EMAC Allocate an Enrolment to a Group failed for no definite reason")
             }
           }
         }
@@ -163,12 +164,22 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     test(result)
   }
 
-  def registerWithDuplicateUser(test: Future[Result] => Any) {
+  def registerWithBadRequest(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
     when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_REQUEST)))
+    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+    test(result)
+  }
+
+  def registerWithDuplicateUser(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
+    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(CONFLICT)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

@@ -81,4 +81,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val backToBusinessCustomerUrl: String = servicesConfig.getConfString("business-customer.backLinkUrl",
     "/business-customer/back-link/ATED")
 
+  lazy val toBusinessAccountUrl: String = servicesConfig.getConfString("business-tax-account.serviceRedirectUrl", "/business-account")
+
 }
