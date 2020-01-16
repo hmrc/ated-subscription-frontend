@@ -16,12 +16,13 @@
 
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, applicationConfig: config.ApplicationConfig)
 
+
 @contentHeader = {
- <h1>@messages(heading)</h1>
+ <h1 class="column-two-thirds">@messages(heading)</h1>
 }
 
 @mainContent = {
- <p>@Html(messages(message))</p>
+ <p class="column-two-thirds">@Html(messages(message))</p>
 }
 
 @global_error_wrapper(appConfig = applicationConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), mainContent = mainContent)

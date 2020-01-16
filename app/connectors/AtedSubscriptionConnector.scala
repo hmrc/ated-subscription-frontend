@@ -39,7 +39,8 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
     val postURL = s"""$serviceURL$authLink/$subscriptionURI"""
     http.POST[JsValue, HttpResponse](postURL, data) map { response =>
       response.status match {
-        case OK => response.json.as[SubscribeSuccessResponse]
+        case OK =>
+          response.json.as[SubscribeSuccessResponse]
         case BAD_REQUEST =>
           Logger.warn(s"[AtedSubscriptionConnector][subscribeAted] - Bad Request Exception ${response.body}")
           throw new BadRequestException(response.body)
