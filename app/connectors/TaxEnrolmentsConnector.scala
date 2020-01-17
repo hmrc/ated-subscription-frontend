@@ -70,9 +70,9 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
   private def handleErrorResponse: PartialFunction[Throwable, HttpResponse] = {
     PartialFunction[Throwable, HttpResponse] { throwable: Throwable => {
       throwable match {
-        case ex: BadRequestException => HttpResponse(CONFLICT, Some(Json.parse(ex.getMessage)))
-        case ex: UpstreamErrorResponse => HttpResponse  (ex.upstreamResponseCode, responseString = Some(ex.getMessage))
-        case ex: Exception => HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.parse(ex.getMessage)))
+        case ex: BadRequestException => HttpResponse(CONFLICT, responseString = Some(ex.getMessage))
+        case ex: UpstreamErrorResponse => HttpResponse(ex.upstreamResponseCode, responseString = Some(ex.getMessage))
+        case ex: Exception => HttpResponse(INTERNAL_SERVER_ERROR, responseString = Some(ex.getMessage))
       }
     }}
   }
