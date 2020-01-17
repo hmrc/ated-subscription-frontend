@@ -61,6 +61,11 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
       Redirect(appConfig.logoutPath)
   }
 
+  def redirectToGuidance: Action[AnyContent] = Action {
+    implicit request =>
+      Redirect(appConfig.guidanceUrl).withNewSession
+  }
+
   def unauthorisedAssistant: Action[AnyContent] = Action {
     implicit request => Ok(views.html.unauthorisedAssistant())
   }
