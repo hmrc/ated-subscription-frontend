@@ -51,11 +51,10 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.logging.SessionId
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.logging.SessionId
 
 
 class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
@@ -86,6 +85,31 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(CREATED)
+      }
+
+
+      "return CONFLICT when retrieving a bad request exception from tax enrolments" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+          thenReturn(Future.failed(new BadRequestException("Error")))
+        val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
+        val enrolResponse = await(result)
+        enrolResponse.status must be(CONFLICT)
+      }
+
+      "return 301 when retrieving a Upstream response of 301 from tax enrolments" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+          thenReturn(Future.failed( new Upstream5xxResponse("", 301,301)))
+        val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
+        val enrolResponse = await(result)
+        enrolResponse.status must be(301)
+      }
+
+      "return Internal server error when retrieving a Internal Server Exception from tax enrolments" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+          thenReturn(Future.failed(new InternalServerException("Error")))
+        val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
+        val enrolResponse = await(result)
+        enrolResponse.status must be(INTERNAL_SERVER_ERROR)
       }
 
       "return status anything else, for bad data sent for enrol" in {
