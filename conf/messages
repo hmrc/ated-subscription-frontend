@@ -29,9 +29,39 @@ unauthorised.header = You are not authorised to use this service
 
 ##### UNAUTHORISED ASSISTANT
 
-unauthorised.assistant.title = Unauthorised Assistant Agent
-unauthorised.assistant.header = Only admin agents can enrol for the ATED service
-unauthorised.assistant.lede-paragraph = Once enrolled an admin agent can assign assistant agents to work on their behalf.
+unauthorised.assistant.title = You may not register your organisation for ATED
+unauthorised.assistant.header = You may not register your organisation for ATED
+unauthorised.assistant.lede-paragraph = This is because your account is for an added team member (standard account) and not an administrator.
+unauthorised.assistant.h2.a = If your organisation already has an ATED account
+
+unauthorised.assistant.p1.a = The person in your organisation who originally registered for ATED needs to sign in using the Gateway ID that they used to set up the account. They can add you by going to
+unauthorised.assistant.p1.link = https://www.tax.service.gov.uk/business-account
+unauthorised.assistant.p1.b = and selecting:
+
+unauthorised.assistant.ol1.li1 = Manage users
+unauthorised.assistant.ol1.li2 = Add users (process to add you to the account)
+unauthorised.assistant.ol1.li3 = Manage who can access taxes and schemes
+unauthorised.assistant.ol1.li4 = Select the link next to your name
+unauthorised.assistant.ol1.li5 = Tick the ‘ATED’ box to give you access
+
+unauthorised.assistant.p1.c = You may already be added but not have access, so check with your administrator.
+
+unauthorised.assistant.p2.a = If your administrator does not see ATED on the list of enrolled taxes and schemes, and you do not know who registered for ATED, you will need to
+unauthorised.assistant.p2.link = contact the Online Services Helpdesk
+unauthorised.assistant.p2.b = to recover or reset these sign-in details for your organisation.
+
+unauthorised.assistant.h2.b = If your organisation does not have an ATED account
+
+unauthorised.assistant.p3.a = If your organisation is new to ATED and has not submitted ATED returns before, either with or without an agent, an account administrator needs to set up the ATED account directly from
+unauthorised.assistant.p3.b = :
+
+unauthorised.assistant.ol2.li1 = Manage account
+unauthorised.assistant.ol2.li2 = Add a tax, duty or scheme
+unauthorised.assistant.ol2.li3 = Select Other taxes and schemes
+unauthorised.assistant.ol2.li4 = Select Housing and land
+unauthorised.assistant.ol2.li5 = Select ‘ATED’
+
+unauthorised.assistant.p4 = If no one in your organisation or your agency has access to this URL then your agent may have set up an overseas account on your behalf.
 
 ##### CLAIM RELIEF
 

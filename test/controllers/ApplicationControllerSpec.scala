@@ -120,11 +120,22 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       }
     }
 
+    "redirecToGuidance" must {
+
+      "respond with a redirect" in {
+        when(mockAppConfig.guidanceUrl)
+          .thenReturn("/example-url")
+        val result = testApplicationController.redirectToGuidance.apply(FakeRequest())
+        status(result) must be(SEE_OTHER)
+        redirectLocation(result).get must include("/example-url")
+      }
+    }
+
     "unauthorisedAssistant returns OK and unauthorised agent page" in {
       val result = testApplicationController.unauthorisedAssistant().apply(FakeRequest())
       status(result) must equal(OK)
-      contentAsString(result) must include("Unauthorised Assistant Agent")
-      contentAsString(result) must include("Only admin agents can enrol for the ATED service")
+      contentAsString(result) must include("You may not register your organisation for ATED")
+      contentAsString(result) must include("This is because your account is for an added team member (standard account) and not an administrator.")
     }
 
     "clearCache" must {

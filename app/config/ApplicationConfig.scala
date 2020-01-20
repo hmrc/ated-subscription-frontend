@@ -58,6 +58,9 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
   lazy val loginURL: String = s"$companyAuthHost/gg/$loginPath"
   lazy val signOut: String = s"$companyAuthHost/gg/sign-out"
+  lazy val guidanceUrl: String = servicesConfig.getString("guidanceUrl")
+
+  lazy val helpdeskUrl: String = servicesConfig.getString("helpdeskUrl")
 
   lazy val logoutPath: String = servicesConfig.getConfString("ated-frontend.logoutUrl", "/ated/logout")
   lazy val atedStartPath: String = servicesConfig.getConfString("ated-frontend.atedStartRedirectUrl", "/ated/home")

@@ -8,6 +8,7 @@ GET                 /cancel                                     controllers.Appl
 GET                 /keep-alive                                 controllers.ApplicationController.keepAlive
 GET                 /logout                                     controllers.ApplicationController.logout
 GET                 /redirect-to-logout                         controllers.ApplicationController.redirectToLogout
+GET                 /redirect-to-guidance                       controllers.ApplicationController.redirectToGuidance
 
 GET                 /registered-business-address                controllers.RegisteredBusinessController.registeredBusinessAddress
 POST                /registered-business-address                controllers.RegisteredBusinessController.continue
