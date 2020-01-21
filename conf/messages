@@ -8,6 +8,7 @@ ated.sign-out = Sign out
 ated.navTitle = Submit and view your ATED returns
 ated.confirm-and-register = Confirm and register
 ated.confirm-and-continue = Confirm and continue
+ated.full-stop = .
 
 ated.screen-reader.section = This section is:
 
@@ -27,7 +28,40 @@ ated.error.length = {0} must not be more than {1} characters
 unauthorised.title = UNAUTHORISED
 unauthorised.header = You are not authorised to use this service
 
-##### UNAUTHORISED ASSISTANT
+##### UNAUTHORISED ASSISTANT AGENT
+
+unauthorised.assistant.agent.title = You may not register your agency for ATED
+unauthorised.assistant.agent.header = You may not register your agency for ATED
+unauthorised.assistant.agent.lede-paragraph = This is because your account is for an added team member (standard account) and not an administrator.
+
+unauthorised.assistant.agent.p1.a = An administrator for your agency’s account can 
+unauthorised.assistant.agent.p1.link-text = register your agency for ATED
+unauthorised.assistant.agent.p1.link = https://www.gov.uk/guidance/register-for-the-annual-tax-on-enveloped-dwellings-online-service
+unauthorised.assistant.agent.p1.b = If your agency is already registered the administrator can give you permission to access ATED for a client - they need to:
+
+unauthorised.assistant.agent.ol1.li1 = Sign in to the agency account at
+unauthorised.assistant.agent.ol1.li2 = Select ‘Manage who can access taxes and schemes’
+unauthorised.assistant.agent.ol1.li3 = Select the ‘Clients’ tab
+unauthorised.assistant.agent.ol1.li4 = Select ‘Manage team members’ and tick the box to assign you to a client who has an ATED account
+
+unauthorised.assistant.agent.p2 = If you are not on the list of team members you need to be added using the ‘Add team members’ link.
+
+unauthorised.assistant.agent.p3 = If you need to add an overseas client and register them for ATED the administrator(s) can do this at 
+unauthorised.assistant.agent.p3.link-text = https://www.tax.service.gov.uk/mandate/agent/summary
+
+unauthorised.assistant.agent.p4.a = If you do not know any administrators for your account you will need to contact HMRC’s 
+unauthorised.assistant.agent.p4.a.link = https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk 
+unauthorised.assistant.agent.p4.a.link-text = Online Services Helpdesk 
+unauthorised.assistant.agent.p4.b = by phone. Advise you are ringing about Annual Tax on Enveloped Dwellings as an agent who wants to submit returns on behalf of a client.
+
+unauthorised.assistant.agent.p5.a = You will need the following information from your HMRC agent account to pass security:
+
+unauthorised.assistant.agent.ul2.li1 = ATED reference number
+unauthorised.assistant.agent.ul2.li2 = UTR for Corporation Tax or Self Assessment if you have one
+unauthorised.assistant.agent.ul2.li3 = Company registration number if you do not have a UTR
+unauthorised.assistant.agent.ul2.li4 = Postcode
+
+##### UNAUTHORISED ASSISTANT ORG
 
 unauthorised.assistant.title = You may not register your organisation for ATED
 unauthorised.assistant.header = You may not register your organisation for ATED

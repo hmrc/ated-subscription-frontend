@@ -3,7 +3,8 @@ GET                 /assets/*file                               controllers.Asse
 ->                  /template                                   template.Routes
 
 GET                 /unauthorised                               controllers.ApplicationController.unauthorised
-GET                 /unauthorised-assistant                     controllers.ApplicationController.unauthorisedAssistant
+GET                 /unauthorised-assistant-org                 controllers.ApplicationController.unauthorisedAssistantOrg
+GET                 /unauthorised-assistant-agent               controllers.ApplicationController.unauthorisedAssistantAgent
 GET                 /cancel                                     controllers.ApplicationController.cancel
 GET                 /keep-alive                                 controllers.ApplicationController.keepAlive
 GET                 /logout                                     controllers.ApplicationController.logout

@@ -61,6 +61,7 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val guidanceUrl: String = servicesConfig.getString("guidanceUrl")
 
   lazy val helpdeskUrl: String = servicesConfig.getString("helpdeskUrl")
+  lazy val agentAccountPortalUrl: String = servicesConfig.getString("agentAccountPortalUrl")
 
   lazy val logoutPath: String = servicesConfig.getConfString("ated-frontend.logoutUrl", "/ated/logout")
   lazy val atedStartPath: String = servicesConfig.getConfString("ated-frontend.atedStartRedirectUrl", "/ated/home")

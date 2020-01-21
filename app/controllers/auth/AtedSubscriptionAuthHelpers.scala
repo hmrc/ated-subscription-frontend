@@ -33,10 +33,15 @@ trait AtedSubscriptionAuthHelpers {
                  (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Result] = {
     authoriseFor {
       implicit authContext =>
-        if (isAgentAdmin) {
+        if (isAgentUser) {
           f(authContext)
-        } else if (isAgentAssistant) {
-          Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistant()))
+        } else if (isAssistant) {
+          if (isAgent) {
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantAgent()))
+          } else {
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantOrg()))
+          }
+
         } else {
           Future.successful(Redirect(controllers.routes.ApplicationController.unauthorised()))
         }
@@ -52,14 +57,17 @@ trait AtedSubscriptionAuthHelpers {
 
     authoriseFor {
       implicit authContext =>
-        if (isAgentAdmin) {
+        if (isAgentUser) {
           Future.successful(redirectToSubscription("microservice.services.business-customer.agentServiceRedirectUrl"))
-        } else if (isAgentAssistant) {
-          Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistant()))
+        } else if (isAssistant) {
+          if (isAgent) {
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantAgent()))
+          } else {
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantOrg()))
+          }
         } else {
           f(authContext)
         }
     }
   }
-
 }

@@ -33,32 +33,32 @@ class AuthUtilsSpec extends PlaySpec {
     }
   }
 
-  "isAgentAssistant" must {
-    "return true if user is Assistant Agent" in {
+  "isAssistant" must {
+    "return true if user is an Assistant" in {
       implicit val auth = builders.AuthBuilder.createAgentAssistantAuthContext("agentId", "Agent Bloggs")
-      AuthUtils.isAgentAssistant must be(true)
+      AuthUtils.isAssistant must be(true)
     }
 
-    "return false if user is Not Assistant Agent" in {
+    "return false if user is not an Assistant" in {
       implicit val auth = builders.AuthBuilder.createAgentAuthContext("agentId", "Agent Bloggs")
-      AuthUtils.isAgentAssistant must be(false)
+      AuthUtils.isAssistant must be(false)
     }
   }
 
-  "isAgentAdmin" must {
+  "isAgentUser" must {
     "return true if user is Admin Agent" in {
       implicit val auth = builders.AuthBuilder.createAgentAuthContext("agentId", "Agent Bloggs")
-      AuthUtils.isAgentAdmin must be(true)
+      AuthUtils.isAgentUser must be(true)
     }
 
     "return true if user is User Agent" in {
       implicit val auth = builders.AuthBuilder.createAgentUserAuthContext("agentId", "Agent Bloggs")
-      AuthUtils.isAgentAdmin must be(true)
+      AuthUtils.isAgentUser must be(true)
     }
 
     "return false if user is Not Admin Agent" in {
       implicit val auth = builders.AuthBuilder.createAgentAssistantAuthContext("agentId", "Agent Bloggs")
-      AuthUtils.isAgentAdmin must be(false)
+      AuthUtils.isAgentUser must be(false)
     }
   }
 
