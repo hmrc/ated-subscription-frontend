@@ -120,7 +120,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       }
     }
 
-    "redirecToGuidance" must {
+    "redirectToGuidance" must {
 
       "respond with a redirect" in {
         when(mockAppConfig.guidanceUrl)
@@ -131,10 +131,17 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       }
     }
 
-    "unauthorisedAssistant returns OK and unauthorised agent page" in {
-      val result = testApplicationController.unauthorisedAssistant().apply(FakeRequest())
+    "unauthorisedAssistantOrg returns OK and unauthorised organisation page" in {
+      val result = testApplicationController.unauthorisedAssistantOrg().apply(FakeRequest())
       status(result) must equal(OK)
       contentAsString(result) must include("You may not register your organisation for ATED")
+      contentAsString(result) must include("This is because your account is for an added team member (standard account) and not an administrator.")
+    }
+
+    "unauthorisedAssistantAgent returns OK and unauthorised agent page" in {
+      val result = testApplicationController.unauthorisedAssistantAgent().apply(FakeRequest())
+      status(result) must equal(OK)
+      contentAsString(result) must include("You may not register your agency for ATED")
       contentAsString(result) must include("This is because your account is for an added team member (standard account) and not an administrator.")
     }
 

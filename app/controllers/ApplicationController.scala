@@ -66,8 +66,12 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
       Redirect(appConfig.guidanceUrl).withNewSession
   }
 
-  def unauthorisedAssistant: Action[AnyContent] = Action {
-    implicit request => Ok(views.html.unauthorisedAssistant())
+  def unauthorisedAssistantOrg: Action[AnyContent] = Action {
+    implicit request => Ok(views.html.unauthorisedAssistantOrg())
+  }
+
+  def unauthorisedAssistantAgent: Action[AnyContent] = Action {
+    implicit request => Ok(views.html.unauthorisedAssistantAgent())
   }
 
   def clearCache: Action[AnyContent] = Action.async { implicit request =>

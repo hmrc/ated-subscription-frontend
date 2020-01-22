@@ -81,7 +81,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
         }
 
         "return the client subscription landing page view" in {
-
           getWithAuthorisedUser {
             result =>
               status(result) must be(OK)
@@ -93,6 +92,15 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           }
         }
 
+        "return the start subscription page for an Organisation assistant" in {
+          getWithAuthorisedOrgAssistant {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+
+              document.title() must be("Are you an agent acting for a client? - GOV.UK")
+          }
+        }
       }
 
       "Authorised agent" must {
@@ -107,7 +115,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           getWithAuthorisedAgentAssistant {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result) must be(Some("/ated-subscription/unauthorised-assistant"))
+              redirectLocation(result) must be(Some("/ated-subscription/unauthorised-assistant-agent"))
           }
         }
 
@@ -131,7 +139,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               document.getElementById("agent-startpage-text1").text() must be("You must enter your agency’s registered name and Unique Taxpayer Reference (UTR).")
               document.getElementById("agent-startpage-text2").text() must be("After setting up your details, you can add your clients.")
               document.getElementById("submit").text() must be("Set up your agency")
-
           }
         }
       }
@@ -173,7 +180,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
           }
         }
-
       }
 
 
@@ -198,7 +204,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             redirectLocation(result).get must include("/ated-subscription/appoint-agent")
           }
         }
-
       }
 
       "Continue with Agent" must {
@@ -210,7 +215,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               redirectLocation(result).get must include("/business-customer/agent/ATED")
           }
         }
-
       }
 
       "Cancel link" must {
@@ -221,7 +225,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               val document = Jsoup.parse(contentAsString(result))
           }
         }
-
       }
 
       "register" must {
@@ -243,7 +246,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             redirectLocation(result).get must include("/business-customer/ATED")
           }
         }
-
       }
 
       "register with Agent" must {
@@ -265,7 +267,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           }
         }
       }
-
     }
   }
 
@@ -311,6 +312,14 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgentAssistant(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+
+  def getWithAuthorisedOrgAssistant(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedOrgAssistant(userId, mockAuthConnector)
+    val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -376,5 +385,4 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
     test(result)
   }
-
 }

@@ -18,16 +18,16 @@ package utils
 
 import models.AtedSubscriptionAuthData
 import play.api.Logger
-import uk.gov.hmrc.auth.core.{Admin, AffinityGroup, Assistant, User}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Assistant, User}
 
 object AuthUtils {
 
   def isAgent(implicit user: AtedSubscriptionAuthData): Boolean =
     user.enrolments.getEnrolment("HMRC-AGENT-AGENT").isDefined || user.affinityGroup.contains(AffinityGroup.Agent)
 
-  def isAgentAssistant(implicit user: AtedSubscriptionAuthData): Boolean = user.credentialRole.contains(Assistant)
+  def isAssistant(implicit user: AtedSubscriptionAuthData): Boolean = user.credentialRole.contains(Assistant)
 
-  def isAgentAdmin(implicit user: AtedSubscriptionAuthData): Boolean =
+  def isAgentUser(implicit user: AtedSubscriptionAuthData): Boolean =
     isAgent && user.credentialRole.contains(User)
 
   def agentLink(implicit user: AtedSubscriptionAuthData): String = {

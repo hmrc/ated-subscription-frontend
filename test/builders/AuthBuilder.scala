@@ -112,6 +112,15 @@ object AuthBuilder {
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
+  def mockAuthorisedOrgAssistant(userId: String, mockAuthConnector: AuthConnector) {
+    val atedSubscriptionAuthData: AtedSubscriptionAuthData = createOrganisationAuthority(
+      credRole = Assistant
+    )
+
+    when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
+  }
+
   def mockAuthorisedAgentAssistant(userId: String, mockAuthConnector: AuthConnector) {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(
       agentRole = Assistant,
@@ -145,6 +154,19 @@ object AuthBuilder {
       Some(agentCode),
       Some("cred"),
       Enrolments(Set(agentEnrolment).flatten)
+    )
+
+    authData
+  }
+
+  private def createOrganisationAuthority(credRole: CredentialRole = User): AtedSubscriptionAuthData = {
+
+    val authData = AtedSubscriptionAuthData(
+      Some(credRole),
+      Some(AffinityGroup.Organisation),
+      Some("cred"),
+      None,
+      Enrolments(Set())
     )
 
     authData
