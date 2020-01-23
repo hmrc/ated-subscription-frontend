@@ -68,8 +68,7 @@ unauthorised.assistant.header = You may not register your organisation for ATED
 unauthorised.assistant.lede-paragraph = This is because your account is for an added team member (standard account) and not an administrator.
 unauthorised.assistant.h2.a = If your organisation already has an ATED account
 
-unauthorised.assistant.p1.a = The person in your organisation who originally registered for ATED needs to sign in using the Gateway ID that they used to set up the account. They 
-you by going to
+unauthorised.assistant.p1.a = The person in your organisation who originally registered for ATED needs to sign in using the Gateway ID that they used to set up the account. They can then add you by going to
 unauthorised.assistant.p1.link = https://www.tax.service.gov.uk/business-account
 unauthorised.assistant.p1.b = and selecting:
 
