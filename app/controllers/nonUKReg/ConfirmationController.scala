@@ -39,7 +39,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
   def view: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        registeredBusinessService.getReviewBusinessDetails.map(_.businessName) map { name =>
+        registeredBusinessService.getBusinessCustomerDetails.map(_.businessName) map { name =>
           Ok(views.html.nonUKReg.confirmation(name, Dates.formatDate(LocalDate.now())))
         }
       }

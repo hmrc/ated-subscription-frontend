@@ -28,11 +28,13 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
+import utils.TestJson
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with
+  BeforeAndAfterEach with AtedTestHelper with TestJson {
 
   override def beforeEach: Unit = {
     reset(mockAppConfig)
@@ -44,6 +46,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
 
   val subscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
@@ -52,39 +55,76 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
   val subscribeData = SubscribeData(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
     address = List(EtmpCorrespondence(name1 = "Joe", name2 = "Bloggs",
       addressDetails = EtmpAddressDetails("Correspondence", "line1", "line2", None, None, None, "GB"),
-      contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true, utr = "1234567890", isNonUKClientRegisteredByAgent = false, knownFactPostcode=Some("AA1 1AA"))
+      contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true,
+    utr = "1234567890", isNonUKClientRegisteredByAgent = false, knownFactPostcode=Some("AA1 1AA"))
   val subscribeDataJson: JsValue = Json.toJson(subscribeData)
 
   "AtedSubscriptionConnector" must {
     "subscribeAted" must {
+
       "return status as OK, for successful subscription" in {
-        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         await(result) must be(subscribeSuccessResponse)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())
       }
+
       "return status as BAD_REQUEST, for bad data sent for subscription" in {
-        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())
       }
+
       "return status anything else, for bad data sent for subscription" in {
-        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
-  }
+    "checkEtmpBusinessPartnerExists" must {
+      "return true when an OK has been received" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
+        )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.obj()))))
+        val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
+        await(result) must be(true)
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())
+      }
 
+      "return false for any other status received" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
+        )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.obj()))))
+        val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
+        await(result) must be(false)
+        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any(), ArgumentMatchers.any())
+      }
+    }
+  }
 }

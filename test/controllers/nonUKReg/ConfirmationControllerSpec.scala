@@ -19,7 +19,7 @@ package controllers.nonUKReg
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import models.{Address, ReviewDetails}
+import models.{Address, BusinessCustomerDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -44,13 +44,13 @@ class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeA
   }
 
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val testReviewBusinessDetails = ReviewDetails(businessName = "test Name", businessType = None, businessAddress = testAddress,
+  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = None, businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   def viewWithAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getReviewBusinessDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
     val result = testConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

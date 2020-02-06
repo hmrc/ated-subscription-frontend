@@ -2,7 +2,7 @@ package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import helpers.IntegrationSpec
-import models.{Address, RequestEMACPayload, ReviewDetails, Verifier}
+import models.{Address, RequestEMACPayload, BusinessCustomerDetails, Verifier}
 import play.api.http.Status._
 import play.api.http.{HeaderNames => HN}
 import play.api.libs.json.Json
@@ -14,7 +14,7 @@ class RegisterUserControllerISpec extends IntegrationSpec {
   val ATED_SERVICE_NAME = "HMRC-ATED-ORG"
   val enrolmentKey = s"$ATED_SERVICE_NAME~AtedRefNumber~XN1200000100001"
 
-  val reviewDetails = ReviewDetails(businessName = "ACME",
+  val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
     businessType = Some("Corporate Body"),
     businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = Some("NE98 1ZZ"), country = "GB"),
     sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = None, utr = Some("12345678"))

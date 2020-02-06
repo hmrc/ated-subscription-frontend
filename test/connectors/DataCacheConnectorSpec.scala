@@ -55,11 +55,11 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
 
       "fetch saved BusinessDetails from SessionCache" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        val reviewDetails = ReviewDetails(businessName = "ACME",
+        val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
           businessType = Some("corporate body"),
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-        when(mockAtedSessionCache.fetchAndGetEntry[ReviewDetails](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(reviewDetails)))
+        when(mockAtedSessionCache.fetchAndGetEntry[BusinessCustomerDetails](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(reviewDetails)))
         val result = testAtedSubscriptionDataCacheConnector.fetchAndGetReviewDetailsForSession
         await(result) must be(Some(reviewDetails))
       }
@@ -88,12 +88,12 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
 
       "save the fetched business details" in {
         implicit val hc: HeaderCarrier = HeaderCarrier()
-        val reviewDetails = ReviewDetails(businessName = "ACME",
+        val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
           businessType = Some("corporate body"),
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
         val returnedCacheMap: CacheMap = CacheMap("data", Map("BC_Business_Details" -> Json.toJson(reviewDetails)))
-        when(mockAtedSessionCache.cache[ReviewDetails](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        when(mockAtedSessionCache.cache[BusinessCustomerDetails](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
         val result = testAtedSubscriptionDataCacheConnector.saveReviewDetails(reviewDetails)
         await(result).get must be (reviewDetails)
       }

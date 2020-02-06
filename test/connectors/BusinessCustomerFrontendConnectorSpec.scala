@@ -51,16 +51,21 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSu
   }
 
   "BusinessCustomerFrontendConnector" must {
-    "getReviewDetails" in {
+    "getBusinessCustomerDetails" in {
       val testAddress = Address("line_1", "line_2", None, None, None, "U.K.")
-      val reviewDetails = ReviewDetails(businessName = "ACME",
+      val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
         businessType = Some("corporate body"),
         businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
         sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
-      val response = await(testBusinessCustomerFrontendConnector.getReviewDetails)
+      val response = await(testBusinessCustomerFrontendConnector.getBusinessCustomerDetails)
       response.status must be(OK)
+    }
+
+    "crypto" in {
+      val testString = "I 5! stay 6? the 7π same"
+      testBusinessCustomerFrontendConnector.crypto(testString) must be(testString)
     }
   }
 

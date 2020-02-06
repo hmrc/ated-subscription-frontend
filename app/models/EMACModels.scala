@@ -26,7 +26,6 @@ object Verifier {
 
 case class RequestEMACPayload(userId: String, friendlyName: String, `type`: String, verifiers: List[Verifier])
 
-
 object RequestEMACPayload {
   implicit val formats: OFormat[RequestEMACPayload] = Json.format[RequestEMACPayload]
 }

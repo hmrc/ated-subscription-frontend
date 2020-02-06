@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.BusinessCustomerFrontendConnector
-import models.{Address, ReviewDetails}
+import models.{Address, BusinessCustomerDetails}
 import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -121,12 +121,12 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
-    val reviewDetails = ReviewDetails(businessName = businessName,
+    val reviewDetails = BusinessCustomerDetails(businessName = businessName,
       businessType = Some("corporate body"),
       businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
       sapNumber = "1234567890", safeId = "XW0001234567890",isAGroup = false, agentReferenceNumber = Some("JARN1234567"))
 
-    when(mockBCConnector.getReviewDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+    when(mockBCConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
     val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 

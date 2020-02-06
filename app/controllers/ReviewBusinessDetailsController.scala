@@ -41,7 +41,7 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
   def reviewDetails: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit auth =>
       for {
-        businessDetails <- registeredBusinessService.getReviewBusinessDetails
+        businessDetails <- registeredBusinessService.getBusinessCustomerDetails
         address <- correspondenceAddressService.fetchCorrespondenceAddress
         contactDetails <- contactDetailsService.fetchContactDetails
         contactDetailsEmail <- contactDetailsService.fetchContactDetailsEmail

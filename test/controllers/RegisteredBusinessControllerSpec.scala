@@ -19,9 +19,10 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import models.{Address, BusinessAddress}
+import connectors.AtedSubscriptionConnector
+import models.{Address, BusinessAddress, BusinessCustomerDetails}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -41,14 +42,16 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
   val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
   val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
-  val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val testAddressForm = BusinessAddress(Some(true))
+  val mockAtedSubscriptionConnector: AtedSubscriptionConnector = mock[AtedSubscriptionConnector]
+  val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
+  val testAddressForm: BusinessAddress = BusinessAddress(Some(true))
 
   val testRegisteredBusinessController = new RegisteredBusinessController(
     mockMCC,
     mockRegisteredBusinessService,
     mockCorrespondenceAddressService,
     mockDataCacheConnector,
+    mockAtedSubscriptionConnector,
     mockAuthConnector,
     mockAppConfig
   )
@@ -66,13 +69,13 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       "Authorised users" must {
 
         "respond with OK" in {
-          getWithAuthorisedUser { result =>
+          withAuthorisedUser { result =>
             status(result) must be(OK)
           }
         }
 
         "contain title and header as Your correspondence address" in {
-          getWithAuthorisedUser { result =>
+          withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
@@ -81,7 +84,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "contain title and header as Your correspondence address for agent registering non-uk client" in {
-          getWithAuthorisedAgent { result =>
+          withAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Is this where we should send your client’s letters about ATED? - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: Add a client")
@@ -90,7 +93,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "should contain address fetched from Keystore" in {
-          getWithAuthorisedUser { result =>
+          withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
             val bizAddress = document.select("#businessAddress")
 
@@ -98,12 +101,12 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
             bizAddress.text() must include("line_2")
             bizAddress.text() must include("United Kingdom")
 
-            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())
           }
         }
 
         "contain the correspondence address radio buttons" in {
-          getWithAuthorisedUser { result =>
+          withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.select(".block-label").text() must include("Yes")
             document.select(".block-label").text() must include("No")
@@ -113,7 +116,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "contain the correspondence address radio buttons with saved data" in {
-          getWithAuthorisedUserWithSavedData { result =>
+          withAuthorisedUserWithSavedData { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.select(".block-label").text() must include("Yes")
             document.select(".block-label").text() must include("No")
@@ -123,22 +126,29 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "contain a continue button" in {
-          getWithAuthorisedUser { result =>
+          withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("submit").text() must be("Continue")
           }
         }
+
+        "redirect users with existing ETMP registrations to ATED home" in {
+          withETMPRegistration { result =>
+            redirectLocation(result).get must include("/ated/home")
+          }
+        }
+
       }
 
       "unauthorised users" must {
         "respond with a redirect" in {
-          getWithUnAuthorisedUser { result =>
+          withUnAuthorisedUser { result =>
             status(result) must be(SEE_OTHER)
           }
         }
 
         "be redirected to the login page" in {
-          getWithUnAuthorisedUser { result =>
+          withUnAuthorisedUser { result =>
             redirectLocation(result).get must include("/ated-subscription/unauthorised")
           }
         }
@@ -163,7 +173,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
             redirectLocation(result).isDefined must be(true)
             redirectLocation(result).get must include("/ated-subscription/contact-details")
-            verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(any())(any(), any())
           }
         }
 
@@ -201,47 +211,85 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
   }
 
-  def getWithAuthorisedUser(test: Future[Result] => Any) {
+  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = None, businessAddress = testAddress,
+    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+
+  def withAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+      .thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+      .thenReturn(Future.successful(false))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def getWithAuthorisedUserWithSavedData(test: Future[Result] => Any) {
+  def withETMPRegistration(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddressForm)))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+      .thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+      .thenReturn(Future.successful(true))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def getWithAuthorisedAgent(test: Future[Result] => Any) {
+  def withAuthorisedUserWithSavedData(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+      .thenReturn(Future.successful(Some(testAddressForm)))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+      .thenReturn(Future.successful(false))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+
+  def withAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+      .thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+      .thenReturn(Future.successful(false))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def withUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
+  def withUnAuthenticated(test: Future[Result] => Any) {
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
@@ -250,8 +298,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
-    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(any())(any(), any())).thenReturn(Future.successful(Some(testAddress)))
     val result = testRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
     test(result)

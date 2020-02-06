@@ -18,7 +18,7 @@ package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessCustomerFrontendConnector}
 import javax.inject.Inject
-import models.{SubscriptionData, _}
+import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, SubscriptionData, EtmpRegistrationDetails}
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,13 +27,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: BusinessCustomerFrontendConnector,
                                           atedConnector: AtedConnector,
-                                          agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector
-                                         )  {
+                                          agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector)  {
 
-  def getReviewBusinessDetails(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[ReviewDetails] = {
-    businessCustomerFrontendConnector.getReviewDetails flatMap { response =>
+  def getBusinessCustomerDetails(implicit request: Request[_], user: AtedSubscriptionAuthData,
+                                 hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessCustomerDetails] = {
+    businessCustomerFrontendConnector.getBusinessCustomerDetails flatMap { response =>
       response.status match {
-        case OK => Future.successful(response.json.as[ReviewDetails])
+        case OK => Future.successful(response.json.as[BusinessCustomerDetails])
         case NOT_FOUND =>
           agentClientMandateFrontendConnector.getOldMandateDetails flatMap  { mandateRef =>
             val atedRefNumber = mandateRef.map(_.atedRefNumber).getOrElse(throw new RuntimeException("No Old Mandate Reference found for the client!"))
@@ -46,7 +46,7 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
                     line_2 = addressData.addressDetails.addressLine2,
                     country = addressData.addressDetails.countryCode)
                   val agentRefNo = user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
-                  Future.successful(ReviewDetails(businessName = subscriptionData.organisationName,
+                  Future.successful(BusinessCustomerDetails(businessName = subscriptionData.organisationName,
                     businessType = None, businessAddress = address, sapNumber = "", safeId = subscriptionData.safeId, agentReferenceNumber = agentRefNo))
                 case status => throw new RuntimeException(s"Error while retrieving subscription data for ated ref no: $atedRefNumber  status:: $status")
               }
@@ -57,22 +57,16 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
     }
   }
 
-  def getDefaultCorrespondenceAddress(implicit request: Request[_],
+  def getDefaultCorrespondenceAddress(businessAddress: Option[Address] = None)(implicit request: Request[_],
                                       user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
-    for {
-      agentAddress <- getAgentCorrespondenceAddress
-      correspondenceAddress <-
-      agentAddress match {
-        case Some(x) => Future.successful(x)
-        case None => getBusinessAddress
-      }
-    } yield {
-      correspondenceAddress
+    getAgentCorrespondenceAddress flatMap {
+      case Some(address) => Future.successful(address)
+      case _             => businessAddress.fold(getBusinessAddress)(Future.successful)
     }
   }
 
   def getBusinessAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
-    getReviewBusinessDetails.map(_.businessAddress)
+    getBusinessCustomerDetails.map(_.businessAddress)
   }
 
 
@@ -81,8 +75,7 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
 
     def getDetails(identifier: String, identifierType: String)
                   (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
-      atedConnector.getDetails(identifier = identifier, identifierType = identifierType) map {
-        response =>
+      atedConnector.getDetails(identifier = identifier, identifierType = identifierType) map { response =>
           response.status match {
             case OK => response.json.asOpt[EtmpRegistrationDetails]
             case _ => None
@@ -90,20 +83,23 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
       }
     }
 
-    val agentArn = user.enrolments.getEnrolment("HMRC-AGENT-AGENT")
-      .flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
+    val agentArn = user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
     agentArn match {
       case Some(agentArnId) =>
         val IdentifierArn = "arn"
         for {
           foundDetails <- getDetails(agentArnId, IdentifierArn)
         } yield {
-          foundDetails.map(details => Address(details.addressDetails.addressLine1,
-            details.addressDetails.addressLine2,
-            details.addressDetails.addressLine3,
-            details.addressDetails.addressLine4,
-            details.addressDetails.postalCode,
-            details.addressDetails.countryCode))
+          foundDetails.map { details =>
+            Address(
+              details.addressDetails.addressLine1,
+              details.addressDetails.addressLine2,
+              details.addressDetails.addressLine3,
+              details.addressDetails.addressLine4,
+              details.addressDetails.postalCode,
+              details.addressDetails.countryCode
+            )
+          }
         }
       case None => Future.successful(None)
     }

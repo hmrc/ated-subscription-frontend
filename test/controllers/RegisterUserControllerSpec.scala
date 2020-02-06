@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import models.{EnrolResponse, SubscribeSuccessResponse}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -136,11 +136,11 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   val enrolResp: JsValue = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
 
-  val badGatewayResponse9001: JsValue = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>9001</ErrorNumber>"}	""")
-  val badGatewayResponse11006: JsValue = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>11006</ErrorNumber>"}	""")
-  val badGatewayResponse10004: JsValue = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>10004</ErrorNumber>"}	""")
-  val badGatewayResponse8026: JsValue = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>8026</ErrorNumber>"}	""")
-  val badGatewayResponseOthers: JsValue = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>1234</ErrorNumber>"}	""")
+  val badGatewayResponse9001: JsValue   = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>9001</ErrorNumber>"}""")
+  val badGatewayResponse11006: JsValue  = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>11006</ErrorNumber>"}""")
+  val badGatewayResponse10004: JsValue  = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>10004</ErrorNumber>"}""")
+  val badGatewayResponse8026: JsValue   = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>8026</ErrorNumber>"}""")
+  val badGatewayResponseOthers: JsValue = Json.parse( """{"statusCode":502,"message":"<ErrorNumber>1234</ErrorNumber>"}""")
 
   def registerWithUnAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
@@ -159,7 +159,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(CREATED, Some(enrolResp))))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(successResponse, HttpResponse(CREATED, Some(enrolResp))))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -169,7 +170,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(BAD_REQUEST)))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(successResponse, HttpResponse(BAD_REQUEST)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -179,7 +181,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(CONFLICT)))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(successResponse, HttpResponse(CONFLICT)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -189,7 +192,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(FORBIDDEN)))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(successResponse, HttpResponse(FORBIDDEN)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
@@ -199,7 +203,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     implicit val hc: HeaderCarrier = HeaderCarrier()
     val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
-    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(false))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(successResponse, HttpResponse(INTERNAL_SERVER_ERROR)))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(successResponse, HttpResponse(INTERNAL_SERVER_ERROR)))
     val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

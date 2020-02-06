@@ -57,22 +57,22 @@ object Identification {
   implicit val formats: OFormat[Identification] = Json.format[Identification]
 }
 
-case class ReviewDetails(businessName: String,
-                         businessType: Option[String],
-                         businessAddress: Address,
-                         sapNumber: String,
-                         safeId: String,
-                         isAGroup: Boolean = false,
-                         directMatch: Boolean = false,
-                         agentReferenceNumber: Option[String],
-                         firstName: Option[String] = None,
-                         lastName: Option[String] = None,
-                         utr: Option[String] = None,
-                         identification: Option[Identification] = None,
-                         isBusinessDetailsEditable: Boolean = false)
+case class BusinessCustomerDetails(businessName: String,
+                                   businessType: Option[String],
+                                   businessAddress: Address,
+                                   sapNumber: String,
+                                   safeId: String,
+                                   isAGroup: Boolean = false,
+                                   directMatch: Boolean = false,
+                                   agentReferenceNumber: Option[String],
+                                   firstName: Option[String] = None,
+                                   lastName: Option[String] = None,
+                                   utr: Option[String] = None,
+                                   identification: Option[Identification] = None,
+                                   isBusinessDetailsEditable: Boolean = false)
 
-object ReviewDetails {
-  implicit val formats: OFormat[ReviewDetails] = Json.format[ReviewDetails]
+object BusinessCustomerDetails {
+  implicit val formats: OFormat[BusinessCustomerDetails] = Json.format[BusinessCustomerDetails]
 }
 
 case class BusinessAddress(isCorrespondenceAddress: Option[Boolean] = None)

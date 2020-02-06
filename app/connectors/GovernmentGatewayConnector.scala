@@ -63,8 +63,8 @@ class GovernmentGatewayConnector @Inject()(appConfig: ApplicationConfig,
     }
   }
 
-  private def auditEnrolUser(enrolRequest: EnrolRequest,
-                             response: HttpResponse)(implicit hc: HeaderCarrier): Unit = {
+  private def auditEnrolUser(enrolRequest: EnrolRequest,response: HttpResponse
+                            )(implicit hc: HeaderCarrier, executionContext: ExecutionContext): Unit = {
     val eventType = response.status match {
       case OK => EventTypes.Succeeded
       case _ => EventTypes.Failed
