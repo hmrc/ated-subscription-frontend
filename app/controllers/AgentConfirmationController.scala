@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import connectors.BusinessCustomerFrontendConnector
 import controllers.auth.AuthFunctionality
 import javax.inject.Inject
-import models.ReviewDetails
+import models.BusinessCustomerDetails
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -40,10 +40,10 @@ class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
   def view: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        businessCustomerFEConnector.getReviewDetails.map(response =>
+        businessCustomerFEConnector.getBusinessCustomerDetails.map(response =>
           response.status match {
             case OK =>
-              val reviewDetails = response.json.as[ReviewDetails]
+              val reviewDetails = response.json.as[BusinessCustomerDetails]
               Ok(views.html.agentConfirmation(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
           }
         )

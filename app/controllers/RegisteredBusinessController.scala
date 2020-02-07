@@ -17,11 +17,12 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.AtedSubscriptionDataCacheConnector
+import connectors.{AtedSubscriptionConnector, AtedSubscriptionDataCacheConnector}
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
 import javax.inject.Inject
 import models.BusinessAddress
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{CorrespondenceAddressService, RegisteredBusinessService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -34,6 +35,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              registeredBusinessService: RegisteredBusinessService,
                                              correspondenceAddressService: CorrespondenceAddressService,
                                              dataCacheConnector: AtedSubscriptionDataCacheConnector,
+                                             atedSubscriptionConnector: AtedSubscriptionConnector,
                                              val authConnector: DefaultAuthConnector,
                                              implicit val appConfig: ApplicationConfig
                                             ) extends FrontendController(mcc) with AuthFunctionality {
@@ -45,21 +47,26 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         for {
+          customerDetails <- registeredBusinessService.getBusinessCustomerDetails
           businessReg <- dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession
-          address <- registeredBusinessService.getDefaultCorrespondenceAddress
+          address <- registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress))
+          etmpRegistered <- atedSubscriptionConnector.checkEtmpBusinessPartnerExists(Json.toJson(customerDetails))
+        } yield if (etmpRegistered) {
+          Redirect(appConfig.atedStartPath)
+        } else {
+          Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(
+            businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
+          )
         }
-          yield Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl)))
       }
   }
-
-
 
   def continue: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
         businessAddressForm.bindFromRequest.fold(
           formWithErrors => {
-            registeredBusinessService.getDefaultCorrespondenceAddress map { address =>
+            registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
               BadRequest(views.html.registeredBusinessAddress(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
             }
           },
@@ -68,7 +75,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
             val isCorrespondenceAddress = businessAddressData.isCorrespondenceAddress.getOrElse(false)
             if (isCorrespondenceAddress) {
               for {
-                address <- registeredBusinessService.getDefaultCorrespondenceAddress
+                address <- registeredBusinessService.getDefaultCorrespondenceAddress()
                 _ <- correspondenceAddressService.saveCorrespondenceAddress(address)
               } yield {
                 Redirect(controllers.routes.ContactDetailsController.editDetails(Some("skip")))

@@ -29,7 +29,6 @@ class Bindings extends Module {
 	private def bindDeps() = Seq(
 		bind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
 		bind(classOf[AtedSubscriptionUtils]).to(classOf[AtedSubscriptionUtilsImpl])
-
 	)
 
 }

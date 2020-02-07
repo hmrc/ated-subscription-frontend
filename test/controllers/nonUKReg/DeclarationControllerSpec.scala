@@ -22,7 +22,7 @@ import builders.{AuthBuilder, SessionBuilder}
 import connectors.AgentClientMandateFrontendConnector
 import models.{EnrolResponse, OldMandateReference, SubscribeSuccessResponse}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -43,8 +43,12 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   val mockMandateService: MandateService = mock[MandateService]
   val mockAgentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
 
-  val testDeclarationControllerWithEMAC: DeclarationController =
-    new DeclarationController(mockMCC, mockRegisterUserService, mockMandateService, mockAgentClientFrontendMandateConnector, mockAuthConnector, mockAppConfig)
+  val testDeclarationControllerWithEMAC: DeclarationController = new DeclarationController(mockMCC,
+                                                                                           mockRegisterUserService,
+                                                                                           mockMandateService,
+                                                                                           mockAgentClientFrontendMandateConnector,
+                                                                                           mockAuthConnector,
+                                                                                           mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -60,20 +64,21 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     test(result)
   }
 
-  def succResp(ated: Option[String] = None) = SubscribeSuccessResponse(None, ated, Some("formBundleNo"))
+  def succResp(ated: Option[String] = None): SubscribeSuccessResponse = SubscribeSuccessResponse(None, ated, Some("formBundleNo"))
   val enrolResp: JsValue = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
 
   def submitWithAuthorisedUserForEmac(request: FakeRequest[AnyContentAsFormUrlEncoded], ated: Option[String] = None,
                                       oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(oldMandateRef))
-    when(mockRegisterUserService.subscribeAted(ArgumentMatchers.eq(true))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(any(), any()))
+      .thenReturn(Future.successful(oldMandateRef))
+    when(mockRegisterUserService.subscribeAted(eqTo(true))(any(), any(), any(), any()))
       .thenReturn(Future.successful(succResp(ated), HttpResponse(CREATED, Some(enrolResp))))
-    when(mockMandateService.createMandateForNonUK(ArgumentMatchers.eq("atedRefNum"))(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMandateService.createMandateForNonUK(eqTo("atedRefNum"))(any(), any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse(CREATED)))
-    when(mockMandateService.updateMandateForNonUK(ArgumentMatchers.eq("atedRefNum"), ArgumentMatchers.eq("mandateId"))
-    (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
+    when(mockMandateService.updateMandateForNonUK(eqTo("atedRefNum"), eqTo("mandateId"))
+    (any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse(CREATED)))
     val result = testDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
     test(result)
   }
@@ -88,7 +93,10 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
           document.title() must be("Declaration - GOV.UK")
           document.getElementById("declaration-header").text must be("Declaration")
           document.getElementById("subtitle").text must be("This section is: Add a client")
-          document.getElementById("i-confirm-text").text must be("I confirm that my client has nominated me as an agent to act on their behalf in respect of Annual Tax on Enveloped Dwellings and that the information I have given is correct and complete.")
+          document.getElementById("i-confirm-text").text must be("I confirm that my client has nominated me as an agent" +
+                                                                      " to act on their behalf in respect of Annual Tax on" +
+                                                                      " Enveloped Dwellings and that the information I have " +
+                                                                      "given is correct and complete.")
           document.getElementById("submit").text must be("Confirm and register")
         }
       }

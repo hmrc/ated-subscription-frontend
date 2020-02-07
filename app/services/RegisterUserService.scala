@@ -48,7 +48,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
                     ec: ExecutionContext): Future[(SubscribeSuccessResponse, HttpResponse)] = {
 
     for {
-      businessDetails <- registeredBusinessService.getReviewBusinessDetails
+      businessDetails <- registeredBusinessService.getBusinessCustomerDetails
       address <- dataCacheConnector.fetchCorrespondenceAddress
       contactDetails <- dataCacheConnector.fetchContactDetailsForSession
       contactDetailsEmail <- dataCacheConnector.fetchContactDetailsEmailForSession

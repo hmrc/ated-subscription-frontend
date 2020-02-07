@@ -43,13 +43,13 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: AtedSessionCach
        }
   }
 
-  def fetchAndGetReviewDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ReviewDetails]] = {
-    sessionCache.fetchAndGetEntry[ReviewDetails](bcSourceId)
+  def fetchAndGetReviewDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] = {
+    sessionCache.fetchAndGetEntry[BusinessCustomerDetails](bcSourceId)
   }
 
-  def saveReviewDetails(reviewDetails: ReviewDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ReviewDetails]] = {
-    sessionCache.cache[ReviewDetails](bcSourceId, reviewDetails) map  {
-      data => data.getEntry[ReviewDetails](bcSourceId) }
+  def saveReviewDetails(reviewDetails: BusinessCustomerDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] = {
+    sessionCache.cache[BusinessCustomerDetails](bcSourceId, reviewDetails) map  {
+      data => data.getEntry[BusinessCustomerDetails](bcSourceId) }
   }
 
   def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {

@@ -36,7 +36,7 @@ class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
 
   override def crypto: String => String = identity
 
-  def getReviewDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+  def getBusinessCustomerDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
     http.GET(getUrl)
   }

@@ -33,6 +33,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
 
   lazy val serviceURL: String = appConfig.serviceUrlAtedSub
   val subscriptionURI: String = "subscribe"
+  val checkEtmpUri: String = "regime-etmp-check"
 
   def subscribeAted(data: JsValue)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
     val authLink = AuthUtils.getAuthLink
@@ -47,6 +48,19 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
         case status =>
           Logger.warn(s"[AtedSubscriptionConnector][subscribeAted] - status: $status InternalServerException ${response.body}")
           throw new InternalServerException(response.body)
+      }
+    }
+  }
+
+  def checkEtmpBusinessPartnerExists(data: JsValue)(implicit user: AtedSubscriptionAuthData,
+                                                    hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    val authLink = AuthUtils.getAuthLink
+    val postURL = s"""$serviceURL$authLink/$checkEtmpUri"""
+
+    http.POST[JsValue, HttpResponse](postURL, data) map { response: HttpResponse =>
+      response.status match {
+        case OK => true
+        case _ => false
       }
     }
   }

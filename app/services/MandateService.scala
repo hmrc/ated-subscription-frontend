@@ -38,7 +38,7 @@ class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConn
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
     val clientDisplayNameFuture = fetchClientDisplayName
-    val reviewDetailsFuture = registeredBusinessService.getReviewBusinessDetails
+    val reviewDetailsFuture = registeredBusinessService.getBusinessCustomerDetails
     for {
       _ <- contactDetailsFuture
       contactDetailsEmail <- contactDetailsEmailFuture
@@ -75,7 +75,7 @@ class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConn
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
     val clientDisplayNameFuture = fetchClientDisplayName
-    val reviewDetailsFuture = registeredBusinessService.getReviewBusinessDetails
+    val reviewDetailsFuture = registeredBusinessService.getBusinessCustomerDetails
     for {
       _ <- contactDetailsFuture
       contactDetailsEmail <- contactDetailsEmailFuture
