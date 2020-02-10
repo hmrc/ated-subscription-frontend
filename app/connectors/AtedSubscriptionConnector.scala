@@ -54,8 +54,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
 
   def checkEtmpBusinessPartnerExists(data: JsValue)(implicit user: AtedSubscriptionAuthData,
                                                     hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    val authLink = AuthUtils.getAuthLink
-    val postURL = s"""$serviceURL$authLink/$checkEtmpUri"""
+    val postURL = s"""$serviceURL/$checkEtmpUri"""
 
     http.POST[JsValue, HttpResponse](postURL, data) map { response: HttpResponse =>
       response.status match {
