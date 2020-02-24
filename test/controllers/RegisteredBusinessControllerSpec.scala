@@ -132,11 +132,11 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           }
         }
 
-        "redirect users with existing ETMP registrations to ATED home" in {
-          withETMPRegistration { result =>
-            redirectLocation(result).get must include("/ated/home")
-          }
-        }
+//        "redirect users with existing ETMP registrations to ATED home" in {
+//          withETMPRegistration { result =>
+//            redirectLocation(result).get must include("/ated/home")
+//          }
+//        }
 
       }
 

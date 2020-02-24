@@ -52,7 +52,9 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
           address <- registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress))
           etmpRegistered <- atedSubscriptionConnector.checkEtmpBusinessPartnerExists(Json.toJson(customerDetails))
         } yield if (etmpRegistered) {
-          Redirect(appConfig.atedStartPath)
+          Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(
+            businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
+          )
         } else {
           Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(
             businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
