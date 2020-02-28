@@ -1,0 +1,67 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.ApplicationConfig
+@(previousSubmittedForm: Form[models.PreviousSubmittedForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
+@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helpers._
+@import utils._
+
+@implicitFormInstance = @{ Some(previousSubmittedForm) }
+
+@pageScripts = {
+  <script src='@routes.Assets.at("javascript/show-hide-content.js")'></script>
+  <script>
+    $(document).ready(function() {
+      // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
+    });
+  </script>
+}
+
+@atedNoAuthMain(title = messages("ated.prev-submitted.title"),
+                userLoggedIn = true,
+                pageScripts = Some(pageScripts)) {
+
+@pageHeadersAndError(backLink, "client-appoint-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.prev-submitted.title"),
+    Some(atedErrorSummary(previousSubmittedForm, "ated.previous-submitted.general")))
+
+  <p>@messages("ated.prev-submitted.p1")</p>
+
+  @form(action = controllers.routes.PreviousSubmittedController.continue()) {
+
+    <div class="form-group" id="previousSubmitted">
+      @atedInputRadioGroupReveal(previousSubmittedForm("previousSubmitted"),
+        Seq("true" -> (messages("ated.radio.yes.label"), None),
+            "false" -> (messages("ated.radio.no.label"), None)),
+      '_legend -> messages("ated.prev-submitted.title"),
+      '_legendClass -> "visuallyhidden",
+      '_groupClass -> "inline",
+      '_labelClass -> "block-label",
+      '_labelAfter -> true,
+      '_trackGA -> true)
+
+
+    </div>
+
+    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - Previously Submitted', 'button clicked')">@messages("ated.continue")</button>
+
+  }
+
+}
