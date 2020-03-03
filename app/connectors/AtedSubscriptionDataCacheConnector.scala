@@ -29,6 +29,7 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: AtedSessionCach
   val bcRegDetailseId: String = "BC_BusinessReg_Details"
   val addressFormId: String = "Correspondence_Address"
   val contactFormId: String = "Contact_Details"
+  val previousSubmittedFormId: String = "Previously_Submitted"
   val mandateAgentEmailFormId: String = "agent-email"
   val clientDisplayNameFormId = "client-display-name-form-id"
   val contactEmailFormId: String = "Contact_Email_Details"
@@ -85,6 +86,17 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: AtedSessionCach
     sessionCache.cache[ContactDetailsEmail](contactEmailFormId, contactDetailsEmail) map { cachedData =>
       cachedData.getEntry[ContactDetailsEmail](contactEmailFormId)
     }
+  }
+
+  def savePreviouslySubmitted(previousSubmittedForm: PreviousSubmittedForm)
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] = {
+    sessionCache.cache[PreviousSubmittedForm](previousSubmittedFormId, previousSubmittedForm) map { cachedData =>
+      cachedData.getEntry[PreviousSubmittedForm](previousSubmittedFormId)
+    }
+  }
+
+  def fetchPreviouslySubmittedForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] = {
+    sessionCache.fetchAndGetEntry[PreviousSubmittedForm](previousSubmittedFormId)
   }
 
 }

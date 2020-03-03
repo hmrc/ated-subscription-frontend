@@ -30,6 +30,12 @@ object AppointAgentForm {
   implicit val formats: OFormat[AppointAgentForm] = Json.format[AppointAgentForm]
 }
 
+case class PreviousSubmittedForm(isPreviousSubmitted: Option[Boolean] = None)
+
+object PreviousSubmittedForm {
+  implicit val formats: OFormat[PreviousSubmittedForm] = Json.format[PreviousSubmittedForm]
+}
+
 case class Address(
                     line_1: String,
                     line_2: String,

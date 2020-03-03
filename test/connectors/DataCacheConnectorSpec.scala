@@ -42,6 +42,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
   val testAgentEmail = AgentEmail("aa@aa.com")
   val clientDisplayName = ClientDisplayName("client display name")
   val testAddressForm = BusinessAddress(Some(true))
+  val previouslySubmitted = PreviousSubmittedForm(Some(true))
 
   val testAtedSubscriptionDataCacheConnector = new AtedSubscriptionDataCacheConnector(mockAtedSessionCache)
 
@@ -152,6 +153,25 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
         when(mockAtedSessionCache.fetchAndGetEntry[ContactDetailsEmail](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
         val result = testAtedSubscriptionDataCacheConnector.fetchContactDetailsEmailForSession
         await(result).get must be (testContactEmail)
+      }
+    }
+
+    "savePreviouslySubmitted" must {
+      "save the previously submitted ATED returns question in keystore" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        val returnedCacheMap: CacheMap = CacheMap("data", Map("Previously_Submitted" -> Json.toJson(previouslySubmitted)))
+        when(mockAtedSessionCache.cache[PreviousSubmittedForm](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(returnedCacheMap))
+        val result = testAtedSubscriptionDataCacheConnector.savePreviouslySubmitted(previouslySubmitted)
+        await(result).get must be (previouslySubmitted)
+      }
+    }
+
+    "fetchPreviouslySubmitted" must {
+      "fetch the previously submitted ATED returns question in keystore" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        when(mockAtedSessionCache.fetchAndGetEntry[PreviousSubmittedForm](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(previouslySubmitted)))
+        val result = testAtedSubscriptionDataCacheConnector.fetchPreviouslySubmittedForSession
+        await(result).get must be (previouslySubmitted)
       }
     }
 

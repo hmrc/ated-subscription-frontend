@@ -48,4 +48,11 @@ POST                /agent/confirmation                         controllers.nonU
 GET                 /agent-confirmation                         controllers.AgentConfirmationController.view
 GET                 /agent-confirmation/continue/summary        controllers.AgentConfirmationController.continue
 
+GET                 /previous                                   controllers.PreviousSubmittedController.view
+POST                /previous                                   controllers.PreviousSubmittedController.continue
+
+GET                 /existing                                   controllers.SameAccountController.viewSameAccount
+GET                 /inform                                     controllers.SameAccountController.viewInform
+POST                /to-nrl                                     controllers.SameAccountController.toNRLQuestionPage
+
 GET                 /clear-cache                                controllers.ApplicationController.clearCache

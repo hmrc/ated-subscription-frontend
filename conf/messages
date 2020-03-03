@@ -305,6 +305,30 @@ ated.nonUKReg.confirmation.what-next = What happens next
 ated.nonUKReg.confirmation.what-next.text = You can create returns for your new client or add another client.
 ated.nonUKReg.confirmation.view-client.button = View all my clients
 
+#### PREVIOUS SUBMITTED PAGE
+
+ated.prev-submitted.title = Has this company submitted ATED returns before?
+ated.prev-submitted.p1 = This means returns submitted online by you or by an agent on your behalf (it does not include paper returns).
+ated.claim-relief.error.previous-submitted = Select yes if this company has submitted ATED returns before
+ated.previous-submitted.general.previousSubmitted = Select yes if this company has submitted ATED returns before
+
+#### SAME ACCOUNT PAGE
+
+ated.same-account.title = You need to use the same account as before
+ated.same-account.p1 = You need to find the Government Gateway details you used before to sign back into your existing account at https://www.tax.service.gov.uk/ated/home.
+ated.same-account.p2 = These details may be held by a colleague or by an agent who helped you register for ATED.
+ated.same-account.sign-out = Sign out
+ated.same-account.old-details = The old sign in details are not available
+
+#### INFORM PAGE
+
+ated.inform.title = Inform HMRC as soon as you create a new ATED account
+ated.inform.p1 = This is so we do not have to contact you about failure to submit returns from your old account.
+ated.inform.p2 = Contact HMRC using the subject line ‘Online Contact - Duplicate ATED Record Overseas Customer’.
+ated.inform.use-the-email = Use the email address: atedadditionalinfo.ctiaa@hmrc.gov.uk
+ated.inform.p3 = When emailing please include your ATED reference number or if you do not have the number please give your company name. Do not include any further personal or financial details. Sending information over the internet is generally not completely secure, and we cannot guarantee the security of your data while it’s in transit. Any data you send is at your own risk.
+ated.inform.continue-to-create = Continue to create new account
+
 ##### ERROR MESSAGES
 
 ated.business-registration-error.duplicate.identifier.header = Somebody has already registered from your organisation

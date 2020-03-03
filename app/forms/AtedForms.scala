@@ -62,6 +62,11 @@ object AtedForms {
       .verifying("ated.claim-relief.error.agent-appoint", result => result.isDefined)
   )(AppointAgentForm.apply)(AppointAgentForm.unapply))
 
+  val previousSubmittedForm = Form(mapping(
+    "previousSubmitted" -> optional(boolean)
+      .verifying("ated.claim-relief.error.previous-submitted", result => result.isDefined)
+  )(PreviousSubmittedForm.apply)(PreviousSubmittedForm.unapply))
+
 
   val businessAddressForm = Form(mapping(
     "isCorrespondenceAddress" -> optional(boolean)

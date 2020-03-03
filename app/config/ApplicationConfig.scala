@@ -68,6 +68,8 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val reviewDetailsPath: String = servicesConfig.getConfString(
     "business-customer.reviewDetailsUrl","/business-customer/review-details/ATED")
+  lazy val nrlPath: String = servicesConfig.getConfString(
+    "business-customer.nrlUrl","/business-customer/nrl/ATED")
   lazy val agentAtedSummaryPath: String = servicesConfig.getConfString(
     "agent-client-mandate-frontend.agentAtedSummaryUrl", "/mandate/agent/summary")
   lazy val clientDisplayNameEditPath: String = servicesConfig.getConfString(
