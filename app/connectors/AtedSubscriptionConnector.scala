@@ -18,7 +18,7 @@ package connectors
 
 import config.ApplicationConfig
 import javax.inject.Inject
-import models.{AtedSubscriptionAuthData, SubscribeSuccessResponse}
+import models.{AtedSubscriptionAuthData, SelfHealSubscriptionResponse, SubscribeSuccessResponse}
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.JsValue
@@ -53,13 +53,13 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
   }
 
   def checkEtmpBusinessPartnerExists(data: JsValue)(implicit user: AtedSubscriptionAuthData,
-                                                    hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+                                                    hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
     val postURL = s"""$serviceURL/$checkEtmpUri"""
 
     http.POST[JsValue, HttpResponse](postURL, data) map { response: HttpResponse =>
       response.status match {
-        case OK => true
-        case _ => false
+        case OK => Some(response.json.as[SelfHealSubscriptionResponse])
+        case _ => None
       }
     }
   }

@@ -17,14 +17,15 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{AtedSubscriptionConnector, AtedSubscriptionDataCacheConnector}
+import connectors.AtedSubscriptionDataCacheConnector
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
 import javax.inject.Inject
-import models.BusinessAddress
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{CorrespondenceAddressService, RegisteredBusinessService}
+import models.{Address, AtedSubscriptionAuthData, BusinessAddress, BusinessCustomerDetails}
+import play.api.i18n.Messages
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.AtedSubscriptionUtils
@@ -35,7 +36,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              registeredBusinessService: RegisteredBusinessService,
                                              correspondenceAddressService: CorrespondenceAddressService,
                                              dataCacheConnector: AtedSubscriptionDataCacheConnector,
-                                             atedSubscriptionConnector: AtedSubscriptionConnector,
+                                             etmpCheckService: EtmpCheckService,
                                              val authConnector: DefaultAuthConnector,
                                              implicit val appConfig: ApplicationConfig
                                             ) extends FrontendController(mcc) with AuthFunctionality {
@@ -46,21 +47,37 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
   def registeredBusinessAddress: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        for {
-          customerDetails <- registeredBusinessService.getBusinessCustomerDetails
-          businessReg <- dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession
-          address <- registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress))
-          etmpRegistered <- atedSubscriptionConnector.checkEtmpBusinessPartnerExists(Json.toJson(customerDetails))
-        } yield if (etmpRegistered) {
-          Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(
-            businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
-          )
-        } else {
-          Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(
-            businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
-          )
+        registeredBusinessService.getBusinessCustomerDetails flatMap { customerDetails =>
+          dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession flatMap { businessReg =>
+            registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress)) flatMap { address =>
+              validateAndRedirect(customerDetails, businessReg, address)
+            }
+          }
         }
       }
+  }
+
+  private def validateAndRedirect(bcDetails: BusinessCustomerDetails, businessReg: Option[BusinessAddress], address: Address)
+                                 (implicit hc: HeaderCarrier, ec: ExecutionContext, auth: AtedSubscriptionAuthData,
+                                  req: Request[AnyContent], messages: Messages): Future[Result] = {
+    val standardView =
+      Future.successful(Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(
+        businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
+      ))
+
+    etmpCheckService.validateBusinessDetails(bcDetails) flatMap { etmpRegistered =>
+      if (etmpRegistered) {
+        authoriseFor { newAuthDetails =>
+          if (newAuthDetails.enrolments.getEnrolment("HMRC-ATED-ORG").isDefined) {
+            Future.successful(Redirect(appConfig.atedStartPath))
+          } else {
+            standardView
+          }
+        }
+      } else {
+        standardView
+      }
+    }
   }
 
   def continue: Action[AnyContent] = Action.async {

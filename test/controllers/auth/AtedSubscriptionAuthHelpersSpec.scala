@@ -53,29 +53,35 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
       credRole,
       affinityGroup,
       None,
+      Some("credId"),
       Some("asdf"),
+      Some("gid"),
       Enrolments(enrolments)
-  )
+    )
 
   type RetrievalType = Option[CredentialRole] ~
     Option[AffinityGroup] ~
     Enrolments ~
     Option[String] ~
-    Option[Credentials]
+    Option[Credentials] ~
+    Option[String]
 
   def buildRetrieval(atedSubscriptionAuthData: AtedSubscriptionAuthData): RetrievalType = {
     new ~(
       new ~(
         new ~(
           new ~(
-            atedSubscriptionAuthData.credentialRole,
-            atedSubscriptionAuthData.affinityGroup
+            new ~(
+              atedSubscriptionAuthData.credentialRole,
+              atedSubscriptionAuthData.affinityGroup
+            ),
+            atedSubscriptionAuthData.enrolments
           ),
-          atedSubscriptionAuthData.enrolments
+          atedSubscriptionAuthData.agentCode
         ),
-        atedSubscriptionAuthData.agentCode
+        Some(Credentials("mockProvi", "type"))
       ),
-      Some(Credentials("mockProvi", "type"))
+      atedSubscriptionAuthData.groupIdentifier
     )
   }
 

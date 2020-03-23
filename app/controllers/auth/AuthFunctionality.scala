@@ -61,14 +61,17 @@ trait AuthFunctionality extends AuthorisedFunctions {
           Retrievals.affinityGroup and
           Retrievals.allEnrolments and
           Retrievals.agentCode and
-          Retrievals.credentials
+          Retrievals.credentials and
+          Retrievals.groupIdentifier
       ) {
-        case credRole ~ affinityGroup ~ authorisedEnrolments ~ agentCode ~ credentials =>
+        case credRole ~ affinityGroup ~ authorisedEnrolments ~ agentCode ~ credentials ~ groupIdentifier =>
           body(AtedSubscriptionAuthData(
             credRole,
             affinityGroup,
             agentCode,
+            credentials.map(_.providerId),
             credentials.map(creds => UrlSafe.hash(creds.providerId)),
+            groupIdentifier,
             authorisedEnrolments
           ))
       } recover {
