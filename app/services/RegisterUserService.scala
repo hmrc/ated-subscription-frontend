@@ -52,26 +52,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
       address <- dataCacheConnector.fetchCorrespondenceAddress
       contactDetails <- dataCacheConnector.fetchContactDetailsForSession
       contactDetailsEmail <- dataCacheConnector.fetchContactDetailsEmailForSession
-      atedSubscriptionSuccess <- {
-        val contact = contactDetails.getOrElse(throw new RuntimeException("data not found"))
-        val contactEmail = contactDetailsEmail.getOrElse(throw new RuntimeException("data not found"))
-        val etmpAddress: EtmpAddressDetails = toEtmpAddress(address.getOrElse(throw new RuntimeException("data not found")))
-        val etmpContactDetails: EtmpContactDetails = toEtmpContactDetails(contact, contactEmail)
-        val correspondence: EtmpCorrespondence = EtmpCorrespondence(name1 = contact.firstName,
-          name2 = contact.lastName,
-          addressDetails = etmpAddress,
-          contactDetails = etmpContactDetails)
-
-        val subscribeData: SubscribeData = SubscribeData(acknowledgementReference = SessionUtils.getUniqueAckNo,
-          safeId = businessDetails.safeId,
-          address = List(correspondence),
-          emailConsent = contactEmail.emailConsent.getOrElse(false),
-          utr = businessDetails.utr.getOrElse(""),
-          isNonUKClientRegisteredByAgent = isNonUKClientRegisteredByAgent,
-          knownFactPostcode = businessDetails.businessAddress.postcode)
-        val dataToSend: JsValue = Json.toJson(subscribeData)
-        atedSubscriptionConnector.subscribeAted(data = dataToSend)
-      }
+      atedSubscriptionSuccess <- prepareSubscriptionForAted(contactDetails, contactDetailsEmail, address, businessDetails, isNonUKClientRegisteredByAgent)
       enrolResponse <- {
         if (isNonUKClientRegisteredByAgent) {
           val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
@@ -79,11 +60,15 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
         } else {
           authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier) flatMap {
               case Credentials(ggCred, _) ~ Some(groupId) =>
-                val grpId = appConfig.atedSubsUtils.validateGroupId(groupId)
-                val requestPayload = createEMACEnrolRequest(atedSubscriptionSuccess,ggCred,
-                  businessDetails.utr, businessDetails.businessAddress.postcode,
-                  businessDetails.safeId)
+                if (atedSubscriptionSuccess.atedRefNumber.isEmpty) {
+                  throw new RuntimeException("[RegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe")
+                } else {
+                  val grpId = appConfig.atedSubsUtils.validateGroupId(groupId)
+                  val requestPayload = createEMACEnrolRequest(ggCred,
+                    businessDetails.utr, businessDetails.businessAddress.postcode,
+                    businessDetails.safeId)
                   taxEnrolmentsConnector.enrol(requestPayload, grpId, atedSubscriptionSuccess.atedRefNumber.getOrElse(""))
+                }
               case _ ~ None =>
                 Future.failed(new RuntimeException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
           }
@@ -94,20 +79,14 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
     }
   }
 
-  private def createEMACEnrolRequest(atedSubscriptionSuccess: SubscribeSuccessResponse,
-                                     gGCredId: String, utr: Option[String], postcode: Option[String],
-                                     safeId : String): RequestEMACPayload = {
-
-    val atedRef = atedSubscriptionSuccess.atedRefNumber
-      .getOrElse(throw new RuntimeException("[RegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe"))
-
+  def createEMACEnrolRequest(gGCredId: String, utr: Option[String], postcode: Option[String], safeId : String): RequestEMACPayload = {
     def verifiers = (utr, postcode) match {
       case (Some(uniqueTaxRef), Some(ukClientPostCode)) =>
         List(Verifier("Postcode", ukClientPostCode), Verifier("CTUTR", uniqueTaxRef))
       case (None, Some(nonUkClientPostCode)) =>
         List(Verifier("NonUKPostalCode", nonUkClientPostCode))
       //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
-      case (Some(uniqueTaxRef), None) =>
+      case (Some(_), None) =>
         throw new RuntimeException(s"[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode must be supplied")
       case (None, None) =>
         throw new RuntimeException(s"[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
@@ -117,6 +96,30 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
       friendlyName = "ATED Enrolment",
       `type` = enrolmentType,
       verifiers = verifiers)
+  }
+
+  private def prepareSubscriptionForAted(contactDetails: Option[ContactDetails], contactDetailsEmail: Option[ContactDetailsEmail],
+                                         address: Option[Address], businessDetails: BusinessCustomerDetails,
+                                         nonUKAgent: Boolean)
+                                        (implicit auth: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
+    val contact = contactDetails.getOrElse(throw new RuntimeException("data not found"))
+    val contactEmail = contactDetailsEmail.getOrElse(throw new RuntimeException("data not found"))
+    val etmpAddress: EtmpAddressDetails = toEtmpAddress(address.getOrElse(throw new RuntimeException("data not found")))
+    val etmpContactDetails: EtmpContactDetails = toEtmpContactDetails(contact, contactEmail)
+    val correspondence: EtmpCorrespondence = EtmpCorrespondence(name1 = contact.firstName,
+      name2 = contact.lastName,
+      addressDetails = etmpAddress,
+      contactDetails = etmpContactDetails)
+
+    val subscribeData: SubscribeData = SubscribeData(acknowledgementReference = SessionUtils.getUniqueAckNo,
+      safeId = businessDetails.safeId,
+      address = List(correspondence),
+      emailConsent = contactEmail.emailConsent.getOrElse(false),
+      utr = businessDetails.utr.getOrElse(""),
+      isNonUKClientRegisteredByAgent = nonUKAgent,
+      knownFactPostcode = businessDetails.businessAddress.postcode)
+    val dataToSend: JsValue = Json.toJson(subscribeData)
+    atedSubscriptionConnector.subscribeAted(data = dataToSend)
   }
 
   def toEtmpAddress(address: Address): EtmpAddressDetails = {

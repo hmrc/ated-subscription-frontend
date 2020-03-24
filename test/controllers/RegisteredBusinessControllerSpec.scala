@@ -32,8 +32,9 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{CorrespondenceAddressService, RegisteredBusinessService}
+import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
+import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -42,7 +43,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
   val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
   val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
-  val mockAtedSubscriptionConnector: AtedSubscriptionConnector = mock[AtedSubscriptionConnector]
+  val mockEtmpCheckService: EtmpCheckService = mock[EtmpCheckService]
   val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
   val testAddressForm: BusinessAddress = BusinessAddress(Some(true))
 
@@ -51,7 +52,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     mockRegisteredBusinessService,
     mockCorrespondenceAddressService,
     mockDataCacheConnector,
-    mockAtedSubscriptionConnector,
+    mockEtmpCheckService,
     mockAuthConnector,
     mockAppConfig
   )
@@ -132,11 +133,11 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           }
         }
 
-//        "redirect users with existing ETMP registrations to ATED home" in {
-//          withETMPRegistration { result =>
-//            redirectLocation(result).get must include("/ated/home")
-//          }
-//        }
+        "redirect users with existing ETMP registrations to ATED home" in {
+          withETMPRegistration { result =>
+            redirectLocation(result).get must include("/ated/home")
+          }
+        }
 
       }
 
@@ -224,7 +225,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       .thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
       .thenReturn(Future.successful(false))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -233,7 +234,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
   def withETMPRegistration(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, Set(Enrolment("HMRC-ATED-ORG", Seq(EnrolmentIdentifier("AtedRefNumber", "test")), "Activated")))
     implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
@@ -241,7 +242,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       .thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
       .thenReturn(Future.successful(true))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -258,7 +259,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       .thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
       .thenReturn(Future.successful(false))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -275,7 +276,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       .thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
       .thenReturn(Future.successful(false))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
 

@@ -22,6 +22,8 @@ case class AtedSubscriptionAuthData(
                                      credentialRole: Option[CredentialRole],
                                      affinityGroup: Option[AffinityGroup],
                                      agentCode: Option[String],
+                                     credId: Option[String],
                                      hashedCredId: Option[String],
+                                     groupIdentifier: Option[String],
                                      enrolments: Enrolments
                                    )

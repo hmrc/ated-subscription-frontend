@@ -102,25 +102,25 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
     }
 
     "checkEtmpBusinessPartnerExists" must {
-      "return true when an OK has been received" in {
+      "return a self heal subscription when an OK has been received" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
         )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.obj()))))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.obj("regimeRefNumber" -> "test")))))
         val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
-        await(result) must be(true)
+        await(result) must be(Some(SelfHealSubscriptionResponse("test")))
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any())
       }
 
-      "return false for any other status received" in {
+      "return a None for any other status received" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
         )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.obj()))))
         val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
-        await(result) must be(false)
+        await(result) must be(None)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any())

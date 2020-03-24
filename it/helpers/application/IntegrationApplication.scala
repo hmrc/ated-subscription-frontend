@@ -30,6 +30,8 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
     "microservice.services.agent-client-mandate-frontend.port"    -> wireMockPort,
     "microservice.services.tax-enrolments.host"            -> wireMockHost,
     "microservice.services.tax-enrolments.port"            -> wireMockPort,
+    "microservice.services.ated-subscription.host"         -> wireMockHost,
+    "microservice.services.ated-subscription.port"         -> wireMockPort,
     "microservice.services.session-cache.host"            -> wireMockHost,
     "microservice.services.session-cache.port"            -> wireMockPort,
     "microservice.services.cachable.session-cache.host"   -> wireMockHost,

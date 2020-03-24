@@ -30,21 +30,25 @@ object AuthBuilder {
     Option[AffinityGroup] ~
     Enrolments ~
     Option[String] ~
-    Option[Credentials]
+    Option[Credentials] ~
+    Option[String]
 
   def buildRetrieval(atedSubscriptionAuthData: AtedSubscriptionAuthData): RetrievalType = {
     new ~(
       new ~(
         new ~(
           new ~(
-            atedSubscriptionAuthData.credentialRole,
-            atedSubscriptionAuthData.affinityGroup
+            new ~(
+              atedSubscriptionAuthData.credentialRole,
+              atedSubscriptionAuthData.affinityGroup
+            ),
+            atedSubscriptionAuthData.enrolments
           ),
-          atedSubscriptionAuthData.enrolments
+          atedSubscriptionAuthData.agentCode
         ),
-        atedSubscriptionAuthData.agentCode
+        Some(Credentials("mockProvi", "type"))
       ),
-      Some(Credentials("mockProvi", "type"))
+      atedSubscriptionAuthData.groupIdentifier
     )
   }
 
@@ -57,7 +61,9 @@ object AuthBuilder {
       None,
       Some(AffinityGroup.Organisation),
       None,
+      Some("credId"),
       Some("hashed"),
+      Some("testGroupId-"),
       Enrolments(Set())
     )
 
@@ -66,6 +72,8 @@ object AuthBuilder {
 
   def createUserAuthContextWithoutOrg(userId: String, userName: String): AtedSubscriptionAuthData = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
+      None,
+      None,
       None,
       None,
       None,
@@ -92,17 +100,23 @@ object AuthBuilder {
     createAgentAuthority(Assistant, agentRefNo)
   }
 
-  def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
+  def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector, secondExtraEnrolments: Set[Enrolment] = Set.empty) {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
       None,
       Some(AffinityGroup.Organisation),
       None,
+      Some("credId"),
       Some("hashed"),
+      Some("testGroupId-"),
       Enrolments(Set())
     )
 
+    val secondData = atedSubscriptionAuthData.copy(enrolments = Enrolments(
+      atedSubscriptionAuthData.enrolments.enrolments ++ secondExtraEnrolments
+    ))
+
     when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
+      .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)), Future.successful(buildRetrieval(secondData)))
   }
 
   def mockAuthorisedAgent(userId: String, mockAuthConnector: AuthConnector) {
@@ -152,7 +166,9 @@ object AuthBuilder {
       Some(agentRole),
       Some(AffinityGroup.Agent),
       Some(agentCode),
+      Some("credId"),
       Some("cred"),
+      Some("testGroupId-"),
       Enrolments(Set(agentEnrolment).flatten)
     )
 
@@ -164,8 +180,10 @@ object AuthBuilder {
     val authData = AtedSubscriptionAuthData(
       Some(credRole),
       Some(AffinityGroup.Organisation),
+      Some("credId"),
       Some("cred"),
       None,
+      Some("testGroupId-"),
       Enrolments(Set())
     )
 

@@ -24,6 +24,12 @@ object SubscribeSuccessResponse {
   implicit val formats: OFormat[SubscribeSuccessResponse] = Json.format[SubscribeSuccessResponse]
 }
 
+case class SelfHealSubscriptionResponse(regimeRefNumber: String)
+
+object SelfHealSubscriptionResponse {
+  implicit val formats: OFormat[SelfHealSubscriptionResponse] = Json.format[SelfHealSubscriptionResponse]
+}
+
 case class EtmpAddressDetails(addressType: String,
                        addressLine1: String,
                        addressLine2: String,
