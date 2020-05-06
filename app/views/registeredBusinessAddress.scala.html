@@ -17,13 +17,14 @@
 @import _root_.models.Address
 @import _root_.utils.AtedSubscriptionUtils
 @import config.ApplicationConfig
-@(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import utils._
 @import _root_.utils.AuthUtils.isAgent
 @import controllers.auth._
+
+@(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(businessAddressForm) }
 
@@ -43,16 +44,10 @@
   <p id="businessAddress" class="margin-bottom-default">
     @businessAddress.line_1 <br>
     @businessAddress.line_2 <br>
-    @businessAddress.line_3.map {line_3 =>
-      @line_3 <br>
-    }
-    @businessAddress.line_4.map {line_4 =>
-      @line_4 <br>
-    }
-    @businessAddress.postcode.map {postcode =>
-      @postcode <br>
-    }
-    @atedSubUtils.getSelectedCountry(businessAddress.country)
+    @businessAddress.line_3.map { line_3 =>@line_3 <br> }
+    @businessAddress.line_4.map { line_4 =>@line_4 <br> }
+    @businessAddress.postcode.map { postcode =>@postcode <br> }
+    @atedSubUtils.getSelectedCountry(businessAddress.country)<br>
   </p>
 
   @form(action = controllers.routes.RegisteredBusinessController.continue) {
@@ -65,8 +60,6 @@
       "false" -> messages("ated.registered-business-address.correspondence-address.no")),
       '_groupClass -> "form-group form-group-compound inline",
       '_labelClass -> "block-label",
-      '_legend -> header,
-      '_legendClass -> "visuallyhidden",
       '_labelAfter -> true,
       '_trackGA -> true
       )
