@@ -28,8 +28,8 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.EventTypes
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
                                        auditable: Auditable,
@@ -42,7 +42,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
 
   def enrol(requestPayload: RequestEMACPayload,
             groupId: String,
-            atedRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+            atedRefNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
 
     val jsonData = Json.toJson(requestPayload)
     val enrolmentKey = s"HMRC-ATED-ORG~ATEDRefNumber~$atedRefNumber"

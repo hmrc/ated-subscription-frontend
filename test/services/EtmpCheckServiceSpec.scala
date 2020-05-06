@@ -55,7 +55,7 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
 
         when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
             .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("test"))))
-        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any(), any()))
+        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any()))
             .thenReturn(Future.successful(HttpResponse(CREATED)))
 
         await(etmpCheckService.validateBusinessDetails(reviewDetails)) mustBe true
@@ -73,7 +73,7 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
 
         when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
             .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("test"))))
-        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any(), any()))
+        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any()))
             .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
 
         await(etmpCheckService.validateBusinessDetails(reviewDetails)) mustBe false
