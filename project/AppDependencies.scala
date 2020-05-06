@@ -1,12 +1,5 @@
 import sbt._
 
-object FrontendBuild extends Build with MicroService {
-
-  val appName = "ated-subscription-frontend"
-
-  override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-}
-
 private object AppDependencies {
 
   import play.core.PlayVersion
@@ -16,9 +9,9 @@ private object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "bootstrap-play-26" % "1.7.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.54.0-play-26",
-    "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-26",
-    "uk.gov.hmrc" %% "play-partials" % "6.10.0-play-26",
-    "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
+    "uk.gov.hmrc" %% "play-ui" % "8.9.0-play-26",
+    "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-26",
+    "uk.gov.hmrc" %% "domain" % "5.8.0-play-26",
     "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
     "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-26"
   )
