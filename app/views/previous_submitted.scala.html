@@ -50,6 +50,8 @@
       @atedInputRadioGroupReveal(previousSubmittedForm("previousSubmitted"),
         Seq("true" -> (messages("ated.radio.yes.label"), None),
             "false" -> (messages("ated.radio.no.label"), None)),
+      '_legend -> messages("ated.prev-submitted.title"),
+      '_legendClass -> "visuallyhidden",
       '_groupClass -> "inline",
       '_labelClass -> "block-label",
       '_labelAfter -> true,

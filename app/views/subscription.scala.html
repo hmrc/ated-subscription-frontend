@@ -52,6 +52,8 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
       @atedInputRadioGroupReveal(areYouAnAgentForm("isAgent"),
         Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-isAnAgent")),
             "false" -> (messages("ated.radio.no.label"), None)),
+        '_legend -> messages("ated.client-startpage-header"),
+        '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
         '_labelAfter -> true,

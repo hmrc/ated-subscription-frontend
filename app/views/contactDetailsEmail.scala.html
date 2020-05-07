@@ -75,6 +75,8 @@
       @atedInputRadioGroupReveal(contactDetailsEmailForm("emailConsent"),
         Seq("true" -> (messages("ated.radio.yes.label"), Some("email-contact-hidden")),
             "false" -> (messages("ated.radio.no.label"), None)),
+        '_legend -> messages("ated.contact-details-email-header"),
+        '_legendClass -> "visuallyhidden",
         '_groupClass -> "inline",
         '_labelClass -> "block-label",
         '_labelAfter -> true,
