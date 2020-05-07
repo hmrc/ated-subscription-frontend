@@ -56,13 +56,13 @@
   @form(action = controllers.routes.CorrespondenceAddressController.submit(mode)) {
 
       <fieldset id="correspondence-address-form">
-        <legend class="visuallyhidden">
-          @if(isAgent) {
-          @messages("ated.correspondence-address.agent.header")
-          } else {
-          @messages("ated.correspondence-address.header")
-          }
-        </legend>
+          <legend class="visuallyhidden">
+              @if(isAgent) {
+              @messages("ated.correspondence-address.agent.header")
+              } else {
+              @messages("ated.correspondence-address.header")
+              }
+          </legend>
 
         @atedInput(correspondenceAddressForm("line_1"),
         '_label ->  Html(messages("ated.address.line-1")),
