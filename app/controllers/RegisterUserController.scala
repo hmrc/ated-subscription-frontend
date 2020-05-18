@@ -27,7 +27,6 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 import utils.AuthUtils._
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterUserController @Inject()(mcc: MessagesControllerComponents,

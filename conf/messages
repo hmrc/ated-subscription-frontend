@@ -340,9 +340,9 @@ ated.business-registration-error.wrong.role.message = If you require access you 
 ated.business-address-error.general.isCorrespondenceAddress = Select an option for the correspondence address
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
 
-ated.business-registration.generic.error.header = Sorry, we’re experiencing technical difficulties
-ated.business-registration.generic.error.title = Sorry, we’re experiencing technical difficulties
-ated.business-registration.generic.error.message = Please try again in a few minutes.
+ated.business-registration.generic.error.header = Sorry, there is a problem with the service
+ated.business-registration.generic.error.title = Sorry, there is a problem with the service
+ated.business-registration.generic.error.message = Try again later.
 
 ated.already-registered-error.title = Somebody has already registered from your organisation
 ated.already-registered-error.header = Somebody has already registered from your organisation
