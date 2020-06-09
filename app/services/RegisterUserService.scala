@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import connectors._
 import javax.inject.Inject
 import models._
+import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.test.Helpers.OK
@@ -64,7 +65,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
                   throw new RuntimeException("[RegisterEmacUserService][createEMACEnrolRequest] ated reference number not returned from ETMP subscribe")
                 } else {
                   val grpId = appConfig.atedSubsUtils.validateGroupId(groupId)
-                  val requestPayload = createEMACEnrolRequest(ggCred,
+                  val requestPayload = createEMACEnrolRequest(businessDetails.businessType, ggCred,
                     businessDetails.utr, businessDetails.businessAddress.postcode,
                     businessDetails.safeId)
                   taxEnrolmentsConnector.enrol(requestPayload, grpId, atedSubscriptionSuccess.atedRefNumber.getOrElse(""))
@@ -79,15 +80,20 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
     }
   }
 
-  def createEMACEnrolRequest(gGCredId: String, utr: Option[String], postcode: Option[String], safeId : String): RequestEMACPayload = {
+  def createEMACEnrolRequest(businessType: Option[String], gGCredId: String, utr: Option[String],
+                             postcode: Option[String], safeId : String): RequestEMACPayload = {
     def verifiers = (utr, postcode) match {
       case (Some(uniqueTaxRef), Some(ukClientPostCode)) =>
-        List(Verifier("Postcode", ukClientPostCode), Verifier("CTUTR", uniqueTaxRef))
+        List(
+          Verifier("Postcode", ukClientPostCode),
+          Verifier(verifierKeyForBusinessType(businessType), uniqueTaxRef)
+        )
+      //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
       case (None, Some(nonUkClientPostCode)) =>
         List(Verifier("NonUKPostalCode", nonUkClientPostCode))
-      //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
-      case (Some(_), None) =>
-        throw new RuntimeException(s"[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode must be supplied")
+      case (Some(uniqueTaxRef), None) =>
+        Logger.info("[RegisterUserService][verifiers] Creating verifiers for user with no postcode")
+        List(Verifier(verifierKeyForBusinessType(businessType), uniqueTaxRef))
       case (None, None) =>
         throw new RuntimeException(s"[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
     }
@@ -96,6 +102,13 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
       friendlyName = "ATED Enrolment",
       `type` = enrolmentType,
       verifiers = verifiers)
+  }
+
+  def verifierKeyForBusinessType(businessType: Option[String]): String = {
+    businessType match {
+      case Some("SOP") => "SAUTR"
+      case _ => "CTUTR"
+    }
   }
 
   private def prepareSubscriptionForAted(contactDetails: Option[ContactDetails], contactDetailsEmail: Option[ContactDetailsEmail],

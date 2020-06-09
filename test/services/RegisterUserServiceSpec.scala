@@ -157,7 +157,7 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
         thrown.getMessage must include("[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode or utr must be supplied")
       }
 
-      "throw exception when postcode not present" in {
+      "not throw an exception when postcode not present" in {
         when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetailsNoPostCode))
         when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddressNoPOstCode)))
         when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
@@ -166,9 +166,8 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
         when(mockTaxEnrolmentConnector.enrol(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
         when(mockAuthConnector.authorise[Any](any(), any())(any(), any())).thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
         implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-        val result = testRegisterUserService.subscribeAted()
-        val thrown = the[RuntimeException] thrownBy await(result)
-        thrown.getMessage must include("[RegisterUserService][subscribeAted][createEMACEnrolRequest] - postalCode must be supplied")
+        val result = await(testRegisterUserService.subscribeAted())
+        result._1 must be(subscribeSuccessResponse)
       }
 
       "should handle invalid data in the subscribe success response" in {
