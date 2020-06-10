@@ -41,8 +41,10 @@ class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConn
         (authData.groupIdentifier, authData.credId) match {
           case (Some(gi), Some(credId)) =>
             val requestPayload = registerUserService.createEMACEnrolRequest(
+              busCusDetails.businessType,
               credId,
-              busCusDetails.utr, busCusDetails.businessAddress.postcode,
+              busCusDetails.utr,
+              busCusDetails.businessAddress.postcode,
               busCusDetails.safeId
             )
             val validatedGroupId = appConfig.atedSubsUtils.validateGroupId(gi)

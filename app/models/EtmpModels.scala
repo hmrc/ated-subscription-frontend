@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
 case class SubscribeSuccessResponse(processingDate: Option[String], atedRefNumber: Option[String], formBundleNumber: Option[String])
 
@@ -38,8 +38,23 @@ case class EtmpAddressDetails(addressType: String,
                        postalCode: Option[String],
                        countryCode: String)
 
+
 object EtmpAddressDetails {
-  implicit val formats: OFormat[EtmpAddressDetails] = Json.format[EtmpAddressDetails]
+
+  implicit class FormatOps[T] (f: OFormat[T]) {
+
+    def strictNull[V:Format](key: String, get: T => Option[V]): OFormat[T] = new OFormat[T] {
+      def reads(j: JsValue): JsResult[T] = f.reads(j)
+
+      def writes(u: T): JsObject =
+        (f.writes(u) - key) ++ Json.obj(
+          key -> (get(u).map(implicitly[Format[V]].writes _).getOrElse(JsNull): JsValue)
+        )
+    }
+  }
+
+  implicit val formats: Format[EtmpAddressDetails] = Json.format[EtmpAddressDetails]
+    .strictNull("postalCode", _.postalCode)
 }
 
 case class EtmpContactDetails(phoneNumber: Option[String],
