@@ -128,6 +128,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
       safeId = businessDetails.safeId,
       address = List(correspondence),
       emailConsent = contactEmail.emailConsent.getOrElse(false),
+      businessType = businessDetails.businessType.getOrElse(""),
       utr = businessDetails.utr.getOrElse(""),
       isNonUKClientRegisteredByAgent = nonUKAgent,
       knownFactPostcode = businessDetails.businessAddress.postcode)

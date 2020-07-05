@@ -79,6 +79,7 @@ case class SubscribeData(acknowledgementReference: String,
                          safeId: String,
                          emailConsent: Boolean,
                          address: List[EtmpCorrespondence],
+                         businessType: String,
                          utr: String,
                          isNonUKClientRegisteredByAgent : Boolean,
                          knownFactPostcode: Option[String])

@@ -46,7 +46,8 @@ trait TestJson {
     )),
     utr = "123456789",
     isNonUKClientRegisteredByAgent = true,
-    knownFactPostcode = None
+    knownFactPostcode = None,
+    businessType = "LTD"
   )
 
   val etmpSubscribeDataJson: JsValue =
