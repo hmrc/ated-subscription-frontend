@@ -5,7 +5,6 @@ import java.util.UUID
 import play.api.Application
 import play.api.mvc.{DefaultCookieHeaderEncoding, DefaultSessionCookieBaker}
 import uk.gov.hmrc.http.SessionKeys
-import uk.gov.hmrc.http.logging.SessionId
 
 trait LoginStub {
 

@@ -18,7 +18,6 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-
 case class SubscriptionContactDetails(phoneNumber: Option[String] = None,
                           mobileNumber: Option[String] = None,
                           faxNumber: Option[String] = None,
@@ -26,22 +25,6 @@ case class SubscriptionContactDetails(phoneNumber: Option[String] = None,
 
 object SubscriptionContactDetails {
   implicit val formats: OFormat[SubscriptionContactDetails] = Json.format[SubscriptionContactDetails]
-}
-
-case class EditContactDetails(firstName: String,
-                              lastName: String,
-                              phoneNumber: String)
-
-object EditContactDetails {
-  implicit val formats: OFormat[EditContactDetails] = Json.format[EditContactDetails]
-}
-
-case class EditContactDetailsEmail(
-                              emailAddress: String,
-                              emailConsent: Boolean)
-
-object EditContactDetailsEmail {
-  implicit val formats: OFormat[EditContactDetailsEmail] = Json.format[EditContactDetailsEmail]
 }
 
 case class AddressDetails(addressType: String,
@@ -69,19 +52,4 @@ case class SubscriptionData(safeId: String, organisationName: String, emailConse
 
 object SubscriptionData {
   implicit val formats: OFormat[SubscriptionData] = Json.format[SubscriptionData]
-}
-
-case class ChangeIndicators(nameChanged: Boolean = false,
-                            permanentPlaceOfBusinessChanged: Boolean = false,
-                            correspondenceChanged: Boolean = false,
-                            contactDetailsChanged: Boolean = false)
-
-object ChangeIndicators {
-  implicit val formats: OFormat[ChangeIndicators] = Json.format[ChangeIndicators]
-}
-
-case class UpdateSubscriptionDataRequest(emailConsent: Boolean, changeIndicators: ChangeIndicators, address : Seq[Address])
-
-object UpdateSubscriptionDataRequest {
-  implicit val formats: OFormat[UpdateSubscriptionDataRequest] = Json.format[UpdateSubscriptionDataRequest]
 }

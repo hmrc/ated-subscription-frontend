@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
@@ -33,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ContactDetailsService
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.http.SessionKeys
 
 import scala.concurrent.Future
 
@@ -146,7 +146,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
       "validate form" must {
 
         "not be empty" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val inputJson = Json.parse( """{ "firstName": "","lastName": "", "telephone": ""}""")
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
@@ -159,7 +158,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         }
 
         "First name must be maximum of 35 characters" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val fname = "a" * 36
           val inputJson = Json.parse( s"""{ "firstName": "$fname", "lastName": "DEF", "telephone": ""}""")
 
@@ -170,7 +168,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         }
 
         "Last name must be maximum of 35 characters" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val lname = "a" * 36
           val inputJson = Json.parse( s"""{ "firstName": "ABC", "lastName": "$lname", "telephone": ""}""")
 
@@ -181,7 +178,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         }
 
         "Telephone number must not be more than 24 characters" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val tele = "a" * 25
           val inputJson = Json.parse( s"""{ "firstName": "ABC", "lastName": "DEF", "telephone": "$tele"}""")
 
@@ -192,7 +188,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         }
 
         "Telephone number must not have invalid characters" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val inputJson = Json.parse( """{ "firstName": "ABC", "lastName": "DEF", "telephone": "@@@@@@@@@@@@@@"}""")
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
@@ -202,7 +197,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         }
 
         "Telephone number must not have lower case letters" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val inputJson = Json.parse( """{ "firstName": "ABC", "lastName": "DEF", "telephone": "0191222x123"}""")
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
@@ -213,7 +207,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
 
         "for valid data, it should redirect to review business details page" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val inputJson = Json.parse( s"""{ "firstName": "ABC", "lastName": "DEF", "telephone": "1234567890"}""")
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
             status(result) must be(SEE_OTHER)
@@ -222,7 +215,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         }
 
         "If registration details entered are valid, save and continue button must redirect to review details page, if mode is edit" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier()
           val inputJson = Json.parse( s"""{ "firstName": "ABC", "lastName": "DEF", "telephone": "1234567890"}""")
           submitEditWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
             result =>

@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
@@ -33,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import services.ContactDetailsService
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.http.SessionKeys
 
 import scala.concurrent.Future
 
@@ -128,7 +128,6 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
 
       "Email address must not be more 241 characters" in {
-        implicit val hc: HeaderCarrier = HeaderCarrier()
         val emailTest = "a" * 240 + "@mail.com"
         val inputJson = Json.parse( s"""{ "emailConsent": "true", "email": "$emailTest" }""")
 
@@ -139,7 +138,6 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
       }
 
       "Email address must be a valid email address" in {
-        implicit val hc: HeaderCarrier = HeaderCarrier()
         val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "abcdef.com" }""")
 
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
@@ -149,7 +147,6 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
       }
 
       "for valid data, it should redirect to review business details page" in {
-        implicit val hc: HeaderCarrier = HeaderCarrier()
         val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "abcdef@mail.com" }""")
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
           status(result) must be(SEE_OTHER)

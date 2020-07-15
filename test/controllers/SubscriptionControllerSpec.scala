@@ -22,7 +22,7 @@ import builders.{AuthBuilder, SessionBuilder}
 import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
@@ -213,16 +213,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/business-customer/agent/ATED")
-          }
-        }
-      }
-
-      "Cancel link" must {
-
-        "redirect to the start-subscription url" in {
-          getWithAuthorisedUser {
-            result =>
-              val document = Jsoup.parse(contentAsString(result))
           }
         }
       }

@@ -20,7 +20,6 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AgentEmail, ClientDisplayName, OldMandateReference}
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 

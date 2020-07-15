@@ -102,7 +102,7 @@ class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConn
     } yield {
       mandateResponse.status match {
         case CREATED => mandateResponse
-        case status => throw new RuntimeException("Non-UK Mandate update failed.")
+        case _ => throw new RuntimeException("Non-UK Mandate update failed.")
       }
     }
   }
@@ -111,7 +111,8 @@ class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConn
     if (AuthUtils.isAgent) mandateFrontendConnector.getAgentEmail else Future.successful(None)
   }
 
-  def fetchClientDisplayName(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
+  def fetchClientDisplayName(implicit request: Request[_], user: AtedSubscriptionAuthData,
+                             hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     if (AuthUtils.isAgent) mandateFrontendConnector.getClientDisplayName else Future.successful(None)
   }
 

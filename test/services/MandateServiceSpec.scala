@@ -22,7 +22,7 @@ import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Request
@@ -46,7 +46,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = None, businessAddress = testAddress,
+  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name",
+    businessType = "Corporate Body", businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
   val testAgentEmail = AgentEmail("aa@mail.com")
   val testClientDisplayName = ClientDisplayName("client display name")
@@ -66,7 +67,9 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockMandateFrontendConnector.getClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
         when(mockMandateConnector.createMandateForNonUK(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        val result = testMandateService.createMandateForNonUK("atedRefNum")
+        val result = await(testMandateService.createMandateForNonUK("atedRefNum"))
+        result.status must be(CREATED)
+
       }
 
       "return response, if mandate is created and status is CREATED but agent email and client display are are None" in {
@@ -76,7 +79,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockMandateConnector.createMandateForNonUK(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        val result = testMandateService.createMandateForNonUK("atedRefNum")
+        val result = await(testMandateService.createMandateForNonUK("atedRefNum"))
+        result.status must be(CREATED)
       }
 
       "throw exception, if status is anything other than CREATED" in {
@@ -101,7 +105,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockMandateFrontendConnector.getClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testClientDisplayName)))
         when(mockMandateConnector.updateMandateForNonUK(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        val result = testMandateService.updateMandateForNonUK("atedRefNum", "mandateId")
+        val result = await(testMandateService.updateMandateForNonUK("atedRefNum", "mandateId"))
+        result.status must be(CREATED)
       }
 
       "return response, if mandate is created and status is CREATED but agent email and client display are are None" in {
@@ -111,7 +116,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
         when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
         when(mockMandateConnector.updateMandateForNonUK(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(CREATED)))
         implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        val result = testMandateService.updateMandateForNonUK("atedRefNum", "mandateId")
+        val result = await(testMandateService.updateMandateForNonUK("atedRefNum", "mandateId"))
+        result.status must be(CREATED)
       }
 
       "throw exception, if status is anything other than CREATED" in {

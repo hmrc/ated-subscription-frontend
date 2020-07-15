@@ -18,14 +18,20 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Verifier(key: String, value: String)
+case class Verifiers(verifiers: List[Verifier])
 
-object Verifier {
-  implicit val formats: OFormat[Verifier] = Json.format[Verifier]
+object Verifiers {
+  implicit val formats: OFormat[Verifiers] = Json.format[Verifiers]
 }
 
-case class RequestEMACPayload(userId: String, friendlyName: String, `type`: String, verifiers: Verifiers)
+case class KnownFact(`type`: String, value: String)
 
-object RequestEMACPayload {
-  implicit val formats: OFormat[RequestEMACPayload] = Json.format[RequestEMACPayload]
+object KnownFact {
+  implicit val formats: OFormat[KnownFact] = Json.format[KnownFact]
+}
+
+case class KnownFactsForService(facts: List[KnownFact])
+
+object KnownFactsForService {
+  implicit val formats: OFormat[KnownFactsForService] = Json.format[KnownFactsForService]
 }

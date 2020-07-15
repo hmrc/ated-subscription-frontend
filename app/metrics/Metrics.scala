@@ -18,7 +18,6 @@ package metrics
 
 import com.codahale.metrics.{Counter, MetricRegistry, Timer}
 import com.codahale.metrics.Timer.Context
-import javax.inject.Inject
 import metrics.MetricsEnum.MetricsEnum
 
 class Metrics {

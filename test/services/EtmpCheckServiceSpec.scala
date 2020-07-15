@@ -23,7 +23,7 @@ import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, SelfH
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
@@ -38,7 +38,7 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
   val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockRegisterUserService = mock[RegisterUserService]
   lazy val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-
+  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "user name")
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val etmpCheckService = new EtmpCheckService(mockAtedSubscriptionConnector, mockTaxEnrolmentsConnector, mockRegisterUserService, mockAppConfig)
@@ -46,10 +46,11 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
   "etmpCheckService" should {
     "validate business details successfully" when {
       "there is a business with regime etmp details" in {
-        implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "user name")
 
-        val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
-          businessType = Some("corporate body"),
+
+        val reviewDetails = BusinessCustomerDetails(
+          businessName = "ACME",
+          businessType = "Corporate Body",
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
 
@@ -64,10 +65,10 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
 
     "fail to validate business details successfully" when {
       "there is a business with regime etmp details but enrolling ES8 fails" in {
-        implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "user name")
 
-        val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
-          businessType = Some("corporate body"),
+        val reviewDetails = BusinessCustomerDetails(
+          businessName = "ACME",
+          businessType = "Corporate Body",
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
 

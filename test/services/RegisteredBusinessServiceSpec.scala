@@ -22,17 +22,17 @@ import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class RegisteredBusinessServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
@@ -41,7 +41,7 @@ class RegisteredBusinessServiceSpec extends PlaySpec with GuiceOneServerPerSuite
   val mockAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
 
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = None, businessAddress = testAddress,
+  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "Corporate Body", businessAddress = testAddress,
     sapNumber =  "1234567890", safeId =  "EX0012345678909", agentReferenceNumber =  None)
 
   val testRegisteredBusinessServices = new RegisteredBusinessService(mockBusinessCustomerFrontendConnector, mockAtedConnector, mockAgentClientMandateFrontendConnector)
@@ -95,7 +95,6 @@ class RegisteredBusinessServiceSpec extends PlaySpec with GuiceOneServerPerSuite
       implicit val hc: HeaderCarrier = HeaderCarrier()
       implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
       implicit val request: Request[_] = FakeRequest(GET, "")
-      val oldMandateRef = OldMandateReference("mandateId", "atedRefNo")
       when(mockBusinessCustomerFrontendConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, None)))
       val thrown = the[RuntimeException] thrownBy await(testRegisteredBusinessServices.getBusinessCustomerDetails)
       thrown.getMessage must include("Error while retrieving review details from business-customer keystore")
@@ -105,7 +104,6 @@ class RegisteredBusinessServiceSpec extends PlaySpec with GuiceOneServerPerSuite
       implicit val hc: HeaderCarrier = HeaderCarrier()
       implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
       implicit val request: Request[_] = FakeRequest(GET, "")
-      val oldMandateRef = OldMandateReference("mandateId", "atedRefNo")
       when(mockBusinessCustomerFrontendConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(NOT_FOUND, None)))
       when(mockAgentClientMandateFrontendConnector.getOldMandateDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
       when(mockAtedConnector.retrieveSubscriptionData(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, None)))

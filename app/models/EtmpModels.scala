@@ -75,15 +75,15 @@ object EtmpCorrespondence {
   implicit val formats: OFormat[EtmpCorrespondence] = Json.format[EtmpCorrespondence]
 }
 
-case class SubscribeData(acknowledgementReference: String,
-                         safeId: String,
-                         emailConsent: Boolean,
-                         address: List[EtmpCorrespondence],
-                         businessType: String,
-                         utr: String,
-                         isNonUKClientRegisteredByAgent : Boolean,
-                         knownFactPostcode: Option[String])
+case class AtedSubscriptionRequest(acknowledgementReference: String,
+                                   safeId: String,
+                                   emailConsent: Boolean,
+                                   address: List[EtmpCorrespondence],
+                                   businessType: String,
+                                   utr: String,
+                                   isNonUKClientRegisteredByAgent : Boolean,
+                                   knownFactPostcode: Option[String])
 
-object SubscribeData {
-  implicit val formats: OFormat[SubscribeData] = Json.format[SubscribeData]
+object AtedSubscriptionRequest {
+  implicit val formats: OFormat[AtedSubscriptionRequest] = Json.format[AtedSubscriptionRequest]
 }

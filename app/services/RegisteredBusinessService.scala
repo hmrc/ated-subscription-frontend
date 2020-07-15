@@ -18,7 +18,7 @@ package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessCustomerFrontendConnector}
 import javax.inject.Inject
-import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, SubscriptionData, EtmpRegistrationDetails}
+import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, EtmpRegistrationDetails, SubscriptionData}
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,7 +33,9 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
                                  hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessCustomerDetails] = {
     businessCustomerFrontendConnector.getBusinessCustomerDetails flatMap { response =>
       response.status match {
-        case OK => Future.successful(response.json.as[BusinessCustomerDetails])
+        case OK => {
+          Future.successful(response.json.as[BusinessCustomerDetails])
+        }
         case NOT_FOUND =>
           agentClientMandateFrontendConnector.getOldMandateDetails flatMap  { mandateRef =>
             val atedRefNumber = mandateRef.map(_.atedRefNumber).getOrElse(throw new RuntimeException("No Old Mandate Reference found for the client!"))
@@ -46,8 +48,8 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
                     line_2 = addressData.addressDetails.addressLine2,
                     country = addressData.addressDetails.countryCode)
                   val agentRefNo = user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
-                  Future.successful(BusinessCustomerDetails(businessName = subscriptionData.organisationName,
-                    businessType = None, businessAddress = address, sapNumber = "", safeId = subscriptionData.safeId, agentReferenceNumber = agentRefNo))
+                  Future.successful(BusinessCustomerDetails(businessName = subscriptionData.organisationName, businessType = "Partnership",
+                    businessAddress = address, sapNumber = "", safeId = subscriptionData.safeId, agentReferenceNumber = agentRefNo))
                 case status => throw new RuntimeException(s"Error while retrieving subscription data for ated ref no: $atedRefNumber  status:: $status")
               }
             }
@@ -68,7 +70,6 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
   def getBusinessAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
     getBusinessCustomerDetails.map(_.businessAddress)
   }
-
 
   private def getAgentCorrespondenceAddress(implicit request: Request[_],
                                             user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {

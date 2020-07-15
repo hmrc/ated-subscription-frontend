@@ -21,12 +21,14 @@ import controllers.auth.AuthFunctionality
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest, Result}
 import services.RegisterUserService
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 import utils.AuthUtils._
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
@@ -37,32 +39,40 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
 
 
   implicit val ec: ExecutionContext = mcc.executionContext
-  private val WrongRoleUserError = "wrong role user error"
-  private val GenericError = "generic user error"
+  private val WrongRoleUserError = "-error.wrong.role"
+  private val GenericError = ".generic.error"
 
-  def registerUser: Action[AnyContent] = Action.async { implicit request =>
-     authoriseFor { implicit data =>
-        if (isAgent) Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
-        else {
-          registerUserService.subscribeAted() map { registerResponse =>
-            val (_, emacEnrolResponse) = registerResponse
-            emacEnrolResponse.status match {
-              case CREATED => Redirect(controllers.routes.RegisterUserController.confirmation())
-              case CONFLICT =>
-                Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
-                Ok(views.html.alreadyRegistered())
-              case FORBIDDEN =>
-                val (pageTitle, heading, message) = formatEmacErrorMessage(WrongRoleUserError)
-                Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
-                Ok(views.html.global_error(pageTitle, heading, message))
-              case _ =>
-                val (pageTitle, heading, message) = formatEmacErrorMessage(GenericError)
-                Logger.warn("[RegisterUserController][registerUser] - allocation failed - no definite reason found")
-                Ok(views.html.global_error(pageTitle, heading, message))
-            }
-          }
+  def subscribeAndEnrolForAted: Action[AnyContent] = Action.async { implicit request =>
+    authoriseFor { implicit data =>
+      if (isAgent) {
+        Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
+      } else {
+        for {
+          subscribeAtedSuccess <- registerUserService.subscribeAted()
+          enrolAtedResponse <- registerUserService.enrolAted(subscribeAtedSuccess)
+          action <- handleEnrolResponse(enrolAtedResponse)
+        } yield {
+          action
         }
       }
+    }
+  }
+
+  def handleEnrolResponse(enrolAtedResponse: HttpResponse)(implicit request: MessagesRequest[AnyContent]): Future[Result] = {
+    enrolAtedResponse.status match {
+      case CREATED => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
+      case CONFLICT =>
+        Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
+        Future.successful(Ok(views.html.alreadyRegistered()))
+      case FORBIDDEN =>
+        val (pageTitle, heading, message) = formatEmacErrorMessage(WrongRoleUserError)
+        Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
+        Future.successful(Ok(views.html.global_error(pageTitle, heading, message)))
+      case _ =>
+        val (pageTitle, heading, message) = formatEmacErrorMessage(GenericError)
+        Logger.warn("[RegisterUserController][registerUser] - allocation failed - no definite reason found")
+        Future.successful(Ok(views.html.global_error(pageTitle, heading, message)))
+    }
   }
 
   def confirmation: Action[AnyContent] = Action.async {
@@ -79,17 +89,8 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-
-  private def formatEmacErrorMessage(str: String): (String, String, String) =
-    str match {
-      case WrongRoleUserError =>
-        ("ated.business-registration-error.wrong.role.header",
-          "ated.business-registration-error.wrong.role.title",
-          "ated.business-registration-error.wrong.role.message")
-      case GenericError =>
-        ("ated.business-registration.generic.error.header",
-          "ated.business-registration.generic.error.title",
-          "ated.business-registration.generic.error.message")
-    }
-
+  private def formatEmacErrorMessage(key: String): (String, String, String) =
+    (s"ated.business-registration$key.header",
+      s"ated.business-registration$key.title",
+      s"ated.business-registration$key.message")
 }

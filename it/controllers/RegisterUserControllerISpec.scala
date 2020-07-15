@@ -2,7 +2,7 @@ package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import helpers.IntegrationSpec
-import models.{Address, RequestEMACPayload, BusinessCustomerDetails, Verifier}
+import models.{Address, BusinessCustomerDetails, RequestEMACPayload, Verifier, Verifiers}
 import play.api.http.Status._
 import play.api.http.{HeaderNames => HN}
 import play.api.libs.json.Json
@@ -15,16 +15,17 @@ class RegisterUserControllerISpec extends IntegrationSpec {
   val enrolmentKey = s"$ATED_SERVICE_NAME~AtedRefNumber~XN1200000100001"
 
   val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
-    businessType = Some("Corporate Body"),
+    businessType = "Corporate Body",
     businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = Some("NE98 1ZZ"), country = "GB"),
     sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = None, utr = Some("12345678"))
 
-  val reviewDetailss = Json.toJson(reviewDetails)
+  val reviewDetailsJson = Json.toJson(reviewDetails)
 
-  val emacPayloadRequest = RequestEMACPayload(userId = "user-id",
+  val emacPayloadRequest = RequestEMACPayload(
+    userId = "user-id",
     friendlyName = "friendlyName",
     `type` = "type",
-    verifiers = List(Verifier(key = "Postcode", value = "NE98 1ZZ"), Verifier(key = "CTUTR", value = "12345678")))
+    verifiers = Verifiers(List(Verifier(key = "Postcode", value = "NE98 1ZZ"), Verifier(key = "CTUTR", value = "12345678"))))
 
   val emacPayload = Json.toJson(emacPayloadRequest)
 
@@ -96,7 +97,7 @@ class RegisterUserControllerISpec extends IntegrationSpec {
           )
         )
 
-        stubGet("/business-customer/fetch-review-details/ATED", 200, reviewDetailss.toString())
+        stubGet("/business-customer/fetch-review-details/ATED", 200, reviewDetailsJson.toString())
         stubGet("/mandate/agent/old-nonuk-mandate-from-session", 200, "")
         stubGet(s"/keystore/ated-subscription-frontend/${sessionId}", 200, contactDetails)
         stubPost(s"/org/12345-credId/subscribe", 200, "")
