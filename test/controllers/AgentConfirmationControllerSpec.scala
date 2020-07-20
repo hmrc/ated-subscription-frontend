@@ -26,14 +26,14 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.Future
@@ -122,11 +122,12 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
     val reviewDetails = BusinessCustomerDetails(businessName = businessName,
-      businessType = Some("corporate body"),
+      businessType = "Corporate Body",
       businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
-      sapNumber = "1234567890", safeId = "XW0001234567890",isAGroup = false, agentReferenceNumber = Some("JARN1234567"))
+      sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = Some("JARN1234567"))
 
-    when(mockBCConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+    when(mockBCConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
     val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -149,7 +150,6 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
   def continueWithAuthorisedUser(refreshStatus: Int)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)

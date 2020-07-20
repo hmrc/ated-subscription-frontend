@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import play.api.libs.json.{Json, OFormat}
+object BusinessTypeConstants {
 
-case class Verifier(key: String, value: String)
+  val limitedCompany = "Corporate Body"
+  val businessPartnership = "Partnership"
+  val limitedPartnership = "Partnership"
+  val limitedLiabilityPartnership = "LLP"
+  val unitTrust = "Corporate Body"
+  val unlimitedCompany = "Corporate Body"
+  val overseasCompany = "Non UK-based Company"
 
-object Verifier {
-  implicit val formats: OFormat[Verifier] = Json.format[Verifier]
-}
+  def saBusinessTypes: List[String] = {
+    List(
+      businessPartnership, limitedPartnership, limitedLiabilityPartnership, overseasCompany)
+  }
 
-case class RequestEMACPayload(userId: String, friendlyName: String, `type`: String, verifiers: Verifiers)
+  def allBusinessTypes: List[String] = {
+    saBusinessTypes.++(List(limitedCompany, unitTrust, unlimitedCompany))
+  }
 
-object RequestEMACPayload {
-  implicit val formats: OFormat[RequestEMACPayload] = Json.format[RequestEMACPayload]
 }

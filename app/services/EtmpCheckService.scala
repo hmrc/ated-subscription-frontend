@@ -39,15 +39,15 @@ class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConn
     atedSubscriptionConnector.checkEtmpBusinessPartnerExists(Json.toJson(busCusDetails)) flatMap {
       case Some(response) =>
         (authData.groupIdentifier, authData.credId) match {
-          case (Some(gi), Some(credId)) =>
-            val requestPayload = registerUserService.createEMACEnrolRequest(
+          case (Some(groupId), Some(credId)) =>
+            val requestPayload = registerUserService.createEnrolmentRequest(
               busCusDetails.businessType,
               credId,
               busCusDetails.utr,
               busCusDetails.businessAddress.postcode,
               busCusDetails.safeId
             )
-            val validatedGroupId = appConfig.atedSubsUtils.validateGroupId(gi)
+            val validatedGroupId = appConfig.atedSubsUtils.validateGroupId(groupId)
 
             taxEnrolmentsConnector.enrol(requestPayload, validatedGroupId, response.regimeRefNumber) map { resp =>
               resp.status match {

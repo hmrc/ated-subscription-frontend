@@ -24,14 +24,13 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -45,7 +44,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
   val testAddress2 = Address("line_1", "line_2", Some("line_3"), Some("line_3"), Some("NE1 1AB"), "GB")
   val testIdentification = Identification(idNumber = "ID123", issuingInstitution = "InstTest", issuingCountryCode = "FR")
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = Some("test Type"), businessAddress = testAddress,
+  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "LLP", businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None,
     identification = Some(testIdentification)
   )
@@ -231,7 +230,6 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
   def getWithAuthorisedUser(contactDetails: Option[ContactDetails], contactDetailsEmail: Option[ContactDetailsEmail], reviewDetails: BusinessCustomerDetails = testReviewBusinessDetails, testAddress: Option[Address])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(reviewDetails))
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetails))
@@ -258,7 +256,6 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
   def getWithAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))

@@ -21,21 +21,21 @@ import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+class BusinessCustomerFrontendConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   override def beforeEach: Unit = {
     reset(mockAppConfig)
@@ -52,12 +52,12 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with OneServerPerSu
 
   "BusinessCustomerFrontendConnector" must {
     "getBusinessCustomerDetails" in {
-      val testAddress = Address("line_1", "line_2", None, None, None, "U.K.")
       val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
-        businessType = Some("corporate body"),
+        businessType = "Corporate Body",
         businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
         sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(),
+        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
 
       val response = await(testBusinessCustomerFrontendConnector.getBusinessCustomerDetails)
       response.status must be(OK)

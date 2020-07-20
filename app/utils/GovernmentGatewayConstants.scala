@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import play.api.libs.json.{Json, OFormat}
+object GovernmentGatewayConstants {
 
-case class Verifier(key: String, value: String)
+  val AtedServiceName = "HMRC-ATED-ORG"
+  val AtedReferenceNoType = "ATEDRefNumber"
 
-object Verifier {
-  implicit val formats: OFormat[Verifier] = Json.format[Verifier]
-}
+  val VerifierPostalCode = "Postcode"
+  val VerifierNonUKPostalCode = "NonUKPostalCode"
+  val VerifierCtUtr = "CTUTR"
+  val VerifierSaUtr = "SAUTR"
 
-case class RequestEMACPayload(userId: String, friendlyName: String, `type`: String, verifiers: Verifiers)
-
-object RequestEMACPayload {
-  implicit val formats: OFormat[RequestEMACPayload] = Json.format[RequestEMACPayload]
 }

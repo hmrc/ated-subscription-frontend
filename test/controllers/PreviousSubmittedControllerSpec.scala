@@ -25,14 +25,13 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.OverseasCompanyService
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -177,7 +176,6 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
     when(mockOverseasService.savePreviouslySubmitted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(None))
 
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
 
     test(result)

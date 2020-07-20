@@ -20,14 +20,12 @@ import java.util.UUID
 
 import audit.Auditable
 import builders.AuthBuilder
-import com.codahale.metrics.{MetricRegistry, Timer}
-import config.AtedSubscriptionFrontendAuditConnector
 import metrics.Metrics
 import models.{AtedSubscriptionAuthData, EnrolRequest, EnrolResponse, Identifier}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
@@ -61,8 +59,6 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with GuiceOneServerPerSuit
     val successfulSubscribeJson = HttpResponse(OK, Some(response))
     val subscribeFailureResponseJson = Json.parse( """{"reason" : "Error happened"}""")
     implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-    implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("User-Id", "name")
-
 
     "enrol user" must {
       "works for a user" in {

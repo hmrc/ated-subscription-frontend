@@ -27,7 +27,7 @@ POST                /email-submit                               controllers.Cont
 
 GET                 /review-business-details                    controllers.ReviewBusinessDetailsController.reviewDetails
 
-GET                 /register-user                              controllers.RegisterUserController.registerUser
+GET                 /register-user                              controllers.RegisterUserController.subscribeAndEnrolForAted
 GET                 /user-confirmation                          controllers.RegisterUserController.confirmation
 POST                /redirect-to-ated                           controllers.RegisterUserController.redirectToAted
 

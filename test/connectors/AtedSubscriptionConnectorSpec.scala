@@ -21,7 +21,7 @@ import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
@@ -52,11 +52,11 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
   val subscribeFailureResponseJson: JsValue = Json.parse( """{"reason" : "Error happened"}""")
   val subscribeSuccessResponseJson: JsValue = Json.toJson(subscribeSuccessResponse)
-  val subscribeData = SubscribeData(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
+  val subscribeData = AtedSubscriptionRequest(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
     address = List(EtmpCorrespondence(name1 = "Joe", name2 = "Bloggs",
       addressDetails = EtmpAddressDetails("Correspondence", "line1", "line2", None, None, None, "GB"),
       contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true,
-    utr = "1234567890", isNonUKClientRegisteredByAgent = false, knownFactPostcode=Some("AA1 1AA"), businessType = "LTD")
+    businessType = "Corporate Body", utr = "1234567890", isNonUKClientRegisteredByAgent = false, knownFactPostcode = Some("AA1 1AA"))
   val subscribeDataJson: JsValue = Json.toJson(subscribeData)
 
   "AtedSubscriptionConnector" must {

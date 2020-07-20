@@ -21,7 +21,7 @@ import connectors.AtedSubscriptionDataCacheConnector
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatest.TestSuite
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc._
 import services.RegisterUserService

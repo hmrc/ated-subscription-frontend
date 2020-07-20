@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
@@ -33,7 +33,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -101,12 +100,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
         }
 
-        "contain a cancel link with the correct url" in {
-          getWithAuthorisedUser { result =>
-            val document = Jsoup.parse(contentAsString(result))
-          }
-        }
-
         "if data exists in keystore, fill the form with that data in the page" in {
           editWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
@@ -147,7 +140,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
         "validate form" must {
 
           "not be empty" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson = Json.parse( """{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "", "country": ""}""")
 
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
@@ -159,7 +151,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "If entered, Address line 1 must be maximum of 35 characters" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val line1 = "a" * 36
             val inputJson = Json.parse( s"""{ "line_1": "$line1", "line_2": "", "line_3": "", "line_4": "", "postcode": "", "country": ""}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
@@ -170,7 +161,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "If entered, Address line 2 must be maximum of 35 characters" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val line2 = "a" * 36
             val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "$line2", "line_3": "", "line_4": "", "postcode": "", "country": ""}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
@@ -182,7 +172,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
 
           "Address line 3 is optional but if entered, must be maximum of 35 characters" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val line3 = "a" * 36
             val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "$line3", "line_4": "", "postcode": "", "country": ""}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
@@ -193,7 +182,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "Address line 4 is optional but if entered, must be maximum of 35 characters" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val line4 = "a" * 36
             val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "$line4", "postcode": "", "country": ""}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
@@ -204,7 +192,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "Postcode is optional but if entered, must be maximum of 10 characters" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val line = "a" * 12
             val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "$line", "country": ""}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
@@ -215,7 +202,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "Postcode is optional but if entered, must be a valid string" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val line = "gh*yuy,"
             val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "$line", "country": ""}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
@@ -226,7 +212,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "Country Code must be selected" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson = Json.parse( """{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "", "country": ""} """)
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
@@ -236,7 +221,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is not edit" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson = Json.parse( """{ "line_1": "sadsdf", "line_2": "sdfsdf", "line_3": "asd", "line_4": "asd", "postcode": "AA1 1AA", "country": "GB"}""")
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
@@ -246,7 +230,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             }
           }
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is edit" in {
-            implicit val hc: HeaderCarrier = HeaderCarrier()
             val inputJson = Json.parse( """{ "line_1": "sadsdf", "line_2": "sdfsdf", "line_3": "asd", "line_4": "asd", "postcode": "AA1 1AA", "country": "GB"}""")
             submitEditWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>

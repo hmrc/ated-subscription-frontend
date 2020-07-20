@@ -20,21 +20,15 @@ import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.BusinessCustomerFrontendConnector
-import models.{Address, BusinessCustomerDetails}
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.Future
 

@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeclarationController @Inject()(mcc: MessagesControllerComponents,
-                                      registerEmacUserService: RegisterUserService,
+                                      registerUserService: RegisterUserService,
                                       mandateService: MandateService,
                                       agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector,
                                       val authConnector: DefaultAuthConnector,
@@ -52,8 +52,7 @@ class DeclarationController @Inject()(mcc: MessagesControllerComponents,
               Future.successful(Redirect(routes.ConfirmationController.view()))
             }
           case None =>
-            registerEmacUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { response =>
-              val (etmpSubscriptionResponse, _) = response
+            registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { etmpSubscriptionResponse =>
               val atedRefNo = etmpSubscriptionResponse.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
               mandateService.createMandateForNonUK(atedRefNo) flatMap { _ =>
                 Future.successful(Redirect(routes.ConfirmationController.view()))

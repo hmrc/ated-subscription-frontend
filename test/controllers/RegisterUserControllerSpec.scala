@@ -35,6 +35,7 @@ import scala.concurrent.Future
 class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with AtedTestHelper {
 
   val testRegisterUserWithEMACController = new RegisterUserController(mockMCC, mockRegisterUserService, mockAuthConnector, mockAppConfig)
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -147,70 +148,73 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   def registerWithUnAuthorisedUser(test: Future[Result] => Any) {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def registerWithUnAuthenticated(test: Future[Result] => Any) {
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
   def registerWithAuthorisedUser(test: Future[Result] => Any) {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
-      .thenReturn(Future.successful(successResponse, HttpResponse(CREATED, Some(enrolResp))))
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+      .thenReturn(Future.successful(successResponse))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(CREATED, Some(enrolResp))))
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def registerWithBadRequest(test: Future[Result] => Any) {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
-      .thenReturn(Future.successful(successResponse, HttpResponse(BAD_REQUEST)))
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+      .thenReturn(Future.successful(successResponse))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST)))
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def registerWithDuplicateUser(test: Future[Result] => Any) {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
-      .thenReturn(Future.successful(successResponse, HttpResponse(CONFLICT)))
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+      .thenReturn(Future.successful(successResponse))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(CONFLICT)))
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def registerWithWrongRoleUser(test: Future[Result] => Any) {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
-      .thenReturn(Future.successful(successResponse, HttpResponse(FORBIDDEN)))
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+      .thenReturn(Future.successful(successResponse))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(FORBIDDEN)))
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def registerWithInvalidUser(test: Future[Result] => Any) {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
-      .thenReturn(Future.successful(successResponse, HttpResponse(INTERNAL_SERVER_ERROR)))
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+      .thenReturn(Future.successful(successResponse))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR)))
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def registerWithAuthorisedAgent(test: Future[Result] => Any) {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    val result = testRegisterUserWithEMACController.registerUser.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def confirmationWithAuthorisedUser(test: Future[Result] => Any) {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     val result = testRegisterUserWithEMACController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }

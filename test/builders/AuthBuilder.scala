@@ -155,7 +155,7 @@ object AuthBuilder {
       .thenReturn(Future.failed(MissingBearerToken("message")))
   }
 
-  private def createAgentAuthority(agentRole: CredentialRole = User, agentRefNo: Option[String] = None): AtedSubscriptionAuthData = {
+  private def createAgentAuthority(agentRole: CredentialRole = User, agentRefNo: Option[String]): AtedSubscriptionAuthData = {
     val agentCode = "AGENT-123"
 
     val agentEnrolment: Option[Enrolment] = agentRefNo.map { agentRef =>
@@ -175,7 +175,7 @@ object AuthBuilder {
     authData
   }
 
-  private def createOrganisationAuthority(credRole: CredentialRole = User): AtedSubscriptionAuthData = {
+  private def createOrganisationAuthority(credRole: CredentialRole): AtedSubscriptionAuthData = {
 
     val authData = AtedSubscriptionAuthData(
       Some(credRole),

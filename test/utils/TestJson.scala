@@ -16,12 +16,12 @@
 
 package utils
 
-import models.{EtmpAddressDetails, EtmpContactDetails, EtmpCorrespondence, SubscribeData}
+import models.{EtmpAddressDetails, EtmpContactDetails, EtmpCorrespondence, AtedSubscriptionRequest}
 import play.api.libs.json.{JsValue, Json}
 
 trait TestJson {
 
-  val etmpSubscribeDataModel = SubscribeData(
+  val etmpSubscribeDataModel = AtedSubscriptionRequest(
     acknowledgementReference = "XN123434678569",
     safeId = "243567679865",
     emailConsent = false,
@@ -44,10 +44,10 @@ trait TestJson {
         emailAddress = None
       )
     )),
+    businessType = "Corporate Body",
     utr = "123456789",
     isNonUKClientRegisteredByAgent = true,
-    knownFactPostcode = None,
-    businessType = "LTD"
+    knownFactPostcode = None
   )
 
   val etmpSubscribeDataJson: JsValue =

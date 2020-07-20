@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -44,7 +44,7 @@ class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeA
   }
 
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = None, businessAddress = testAddress,
+  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "LLP", businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   def viewWithAuthorisedUser(test: Future[Result] => Any) {

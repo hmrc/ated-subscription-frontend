@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}

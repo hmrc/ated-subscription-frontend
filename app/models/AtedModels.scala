@@ -16,7 +16,9 @@
 
 package models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
+import utils.BusinessTypeConstants
+import play.api.libs.functional.syntax._
 
 case class AreYouAnAgent(isAgent: Option[Boolean] = None)
 
@@ -64,21 +66,37 @@ object Identification {
 }
 
 case class BusinessCustomerDetails(businessName: String,
-                                   businessType: Option[String],
+                                   businessType: String,
                                    businessAddress: Address,
                                    sapNumber: String,
                                    safeId: String,
-                                   isAGroup: Boolean = false,
                                    directMatch: Boolean = false,
                                    agentReferenceNumber: Option[String],
-                                   firstName: Option[String] = None,
-                                   lastName: Option[String] = None,
                                    utr: Option[String] = None,
                                    identification: Option[Identification] = None,
                                    isBusinessDetailsEditable: Boolean = false)
 
 object BusinessCustomerDetails {
-  implicit val formats: OFormat[BusinessCustomerDetails] = Json.format[BusinessCustomerDetails]
+  implicit val bcdWrites: Writes[BusinessCustomerDetails] = Json.writes[BusinessCustomerDetails]
+
+  implicit val bcdReads: Reads[BusinessCustomerDetails] = (
+    (JsPath \ "businessName").read[String] and
+    (JsPath \ "businessType").read[String].map { bType =>
+      if (BusinessTypeConstants.allBusinessTypes.contains(bType)) {
+        bType
+      } else {
+        throw new RuntimeException("[models][AtedModels][BusinessCustomerDetails] - Missing or invalid business type received")
+      }
+    } and
+    (JsPath \ "businessAddress").read[Address] and
+    (JsPath \ "sapNumber").read[String] and
+    (JsPath \ "safeId").read[String] and
+    (JsPath \ "directMatch").read[Boolean] and
+    (JsPath \ "agentReferenceNumber").readNullable[String] and
+    (JsPath \ "utr").readNullable[String] and
+    (JsPath \ "identification").readNullable[Identification] and
+    (JsPath \ "isBusinessDetailsEditable").read[Boolean]
+    )(BusinessCustomerDetails.apply _)
 }
 
 case class BusinessAddress(isCorrespondenceAddress: Option[Boolean] = None)

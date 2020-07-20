@@ -19,13 +19,12 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
-import connectors.AtedSubscriptionConnector
 import models.{Address, BusinessAddress, BusinessCustomerDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
@@ -35,7 +34,6 @@ import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -208,17 +206,14 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       }
 
     }
-
-
   }
 
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = None, businessAddress = testAddress,
-    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
+  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "LLP",
+    businessAddress = testAddress, sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
   def withAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
     when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
@@ -235,7 +230,6 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   def withETMPRegistration(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, Set(Enrolment("HMRC-ATED-ORG", Seq(EnrolmentIdentifier("AtedRefNumber", "test")), "Activated")))
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
     when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
@@ -252,7 +246,6 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   def withAuthorisedUserWithSavedData(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(Some(testAddressForm)))
     when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
@@ -269,7 +262,6 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   def withAuthorisedAgent(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    implicit val hc: HeaderCarrier = HeaderCarrier()
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
     when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
