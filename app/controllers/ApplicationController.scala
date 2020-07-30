@@ -23,20 +23,23 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, DiscardingCookie, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
 
 class ApplicationController @Inject()(mcc: MessagesControllerComponents,
                                       dataCacheConnector: AtedSubscriptionDataCacheConnector,
                                       val authConnector: DefaultAuthConnector,
+                                      template: views.html.unauthorised,
+                                      template2: views.html.unauthorisedAssistantOrg,
+                                      template3: views.html.unauthorisedAssistantAgent,
                                       implicit val appConfig: ApplicationConfig
                                      ) extends FrontendController(mcc) with AuthFunctionality {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def unauthorised(): Action[AnyContent] = Action { implicit request =>
-    Ok(views.html.unauthorised())
+    Ok(template())
   }
 
   def cancel(): Action[AnyContent] = Action { implicit request =>
@@ -67,11 +70,11 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def unauthorisedAssistantOrg: Action[AnyContent] = Action {
-    implicit request => Ok(views.html.unauthorisedAssistantOrg())
+    implicit request => Ok(template2())
   }
 
   def unauthorisedAssistantAgent: Action[AnyContent] = Action {
-    implicit request => Ok(views.html.unauthorisedAssistantAgent())
+    implicit request => Ok(template3())
   }
 
   def clearCache: Action[AnyContent] = Action.async { implicit request =>

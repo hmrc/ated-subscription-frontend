@@ -23,13 +23,14 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ContactDetailsService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
                                               contactDetailsService: ContactDetailsService,
                                               val authConnector: DefaultAuthConnector,
+                                              template: views.html.contactDetailsEmail,
                                               implicit val appConfig: ApplicationConfig
                                              ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -39,7 +40,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         val mode = None
-        Future.successful(Ok(views.html.contactDetailsEmail(contactDetailsEmailForm, mode, getBackLink(mode))))
+        Future.successful(Ok(template(contactDetailsEmailForm, mode, getBackLink(mode))))
       }
   }
 
@@ -48,8 +49,8 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
       authoriseFor { implicit data =>
         val mode = Some("edit")
         contactDetailsService.fetchContactDetailsEmail map {
-          case Some(formData) => Ok(views.html.contactDetailsEmail(contactDetailsEmailForm.fill(formData), mode, getBackLink(mode)))
-          case _ => Ok(views.html.contactDetailsEmail(contactDetailsEmailForm, mode, getBackLink(mode)))
+          case Some(formData) => Ok(template(contactDetailsEmailForm.fill(formData), mode, getBackLink(mode)))
+          case _ => Ok(template(contactDetailsEmailForm, mode, getBackLink(mode)))
         }
       }
   }
@@ -59,7 +60,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
       authoriseFor { implicit data =>
         validateEmail(contactDetailsEmailForm.bindFromRequest).fold(
           formWithErrors => {
-            Future.successful(BadRequest(views.html.contactDetailsEmail(formWithErrors, mode, getBackLink(mode))))
+            Future.successful(BadRequest(template(formWithErrors, mode, getBackLink(mode))))
           },
           contactDetailsEmail => {
             for {

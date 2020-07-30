@@ -23,13 +23,14 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ContactDetailsService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          contactDetailsService: ContactDetailsService,
                                          val authConnector: DefaultAuthConnector,
+                                         template: views.html.contactDetails,
                                          implicit val appConfig: ApplicationConfig
                                         ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -39,8 +40,8 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit user =>
         contactDetailsService.fetchContactDetails map {
-          case Some(data) => Ok(views.html.contactDetails(contactDetailsForm.fill(data), mode, getBackLink(mode)))
-          case _ => Ok(views.html.contactDetails(contactDetailsForm, mode, getBackLink(mode)))
+          case Some(data) => Ok(template(contactDetailsForm.fill(data), mode, getBackLink(mode)))
+          case _ => Ok(template(contactDetailsForm, mode, getBackLink(mode)))
         }
       }
   }
@@ -50,7 +51,7 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
       authoriseFor { implicit data =>
         contactDetailsForm.bindFromRequest.fold(
           formWithErrors => {
-            Future.successful(BadRequest(views.html.contactDetails(formWithErrors, mode, getBackLink(mode))))
+            Future.successful(BadRequest(template(formWithErrors, mode, getBackLink(mode))))
           },
           contactDetails => {
             val telephoneWithoutSpaces = contactDetails.telephone.replaceAll(" ", "")

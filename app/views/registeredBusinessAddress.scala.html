@@ -23,6 +23,7 @@
 @import utils._
 @import _root_.utils.AuthUtils.isAgent
 @import controllers.auth._
+@this(atedMain: atedMain)
 
 @(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 

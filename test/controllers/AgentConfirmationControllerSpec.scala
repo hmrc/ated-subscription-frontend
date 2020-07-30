@@ -41,7 +41,8 @@ import scala.concurrent.Future
 class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
-  val testAgentConfirmationController: AgentConfirmationController = new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, mockAppConfig)
+  val injview = app.injector.instanceOf[views.html.agentConfirmation]
+  val testAgentConfirmationController: AgentConfirmationController = new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injview, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

@@ -23,6 +23,7 @@
 @import views.html.helpers._
 
 @import config.ApplicationConfig
+@this(atedMain: atedMain)
 @(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }

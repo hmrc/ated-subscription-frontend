@@ -16,13 +16,13 @@
 
 package audit
 
-import config.AtedSubscriptionFrontendAuditConnector
 import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.{Audit, DataEvent}
 
-class Auditable @Inject()(auditConnector: AtedSubscriptionFrontendAuditConnector) {
+class Auditable @Inject()(auditConnector: AuditConnector) {
 
   val appName: String = "ated-subscription-frontend"
 

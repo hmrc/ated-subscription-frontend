@@ -23,7 +23,8 @@ import utils.AtedSubscriptionUtils
 import scala.util.Try
 
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
-                                  val atedSubsUtils: AtedSubscriptionUtils) {
+                                  val atedSubsUtils: AtedSubscriptionUtils,
+                                  val templateError: views.html.global_error) {
 
   lazy val appName: String = servicesConfig.getConfString("appName", "ated-subscription-frontend")
   lazy val serviceUrlACMFrontend: String = servicesConfig.baseUrl("agent-client-mandate-frontend")

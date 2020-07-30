@@ -42,12 +42,14 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
   val mockMandateService: MandateService = mock[MandateService]
   val mockAgentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
+  val injview = app.injector.instanceOf[views.html.nonUKReg.declaration]
 
   val testDeclarationControllerWithEMAC: DeclarationController = new DeclarationController(mockMCC,
                                                                                            mockRegisterUserService,
                                                                                            mockMandateService,
                                                                                            mockAgentClientFrontendMandateConnector,
                                                                                            mockAuthConnector,
+                                                                                           injview,
                                                                                            mockAppConfig)
 
   override def beforeEach(): Unit = {

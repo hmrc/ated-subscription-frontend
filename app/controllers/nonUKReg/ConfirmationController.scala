@@ -24,7 +24,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.RegisteredBusinessService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                        registeredBusinessService: RegisteredBusinessService,
                                        val authConnector: DefaultAuthConnector,
+                                       template: views.html.nonUKReg.confirmation,
                                        implicit val appConfig: ApplicationConfig
                                       ) extends FrontendController(mcc) with AuthFunctionality with I18nSupport {
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -40,7 +41,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         registeredBusinessService.getBusinessCustomerDetails.map(_.businessName) map { name =>
-          Ok(views.html.nonUKReg.confirmation(name, Dates.formatDate(LocalDate.now())))
+          Ok(template(name, Dates.formatDate(LocalDate.now())))
         }
       }
   }

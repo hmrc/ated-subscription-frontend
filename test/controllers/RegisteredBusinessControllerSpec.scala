@@ -44,6 +44,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockEtmpCheckService: EtmpCheckService = mock[EtmpCheckService]
   val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
   val testAddressForm: BusinessAddress = BusinessAddress(Some(true))
+  val injview = app.injector.instanceOf[views.html.registeredBusinessAddress]
 
   val testRegisteredBusinessController = new RegisteredBusinessController(
     mockMCC,
@@ -52,6 +53,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     mockDataCacheConnector,
     mockEtmpCheckService,
     mockAuthConnector,
+    injview,
     mockAppConfig
   )
 

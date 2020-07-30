@@ -36,7 +36,8 @@ import scala.concurrent.Future
 class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
-  val testConfirmationController = new ConfirmationController(mockMCC, mockRegisteredBusinessService, mockAuthConnector, mockAppConfig)
+  val injview = app.injector.instanceOf[views.html.nonUKReg.confirmation]
+  val testConfirmationController = new ConfirmationController(mockMCC, mockRegisteredBusinessService, mockAuthConnector,injview, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

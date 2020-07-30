@@ -18,16 +18,10 @@ package config
 
 import javax.inject.Inject
 import uk.gov.hmrc.http.cache.client.SessionCache
-import uk.gov.hmrc.play.audit.http.config.AuditingConfig
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.config.{AuditingConfigProvider, ServicesConfig}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 
-class AtedSubscriptionFrontendAuditConnector @Inject()(conf: ServicesConfig,
-                                                       auditConf: AuditingConfigProvider) extends AuditConnector {
-  override lazy val auditingConfig: AuditingConfig = auditConf.get()
-}
 
 class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) extends CachedStaticHtmlPartialRetriever
 

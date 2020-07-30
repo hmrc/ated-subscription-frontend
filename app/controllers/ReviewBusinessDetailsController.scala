@@ -22,7 +22,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedSubscriptionUtils
 
 import scala.concurrent.ExecutionContext
@@ -33,6 +33,7 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
                                                 contactDetailsService: ContactDetailsService,
                                                 mandateService: MandateService,
                                                 val authConnector: DefaultAuthConnector,
+                                                template: views.html.reviewBusinessDetails,
                                                 implicit val appConfig: ApplicationConfig
                                                ) extends FrontendController(mcc) with AuthFunctionality {
   implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
@@ -48,7 +49,7 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
         agentEmail <- mandateService.fetchEmailAddress
         clientDisplayName <- mandateService.fetchClientDisplayName
       } yield {
-        Ok(views.html.reviewBusinessDetails(businessDetails,
+        Ok(template(businessDetails,
           address.getOrElse(throw new RuntimeException("Correspondence Address not found!")),
           contactDetails.getOrElse(throw new RuntimeException("Contact Details not found!")),
           contactDetailsEmail,

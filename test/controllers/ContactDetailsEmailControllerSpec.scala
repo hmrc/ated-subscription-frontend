@@ -41,8 +41,9 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
   val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
+  val injview = app.injector.instanceOf[views.html.contactDetailsEmail]
 
-  val testContactDetailsEmailController: ContactDetailsEmailController = new ContactDetailsEmailController(mockMCC, mockContactDetailsService, mockAuthConnector, mockAppConfig)
+  val testContactDetailsEmailController: ContactDetailsEmailController = new ContactDetailsEmailController(mockMCC, mockContactDetailsService, mockAuthConnector, injview, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

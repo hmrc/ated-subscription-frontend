@@ -21,7 +21,7 @@ import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi, Messages}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
+import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
                              val configuration: Configuration,
@@ -30,11 +30,11 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi,
 
 	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
 																		(implicit request: Request[_]): Html = {
-		views.html.global_error(pageTitle, heading, message)
+		appConfig.templateError(pageTitle, heading, message)
 	}
 
 	override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
-		standardErrorTemplate(
+		appConfig.templateError(
 			Messages("ated.business-registration.generic.error.header"),
 			Messages("ated.business-registration.generic.error.title"),
 			Messages("ated.business-registration.generic.error.message")

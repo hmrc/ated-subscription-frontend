@@ -35,7 +35,9 @@ import scala.concurrent.Future
 class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
-  val testSameAccountController: SameAccountController = new SameAccountController(mockMCC, mockBCConnector, mockAuthConnector, mockAppConfig)
+  val injview = app.injector.instanceOf[views.html.sameAccount]
+  val injview2 = app.injector.instanceOf[views.html.inform]
+  val testSameAccountController: SameAccountController = new SameAccountController(mockMCC, mockBCConnector, mockAuthConnector, injview, injview2, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

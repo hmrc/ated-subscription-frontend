@@ -23,7 +23,7 @@ import models.{AtedSubscriptionAuthData, SubscribeSuccessResponse, Verifiers, _}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.test.Helpers.OK
-import uk.gov.hmrc.auth.core.retrieve.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -74,7 +74,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
       for {
         authorised <- authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier)
         enrolSuccess <- authorised match {
-          case Credentials(ggCred, _) ~ Some(groupId) =>
+          case Some(Credentials(ggCred, _)) ~ Some(groupId) =>
             if (registrationResponse.atedRefNumber.isEmpty) {
               throw new RuntimeException("[RegisterUserService][subscribeAted] ated reference number not returned from ETMP subscribe")
             } else {

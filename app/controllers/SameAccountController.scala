@@ -24,7 +24,7 @@ import models.BusinessCustomerDetails
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,6 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class SameAccountController @Inject()(mcc: MessagesControllerComponents,
                                       businessCustomerFEConnector: BusinessCustomerFrontendConnector,
                                       val authConnector: DefaultAuthConnector,
+                                      template: views.html.sameAccount,
+                                      template2: views.html.inform,
                                       implicit val appConfig: ApplicationConfig
                                      ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -40,14 +42,14 @@ class SameAccountController @Inject()(mcc: MessagesControllerComponents,
   def viewSameAccount: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(views.html.sameAccount(Some(controllers.routes.PreviousSubmittedController.view().url))))
+        Future.successful(Ok(template(Some(controllers.routes.PreviousSubmittedController.view().url))))
       }
   }
 
   def viewInform: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(views.html.inform(Some(controllers.routes.SameAccountController.viewSameAccount().url))))
+        Future.successful(Ok(template2(Some(controllers.routes.SameAccountController.viewSameAccount().url))))
       }
   }
 

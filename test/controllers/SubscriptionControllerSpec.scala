@@ -34,7 +34,10 @@ import scala.concurrent.Future
 
 class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val testSubscriptionController = new SubscriptionController(mockMCC, mockAuthConnector, mockAppConfig)
+  val injview = app.injector.instanceOf[views.html.subscription]
+  val injview2 = app.injector.instanceOf[views.html.appointAgent]
+  val injview3 = app.injector.instanceOf[views.html.agentSubscription]
+  val testSubscriptionController = new SubscriptionController(mockMCC, mockAuthConnector, injview, injview2, injview3, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

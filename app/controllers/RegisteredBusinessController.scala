@@ -27,7 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, 
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedSubscriptionUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,6 +38,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              dataCacheConnector: AtedSubscriptionDataCacheConnector,
                                              etmpCheckService: EtmpCheckService,
                                              val authConnector: DefaultAuthConnector,
+                                             template: views.html.registeredBusinessAddress,
                                              implicit val appConfig: ApplicationConfig
                                             ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -61,7 +62,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                  (implicit hc: HeaderCarrier, ec: ExecutionContext, auth: AtedSubscriptionAuthData,
                                   req: Request[AnyContent], messages: Messages): Future[Result] = {
     val standardView =
-      Future.successful(Ok(views.html.registeredBusinessAddress(businessAddressForm.fill(
+      Future.successful(Ok(template(businessAddressForm.fill(
         businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
       ))
 
@@ -86,7 +87,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
         businessAddressForm.bindFromRequest.fold(
           formWithErrors => {
             registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
-              BadRequest(views.html.registeredBusinessAddress(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
+              BadRequest(template(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
             }
           },
           businessAddressData => {

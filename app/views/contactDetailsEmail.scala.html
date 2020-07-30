@@ -16,6 +16,7 @@
 
 @import models._
 @import config.ApplicationConfig
+@this(atedMain: atedMain)
 @(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 @import uk.gov.hmrc.play.views.html._
 @import uk.gov.hmrc.play.views.html.helpers._

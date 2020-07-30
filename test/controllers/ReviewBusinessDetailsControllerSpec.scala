@@ -54,6 +54,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
   val testContactLetter = ContactDetails("ABC", "DEF", "1234567890")
   val emailAddress = AgentEmail("test@mail.com")
   val clientDisplayName = ClientDisplayName("client display name")
+  val injview = app.injector.instanceOf[views.html.reviewBusinessDetails]
 
   val testReviewDetailsController = new ReviewBusinessDetailsController(
     mockMCC,
@@ -62,6 +63,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
     mockContactDetailsService,
     mockMandateService,
     mockAuthConnector,
+    injview,
     mockAppConfig
   )
 

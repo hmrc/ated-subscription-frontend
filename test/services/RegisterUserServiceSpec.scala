@@ -99,10 +99,10 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
                  invalidUser: Boolean = false): OngoingStubbing[Future[HttpResponse]] = {
     if(invalidUser){
       when(mockAuthConnector.authorise[Any](any(), any())(any(), any()))
-        .thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), None)))
+        .thenReturn(Future.successful(new ~ (Some(Credentials("ggcredId", "ggCredType")), None)))
     }else{
       when(mockAuthConnector.authorise[Any](any(), any())(any(), any()))
-        .thenReturn(Future.successful(new ~ (Credentials("ggcredId", "ggCredType"), Some("42424200-0000-0000-0000-000000000000"))))
+        .thenReturn(Future.successful(new ~ (Some(Credentials("ggcredId", "ggCredType")), Some("42424200-0000-0000-0000-000000000000"))))
     }
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(
       ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))

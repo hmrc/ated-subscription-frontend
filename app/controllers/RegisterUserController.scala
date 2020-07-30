@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesR
 import services.RegisterUserService
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 import utils.AuthUtils._
 
@@ -34,6 +34,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
                                        registerUserService: RegisterUserService,
                                        val authConnector: DefaultAuthConnector,
+                                       template: views.html.alreadyRegistered,
+                                       template2: views.html.registerUserConfirmation,
+                                       templateError: views.html.global_error,
                                        implicit val appConfig: ApplicationConfig
                                       ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -63,22 +66,22 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
       case CREATED => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
       case CONFLICT =>
         Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
-        Future.successful(Ok(views.html.alreadyRegistered()))
+        Future.successful(Ok(template()))
       case FORBIDDEN =>
         val (pageTitle, heading, message) = formatEmacErrorMessage(WrongRoleUserError)
         Logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
-        Future.successful(Ok(views.html.global_error(pageTitle, heading, message)))
+        Future.successful(Ok(templateError(pageTitle, heading, message)))
       case _ =>
         val (pageTitle, heading, message) = formatEmacErrorMessage(GenericError)
         Logger.warn("[RegisterUserController][registerUser] - allocation failed - no definite reason found")
-        Future.successful(Ok(views.html.global_error(pageTitle, heading, message)))
+        Future.successful(Ok(templateError(pageTitle, heading, message)))
     }
   }
 
   def confirmation: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(views.html.registerUserConfirmation(Dates.formatDate(LocalDate.now()))))
+        Future.successful(Ok(template2(Dates.formatDate(LocalDate.now()))))
       }
   }
 

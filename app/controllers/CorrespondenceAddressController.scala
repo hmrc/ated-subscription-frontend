@@ -23,13 +23,14 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CorrespondenceAddressService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
                                                 correspondenceAddressService: CorrespondenceAddressService,
                                                 val authConnector: DefaultAuthConnector,
+                                                template: views.html.correspondenceAddress,
                                                 implicit val appConfig: ApplicationConfig
                                                ) extends FrontendController(mcc)  with AuthFunctionality {
 
@@ -40,9 +41,9 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
       authoriseFor { implicit data =>
         correspondenceAddressService.fetchCorrespondenceAddress map {
           case Some(formData) =>
-            Ok(views.html.correspondenceAddress(correspondenceAddressForm.fill(formData), mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
+            Ok(template(correspondenceAddressForm.fill(formData), mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
           case _ =>
-            Ok(views.html.correspondenceAddress(correspondenceAddressForm, mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
+            Ok(template(correspondenceAddressForm, mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
         }
       }
   }
@@ -52,7 +53,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
       authoriseFor { implicit data =>
         correspondenceAddressForm.bindFromRequest.fold(
           formWithErrors =>
-            Future.successful(BadRequest(views.html.correspondenceAddress(formWithErrors,mode,appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))),
+            Future.successful(BadRequest(template(formWithErrors,mode,appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))),
           addressData => {
             val trimmedPostCode = appConfig.atedSubsUtils.formatPostCode(addressData.postcode)
             val trimmedAddress = addressData.copy(postcode = trimmedPostCode)

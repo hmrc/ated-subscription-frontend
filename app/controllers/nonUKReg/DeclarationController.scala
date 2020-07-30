@@ -23,7 +23,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{MandateService, RegisterUserService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,6 +32,7 @@ class DeclarationController @Inject()(mcc: MessagesControllerComponents,
                                       mandateService: MandateService,
                                       agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector,
                                       val authConnector: DefaultAuthConnector,
+                                      template: views.html.nonUKReg.declaration,
                                       implicit val appConfig: ApplicationConfig
                                      ) extends FrontendController(mcc)  with AuthFunctionality {
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -39,7 +40,7 @@ class DeclarationController @Inject()(mcc: MessagesControllerComponents,
   def view: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(views.html.nonUKReg.declaration(getBackLink)))
+        Future.successful(Ok(template(getBackLink)))
       }
   }
 

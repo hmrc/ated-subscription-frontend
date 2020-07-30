@@ -24,7 +24,7 @@ import models.BusinessCustomerDetails
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.views.formatting.Dates
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                             businessCustomerFEConnector: BusinessCustomerFrontendConnector,
                                             val authConnector: DefaultAuthConnector,
+                                            template: views.html.agentConfirmation,
                                             implicit val appConfig: ApplicationConfig
                                            ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -44,7 +45,7 @@ class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
           response.status match {
             case OK =>
               val reviewDetails = response.json.as[BusinessCustomerDetails]
-              Ok(views.html.agentConfirmation(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
+              Ok(template(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
           }
         )
       }

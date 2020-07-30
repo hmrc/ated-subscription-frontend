@@ -24,7 +24,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.OverseasCompanyService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,6 +32,7 @@ class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
                                             businessCustomerFEConnector: BusinessCustomerFrontendConnector,
                                             overseasCompanyService: OverseasCompanyService,
                                             val authConnector: DefaultAuthConnector,
+                                            template: views.html.previous_submitted,
                                             implicit val appConfig: ApplicationConfig
                                            ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -46,7 +47,7 @@ class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
             case _ => AtedForms.previousSubmittedForm
           }
 
-          Ok(views.html.previous_submitted(form, Some(appConfig.backToBusinessCustomerUrl)))
+          Ok(template(form, Some(appConfig.backToBusinessCustomerUrl)))
         }
       }
   }
@@ -56,7 +57,7 @@ class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
       authoriseFor { implicit data =>
         AtedForms.previousSubmittedForm.bindFromRequest().fold(
           hasErrors =>
-            Future.successful(BadRequest(views.html.previous_submitted(hasErrors, Some(appConfig.backToBusinessCustomerUrl)))),
+            Future.successful(BadRequest(template(hasErrors, Some(appConfig.backToBusinessCustomerUrl)))),
           success => {
             val answer = success.isPreviousSubmitted
             answer match {

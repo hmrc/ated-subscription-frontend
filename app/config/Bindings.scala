@@ -18,7 +18,8 @@ package config
 
 import play.api.{Configuration, Environment}
 import play.api.inject.{Binding, Module}
-import uk.gov.hmrc.play.bootstrap.http.{DefaultHttpClient, HttpClient}
+import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AtedSubscriptionUtils, AtedSubscriptionUtilsImpl}
 
 class Bindings extends Module {

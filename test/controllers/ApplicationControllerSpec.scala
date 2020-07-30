@@ -35,13 +35,16 @@ import scala.concurrent.Future
 class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  val injview = app.injector.instanceOf[views.html.unauthorised]
+  val injview2 = app.injector.instanceOf[views.html.unauthorisedAssistantOrg]
+  val injview3 = app.injector.instanceOf[views.html.unauthorisedAssistantAgent]
 
   override def beforeEach: Unit = {
     reset(mockDataCacheConnector)
     reset(mockAuthConnector)
   }
 
-  val testApplicationController = new ApplicationController(mockMCC, mockDataCacheConnector, mockAuthConnector, mockAppConfig)
+  val testApplicationController = new ApplicationController(mockMCC, mockDataCacheConnector, mockAuthConnector, injview, injview2, injview3, mockAppConfig)
 
   private def fakeRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"

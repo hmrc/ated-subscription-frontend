@@ -34,7 +34,10 @@ import scala.concurrent.Future
 
 class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with AtedTestHelper {
 
-  val testRegisterUserWithEMACController = new RegisterUserController(mockMCC, mockRegisterUserService, mockAuthConnector, mockAppConfig)
+  val injview = app.injector.instanceOf[views.html.alreadyRegistered]
+  val injview2 = app.injector.instanceOf[views.html.registerUserConfirmation]
+  val injviewError = app.injector.instanceOf[views.html.global_error]
+  val testRegisterUserWithEMACController = new RegisterUserController(mockMCC, mockRegisterUserService, mockAuthConnector,injview, injview2, injviewError, mockAppConfig)
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override def beforeEach(): Unit = {
