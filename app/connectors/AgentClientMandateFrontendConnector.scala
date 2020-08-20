@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AgentEmail, ClientDisplayName, OldMandateReference}
 import play.api.mvc.Request
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
@@ -41,15 +42,13 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
     val getUrl = s"$serviceUrl/$emailUri/"
     http.GET[Option[AgentEmail]](getUrl)
   }
-
   def getClientDisplayName(implicit request: Request[_], ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     val getUrl = s"$serviceUrl/$displayNameUri/"
     http.GET[Option[ClientDisplayName]](getUrl)
   }
-
   def getOldMandateDetails(implicit request: Request[_], ec: ExecutionContext): Future[Option[OldMandateReference]] = {
     val getUrl = s"$serviceUrl/$mandateDetails/"
-    http.GET(getUrl) map { response => response.json.asOpt[OldMandateReference]}
+    http.GET(getUrl)(readRaw, implicitly, implicitly) map { _.json.asOpt[OldMandateReference]}
   }
 
 }

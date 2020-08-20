@@ -177,7 +177,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
 
     "clearCache" must {
       "clear the local keystore" in {
-        when(mockAtedSessionCache.remove()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+        when(mockAtedSessionCache.remove()(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
         await(testAtedSubscriptionDataCacheConnector.clearCache).status must be(OK)
       }
     }

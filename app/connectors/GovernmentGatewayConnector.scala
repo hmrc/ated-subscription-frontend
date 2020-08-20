@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import metrics.{Metrics, MetricsEnum}
 import models._
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
@@ -34,7 +34,7 @@ class GovernmentGatewayConnector @Inject()(appConfig: ApplicationConfig,
                                            auditable: Auditable,
                                            http: DefaultHttpClient,
                                            metrics: Metrics
-                                          ) extends RawResponseReads {
+                                          ) extends RawResponseReads with Logging {
   lazy val serviceURL: String = appConfig.serviceUrlGG
   val enrolURI = "enrol"
 
@@ -51,12 +51,12 @@ class GovernmentGatewayConnector @Inject()(appConfig: ApplicationConfig,
           response
         case BAD_REQUEST =>
           metrics.incrementFailedCounter(MetricsEnum.GG_CLIENT_ENROL)
-          Logger.warn(s"[GovernmentGatewayConnector][enrol] - Bad Request Exception")
+          logger.warn(s"[GovernmentGatewayConnector][enrol] - Bad Request Exception")
           auditable.doFailedAudit("enrolFailed", jsonData.toString, response.body)
           throw new BadRequestException(response.body)
         case status =>
           metrics.incrementFailedCounter(MetricsEnum.GG_CLIENT_ENROL)
-          Logger.warn(s"[GovernmentGatewayConnector][enrol] - status: $status")
+          logger.warn(s"[GovernmentGatewayConnector][enrol] - status: $status")
           auditable.doFailedAudit("enrolFailed", jsonData.toString, response.body)
           throw new InternalServerException(response.body)
       }

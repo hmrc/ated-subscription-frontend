@@ -17,10 +17,10 @@
 package utils
 
 import models.AtedSubscriptionAuthData
-import play.api.Logger
+import play.api.Logging
 import uk.gov.hmrc.auth.core.{AffinityGroup, Assistant, User}
 
-object AuthUtils {
+object AuthUtils extends Logging {
 
   def isAgent(implicit user: AtedSubscriptionAuthData): Boolean =
     user.enrolments.getEnrolment("HMRC-AGENT-AGENT").isDefined || user.affinityGroup.contains(AffinityGroup.Agent)
@@ -32,7 +32,7 @@ object AuthUtils {
 
   def agentLink(implicit user: AtedSubscriptionAuthData): String = {
     user.agentCode.map(str => s"/agent/$str").getOrElse {
-      Logger.warn(s"[AuthUtils][getAgentLink] Exception - User does not have the correct authorisation ")
+      logger.warn(s"[AuthUtils][getAgentLink] Exception - User does not have the correct authorisation ")
       throw new RuntimeException("User is not agent")
     }
   }

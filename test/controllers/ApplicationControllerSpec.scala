@@ -35,16 +35,16 @@ import scala.concurrent.Future
 class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val injview = app.injector.instanceOf[views.html.unauthorised]
-  val injview2 = app.injector.instanceOf[views.html.unauthorisedAssistantOrg]
-  val injview3 = app.injector.instanceOf[views.html.unauthorisedAssistantAgent]
+  val injectedViewInstanceUnauthorised = app.injector.instanceOf[views.html.unauthorised]
+  val injectedViewInstanceUnauthorisedAssistantOrg = app.injector.instanceOf[views.html.unauthorisedAssistantOrg]
+  val injectedViewInstanceUnauthorisedAssistantAgent = app.injector.instanceOf[views.html.unauthorisedAssistantAgent]
 
   override def beforeEach: Unit = {
     reset(mockDataCacheConnector)
     reset(mockAuthConnector)
   }
 
-  val testApplicationController = new ApplicationController(mockMCC, mockDataCacheConnector, mockAuthConnector, injview, injview2, injview3, mockAppConfig)
+  val testApplicationController = new ApplicationController(mockMCC, mockDataCacheConnector, mockAuthConnector, injectedViewInstanceUnauthorised, injectedViewInstanceUnauthorisedAssistantOrg, injectedViewInstanceUnauthorisedAssistantAgent, mockAppConfig)
 
   private def fakeRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
@@ -163,7 +163,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
         "be able to clear cache successfully" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse(200))
+          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse.apply(200, ""))
           val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(OK)
@@ -172,7 +172,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
         "handle error" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse(400))
+          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse.apply(400, ""))
           val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(INTERNAL_SERVER_ERROR)

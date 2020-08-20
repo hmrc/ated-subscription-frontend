@@ -73,7 +73,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServ
 
     "get old mandate details" in {
       val oldMandateDetails = OldMandateReference("mandateId", "atedRef")
-      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(oldMandateDetails)))))
+      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(oldMandateDetails).toString)))
 
       val response = await(testAgentClientMandateFrontendConnector.getOldMandateDetails)
       response.get.atedRefNumber must be("atedRef")

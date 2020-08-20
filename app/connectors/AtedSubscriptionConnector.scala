@@ -19,7 +19,7 @@ package connectors
 import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, SelfHealSubscriptionResponse, SubscribeSuccessResponse}
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http._
@@ -29,7 +29,7 @@ import utils.AuthUtils
 import scala.concurrent.{ExecutionContext, Future}
 
 class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
-                                          http: DefaultHttpClient) extends RawResponseReads {
+                                          http: DefaultHttpClient) extends RawResponseReads with Logging {
 
   lazy val serviceURL: String = appConfig.serviceUrlAtedSub
   val subscriptionURI: String = "subscribe"
@@ -43,10 +43,10 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
         case OK =>
           response.json.as[SubscribeSuccessResponse]
         case BAD_REQUEST =>
-          Logger.warn(s"[AtedSubscriptionConnector][subscribeAted] - Bad Request Exception ${response.body}")
+          logger.warn(s"[AtedSubscriptionConnector][subscribeAted] - Bad Request Exception ${response.body}")
           throw new BadRequestException(response.body)
         case status =>
-          Logger.warn(s"[AtedSubscriptionConnector][subscribeAted] - status: $status InternalServerException ${response.body}")
+          logger.warn(s"[AtedSubscriptionConnector][subscribeAted] - status: $status InternalServerException ${response.body}")
           throw new InternalServerException(response.body)
       }
     }

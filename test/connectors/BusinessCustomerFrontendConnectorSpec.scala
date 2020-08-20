@@ -57,7 +57,7 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with GuiceOneServer
         businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
         sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
       when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(reviewDetails).toString())))
 
       val response = await(testBusinessCustomerFrontendConnector.getBusinessCustomerDetails)
       response.status must be(OK)

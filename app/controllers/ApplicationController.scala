@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import connectors.AtedSubscriptionDataCacheConnector
 import controllers.auth.AuthFunctionality
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Action, AnyContent, DiscardingCookie, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -30,16 +30,16 @@ import scala.concurrent.ExecutionContext
 class ApplicationController @Inject()(mcc: MessagesControllerComponents,
                                       dataCacheConnector: AtedSubscriptionDataCacheConnector,
                                       val authConnector: DefaultAuthConnector,
-                                      template: views.html.unauthorised,
-                                      template2: views.html.unauthorisedAssistantOrg,
-                                      template3: views.html.unauthorisedAssistantAgent,
+                                      templateUnauthorised: views.html.unauthorised,
+                                      templateUnauthorisedAssistantOrg: views.html.unauthorisedAssistantOrg,
+                                      templateUnauthorisedAssistantAgent: views.html.unauthorisedAssistantAgent,
                                       implicit val appConfig: ApplicationConfig
-                                     ) extends FrontendController(mcc) with AuthFunctionality {
+                                     ) extends FrontendController(mcc) with AuthFunctionality with Logging {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
   def unauthorised(): Action[AnyContent] = Action { implicit request =>
-    Ok(template())
+    Ok(templateUnauthorised())
   }
 
   def cancel(): Action[AnyContent] = Action { implicit request =>
@@ -70,11 +70,11 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def unauthorisedAssistantOrg: Action[AnyContent] = Action {
-    implicit request => Ok(template2())
+    implicit request => Ok(templateUnauthorisedAssistantOrg())
   }
 
   def unauthorisedAssistantAgent: Action[AnyContent] = Action {
-    implicit request => Ok(template3())
+    implicit request => Ok(templateUnauthorisedAssistantAgent())
   }
 
   def clearCache: Action[AnyContent] = Action.async { implicit request =>
@@ -82,10 +82,10 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
       dataCacheConnector.clearCache.map { x =>
         x.status match {
           case OK | NO_CONTENT =>
-            Logger.info("session has been cleared")
+            logger.info("session has been cleared")
             Ok
           case errorStatus =>
-            Logger.error(s"session has not been cleared for ATED_SUBSCRIPTION. Status: $errorStatus, Error: ${x.body}")
+            logger.error(s"session has not been cleared for ATED_SUBSCRIPTION. Status: $errorStatus, Error: ${x.body}")
             InternalServerError
         }
       }

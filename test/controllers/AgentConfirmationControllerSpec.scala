@@ -41,8 +41,8 @@ import scala.concurrent.Future
 class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
-  val injview = app.injector.instanceOf[views.html.agentConfirmation]
-  val testAgentConfirmationController: AgentConfirmationController = new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injview, mockAppConfig)
+  val injectedViewInstance = app.injector.instanceOf[views.html.agentConfirmation]
+  val testAgentConfirmationController: AgentConfirmationController = new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -128,7 +128,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = Some("JARN1234567"))
 
     when(mockBCConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(reviewDetails)))))
+      .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(reviewDetails).toString())))
 
     val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 

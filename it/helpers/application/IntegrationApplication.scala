@@ -1,15 +1,15 @@
 package helpers.application
 
 import helpers.wiremock.WireMockConfig
-import org.apache.http.client.HttpClient
-import org.apache.http.impl.client.DefaultHttpClient
+import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.HttpClient
 import org.scalatest.TestSuite
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
 import utils.{AtedSubscriptionUtils, AtedSubscriptionUtilsImpl}
-import play.api.inject.bind
+import play.api.inject.{bind => playBind}
 
 trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig {
   self: TestSuite =>
@@ -52,7 +52,7 @@ trait IntegrationApplication extends GuiceOneServerPerSuite with WireMockConfig 
   )
 
   override lazy val app: Application = new GuiceApplicationBuilder()
-    .overrides(bind[HttpClient].to[DefaultHttpClient])
-    .overrides(bind[AtedSubscriptionUtils].to[AtedSubscriptionUtilsImpl])
+    .overrides(playBind[HttpClient].to[DefaultHttpClient])
+    .overrides(playBind[AtedSubscriptionUtils].to[AtedSubscriptionUtilsImpl])
     .build()
 }

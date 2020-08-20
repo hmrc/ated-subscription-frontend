@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import connectors.{AtedSubscriptionConnector, TaxEnrolmentsConnector}
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, BusinessCustomerDetails}
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,11 +30,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConnector,
                                  taxEnrolmentsConnector: TaxEnrolmentsConnector,
                                  registerUserService: RegisterUserService,
-                                 appConfig: ApplicationConfig) {
+                                 appConfig: ApplicationConfig) extends Logging {
 
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext, authData: AtedSubscriptionAuthData): Future[Boolean] = {
-    Logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
+    logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
 
     atedSubscriptionConnector.checkEtmpBusinessPartnerExists(Json.toJson(busCusDetails)) flatMap {
       case Some(response) =>
@@ -52,19 +52,19 @@ class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConn
             taxEnrolmentsConnector.enrol(requestPayload, validatedGroupId, response.regimeRefNumber) map { resp =>
               resp.status match {
                 case CREATED =>
-                  Logger.info("[EtmpCheckService][validateBusinessDetails] ES8 success")
+                  logger.info("[EtmpCheckService][validateBusinessDetails] ES8 success")
                   true
                 case _ =>
-                  Logger.info("[EtmpCheckService][validateBusinessDetails] ES8 failure")
+                  logger.info("[EtmpCheckService][validateBusinessDetails] ES8 failure")
                   false
               }
             }
           case _ =>
-            Logger.info("[EtmpCheckService][validateBusinessDetails] No group identifier or credId for user")
+            logger.info("[EtmpCheckService][validateBusinessDetails] No group identifier or credId for user")
             Future.successful(false)
         }
       case None =>
-        Logger.info("[EtmpCheckService][validateBusinessDetails] Could not perform ES6")
+        logger.info("[EtmpCheckService][validateBusinessDetails] Could not perform ES6")
         Future.successful(false)
     }
   }

@@ -41,9 +41,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
   val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
   val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val injview = app.injector.instanceOf[views.html.correspondenceAddress]
+  val injectedViewInstance = app.injector.instanceOf[views.html.correspondenceAddress]
 
-  val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(mockMCC, mockCorrespondenceAddressService, mockAuthConnector, injview, mockAppConfig)
+  val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(mockMCC, mockCorrespondenceAddressService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

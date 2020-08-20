@@ -21,6 +21,7 @@ import play.api.inject.{Binding, Module}
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.{AtedSubscriptionUtils, AtedSubscriptionUtilsImpl}
+import play.api.inject.{bind => playBind}
 
 class Bindings extends Module {
 	override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -28,8 +29,8 @@ class Bindings extends Module {
 	}
 
 	private def bindDeps() = Seq(
-		bind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
-		bind(classOf[AtedSubscriptionUtils]).to(classOf[AtedSubscriptionUtilsImpl])
+		playBind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
+		playBind(classOf[AtedSubscriptionUtils]).to(classOf[AtedSubscriptionUtilsImpl])
 	)
 
 }

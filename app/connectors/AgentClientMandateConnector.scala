@@ -19,7 +19,7 @@ package connectors
 import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, NonUKClientDto}
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
                                             http: DefaultHttpClient
-                                           ) extends RawResponseReads {
+                                           ) extends RawResponseReads with Logging {
 
   lazy val serviceURL: String = appConfig.serviceUrlACM
   val createMandateURI = "mandate/non-uk"
@@ -45,7 +45,7 @@ class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
       response.status match {
         case CREATED => response
         case status =>
-          Logger.warn(s"[AgentClientMandateConnector][createMandateForNonUK]- Exception occured - status:: $status response:: ${response.body}")
+          logger.warn(s"[AgentClientMandateConnector][createMandateForNonUK]- Exception occured - status:: $status response:: ${response.body}")
           throw new InternalServerException(response.body)
       }
     }
@@ -60,7 +60,7 @@ class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
       response.status match {
         case CREATED => response
         case status =>
-          Logger.warn(s"[AgentClientMandateConnector][updateMandateForNonUK]- Exception occurred - status:: $status response:: ${response.body}")
+          logger.warn(s"[AgentClientMandateConnector][updateMandateForNonUK]- Exception occurred - status:: $status response:: ${response.body}")
           throw new InternalServerException(response.body)
       }
     }

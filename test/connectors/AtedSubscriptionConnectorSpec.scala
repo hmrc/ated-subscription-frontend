@@ -66,7 +66,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
         when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(OK, Some(subscribeSuccessResponseJson))))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, subscribeSuccessResponseJson.toString())))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         await(result) must be(subscribeSuccessResponse)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
@@ -78,7 +78,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
         when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
+          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailureResponseJson.toString())))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
@@ -91,7 +91,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
         when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
+          .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
@@ -106,7 +106,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
         when(mockWSHttp.POST[JsValue, HttpResponse](
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
         )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.obj("regimeRefNumber" -> "test")))))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.obj("regimeRefNumber" -> "test").toString())))
         val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
         await(result) must be(Some(SelfHealSubscriptionResponse("test")))
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
@@ -118,7 +118,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
         when(mockWSHttp.POST[JsValue, HttpResponse](
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
         )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.obj()))))
+          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, Json.obj().toString())))
         val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
         await(result) must be(None)
         verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
