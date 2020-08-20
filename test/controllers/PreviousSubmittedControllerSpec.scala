@@ -39,8 +39,8 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
   val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
   val mockOverseasService: OverseasCompanyService = mock[OverseasCompanyService]
-  val injview = app.injector.instanceOf[views.html.previous_submitted]
-  val testPreviousSubmittedController: PreviousSubmittedController = new PreviousSubmittedController(mockMCC, mockBCConnector, mockOverseasService, mockAuthConnector, injview, mockAppConfig)
+  val injectedViewInstance = app.injector.instanceOf[views.html.previous_submitted]
+  val testPreviousSubmittedController: PreviousSubmittedController = new PreviousSubmittedController(mockMCC, mockBCConnector, mockOverseasService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)

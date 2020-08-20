@@ -19,9 +19,8 @@ package connectors
 import java.util.UUID
 
 import audit.Auditable
-import builders.AuthBuilder
 import metrics.Metrics
-import models.{AtedSubscriptionAuthData, EnrolRequest, EnrolResponse, Identifier}
+import models.{EnrolRequest, EnrolResponse, Identifier}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -56,7 +55,7 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with GuiceOneServerPerSuit
 
     val request = EnrolRequest(portalId = "ATED", serviceName = "ATED", friendlyName = "Main Enrolment", knownFacts = Seq("ATED-123"))
     val response = Json.toJson(EnrolResponse(serviceName = "ATED", state = "NotYetActivated", identifiers = List(Identifier("ATED", "Ated_Ref_No"))))
-    val successfulSubscribeJson = HttpResponse(OK, Some(response))
+    val successfulSubscribeJson = HttpResponse.apply(OK, response.toString())
     val subscribeFailureResponseJson = Json.parse( """{"reason" : "Error happened"}""")
     implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
 
@@ -72,7 +71,7 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with GuiceOneServerPerSuit
 
       "return status as BAD_REQUEST, for bad data sent for enrol" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(subscribeFailureResponseJson))))
+          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailureResponseJson.toString())))
         val result = testGovernmentGatewayConnector.enrol(request)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
@@ -80,7 +79,7 @@ class GovernmentGatewayConnectorSpec extends PlaySpec with GuiceOneServerPerSuit
       }
       "return status anything else, for bad data sent for enrol" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, Some(subscribeFailureResponseJson))))
+          .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())))
         val result = testGovernmentGatewayConnector.enrol(request)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)

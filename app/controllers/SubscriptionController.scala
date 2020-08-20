@@ -29,9 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        val authConnector: DefaultAuthConnector,
-                                       template: views.html.subscription,
-                                       template2: views.html.appointAgent,
-                                       template3: views.html.agentSubscription,
+                                       templateSubscription: views.html.subscription,
+                                       templateAppointAgent: views.html.appointAgent,
+                                       templateAgentSubscription: views.html.agentSubscription,
                                        implicit val appConfig: ApplicationConfig
                                       ) extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality {
 
@@ -42,7 +42,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
       if (AuthUtils.isAgent) {
         Future.successful(Redirect(controllers.routes.SubscriptionController.subscribeAgent()))
       } else {
-        Future.successful(Ok(template(areYouAnAgentForm)))
+        Future.successful(Ok(templateSubscription(areYouAnAgentForm)))
       }
     }
   }
@@ -51,21 +51,21 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         Future.successful(
-          Ok(template2(appointAgentForm, Some(controllers.routes.SubscriptionController.subscribe().url)))
+          Ok(templateAppointAgent(appointAgentForm, Some(controllers.routes.SubscriptionController.subscribe().url)))
         )
       }
   }
 
   def subscribeAgent: Action[AnyContent] = Action.async { implicit req =>
     agentAction { implicit user =>
-      Future.successful(Ok(template3()))
+      Future.successful(Ok(templateAgentSubscription()))
     }
   }
 
   def continue: Action[AnyContent] = Action.async { implicit req =>
     clientAction { implicit user =>
       areYouAnAgentForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(template(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(templateSubscription(formWithErrors))),
         _ => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint()))
       )
     }
@@ -74,7 +74,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
   def register: Action[AnyContent] = Action.async { implicit req =>
     clientAction { implicit user =>
       appointAgentForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(template2(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(templateAppointAgent(formWithErrors))),
         _ => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
       )
     }

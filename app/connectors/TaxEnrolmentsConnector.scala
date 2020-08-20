@@ -21,7 +21,7 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import metrics.{Metrics, MetricsEnum}
 import models.RequestEMACPayload
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
@@ -35,7 +35,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
                                        auditable: Auditable,
                                        http: DefaultHttpClient,
                                        metrics: Metrics
-                                      ) {
+                                      ) extends  Logging {
   lazy val serviceURL: String = appConfig.serviceUrlTaxEnrol
   val enrolURI: String = "enrol"
   val enrolmentUrl: String = s"$serviceURL/tax-enrolments"
@@ -49,10 +49,10 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
 
-    http.POST[JsValue, HttpResponse](postUrl, jsonData) map { response =>
+    http.POST[JsValue, HttpResponse](postUrl, jsonData)(implicitly, HttpReads.Implicits.readRaw,implicitly,implicitly) map { response =>
       timerContext.stop()
       auditEnrolUser(postUrl, requestPayload, response)
-      Logger.debug(s"PostUrl::$postUrl ---- requestBody:: $jsonData --- responseBody::${response.body} --- responseStatus:: ${response.status}")
+      logger.debug(s"PostUrl::$postUrl ---- requestBody:: $jsonData --- responseBody::${response.body} --- responseStatus:: ${response.status}")
 
       response.status match {
         case CREATED =>
@@ -60,7 +60,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
           response
         case status =>
           metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-          Logger.warn(s"[TaxEnrolmentsConnector][enrol] - status: $status")
+          logger.warn(s"[TaxEnrolmentsConnector][enrol] - status: $status")
           auditable.doFailedAudit("enrolFailed", jsonData.toString, response.body)
           response
       }
@@ -68,13 +68,9 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
   } recover handleErrorResponse
 
   private def handleErrorResponse: PartialFunction[Throwable, HttpResponse] = {
-    PartialFunction[Throwable, HttpResponse] { throwable: Throwable => {
-      throwable match {
-        case ex: BadRequestException => HttpResponse(CONFLICT, responseString = Some(ex.getMessage))
-        case ex: UpstreamErrorResponse => HttpResponse(ex.upstreamResponseCode, responseString = Some(ex.getMessage))
-        case ex: Exception => HttpResponse(INTERNAL_SERVER_ERROR, responseString = Some(ex.getMessage))
-      }
-    }}
+    case ex: BadRequestException => HttpResponse.apply(CONFLICT, ex.getMessage)
+    case ex: UpstreamErrorResponse => HttpResponse.apply(ex.statusCode, ex.getMessage)
+    case ex: Exception => HttpResponse.apply(INTERNAL_SERVER_ERROR, ex.getMessage)
   }
 
   private def auditEnrolUser(postUrl: String,

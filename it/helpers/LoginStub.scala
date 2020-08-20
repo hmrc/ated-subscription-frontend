@@ -4,6 +4,7 @@ import java.util.UUID
 
 import play.api.Application
 import play.api.mvc.{DefaultCookieHeaderEncoding, DefaultSessionCookieBaker}
+import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 import uk.gov.hmrc.http.SessionKeys
 
 trait LoginStub {
@@ -22,7 +23,7 @@ trait LoginStub {
       SessionKeys.sessionId -> sessionId,
       SessionKeys.userId -> "/auth/oid/1234567890",
       SessionKeys.authToken -> "token",
-      SessionKeys.authProvider -> "GGW",
+      SimpleRetrieval("authProviderId", LegacyCredentials.reads).toString -> "GGW",
       SessionKeys.lastRequestTimestamp -> rollbackTimestamp
     ) ++ additionalData
   }

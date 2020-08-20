@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
 import org.apache.commons.codec.binary.Base64.encodeBase64String
 import org.apache.commons.codec.digest.DigestUtils
-import play.api.Logger
+import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
@@ -32,7 +32,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait AuthFunctionality extends AuthorisedFunctions {
+trait AuthFunctionality extends AuthorisedFunctions with Logging {
 
   val appConfig: ApplicationConfig
 
@@ -78,7 +78,7 @@ trait AuthFunctionality extends AuthorisedFunctions {
         case _: MissingBearerToken =>
           Redirect(appConfig.loginURL, loginParams)
         case er: AuthorisationException =>
-          Logger.error(s"[authoriseFor] Auth exception: $er")
+          logger.error(s"[authoriseFor] Auth exception: $er")
           Redirect(controllers.routes.ApplicationController.unauthorised().url)
       }
   }

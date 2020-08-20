@@ -42,14 +42,14 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
   val mockMandateService: MandateService = mock[MandateService]
   val mockAgentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
-  val injview = app.injector.instanceOf[views.html.nonUKReg.declaration]
+  val injectedViewInstance = app.injector.instanceOf[views.html.nonUKReg.declaration]
 
   val testDeclarationControllerWithEMAC: DeclarationController = new DeclarationController(mockMCC,
                                                                                            mockRegisterUserService,
                                                                                            mockMandateService,
                                                                                            mockAgentClientFrontendMandateConnector,
                                                                                            mockAuthConnector,
-                                                                                           injview,
+                                                                                           injectedViewInstance,
                                                                                            mockAppConfig)
 
   override def beforeEach(): Unit = {
@@ -78,9 +78,9 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     when(mockRegisterUserService.subscribeAted(eqTo(true))(any(), any(), any(), any()))
       .thenReturn(Future.successful(succResp(ated)))
     when(mockMandateService.createMandateForNonUK(eqTo("atedRefNum"))(any(), any(), any(), any()))
-      .thenReturn(Future.successful(HttpResponse(CREATED)))
+      .thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
     when(mockMandateService.updateMandateForNonUK(eqTo("atedRefNum"), eqTo("mandateId"))
-    (any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse(CREATED)))
+    (any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
     val result = testDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
     test(result)
   }

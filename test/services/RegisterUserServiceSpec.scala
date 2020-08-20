@@ -109,7 +109,7 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       .thenReturn(Future.successful(businessCustomerDetails))
     when(mockTaxEnrolmentConnector.enrol(
       ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(CREATED, Some(enrolSuccessResponse))))
+      .thenReturn(Future.successful(HttpResponse.apply(CREATED, enrolSuccessResponse.toString())))
   }
 
   override def beforeEach(): Unit = {

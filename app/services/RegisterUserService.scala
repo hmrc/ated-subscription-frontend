@@ -29,7 +29,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.SessionUtils
-import utils.BusinessTypeConstants.{saBusinessTypes, _}
+import utils.BusinessTypeConstants.saBusinessTypes
 import utils.GovernmentGatewayConstants._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -69,7 +69,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
                 request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     if (isNonUKClientRegisteredByAgent) {
       val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
-      Future.successful(HttpResponse(OK, responseJson = Some(enrolResp)))
+      Future.successful(HttpResponse.apply(OK, enrolResp.toString))
     } else {
       for {
         authorised <- authConnector.authorise(AffinityGroup.Organisation, credentials and groupIdentifier)
