@@ -35,6 +35,7 @@ import play.api.test.Helpers._
 import services.MandateService
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.HttpResponse
+import views.html.nonUKReg.declaration
 
 import scala.concurrent.Future
 
@@ -42,7 +43,7 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
   val mockMandateService: MandateService = mock[MandateService]
   val mockAgentClientFrontendMandateConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
-  val injectedViewInstance = app.injector.instanceOf[views.html.nonUKReg.declaration]
+  val injectedViewInstance: declaration = app.injector.instanceOf[views.html.nonUKReg.declaration]
 
   val testDeclarationControllerWithEMAC: DeclarationController = new DeclarationController(mockMCC,
                                                                                            mockRegisterUserService,
@@ -81,10 +82,9 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       .thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
     when(mockMandateService.updateMandateForNonUK(eqTo("atedRefNum"), eqTo("mandateId"))
     (any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
-    val result = testDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestFormWithSession(request, userId))
+    val result = testDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestWithSession(request, userId))
     test(result)
   }
-
 
   "DeclarationController" must {
     "view" must {
@@ -135,6 +135,5 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       }
     }
   }
-
 
 }

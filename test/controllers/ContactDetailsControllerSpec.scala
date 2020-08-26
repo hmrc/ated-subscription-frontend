@@ -33,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ContactDetailsService
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.SessionKeys
+import views.html.contactDetails
 
 import scala.concurrent.Future
 
@@ -41,7 +41,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
   val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
-  val injectedViewInstance = app.injector.instanceOf[views.html.contactDetails]
+  val injectedViewInstance: contactDetails = app.injector.instanceOf[views.html.contactDetails]
 
   val testContactDetailsController = new ContactDetailsController(mockMCC, mockContactDetailsService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
@@ -267,9 +267,9 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(None).apply(fakeRequest.withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       "token" -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId))
+      "userId" -> userId))
 
     test(result)
   }
@@ -282,9 +282,9 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(mode = Some("edit")).apply(fakeRequest.withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       "token" -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId))
+      "userId" -> userId))
 
     test(result)
   }
