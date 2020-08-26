@@ -91,6 +91,8 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
             }
           case _ ~ None =>
             Future.failed(new RuntimeException("Failed to enrol - user did not have a group identifier (not a valid GG user)"))
+          case _ =>
+            Future.failed(new RuntimeException("Failed to enrol - authorisation exception"))
         }
       } yield {
         enrolSuccess
