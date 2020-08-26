@@ -17,54 +17,37 @@
 package builders
 
 import java.util.UUID
-
-import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.SessionKeys
 
 object SessionBuilder {
-
-  val TOKEN = "token" // this is because SessionKeys.token gives warning
-  val EMAIL = "email" // this is because SessionKeys.token gives warning
-
-  def updateRequestWithSession(fakeRequest: FakeRequest[AnyContentAsJson], userId: String) = {
-    val sessionId = s"session-${UUID.randomUUID}"
+  val sessionId = s"session-${UUID.randomUUID}"
+  def updateRequestWithSession[T](fakeRequest: FakeRequest[T], userId: String): FakeRequest[T] = {
     fakeRequest.withSession(
-      SessionKeys.sessionId -> sessionId,
-      TOKEN -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+      "sessionId" -> sessionId,
+      "token" -> "faketoken",
+      "userId" -> userId)
   }
 
-  def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    fakeRequest.withSession(
-      SessionKeys.sessionId -> sessionId,
-      TOKEN -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
-  }
-
-  def buildRequestWithSession(userId: String, email: Option[String] = None) = {
-    val sessionId = s"session-${UUID.randomUUID}"
-
+  def buildRequestWithSession(userId: String, email: Option[String] = None): FakeRequest[AnyContentAsEmpty.type] = {
     email match {
       case Some(emailId) => FakeRequest().withSession(
-        SessionKeys.sessionId -> sessionId,
-        TOKEN -> "RANDOMTOKEN",
-        SessionKeys.userId -> userId,
-        EMAIL -> emailId
+        "sessionId" -> sessionId,
+        "token" -> "faketoken",
+        "userId" -> userId,
+        "email" -> emailId
       )
       case None => FakeRequest().withSession(
-        SessionKeys.sessionId -> sessionId,
-        TOKEN -> "RANDOMTOKEN",
-        SessionKeys.userId -> userId
+        "sessionId" -> sessionId,
+        "token" -> "faketoken",
+        "userId" -> userId
       )
     }
   }
 
   def buildRequestWithSessionNoUser() = {
-    val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId)
+      "sessionId" -> sessionId)
   }
 
 }

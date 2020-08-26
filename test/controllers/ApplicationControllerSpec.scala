@@ -28,16 +28,17 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionKeys}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import views.html.{unauthorised, unauthorisedAssistantAgent, unauthorisedAssistantOrg}
 
 import scala.concurrent.Future
 
 class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  val injectedViewInstanceUnauthorised = app.injector.instanceOf[views.html.unauthorised]
-  val injectedViewInstanceUnauthorisedAssistantOrg = app.injector.instanceOf[views.html.unauthorisedAssistantOrg]
-  val injectedViewInstanceUnauthorisedAssistantAgent = app.injector.instanceOf[views.html.unauthorisedAssistantAgent]
+  val injectedViewInstanceUnauthorised: unauthorised = app.injector.instanceOf[views.html.unauthorised]
+  val injectedViewInstanceUnauthorisedAssistantOrg: unauthorisedAssistantOrg = app.injector.instanceOf[views.html.unauthorisedAssistantOrg]
+  val injectedViewInstanceUnauthorisedAssistantAgent: unauthorisedAssistantAgent = app.injector.instanceOf[views.html.unauthorisedAssistantAgent]
 
   override def beforeEach: Unit = {
     reset(mockDataCacheConnector)
@@ -49,9 +50,9 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   private def fakeRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
-      SessionKeys.sessionId -> sessionId,
+      "sessionId" -> sessionId,
       "token" -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+      "userId" -> userId)
   }
 
 
