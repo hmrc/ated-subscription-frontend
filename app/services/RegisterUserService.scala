@@ -156,7 +156,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
       emailConsent = contactEmail.emailConsent.getOrElse(false),
       address = List(correspondence),
       businessType = bcd.businessType,
-      utr = bcd.utr.getOrElse(""),
+      utr = bcd.utr,
       isNonUKClientRegisteredByAgent = nonUKAgent,
       knownFactPostcode = bcd.businessAddress.postcode)
     )

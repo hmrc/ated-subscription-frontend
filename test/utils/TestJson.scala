@@ -45,7 +45,7 @@ trait TestJson {
       )
     )),
     businessType = "Corporate Body",
-    utr = "123456789",
+    utr = Some("123456789"),
     isNonUKClientRegisteredByAgent = true,
     knownFactPostcode = None
   )
