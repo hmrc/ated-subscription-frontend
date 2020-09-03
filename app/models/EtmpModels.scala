@@ -80,7 +80,7 @@ case class AtedSubscriptionRequest(acknowledgementReference: String,
                                    emailConsent: Boolean,
                                    address: List[EtmpCorrespondence],
                                    businessType: String,
-                                   utr: String,
+                                   utr: Option[String],
                                    isNonUKClientRegisteredByAgent : Boolean,
                                    knownFactPostcode: Option[String])
 

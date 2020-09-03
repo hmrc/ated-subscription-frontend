@@ -59,9 +59,37 @@ class AtedModelsSpec extends PlaySpec {
       | "isBusinessDetailsEditable":true
       |}""".stripMargin)
 
+  def businessCustomerDetailsJsonNoUtr(businessType: String): JsValue = Json.parse(
+    s"""{
+       | "businessName":"Logical Logistics",
+       | "businessType":"$businessType",
+       | "businessAddress": {
+       |   "line_1":"22 Gordon Road",
+       |   "line_2":"Riverside",
+       |   "line_3":"Town",
+       |   "line_4":"Shropshire",
+       |   "postcode":"TF2 8JP",
+       |   "country":"United Kingdom"
+       | },
+       | "sapNumber":"325435235235",
+       | "safeId":"2343534523",
+       | "agentReferenceNumber":"LARN123456",
+       | "directMatch":true,
+       | "identification": {
+       |   "idNumber":"123123",
+       |   "issuingInstitution":"Companies House",
+       |   "issuingCountryCode":"UK"
+       | },
+       | "isBusinessDetailsEditable":true
+       |}""".stripMargin)
+
   "BusinessCustomerDetails" should {
     "read correctly into a model" in {
       businessCustomerDetailsJson("Corporate Body").as[BusinessCustomerDetails] mustBe businessCustomerDetailsModel
+    }
+
+    "read correctly into a model when there is no utr" in {
+      businessCustomerDetailsJsonNoUtr("Corporate Body").as[BusinessCustomerDetails] mustBe businessCustomerDetailsModel.copy(utr = None)
     }
 
     "fail to read to a model if an invalid businessType has been provided" in {
@@ -70,6 +98,10 @@ class AtedModelsSpec extends PlaySpec {
 
     "write correctly to json all fields have been provided" in {
       Json.toJson(businessCustomerDetailsModel) mustBe businessCustomerDetailsJson("Corporate Body")
+    }
+
+    "write correctly to json when there is no utr" in {
+      Json.toJson(businessCustomerDetailsModel.copy(utr = None)) mustBe businessCustomerDetailsJsonNoUtr("Corporate Body")
     }
   }
 }

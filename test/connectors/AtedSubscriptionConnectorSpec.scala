@@ -56,7 +56,7 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
     address = List(EtmpCorrespondence(name1 = "Joe", name2 = "Bloggs",
       addressDetails = EtmpAddressDetails("Correspondence", "line1", "line2", None, None, None, "GB"),
       contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true,
-    businessType = "Corporate Body", utr = "1234567890", isNonUKClientRegisteredByAgent = false, knownFactPostcode = Some("AA1 1AA"))
+    businessType = "Corporate Body", utr = Some("1234567890"), isNonUKClientRegisteredByAgent = false, knownFactPostcode = Some("AA1 1AA"))
   val subscribeDataJson: JsValue = Json.toJson(subscribeData)
 
   "AtedSubscriptionConnector" must {
