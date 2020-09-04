@@ -44,7 +44,7 @@ class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConn
               busCusDetails.businessType,
               credId,
               busCusDetails.utr,
-              busCusDetails.businessAddress.postcode,
+              busCusDetails.businessAddress.postcode.map(_.replaceAll("\\s+", "")),
               busCusDetails.safeId
             )
             val validatedGroupId = appConfig.atedSubsUtils.validateGroupId(groupId)
