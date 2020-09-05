@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import connectors._
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, SubscribeSuccessResponse, Verifiers, _}
+import play.api.Logging
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.test.Helpers.OK
@@ -40,7 +41,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
                                     registeredBusinessService: RegisteredBusinessService,
                                     taxEnrolmentsConnector: TaxEnrolmentsConnector,
                                     val authConnector: DefaultAuthConnector
-                                   ) extends AuthorisedFunctions {
+                                   ) extends AuthorisedFunctions with Logging {
 
   val enrolmentType = "principal"
 
@@ -86,6 +87,8 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
                   utr = bcd.utr,
                   postcode = bcd.businessAddress.postcode,
                   safeId = bcd.safeId)
+                logger.info("[RegisterUserService][enrolAted] - Attempting ATED enrolment")
+                logger.info("")
                 taxEnrolmentsConnector.enrol(requestPayload, grpId, registrationResponse.atedRefNumber.get)
               }
             }
@@ -113,6 +116,8 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
 
     val utrType: String = getUtrType(businessType)
 
+    logger.info("[RegisterUserService][createEnrolmentRequest] - creating enrolment request")
+
     RequestEMACPayload(
       userId = gGCredId,
       friendlyName = "ATED Enrolment",
@@ -124,12 +129,14 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
 
     (utr, postcode) match {
       case (Some(uniqueTaxRef), Some(ukClientPostCode)) =>
+        logger.info(s"[RegisterUserService][createEnrolmentVerifiers] - uk postcode with $utrType")
         Verifiers(List(Verifier(VerifierPostalCode, ukClientPostCode), Verifier(utrType, uniqueTaxRef)))
       case (None, Some(nonUkClientPostCode)) =>
-        Verifiers(List(
-          Verifier(VerifierNonUKPostalCode, nonUkClientPostCode))
-        ) //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
+        logger.info(s"[RegisterUserService][createEnrolmentVerifiers] - non-uk postcode with no utr")
+        Verifiers(List(Verifier(VerifierNonUKPostalCode, nonUkClientPostCode)))
+      //N.B. Non-UK Clients might use the property UK Postcode or their own Non-UK Postal Code
       case (Some(uniqueTaxRef), None) =>
+        logger.info(s"[RegisterUserService][createEnrolmentVerifiers] - $utrType and no postcode")
         Verifiers(List(Verifier(utrType, uniqueTaxRef)))
       case (_, _) =>
         throw new RuntimeException(s"[RegisterUserService][createEnrolmentVerifiers] - postcode or utr must be supplied")

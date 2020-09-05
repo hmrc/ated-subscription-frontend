@@ -34,6 +34,7 @@ class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConn
 
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext, authData: AtedSubscriptionAuthData): Future[Boolean] = {
+
     logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
 
     atedSubscriptionConnector.checkEtmpBusinessPartnerExists(Json.toJson(busCusDetails)) flatMap {
@@ -48,6 +49,8 @@ class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConn
               busCusDetails.safeId
             )
             val validatedGroupId = appConfig.atedSubsUtils.validateGroupId(groupId)
+
+            logger.info(s"[EtmpCheckService][validateBusinessDetails] - attempting ATED enrolment")
 
             taxEnrolmentsConnector.enrol(requestPayload, validatedGroupId, response.regimeRefNumber) map { resp =>
               resp.status match {
