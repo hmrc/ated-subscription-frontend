@@ -25,7 +25,7 @@ class RegisterUserControllerISpec extends IntegrationSpec {
     userId = "user-id",
     friendlyName = "friendlyName",
     `type` = "type",
-    verifiers = Verifiers(List(Verifier(key = "Postcode", value = "NE98 1ZZ"), Verifier(key = "CTUTR", value = "12345678"))))
+    verifiers = List(Verifier(key = "Postcode", value = "NE98 1ZZ"), Verifier(key = "CTUTR", value = "12345678")))
 
   val emacPayload = Json.toJson(emacPayloadRequest)
 

@@ -68,7 +68,9 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
   } recover handleErrorResponse
 
   private def handleErrorResponse: PartialFunction[Throwable, HttpResponse] = {
-    case ex: BadRequestException => HttpResponse.apply(CONFLICT, ex.getMessage)
+    case ex: ConflictException => HttpResponse.apply(CONFLICT, ex.getMessage)
+    case ex: BadRequestException => throw new RuntimeException("[TaxEnrolmentsConnector][handleErrorResponse]" +
+      s" - ES8 Failed with status: ${ex.responseCode} message: ${ex.message}")
     case ex: UpstreamErrorResponse => HttpResponse.apply(ex.statusCode, ex.getMessage)
     case ex: Exception => HttpResponse.apply(INTERNAL_SERVER_ERROR, ex.getMessage)
   }

@@ -25,7 +25,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
@@ -49,7 +48,7 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite wi
   "TaxEnrolmentsConnector" must {
 
     val request = RequestEMACPayload(userId = "user-id", friendlyName = "friendlyName", `type` = "type",
-      verifiers = Verifiers(List(Verifier(key = "key", value = "value"))))
+      verifiers = List(Verifier(key = "key", value = "value")))
     val groupId = "groupId"
     val atedRefNo = "atedRefNo"
     val subscribeFailureResponseJson = Json.parse( """{"reason" : "Error happened"}""")
@@ -64,23 +63,13 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite wi
         enrolResponse.status must be(CREATED)
       }
 
-
       "return CONFLICT when retrieving a bad request exception from tax enrolments" in {
         when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
           ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-          thenReturn(Future.failed(new BadRequestException("Error")))
+          thenReturn(Future.failed(new ConflictException("Error")))
         val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(CONFLICT)
-      }
-
-      "return 204 when retrieving a Upstream response of 204 from tax enrolments" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-          thenReturn(Future.successful(HttpResponse(Status.NO_CONTENT,"")))
-        val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
-        val enrolResponse = await(result)
-        enrolResponse.status must be(NO_CONTENT)
       }
 
       "return Internal server error when retrieving a Internal Server Exception from tax enrolments" in {
@@ -90,6 +79,15 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite wi
         val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(INTERNAL_SERVER_ERROR)
+      }
+
+      "throw a RuntimeException when receiving a BAD_REQUEST from tax enrolments" in {
+        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
+          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+          thenReturn(Future.failed(new BadRequestException("INVALID_JSON")))
+        intercept[RuntimeException] {
+          await(testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo))
+        }
       }
 
       "return status anything else, for bad data sent for enrol" in {
