@@ -9,7 +9,7 @@ private object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "2.23.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.55.0-play-27",
-    "uk.gov.hmrc" %% "play-ui" % "8.11.0-play-27",
+    "uk.gov.hmrc" %% "play-ui" % "8.12.0-play-27",
     "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-27",
     "uk.gov.hmrc" %% "domain" % "5.9.0-play-27",
     "uk.gov.hmrc" %% "http-caching-client" % "9.1.0-play-27",
