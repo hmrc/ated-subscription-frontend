@@ -97,7 +97,7 @@ header_nav: HeaderNav)
 @insideHeader = {
   @header_nav(
     navTitle = Some(messages("ated.navTitle")),
-    navTitleLink = None,
+    navTitleLink = Some(routes.SubscriptionController.subscribe()),
     showBetaLink = false,
     navLinks = Some(headerNavLinks))
 }
