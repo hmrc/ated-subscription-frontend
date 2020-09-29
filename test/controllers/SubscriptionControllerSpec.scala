@@ -92,6 +92,9 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               document.title() must be("Are you an agent acting for a client? - GOV.UK")
               document.getElementById("client-startpage-header").text() must be("Are you an agent acting for a client?")
               document.getElementById("submit").text() must be("Continue")
+              assert(document.select(".header__menu__proposition-name").attr("href") === "/ated-subscription/start-subscription")
+
+
           }
         }
 
@@ -142,6 +145,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               document.getElementById("agent-startpage-text1").text() must be("You must enter your agency’s registered name and Unique Taxpayer Reference (UTR).")
               document.getElementById("agent-startpage-text2").text() must be("After setting up your details, you can add your clients.")
               document.getElementById("submit").text() must be("Set up your agency")
+              assert(document.select(".header__menu__proposition-name").attr("href") === "/ated-subscription/start-subscription")
           }
         }
       }
