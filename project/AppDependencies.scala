@@ -7,12 +7,12 @@ private object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "2.23.0",
-    "uk.gov.hmrc" %% "govuk-template" % "5.55.0-play-27",
-    "uk.gov.hmrc" %% "play-ui" % "8.12.0-play-27",
-    "uk.gov.hmrc" %% "play-partials" % "6.11.0-play-27",
-    "uk.gov.hmrc" %% "domain" % "5.9.0-play-27",
-    "uk.gov.hmrc" %% "http-caching-client" % "9.1.0-play-27",
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "3.4.0",
+    "uk.gov.hmrc" %% "govuk-template" % "5.61.0-play-27",
+    "uk.gov.hmrc" %% "play-ui" % "8.21.0-play-27",
+    "uk.gov.hmrc" %% "play-partials" % "7.1.0-play-27",
+    "uk.gov.hmrc" %% "domain" % "5.10.0-play-27",
+    "uk.gov.hmrc" %% "http-caching-client" % "9.2.0-play-27",
     "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-27"
   )
 
@@ -28,7 +28,7 @@ private object AppDependencies {
         "org.pegdown" % "pegdown" % "1.6.0",
         "org.jsoup" % "jsoup" % "1.13.1" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26",
+        "uk.gov.hmrc" %% "hmrctest" % "3.10.0-play-26",
         "org.mockito" % "mockito-core" % "3.3.3" % scope,
         "com.github.tomakehurst" % "wiremock-jre8" % "2.26.3" % "test,it"
       )

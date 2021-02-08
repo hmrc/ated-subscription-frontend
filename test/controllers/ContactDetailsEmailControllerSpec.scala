@@ -148,6 +148,24 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
         }
       }
 
+      "Email address must be filled" in {
+        val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "" }""")
+
+        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+          status(result) must be(BAD_REQUEST)
+          contentAsString(result) must include("You must enter an email address")
+        }
+      }
+
+      "Question must be answered" in {
+        val inputJson = Json.parse( s"""{  "emailConsent": "", "email": "" }""")
+
+        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+          status(result) must be(BAD_REQUEST)
+          contentAsString(result) must include("You must answer the can we contact them by email question")
+        }
+      }
+
       "for valid data, it should redirect to review business details page" in {
         val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "abcdef@mail.com" }""")
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
