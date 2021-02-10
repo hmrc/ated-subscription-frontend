@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,6 +145,24 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
           status(result) must be(BAD_REQUEST)
           contentAsString(result) must include("The email address is not valid")
+        }
+      }
+
+      "Email address must be filled" in {
+        val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "" }""")
+
+        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+          status(result) must be(BAD_REQUEST)
+          contentAsString(result) must include("You must enter an email address")
+        }
+      }
+
+      "Question must be answered" in {
+        val inputJson = Json.parse( s"""{  "emailConsent": "", "email": "" }""")
+
+        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+          status(result) must be(BAD_REQUEST)
+          contentAsString(result) must include("You must answer the can we contact them by email question")
         }
       }
 

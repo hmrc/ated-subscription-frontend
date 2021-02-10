@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,6 +111,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("email-address-label").text() must be("Agent’s email address")
             document.getElementById("contact-pref-label").text() must be("Email address")
             document.getElementById("client-display-name-label").text() must be("Display name")
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
             document.select(".button").text must be("Confirm and register")
           }
         }
