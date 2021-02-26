@@ -59,7 +59,6 @@ trait AtedTestHelper extends MockitoSugar  with GuiceOneServerPerSuite { this: T
   when(mockAppConfig.atedStartPath).thenReturn("/ated/home")
   when(mockAppConfig.cancelRedirectUrl).thenReturn("https://www.gov.uk/")
   when(mockAppConfig.servicesConfig).thenReturn(mockServicesConfig)
-  when(mockAppConfig.analyticsToken).thenReturn(Some("UA-123456"))
   when(mockAppConfig.atedSubsUtils).thenReturn(new AtedSubscriptionUtilsImpl(app.environment))
 
   lazy val mockMCC: DefaultMessagesControllerComponents = app.injector.instanceOf[DefaultMessagesControllerComponents]
