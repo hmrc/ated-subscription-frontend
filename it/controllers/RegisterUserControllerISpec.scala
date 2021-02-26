@@ -2,10 +2,10 @@ package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import helpers.IntegrationSpec
-import models.{Address, BusinessCustomerDetails, RequestEMACPayload, Verifier, Verifiers}
+import models.{Address, BusinessCustomerDetails, RequestEMACPayload, Verifier}
 import play.api.http.Status._
 import play.api.http.{HeaderNames => HN}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.http.HeaderNames
 
@@ -14,25 +14,25 @@ class RegisterUserControllerISpec extends IntegrationSpec {
   val ATED_SERVICE_NAME = "HMRC-ATED-ORG"
   val enrolmentKey = s"$ATED_SERVICE_NAME~AtedRefNumber~XN1200000100001"
 
-  val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
+  val reviewDetails: BusinessCustomerDetails = BusinessCustomerDetails(businessName = "ACME",
     businessType = "Corporate Body",
     businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = Some("NE98 1ZZ"), country = "GB"),
     sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = None, utr = Some("12345678"))
 
-  val reviewDetailsJson = Json.toJson(reviewDetails)
+  val reviewDetailsJson: JsValue = Json.toJson(reviewDetails)
 
-  val emacPayloadRequest = RequestEMACPayload(
+  val emacPayloadRequest: RequestEMACPayload = RequestEMACPayload(
     userId = "user-id",
     friendlyName = "friendlyName",
     `type` = "type",
     verifiers = List(Verifier(key = "Postcode", value = "NE98 1ZZ"), Verifier(key = "CTUTR", value = "12345678")))
 
-  val emacPayload = Json.toJson(emacPayloadRequest)
+  val emacPayload: JsValue = Json.toJson(emacPayloadRequest)
 
   val contactDetails: String =
     s"""
                                        {
-       |    "id" : "${sessionId}",
+       |    "id" : "$sessionId",
        |    "atomicId" : "null",
        |    "data" : {
        |        "BC_BusinessReg_Details" : {
@@ -63,7 +63,7 @@ class RegisterUserControllerISpec extends IntegrationSpec {
        |
        |}""".stripMargin
 
-  val authLoginData = Json.parse(
+  val authLoginData: String = Json.parse(
     """{
       |   "affinityGroup":"Organisation",
       |   "credentialRole":"User",
@@ -99,7 +99,7 @@ class RegisterUserControllerISpec extends IntegrationSpec {
 
         stubGet("/business-customer/fetch-review-details/ATED", 200, reviewDetailsJson.toString())
         stubGet("/mandate/agent/old-nonuk-mandate-from-session", 200, "")
-        stubGet(s"/keystore/ated-subscription-frontend/${sessionId}", 200, contactDetails)
+        stubGet(s"/keystore/ated-subscription-frontend/$sessionId", 200, contactDetails)
         stubPost(s"/org/12345-credId/subscribe", 200, "")
 
         stubFor(post(urlMatching("/tax-enrolments/groups/9FFB9E14-681D-446C-9731-F6B2AECA5087/enrolments/HMRC-ATED-ORG~ATEDRefNumber~XY1200000100002"))
@@ -113,7 +113,7 @@ class RegisterUserControllerISpec extends IntegrationSpec {
 
         val result: WSResponse = await(hitApplicationEndpoint("/register-user")
           .withHttpHeaders(HN.SET_COOKIE -> getSessionCookie())
-          .addHttpHeaders(HeaderNames.xSessionId -> s"${sessionId}")
+          .addHttpHeaders(HeaderNames.xSessionId -> s"$sessionId")
           .addHttpHeaders(HN.AUTHORIZATION -> "token")
           .get())
 

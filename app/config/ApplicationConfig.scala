@@ -20,8 +20,6 @@ import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedSubscriptionUtils
 
-import scala.util.Try
-
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
                                   val atedSubsUtils: AtedSubscriptionUtils,
                                   val templateError: views.html.global_error) {
