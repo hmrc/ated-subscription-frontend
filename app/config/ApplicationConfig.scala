@@ -20,8 +20,6 @@ import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedSubscriptionUtils
 
-import scala.util.Try
-
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
                                   val atedSubsUtils: AtedSubscriptionUtils,
                                   val templateError: views.html.global_error) {
@@ -41,8 +39,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val defaultBetaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
   lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
-  lazy val analyticsToken: Option[String] = Try(servicesConfig.getString("google-analytics.token")).toOption
-  lazy val analyticsHost: String = servicesConfig.getConfString("google-analytics.host","auto")
   lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val defaultTimeoutSeconds: Int = servicesConfig.getInt("defaultTimeoutSeconds")
