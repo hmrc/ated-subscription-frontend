@@ -45,6 +45,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
   val testAddressForm: BusinessAddress = BusinessAddress(Some(true))
   val injectedViewInstance = app.injector.instanceOf[views.html.registeredBusinessAddress]
+  val backToBusinessCustomerUrl = "someBackToBusinessCustomerUrl"
 
   val testRegisteredBusinessController = new RegisteredBusinessController(
     mockMCC,
@@ -76,11 +77,14 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "contain title and header as Your correspondence address" in {
+          when(mockAppConfig.backToBusinessCustomerUrl).thenReturn(backToBusinessCustomerUrl)
           withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
             document.getElementById("registered-business-address-header").text() must be("Is this where you want us to send any letters about ATED?")
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be(backToBusinessCustomerUrl)
           }
         }
 
@@ -181,6 +185,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         "return to this page if we have an error" in {
           val inputJson = Json.parse( """{ "isCorrespondenceAddress": "1111" }""")
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be(backToBusinessCustomerUrl)
             status(result) must be(BAD_REQUEST)
           }
         }
@@ -188,6 +195,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         "return to this page if we have an error form validation" in {
           val inputJson = Json.parse( """{ "isCorrespondenceAddress": "" }""")
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+            val document = Jsoup.parse(contentAsString(result))
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be(backToBusinessCustomerUrl)
             status(result) must be(BAD_REQUEST)
           }
         }
