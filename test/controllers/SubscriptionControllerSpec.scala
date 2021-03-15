@@ -178,6 +178,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("client-startpage-header").text() must be("Do you want to appoint an agent to act for you?")
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/start-subscription")
             document.getElementById("appoint-agent-text1").text() must be("Make sure your agent has set up their agency for ATED and given you their unique authorisation number.")
             document.getElementById("appoint-agent-text2").text() must be("Register to use the new ATED online service.")
             document.getElementById("appoint-agent-text3").text() must be("Enter the unique authorisation number when asked.")

@@ -78,6 +78,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("postcode").text() must be("")
             document.getElementById("country_field").text() must include("Country")
             document.getElementById("submit").text() must be("Continue")
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/registered-business-address")
           }
         }
 
@@ -112,6 +114,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("line_3").attr("value") must be("")
             document.getElementById("line_4").attr("value") must be("")
             document.getElementById("postcode").attr("value") must be("")
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")
 
             document.getElementById("submit").text() must be("Continue")
           }
