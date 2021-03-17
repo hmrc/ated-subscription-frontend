@@ -15,25 +15,28 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
-@(clientName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+
+
 @import views.html.helpers._
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+
+@(clientName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @atedMain(title = messages("ated.nonUKReg.confirmation.title")) {
 
-  <div id="banner" class="transaction-banner--complete">
-    <h1 id="confirmation-message">
+  <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
+    <h1 id="confirmation-message" class="govuk-panel__title">
       @messages("ated.nonUKReg.confirmation.header", clientName, date)
     </h1>
      </div>
 
-    <h2 id="what-happens-next">@messages("ated.nonUKReg.confirmation.what-next")</h2>
-    <p id="happens-next-message">@messages("ated.nonUKReg.confirmation.what-next.text")</p>
+    <h2 id="what-happens-next" class="govuk-heading-l">@messages("ated.nonUKReg.confirmation.what-next")</h2>
+    <p id="happens-next-message" class="govuk-body">@messages("ated.nonUKReg.confirmation.what-next.text")</p>
 
-    @form(action = controllers.nonUKReg.routes.ConfirmationController.continue) {
-      <button class="button" id="submit" type="submit">
+    @formHelper(action = controllers.nonUKReg.routes.ConfirmationController.continue) {
+      <button class="govuk-button" id="submit" type="submit">
         @messages("ated.nonUKReg.confirmation.view-client.button")
       </button>
     }

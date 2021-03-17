@@ -18,21 +18,21 @@
 @this(atedNoAuthMain: atedNoAuthMain)
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html._
+
 
 @atedNoAuthMain(title = messages("unauthorised.assistant.title"), userLoggedIn = true) {
 
-  <h1 class="heading-large" id="unauthorised-agent-header">@messages("unauthorised.assistant.header")</h1>
+  <h1 class="govuk-heading-xl" id="unauthorised-agent-header">@messages("unauthorised.assistant.header")</h1>
 
-  <p id="unauthorised-agent-message">@messages("unauthorised.assistant.lede-paragraph")</p>
+  <p id="unauthorised-agent-message" class="govuk-body">@messages("unauthorised.assistant.lede-paragraph")</p>
 
-  <h2 class="heading-medium">@messages("unauthorised.assistant.h2.a")</h2>
+  <h2 class="govuk-heading-l">@messages("unauthorised.assistant.h2.a")</h2>
 
-  <p>@messages("unauthorised.assistant.p1.a")
+  <p class="govuk-body">@messages("unauthorised.assistant.p1.a")
   <a href=@messages("unauthorised.assistant.p1.link")>@messages("unauthorised.assistant.p1.link")</a>
      @messages("unauthorised.assistant.p1.b")</p>
 
-  <ol class="list">
+  <ol class="govuk-list govuk-list--number">
    <li>@messages("unauthorised.assistant.ol1.li1")</li>
    <li>@messages("unauthorised.assistant.ol1.li2")</li>
    <li>@messages("unauthorised.assistant.ol1.li3")</li>
@@ -40,18 +40,18 @@
    <li>@messages("unauthorised.assistant.ol1.li5")</li>
   </ol>
 
-  <p>@messages("unauthorised.assistant.p1.c")</p>
+  <p class="govuk-body">@messages("unauthorised.assistant.p1.c")</p>
 
-  <p>@messages("unauthorised.assistant.p2.a")
+  <p class="govuk-body">@messages("unauthorised.assistant.p2.a")
   <a href=@appConfig.helpdeskUrl>@messages("unauthorised.assistant.p2.link")</a>
      @messages("unauthorised.assistant.p2.b")</p>
 
-  <h2 class="heading-medium">@messages("unauthorised.assistant.h2.b")</h2>
+  <h2 class="govuk-heading-l">@messages("unauthorised.assistant.h2.b")</h2>
 
-  <p>@messages("unauthorised.assistant.p3.a")
+  <p class="govuk-body">@messages("unauthorised.assistant.p3.a")
    <a href=@messages("unauthorised.assistant.p1.link")>@messages("unauthorised.assistant.p1.link")</a>@messages("unauthorised.assistant.p3.b")</p>
 
-  <ol class="list">
+  <ol class="govuk-list govuk-list--number">
    <li>@messages("unauthorised.assistant.ol2.li1")</li>
    <li>@messages("unauthorised.assistant.ol2.li2")</li>
    <li>@messages("unauthorised.assistant.ol2.li3")</li>
@@ -59,8 +59,8 @@
    <li>@messages("unauthorised.assistant.ol2.li5")</li>
   </ol>
 
-  <p>@messages("unauthorised.assistant.p4")</p>
+  <p class="govuk-body">@messages("unauthorised.assistant.p4")</p>
 
-  <a href="@controllers.routes.ApplicationController.redirectToGuidance" id="submit" class="button" role="button">@messages("ated.sign-out")</a>
-
+  <a href="@controllers.routes.ApplicationController.redirectToGuidance" id="submit" class="govuk-button" role="button">@messages("ated.sign-out")</a>
+    <br />
 }

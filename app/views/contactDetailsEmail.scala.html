@@ -16,17 +16,16 @@
 
 @import models._
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
-@(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils.AuthUtils.isAgent
+@import views.html.helper.form
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(contactDetailsEmailForm) }
 
 @pageScripts = {
-  <script src='@routes.Assets.at("javascript/show-hide-content.js")'></script>
+  <script src='@routes.Assets.versioned("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
       // Where .multiple-choice uses the data-target attribute
@@ -51,14 +50,14 @@
     @pageHeadersAndError(backLink, "subtitle", if(isAgent) {messages("ated.contact-details.agent.subheader")} else {messages("ated.contact-details.subheader")}, "contact-details-email.header", messages("ated.contact-details-email-header"),
         Some(atedErrorSummary(contactDetailsEmailForm, "ated.contact-details-error.general")))
 
-  <p id="lede">@messages("ated.contact-details-email-lede")</p>
+  <div id="lede" class="govuk-body">@messages("ated.contact-details-email-lede")</div>
 
   <div id = "email-consent-risk">
-    <details>
-      <summary class="summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="summary govuk-details__summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">
         @messages("ated.contact-details.email.risk.help.text")
       </summary>
-      <div id="details-content-0" class="panel-indent">
+      <div id="details-content-0" class="panel-indent govuk-details__text">
         <p>@messages("ated.contact-details.email.risk.p1")</p>
         <p>@messages("ated.contact-details.email.risk.p2")</p>
         <p>@messages("ated.contact-details.email.risk.p3")</p>
@@ -69,23 +68,23 @@
     </details>
   </div>
 
-  @form(action = controllers.routes.ContactDetailsEmailController.submit(mode)) {
+  @formHelper(action = controllers.routes.ContactDetailsEmailController.submit(mode)) {
 
-    <div class="form-group" id="emailConsent">
+    <div class="govuk-form-group" id="emailConsent">
 
       @atedInputRadioGroupReveal(contactDetailsEmailForm("emailConsent"),
         Seq("true" -> (messages("ated.radio.yes.label"), Some("email-contact-hidden")),
             "false" -> (messages("ated.radio.no.label"), None)),
         '_legend -> messages("ated.contact-details-email-header"),
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
+      '_legendClass -> "govuk-visually-hidden",
+      '_groupClass -> "inline govuk-fieldset",
+      '_labelClass -> "govuk-label govuk-radios__label",
         '_labelAfter -> true,
         '_trackGA -> true
       )
 
       <div id="email-contact-hidden" class="form-group js-hidden">
-        <div class="panel-indent">
+        <div class="panel-indent govuk-radios__conditional">
           @atedInput(contactDetailsEmailForm("email"),
             '_label ->  Html(messages("ated.contact-details.email")),
             '_labelClass -> "form-label",
@@ -97,7 +96,7 @@
 
     </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.contact-details.continue")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.contact-details.continue")</button>
 
   }
 }

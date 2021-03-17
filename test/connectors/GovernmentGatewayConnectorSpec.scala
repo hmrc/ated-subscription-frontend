@@ -16,8 +16,6 @@
 
 package connectors
 
-import java.util.UUID
-
 import audit.Auditable
 import metrics.Metrics
 import models.{EnrolRequest, EnrolResponse, Identifier}
@@ -33,6 +31,7 @@ import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

@@ -16,25 +16,27 @@
 
 @import models._
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
-@(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
+
+
 
 @atedMain(title = messages("ated.nonUKReg.declaration.title")) {
 
   @pageHeadersAndError(backLink, "subtitle", messages("ated.nonUKReg.declaration.sub-header"), "declaration-header", messages("ated.nonUKReg.declaration.header"))
 
-  <p id="declaration-lede"> @messages("ated.nonUKReg.declaration.before-declaration-text") </p>
+  <p id="declaration-lede" class="govuk-body"> @messages("ated.nonUKReg.declaration.before-declaration-text") </p>
 
-  <p id="i-confirm-text">
+  <p id="i-confirm-text" class="govuk-body">
     <span class="text-bold">@messages("ated.nonUKReg.declaration.i-confirm.text")</span>
   </p>
 
-  @form(action = controllers.nonUKReg.routes.DeclarationController.submit) {
+  @formHelper(action = controllers.nonUKReg.routes.DeclarationController.submit) {
 
-      <button class="button" id="submit" type="submit">@messages("ated.confirm-and-register")</button>
+      <button class="govuk-button" id="submit" type="submit">@messages("ated.confirm-and-register")</button>
 
   }
 

@@ -19,14 +19,14 @@ package controllers
 import config.ApplicationConfig
 import connectors.BusinessCustomerFrontendConnector
 import controllers.auth.AuthFunctionality
-import javax.inject.Inject
 import models.BusinessCustomerDetails
 import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.views.formatting.Dates
+import utils.Dates
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,

@@ -81,7 +81,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getWithAuthorisedUser(None){ result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.title() must be("Who should we contact about ATED?")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/correspondence-address")
@@ -101,7 +101,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getWithAuthorisedAgent(Some("skip")) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.title() must be("Who should we contact about ATED?")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/registered-business-address")
@@ -122,7 +122,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
 
-          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.title() must be("Who should we contact about ATED?")
 
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")

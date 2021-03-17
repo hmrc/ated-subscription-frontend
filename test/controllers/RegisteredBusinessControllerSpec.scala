@@ -80,7 +80,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           when(mockAppConfig.backToBusinessCustomerUrl).thenReturn(backToBusinessCustomerUrl)
           withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
+            document.title() must be("Is this where you want us to send any letters about ATED?")
             document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
             document.getElementById("registered-business-address-header").text() must be("Is this where you want us to send any letters about ATED?")
             document.getElementById("backLinkHref").text() must be("Back")
@@ -91,7 +91,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         "contain title and header as Your correspondence address for agent registering non-uk client" in {
           withAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where we should send your client’s letters about ATED? - GOV.UK")
+            document.title() must be("Is this where we should send your client’s letters about ATED?")
             document.getElementById("business-registered-text").text() must be("This section is: Add a client")
             document.getElementById("registered-business-address-header").text() must be("Is this where we should send your client’s letters about ATED?")
           }
@@ -113,8 +113,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         "contain the correspondence address radio buttons" in {
           withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.select(".block-label").text() must include("Yes")
-            document.select(".block-label").text() must include("No")
+            document.select(".govuk-radios__label").text() must include("Yes")
+            document.select(".govuk-radios__label").text() must include("No")
             document.getElementById("isCorrespondenceAddress-true").attr("checked") must be("")
             document.getElementById("isCorrespondenceAddress-false").attr("checked") must be("")
           }
@@ -123,8 +123,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         "contain the correspondence address radio buttons with saved data" in {
           withAuthorisedUserWithSavedData { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.select(".block-label").text() must include("Yes")
-            document.select(".block-label").text() must include("No")
+            document.select(".govuk-radios__label").text() must include("Yes")
+            document.select(".govuk-radios__label").text() must include("No")
             document.getElementById("isCorrespondenceAddress-true").attr("checked") must be("checked")
             document.getElementById("isCorrespondenceAddress-false").attr("checked") must be("")
           }

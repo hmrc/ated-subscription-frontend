@@ -17,13 +17,15 @@
 @import _root_.models.Address
 @import _root_.utils.AtedSubscriptionUtils
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+
+
 @import views.html.helpers._
 @import utils._
 @import _root_.utils.AuthUtils.isAgent
 @import controllers.auth._
-@this(atedMain: atedMain)
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 
 @(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 
@@ -36,40 +38,40 @@
     "registered-business-address-header", header,
     Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
 
-  @if(isAgent) {
+    @if(isAgent) {
+      <div id="lede-agent-text" class="govuk-body">@messages("ated.registered-business-address.agent.lede-text") </div>
+    }
 
-      <p id="lede-agent-text">@messages("ated.registered-business-address.agent.lede-text") </p>
-
-  }
-
-  <p id="businessAddress" class="margin-bottom-default">
+  <div id="businessAddress" class="margin-bottom-default govuk-body">
     @businessAddress.line_1 <br>
     @businessAddress.line_2 <br>
     @businessAddress.line_3.map { line_3 =>@line_3 <br> }
     @businessAddress.line_4.map { line_4 =>@line_4 <br> }
     @businessAddress.postcode.map { postcode =>@postcode <br> }
     @atedSubUtils.getSelectedCountry(businessAddress.country)<br>
-  </p>
+  </div>
 
-  @form(action = controllers.routes.RegisteredBusinessController.continue) {
+  @formHelper(action = controllers.routes.RegisteredBusinessController.continue) {
 
     <div id="isCorrespondenceAddress">
 
-      @atedInputRadioGroupNew(
+      @atedInputRadioGroupReveal(
       businessAddressForm("isCorrespondenceAddress"),
-      Seq("true" -> messages("ated.registered-business-address.correspondence-address.yes"),
-      "false" -> messages("ated.registered-business-address.correspondence-address.no")),
-      '_groupClass -> "form-group form-group-compound inline",
-      '_labelClass -> "block-label",
+      Seq("true" -> (messages("ated.registered-business-address.correspondence-address.yes"), None),
+      "false" -> (messages("ated.registered-business-address.correspondence-address.no"), None)),
       '_legend -> header,
-      '_legendClass -> "visuallyhidden",
+      '_legendClass -> "govuk-visually-hidden",
+      '_groupClass -> "govuk-fieldset",
+      '_labelClass -> "govuk-label govuk-radios__label",
       '_labelAfter -> true,
       '_trackGA -> true
       )
 
     </div>
 
-    <button class="button" id="submit" type="submit">@messages("ated.registered-business-address.continue")</button>
+      <br />
+
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.registered-business-address.continue")</button>
 
   }
 

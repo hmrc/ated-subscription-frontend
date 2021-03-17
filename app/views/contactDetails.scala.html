@@ -14,20 +14,19 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import _root_.utils.AuthUtils.isAgent
 @import models._
 @import models.AtedSubscriptionAuthData
-
+@import views.html.helper.form
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+
 @(contactDetailsForm: Form[ContactDetails],
     mode: Option[String],
     backLink: Option[String] = None
 )(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-
 
 @implicitFormInstance = @{ Some(contactDetailsForm) }
 
@@ -54,9 +53,9 @@
         Some(atedErrorSummary(contactDetailsForm, "ated.contact-details-error.general"))
     )
 
-    <p id="text">@ledeText</p>
+    <div id="text" class="govuk-body">@ledeText</div>
 
-    @form(action = controllers.routes.ContactDetailsController.submit(mode)) {
+    @formHelper(action = controllers.routes.ContactDetailsController.submit(mode)) {
 
         @atedInput(contactDetailsForm("firstName"),
             '_label ->  messages("ated.contact-details.firstName"),
@@ -76,7 +75,7 @@
             '_showConstraints -> false
         )
 
-        <button class="button" id="submit" type="submit">
+        <button class="govuk-button" id="submit" type="submit">
             @messages("ated.contact-details.continue")
         </button>
     }

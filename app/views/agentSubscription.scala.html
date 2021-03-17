@@ -18,8 +18,8 @@
 @import config.ApplicationConfig
 @this(atedNoAuthMain: atedNoAuthMain)
 @()(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+
+
 @import views.html.helpers._
 @import utils._
 
@@ -33,16 +33,18 @@
         messages("ated.agent-startpage-header")
     )
 
-    <p id="lede-paragraph">@messages("ated.agent-startpage-lede")</p>
+    <p id="lede-paragraph" class="govuk-body">@messages("ated.agent-startpage-lede")</p>
 
-    <p id="agent-startpage-text1">@messages("ated.agent-startpage-text1")</p>
-    <p id="agent-startpage-text2" class="margin-bottom-default">@messages("ated.agent-startpage-text2")</p>
+    <p id="agent-startpage-text1" class="govuk-body">@messages("ated.agent-startpage-text1")</p>
+    <p id="agent-startpage-text2" class="govuk-body margin-bottom-default">@messages("ated.agent-startpage-text2")</p>
 
     <a href="@controllers.routes.SubscriptionController.continue.url"
-        class="button"
+        class="govuk-button"
         id="submit"
         role="button"
         onclick="ga('send', 'event', 'Agent - registration - start', 'button clicked')">
             @messages("ated.agent-startpage-continue")
     </a>
+
+    <br />
 }

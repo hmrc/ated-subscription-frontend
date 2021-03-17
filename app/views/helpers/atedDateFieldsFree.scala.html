@@ -14,19 +14,17 @@
  * limitations under the License.
  *@
 
+@import play.api.i18n._
+@import views.html.helper._
+@import views.html.helpers.dateInput
+
 @(formItem:Form[_], fieldName: String, label: Html, isNested: Boolean, args: (Symbol,Any)*)(implicit messages: Messages)
 
-@import uk.gov.hmrc.play.validators._
-@import play.api.i18n._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.mappers.DateFormatSymbols._
-@import uk.gov.hmrc.play.mappers.DateFields._
-@import views.html.helper._
 
 @elements = @{ FieldElements(formItem(fieldName).id, formItem(fieldName), null, args.toMap, messages) }
 
 @if(elements.hasErrors) {
-<div class="form-group">
+<div class="govuk-form-group">
     }
     <fieldset id="@elements.args.get('_idName)" class="validate touch @elements.args.get('_groupClass) @if(elements.hasErrors) { @if(isNested) { form-field--error } else { form-field error} }" data-validation-name="dateOfBirthDate" data-validation-type="fieldset" data-validation-rules="allNonEmpty" data-validation-children="day month year">
         <legend>@label</legend>
@@ -37,7 +35,7 @@
         <div>
             @isOptional = {@if(elements.args.contains('_isRequired)) @{ elements.args.get('_isRequired).get == true} else {false}}
 
-            @dayElem = @{fieldName + "." + day}
+            @dayElem = @{fieldName + ".day"}
 
             @dateInput(
             formItem(dayElem),
@@ -50,7 +48,7 @@
             '_dataAttributes -> "min=1 max=31 pattern=[0-9]*"
             )
 
-            @monthElem = @{fieldName + "." + month}
+            @monthElem = @{fieldName + ".month"}
             @dateInput(
             formItem(monthElem),
             '_label -> messages("date.fields.month"),
@@ -62,7 +60,7 @@
             '_dataAttributes -> "min=1 max=12 pattern=[0-9]*"
             )
 
-            @yearElem = @{fieldName + "." + year}
+            @yearElem = @{fieldName + ".year"}
             @dateInput(
             formItem(yearElem),
             '_label -> messages("date.fields.year"),

@@ -14,7 +14,7 @@ val appName = "ated-subscription-frontend"
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala)
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
-val silencerVersion = "1.7.0"
+val silencerVersion = "1.7.1"
 
 lazy val scoverageSettings: Seq[Def.Setting[_ >: String with Double with Boolean]] = {
   import scoverage.ScoverageKeys
@@ -58,6 +58,12 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= Seq(
     compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
     "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+    ),
+    TwirlKeys.templateImports ++= Seq(
+      "uk.gov.hmrc.govukfrontend.views.html.components._",
+      "uk.gov.hmrc.govukfrontend.views.html.helpers._",
+      "uk.gov.hmrc.hmrcfrontend.views.html.{components => hmrcComponents}",
+      "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
     )
    // ***************
   )

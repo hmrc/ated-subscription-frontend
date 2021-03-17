@@ -83,7 +83,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               result =>
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
-                document.title() must be("Sorry, there is a problem with the service - GOV.UK")
+                document.title() must be("Sorry, there is a problem with the service")
             }
           }
 
@@ -92,7 +92,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               result =>
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
-                document.title() must be("Somebody has already registered from your organisation - GOV.UK")
+                document.title() must be("Somebody has already registered from your organisation")
             }
           }
 
@@ -101,9 +101,9 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               result =>
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
-                document.title() must be("Sorry, there is a problem with the service - GOV.UK")
-                document.getElementsByTag("h1").text must be("Sorry, there is a problem with the service")
-                document.getElementsByTag("article").text must be ("Try again later.")
+                document.title() must be("Sorry, there is a problem with the service")
+                document.getElementsByTag("h1").text must be("ated.business-registration.generic.error.title")
+                document.getElementsByTag("p").text must be ("ated.business-registration.generic.error.message")
             }
           }
 
@@ -112,7 +112,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               result =>
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
-                document.title() must be("You must be logged in as an administrator to submit an ATED return - GOV.UK")
+                document.title() must be("You must be logged in as an administrator to submit an ATED return")
             }
           }
         }
@@ -123,7 +123,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           confirmationWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("You have successfully registered for ATED - GOV.UK")
+            document.title() must be("You have successfully registered for ATED")
             document.getElementById("header").text() must include("You have successfully registered for ATED")
             document.getElementById("happens-next").text() must be("Use this service to:")
             document.getElementById("instruction-1").text() must be("create an ATED return")

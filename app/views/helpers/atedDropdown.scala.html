@@ -27,11 +27,11 @@
 
 @labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
 @labelHighlight = @{ elements.args.get('_labelHighlight).getOrElse(false).asInstanceOf[Boolean] }
-<div class="form-group" id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_div} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_div}">
+<div class="govuk-form-group" id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_div} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_div}">
     @if(elements.hasErrors) {
     <div class="@if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
         }
-        <label for="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }" @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)} id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_field} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_field}">
+        <label for="@if( elements.args.get('_id) ) {@elements.args.get('_id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}" class="govuk-label @elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }" @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)} id="@if( elements.args.get('_id) ) {@elements.args.get('_id)_field} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_field}">
 
 
             @if(labelHighlight){<strong>}
@@ -50,7 +50,7 @@
             }
         </label>
 
-        <select id="@elements.field.name" name="@elements.field.name" class="@if(elements.hasErrors){error } form-control @if( elements.args.get('_inputClass) ){ @elements.args.get('_inputClass) }" @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}>
+        <select id="@elements.field.name" name="@elements.field.name" class="govuk-select @if(elements.hasErrors){error } form-control @if( elements.args.get('_inputClass) ){ @elements.args.get('_inputClass) }" @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}>
             @if(displayEmptyValue) {
             <option value="">@elements.args.get('_emptyValueText)</option>
             }
