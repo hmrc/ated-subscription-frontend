@@ -21,8 +21,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedSubscriptionUtils
 
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
-                                  val atedSubsUtils: AtedSubscriptionUtils,
-                                  val templateError: views.html.global_error) {
+                                  val atedSubsUtils: AtedSubscriptionUtils) {
 
   lazy val appName: String = servicesConfig.getConfString("appName", "ated-subscription-frontend")
   lazy val serviceUrlACMFrontend: String = servicesConfig.baseUrl("agent-client-mandate-frontend")
@@ -86,4 +85,9 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val toBusinessAccountUrl: String = servicesConfig.getConfString("business-tax-account.serviceRedirectUrl", "/business-account")
 
+  lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
+  lazy val accessibilityStatement: String = servicesConfig.getString("urls.footer.accessibility_statement")
+  lazy val privacy: String = servicesConfig.getString("urls.footer.privacy_policy")
+  lazy val termsConditions: String = servicesConfig.getString("urls.footer.terms_and_conditions")
+  lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
 }

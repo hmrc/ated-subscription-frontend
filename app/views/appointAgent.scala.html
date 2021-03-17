@@ -15,17 +15,17 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedNoAuthMain: atedNoAuthMain)
-@(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
 @import utils._
+@import views.html.helper.form
+
+@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF)
+@(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
 @pageScripts = {
-  <script src='@routes.Assets.at("javascript/show-hide-content.js")'></script>
+  <script src='@routes.Assets.versioned("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
       // Where .multiple-choice uses the data-target attribute
@@ -43,29 +43,29 @@
   @pageHeadersAndError(backLink, "client-appoint-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.client-startpage-appoint-header"),
     Some(atedErrorSummary(appointAgentForm, "ated.appoint-agent-error.general")))
 
-  @form(action = controllers.routes.SubscriptionController.register) {
+  @formHelper(action = controllers.routes.SubscriptionController.register) {
 
-    <div class="form-group" id="appointAgent">
+    <div class="govuk-form-group" id="appointAgent">
       @atedInputRadioGroupReveal(appointAgentForm("appointAgent"),
         Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-appointAgent-true")),
             "false" -> (messages("ated.radio.no.label"), Some("hidden-appointAgent-false"))),
       '_legend -> messages("ated.client-startpage-appoint-header"),
-      '_legendClass -> "visuallyhidden",
-      '_groupClass -> "inline",
-      '_labelClass -> "block-label",
+      '_legendClass -> "govuk-visually-hidden",
+      '_groupClass -> "inline govuk-fieldset",
+      '_labelClass -> "govuk-label govuk-radios__label",
       '_labelAfter -> true,
       '_trackGA -> true)
 
-        <div id="hidden-appointAgent-true" class="panel-indent js-hidden">
-            <ul class="list list-bullet">
+        <div id="hidden-appointAgent-true" class="govuk-radios__conditional govuk-body js-hidden">
+            <ul class="govuk-list govuk-list--bullet">
                 <li id="appoint-agent-text1">@messages("ated.appoint-agent.question.true.info1")</li>
                 <li id="appoint-agent-text2">@messages("ated.appoint-agent.question.true.info2")</li>
                 <li id="appoint-agent-text3">@messages("ated.appoint-agent.question.true.info3")</li>
             </ul>
         </div>
 
-        <div id="hidden-appointAgent-false" class="panel-indent js-hidden">
-            <ul class="list list-bullet">
+        <div id="hidden-appointAgent-false" class="govuk-radios__conditional govuk-body js-hidden">
+            <ul class="govuk-list govuk-list--bullet">
                 <li id="appoint-agent-text5">@messages("ated.appoint-agent.question.false.info1")</li>
                 <li id="appoint-agent-text6">@messages("ated.appoint-agent.question.false.info2")</li>
                 <li id="appoint-agent-text7">@messages("ated.appoint-agent.question.false.info3")</li>
@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@messages("ated.client-startpage-register")</button>
+    <button class="govuk-button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@messages("ated.client-startpage-register")</button>
 
   }
 

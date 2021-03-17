@@ -26,6 +26,7 @@
 @fieldsetClass = {@elements.args.get('_groupClass)@if(errors.nonEmpty){ form-field--error}}
 @labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
 @trackGA = @{ elements.args.get('_trackGA).getOrElse(false).asInstanceOf[Boolean] }
+@inputClass = @{ elements.args.getOrElse('_inputClass, "") + "govuk-radios__input"}
 <fieldset class="@fieldsetClass"
           @if(elements.args.get('_fieldsetAttributes).isDefined) {@elements.args.get('_fieldsetAttributes)}>
 @if(elements.args.get('_legend).isDefined) {
@@ -50,38 +51,47 @@
 @commonHelper(field,errors)
 @radioOptions.map { case (value, label) =>
 @defining(s"${elements.field.name}-${value.toLowerCase.replace(" ","_")}")  { inputId =>
-<label for="@inputId"
-       @elements.args.get('_labelClass).map{labelClass => class="@labelClass@field.value.filter( _ == value).map{_ => selected}"}>
-@if(!labelAfter) {
-@if(elements.args.get('_stackedLabel)) {
-@if(label.split(" ").length < 2) {<br>@label
-} else {
-@for( (l, index) <- label.split(" ").zipWithIndex) {
-@if(index != 0) {<br>}@l
-}
-}
-} else { @label }
-}
-<input
-        type="radio"
-        id="@inputId"
-        name="@elements.field.name"
-        value="@value"
-        @elements.args.get('_inputClass).map{inputClass => class="@inputClass"}
-@if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
-@if(trackGA){data-journey-click="gmp:click:@inputId"}
-@field.value.filter( _ == value).map{_ => checked="checked"}/>
-@if(labelAfter) {
-@if(elements.args.get('_stackedLabel)) {
-@if(label.split(" ").length < 2) {<br>@label
-} else {
-@for( (l, index) <- label.split(" ").zipWithIndex) {
-@if(index != 0) {<br>}@l
-}
-}
-} else { @label }
-}
-</label>
+
+    <div class="govuk-radios__item">
+
+    <input
+    type="radio"
+    id="@inputId"
+    name="@elements.field.name"
+    value="@value"
+    class="@inputClass"
+        @if(elements.args.contains('_dataAttributes) ){ @elements.args.get('_dataAttributes)}
+        @if(trackGA){data-journey-click="gmp:click:@inputId"}
+        @field.value.filter( _ == value).map{_ => checked="checked"}
+    />
+
+    <label for="@inputId"
+           @elements.args.get('_labelClass).map{labelClass => class="@labelClass@field.value.filter( _ == value).map{_ => selected}"}>
+    @if(!labelAfter) {
+        @if(elements.args.get('_stackedLabel)) {
+            @if(label.split(" ").length < 2) {<br>@label
+            } else {
+                @for( (l, index) <- label.split(" ").zipWithIndex) {
+                    @if(index != 0) {<br>}@l
+                }
+            }
+        } else { @label }
+    }
+    @if(labelAfter) {
+        @if(elements.args.get('_stackedLabel)) {
+            @if(label.split(" ").length < 2) {<br>@label
+            } else {
+                @for( (l, index) <- label.split(" ").zipWithIndex) {
+                    @if(index != 0) {<br>}@l
+                }
+            }
+        } else { @label }
+    }
+    </label>
+
+</div>
+
+
 }
 }
 </fieldset>

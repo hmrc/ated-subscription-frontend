@@ -15,19 +15,18 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedNoAuthMain: atedNoAuthMain)
-@(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
-@import utils._
-@import controllers.auth._
+
+@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF)
+
+@(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(areYouAnAgentForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.Assets.at("javascript/subscription.js")'></script>
-  <script src='@controllers.routes.Assets.at("javascript/show-hide-content.js")'></script>
+  <script src='@controllers.routes.Assets.versioned("javascript/subscription.js")'></script>
+  <script src='@controllers.routes.Assets.versioned("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
 
@@ -47,27 +46,24 @@
   @pageHeadersAndError(None, "client-startpage-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.client-startpage-header"),
 Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general")))
 
-  @form(action = controllers.routes.SubscriptionController.continue) {
+  @formHelper(action = controllers.routes.SubscriptionController.continue) {
 
-    <div class="form-group" id="isAgent">
+    <div class="govuk-form-group" id="isAgent">
       @atedInputRadioGroupReveal(areYouAnAgentForm("isAgent"),
         Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-isAnAgent")),
             "false" -> (messages("ated.radio.no.label"), None)),
         '_legend -> messages("ated.client-startpage-header"),
-        '_legendClass -> "visuallyhidden",
-        '_groupClass -> "inline",
-        '_labelClass -> "block-label",
+        '_legendClass -> "govuk-visually-hidden",
+        '_groupClass -> "inline govuk-fieldset",
+        '_labelClass -> "govuk-label govuk-radios__label",
         '_labelAfter -> true,
         '_trackGA -> true)
 
-        <div id="hidden-isAnAgent" class="panel-indent js-hidden">
+        <div id="hidden-isAnAgent" class="js-hidden govuk-radios__conditional govuk-body">
           @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
         </div>
     </div>
-    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@messages("ated.client-startpage-continue")</button>
+    <button class="govuk-button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@messages("ated.client-startpage-continue")</button>
 
   }
-  <div class="form-group">
-    <a class="button" role="button" id="signOut" href="@controllers.routes.ApplicationController.logout()" onkeyup='spaceBarHandler(event,"@controllers.routes.ApplicationController.logout()")'>@messages("ated.sign-out")</a>
-  </div>
 }

@@ -16,8 +16,6 @@
 
 package connectors
 
-import java.util.UUID
-
 import builders._
 import models.AtedSubscriptionAuthData
 import org.mockito.ArgumentMatchers
@@ -31,6 +29,7 @@ import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

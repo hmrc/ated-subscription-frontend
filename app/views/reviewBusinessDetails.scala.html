@@ -15,8 +15,8 @@
  *@
 
 @import models._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+
+
 @import views.html.helpers._
 @import utils._
 
@@ -79,63 +79,70 @@
     "review-business-details-header", header
   )
 
-  <div class="form-group">
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+  <dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
         <span id="service-name-label" class="heading-small">@messages("ated.review-details.service")</span>
-      </div>
+      </dt>
 
-      <div class="grid grid-1-2 cya-answer">
+      <dd class="govuk-summary-list__value">
         <span id="service-name">@messages("ated.review-details.service.ated")</span>
-      </div>
+      </dd>
+
+      <dd class="govuk-summary-list__actions">
+      </dd>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
         <span id="business-name-label" class="heading-small">@messages("ated.review-details.business")</span>
-      </div>
+      </dt>
 
-      <div class="grid grid-1-2 cya-answer">
+      <dd class="govuk-summary-list__value">
         <span id="business-name">@businessDetails.businessName</span>
-      </div>
+      </dd>
 
       @if(businessDetails.isBusinessDetailsEditable){
-        <div class="grid grid-1-6 cya-change">
+        <dd class="govuk-summary-list__actions">
           <a href='@appConfig.businessNameAndAddressEditUrl' id="business-name-edit">@messages("ated.review-details.edit")
-            <span class="visuallyhidden">@messages("ated.review-details.business")</span>
+            <span class="govuk-visually-hidden">@messages("ated.review-details.business")</span>
           </a>
-        </div>
+        </dd>
+      } else {
+        <dd class="govuk-summary-list__actions">
+        </dd>
       }
     </div>
 
     @if(businessDetails.isBusinessDetailsEditable){
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
           <span id="business-address-label" class="heading-small">@messages("ated.review-details.registered-address")</span>
-        </div>
+        </dt>
 
-        <div id="registered-address" class="grid grid-1-2 cya-answer">
+        <dd id="registered-address" class="govuk-summary-list__value">
             @businessDetails.businessAddress.line_1<br>
             @businessDetails.businessAddress.line_2<br>
             @businessDetails.businessAddress.line_3.map {line_3 => @line_3<br> }
             @businessDetails.businessAddress.line_4.map {line_4 => @line_4<br> }
             @businessDetails.businessAddress.postcode.map {postcode => @postcode<br> }
             @atedSubUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
-        </div>
+        </dd>
 
-        <div class="grid grid-1-6 cya-change">
+        <dd class="govuk-summary-list__actions">
           <a href='@appConfig.businessNameAndAddressEditUrl' id="register-address-edit">
             @messages("ated.review-details.edit")
-            <span class="visuallyhidden">@messages("ated.review-details.registered-address")</span>
+            <span class="govuk-visually-hidden">@messages("ated.review-details.registered-address")</span>
           </a>
-        </div>
+        </dd>
       </div>
 
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
           <span id="overseas-tax-reference-label" class="heading-small">@messages("ated.review-details.overseas-tax-reference")</span>
-        </div>
-        <div class="grid grid-1-2 cya-answer">
+        </dt>
+
+        <dd id="registered-address" class="govuk-summary-list__value">
           @if(businessDetails.identification.isEmpty) {
             <div id="overseas-not-provided">@messages("ated.review-details.contact-preference-not-provided")</div>
           } else {
@@ -144,184 +151,189 @@
 
             }
           }
-        </div>
+        </dd>
 
-        <div class="grid grid-1-6 cya-change">
+        <dd class="govuk-summary-list__actions">
           <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit">
             @messages("ated.review-details.edit")
-            <span class="visuallyhidden">@messages("ated.review-details.overseas-tax-reference")</span>
+            <span class="govuk-visually-hidden">@messages("ated.review-details.overseas-tax-reference")</span>
           </a>
-        </div>
+        </dd>
       </div>
       @if(!businessDetails.identification.isEmpty) {
-        <div class="grid-wrapper row-border">
-          <div class="grid grid-2-6 cya-question">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
             <span id="overseas-issuing-country-label" class="heading-small">@messages("ated.review-details.issuing-country")</span>
-          </div>
-          <div class="grid grid-1-2 cya-answer">
+          </dt>
+          <dd class="govuk-summary-list__value">
             @businessDetails.identification.map { identification =>
               <div id="overseas-issuingCountryCode">@atedSubUtils.getSelectedCountry(identification.issuingCountryCode)</div>
             }
-          </div>
+          </dd>
 
-          <div class="grid grid-1-6 cya-change">
+          <dd class="govuk-summary-list__actions">
             <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-country-edit">
               @messages("ated.review-details.edit")
-              <span class="visuallyhidden">@messages("ated.review-details.issuing-country")</span>
+              <span class="govuk-visually-hidden">@messages("ated.review-details.issuing-country")</span>
             </a>
-          </div>
+          </dd>
         </div>
 
-        <div class="grid-wrapper row-border">
-          <div class="grid grid-2-6 cya-question">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
             <span id="overseas-issuing-institution-label" class="heading-small">@messages("ated.review-details.issuing-institution")</span>
-          </div>
-          <div class="grid grid-1-2 cya-answer">
+          </dt>
+          <dd class="govuk-summary-list__value">
             @businessDetails.identification.map { identification =>
               <div id="overseas-issuingInstitution">@identification.issuingInstitution</div>
             }
-          </div>
+          </dd>
 
-          <div class="grid grid-1-6 cya-change">
+          <dd class="govuk-summary-list__actions">
             <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-institution-edit">
               @messages("ated.review-details.edit")
-              <span class="visuallyhidden">@messages("ated.review-details.issuing-institution")</span>
+              <span class="govuk-visually-hidden">@messages("ated.review-details.issuing-institution")</span>
             </a>
-          </div>
+          </dd>
         </div>
       }
 
     } else {
 
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
           <span id="business-address-label" class="heading-small">@messages("ated.review-details.registered-address")</span>
-        </div>
+        </dt>
 
-        <div id="business-address" class="grid grid-1-2 cya-answer">
+        <dd id="business-address" class="govuk-summary-list__value">
           @businessDetails.businessAddress.line_1<br>
           @businessDetails.businessAddress.line_2<br>
           @businessDetails.businessAddress.line_3.map {line_3 => @line_3<br> }
           @businessDetails.businessAddress.line_4.map {line_4 => @line_4<br> }
           @businessDetails.businessAddress.postcode.map {postcode => @postcode<br> }
           @atedSubUtils.getSelectedCountry(businessDetails.businessAddress.country)<br>
-        </div>
+        </dd>
+
+        <dd class="govuk-summary-list__actions">
+        </dd>
       </div>
 
     }
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
         <span id="correspondence-address-label" class="heading-small">@messages("ated.review-details.correspondence-address")</span>
-      </div>
+      </dt>
 
-      <div id="correspondence-address" class="grid grid-1-2 cya-answer">
+      <dd id="correspondence-address" class="govuk-summary-list__value">
         @correspondenceAddress.line_1<br>
         @correspondenceAddress.line_2<br>
         @correspondenceAddress.line_3.map {line_3 => @line_3<br> }
         @correspondenceAddress.line_4.map { line_4 => @line_4<br> }
         @correspondenceAddress.postcode.map {postcode => @postcode<br> }
         @atedSubUtils.getSelectedCountry(correspondenceAddress.country)<br>
-      </div>
+      </dd>
 
-      <div class="grid grid-1-6 cya-change">
+      <dd class="govuk-summary-list__actions">
         <a href="@controllers.routes.CorrespondenceAddressController.editAddress(Some("edit"))"
             id="correspondence-edit"
             data-journey-click="ated-subscription:click:correspondence-edit">
           @messages("ated.review-details.edit")
-          <span class="visuallyhidden">@messages("ated.review-details.correspondence-address")</span>
+          <span class="govuk-visually-hidden">@messages("ated.review-details.correspondence-address")</span>
         </a>
-      </div>
+      </dd>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
         <span id="contact-details-label" class="heading-small">@messages("ated.review-details.contact-details")</span>
-      </div>
+      </dt>
 
-      <div id="contact-details" class="grid grid-1-2 cya-answer">
+      <dd id="contact-details" class="govuk-summary-list__value">
         <div id="name">@contactDetails.firstName @contactDetails.lastName</div>
         <div id="telephone">@contactDetails.telephone</div>
-      </div>
+      </dd>
 
-      <div class="grid grid-1-6 cya-change">
+      <dd class="govuk-summary-list__actions">
         <a href="@controllers.routes.ContactDetailsController.editDetails(Some("edit"))"
             id="contact-edit"
             data-journey-click="ated-subscription:click:contact-edit">
           @messages("ated.review-details.edit")
-          <span class="visuallyhidden">@messages("ated.review-details.contact-details")</span>
+          <span class="govuk-visually-hidden">@messages("ated.review-details.contact-details")</span>
         </a>
-      </div>
+      </dd>
     </div>
 
-    <div class="grid-wrapper row-border">
-      <div class="grid grid-2-6 cya-question">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
         <span id="contact-pref-label" class="heading-small">@messages("ated.review-details.contact-preference")</span>
-      </div>
+      </dt>
 
-      <div id="contact-pref" class="grid grid-1-2 cya-answer">
+      <dd id="contact-pref" class="govuk-summary-list__value">
         @email
-      </div>
+      </dd>
 
-      <div class="grid grid-1-6 cya-change">
+      <dd class="govuk-summary-list__actions">
         <a href="@controllers.routes.ContactDetailsEmailController.editDetailsEmail"
             id="contact-pref-edit"
             data-journey-click="ated-subscription:click:contact-pref-edit">
           @messages("ated.review-details.edit")
-          <span class="visuallyhidden">@messages("ated.review-details.contact-preference")</span>
+          <span class="govuk-visually-hidden">@messages("ated.review-details.contact-preference")</span>
         </a>
-      </div>
+      </dd>
     </div>
 
     @if(clientDisplayName.isDefined) {
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
           <span id="client-display-name-label" class="heading-small">@messages("ated.review-details.display-name")</span>
-        </div>
+        </dt>
 
-        <div id="client-display-name" class="grid grid-1-2 cya-answer">
+        <dd id="client-display-name" class="govuk-summary-list__value">
           @clientDisplayName.get.name
-        </div>
+        </dd>
 
-        <div class="grid grid-1-6 cya-change">
+        <dd class="govuk-summary-list__actions">
           <a href="@appConfig.clientDisplayNameEditPath"
               id="client-display-name-edit"
               data-journey-click="ated-subscription:click:client-display-name-edit">
             @messages("ated.review-details.edit")
-            <span class="visuallyhidden">@messages("ated.review-details.display-name")</span>
+            <span class="govuk-visually-hidden">@messages("ated.review-details.display-name")</span>
           </a>
-        </div>
+        </dd>
       </div>
     }
 
     @if(emailAddress.isDefined) {
-      <div class="grid-wrapper row-border">
-        <div class="grid grid-2-6 cya-question">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
           <span id="email-address-label" class="heading-small">@messages("ated.review-details.email-address")</span>
-        </div>
+        </dt>
 
-        <div id="email-address" class="grid grid-1-2 cya-answer">
+        <dd id="email-address" class="govuk-summary-list__value">
           @emailAddress.get.email
-        </div>
+        </dd>
 
-        <div class="grid grid-1-6 cya-change">
+        <dd class="govuk-summary-list__actions">
           <a href="@appConfig.agentEmailEditPath"
               id="agent-email-address-edit"
               data-journey-click="ated-subscription:click:agent-email-address-edit">
             @messages("ated.review-details.edit")
-            <span class="visuallyhidden">@messages("ated.review-details.email-address")</span>
+            <span class="govuk-visually-hidden">@messages("ated.review-details.email-address")</span>
           </a>
-        </div>
+        </dd>
       </div>
     }
-  </div>
+  </dl>
 
   <a href="@controllers.routes.RegisterUserController.subscribeAndEnrolForAted.url"
-      class="button"
+      class="govuk-button"
       id="submit"
       role="button"
       onclick="ga('send', 'event', 'Client - registration - end', 'button clicked')">
     @buttonText
   </a>
+
+  <br />
 
 }

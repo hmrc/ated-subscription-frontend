@@ -15,30 +15,32 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
-@(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
+
+
 
 
 @atedMain(title = messages("ated.inform.title")) {
 
-    <a id="backLinkHref" class="link-back" href='@backLink'>@Messages("ated.back")</a>
+    <a id="backLinkHref" class="govuk-back-link" href='@backLink'>@Messages("ated.back")</a>
     <div class="page-header page-header-margin">
-        <p class="heading-secondary page-header-no-margin"><span class="visuallyhidden">@Messages("ated.screen-reader.section") </span>@messages("ated.registration-subheader")</p>
-        <h1 class="heading-xlarge">@messages("ated.inform.title")</h1>
+        <p class="heading-secondary govuk-heading-l"><span class="govuk-visually-hidden">@Messages("ated.screen-reader.section") </span>@messages("ated.registration-subheader")</p>
+        <h1 class="govuk-heading-xl">@messages("ated.inform.title")</h1>
     </div>
 
-    <p>@messages("ated.inform.p1")</p>
+    <p class="govuk-body">@messages("ated.inform.p1")</p>
 
-    <p class="margin-bottom-default">@messages("ated.inform.p2")</p>
+    <p class="govuk-body margin-bottom-default">@messages("ated.inform.p2")</p>
 
-    <p class="margin-bottom-default">@messages("ated.inform.use-the-email")</p>
+    <p class="govuk-body margin-bottom-default">@messages("ated.inform.use-the-email")</p>
 
-    <p class="margin-bottom-default">@messages("ated.inform.p3")</p>
+    <p class="govuk-body margin-bottom-default">@messages("ated.inform.p3")</p>
 
-    @form(action = controllers.routes.SameAccountController.toNRLQuestionPage) {
-    <button class="button" id="submit" type="submit">@messages("ated.inform.continue-to-create")</button>
+    @formHelper(action = controllers.routes.SameAccountController.toNRLQuestionPage) {
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.inform.continue-to-create")</button>
     }
 }

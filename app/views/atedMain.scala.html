@@ -15,7 +15,7 @@
  *@
 
 @import config.ApplicationConfig
-@this(main: main)
+@this(layout: layout)
 @(title: String,
     userLoggedIn: Boolean = true,
     supportLinkEnabled: Boolean = true,
@@ -25,22 +25,21 @@
 )(mainContent: Html)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @linkElement = {
-  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/palette.css")'/>
-  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/focus.css")'/>
-  <link rel="stylesheet" href='@routes.Assets.at("stylesheets/ated-subscription.css")'/>
-  <link rel="stylesheet" href='@routes.Assets.at("jquery/jquery-ui.min.css")'/>
-  <link rel="stylesheet" href='@routes.Assets.at("jquery/jquery-ui.structure.min.css")'/>
+    <script src='@routes.Assets.versioned("jquery/jquery-3.6.0.min.js")'></script>
+    <script src='@routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
+    <script src='@routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
+    <script src='@routes.Assets.versioned("javascript/ated.js")'></script>
+        <!--[if lte IE 8]><link href='@routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
+        <!--[if gt IE 8]><!--><link href='@routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" /><!--<![endif]-->
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/palette.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/focus.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/ated-subscription.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
+    @pageScripts
 }
 
-@main(
-    applicationConfig = appConfig,
-    supportLinkEnabled = supportLinkEnabled,
-    title = title,
-    sidebarLinks = sidebarLinks,
-    sidebarClass = sidebarClass,
-    serviceInfoContent = None,
-    userLoggedIn = userLoggedIn,
-    pageScripts = pageScripts,
-    linkElement = Some(linkElement)) {
-            @mainContent
-    }
+@layout(
+    pageTitle = Some(title),
+    scripts = Some(linkElement)
+)(mainContent)

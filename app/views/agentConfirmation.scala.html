@@ -15,22 +15,22 @@
  *@
 
 @import config.ApplicationConfig
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
-@this(atedMain: atedMain)
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(businessName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 
 @atedMain(title = messages("ated.business-agent.confirmation.title")) {
 
-  <div id="banner" class="transaction-banner--complete">
+  <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
 
-    <h1 id="agent-reference">@messages("ated.business-agent.confirmation.reference", businessName, date)</h1>
+    <h1 id="agent-reference" class="govuk-panel__title">@messages("ated.business-agent.confirmation.reference", businessName, date)</h1>
 
   </div>
 
-    @form(action = controllers.routes.AgentConfirmationController.continue) {
-    <button class="button" id="submit" type="submit">@messages("ated.business-agent.confirmation.finish")</button>
+    @formHelper(action = controllers.routes.AgentConfirmationController.continue) {
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.business-agent.confirmation.finish")</button>
     }
 }

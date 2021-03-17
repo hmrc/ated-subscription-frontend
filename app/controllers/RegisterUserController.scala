@@ -18,6 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
+
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.Logging
@@ -26,8 +27,8 @@ import services.RegisterUserService
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.views.formatting.Dates
 import utils.AuthUtils._
+import utils.Dates
 
 import scala.concurrent.{ExecutionContext, Future}
 

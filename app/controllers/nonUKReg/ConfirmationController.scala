@@ -18,15 +18,15 @@ package controllers.nonUKReg
 
 import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
-import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.RegisteredBusinessService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.views.formatting.Dates
+import utils.Dates
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmationController @Inject()(mcc: MessagesControllerComponents,

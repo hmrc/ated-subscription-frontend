@@ -15,30 +15,32 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
-@(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
+
+
 
 
 @atedMain(title = messages("ated.same-account.title")) {
 
-    <a id="backLinkHref" class="link-back" href='@backLink'>@Messages("ated.back")</a>
+    <a id="backLinkHref" class="govuk-back-link" href='@backLink'>@Messages("ated.back")</a>
     <div class="page-header page-header-margin">
-        <p class="heading-secondary page-header-no-margin"><span class="visuallyhidden">@Messages("ated.screen-reader.section") </span>@messages("ated.registration-subheader")</p>
-        <h1 class="heading-xlarge">@messages("ated.same-account.title")</h1>
+        <p class="heading-secondary govuk-heading-l"><span class="govuk-visually-hidden">@Messages("ated.screen-reader.section") </span>@messages("ated.registration-subheader")</p>
+        <h1 class="govuk-heading-xl">@messages("ated.same-account.title")</h1>
     </div>
 
     <div>
-        <p>@messages("ated.same-account.p1")</p>
+        <p class="govuk-body">@messages("ated.same-account.p1")</p>
 
-        <p class="margin-bottom-default">@messages("ated.same-account.p2")</p>
+        <p class="govuk-body margin-bottom-default">@messages("ated.same-account.p2")</p>
 
-        @form(action = controllers.routes.ApplicationController.logout()) {
-        <button class="button margin-bottom-default" id="submit" type="submit">@messages("ated.same-account.sign-out")</button>
+        @formHelper(action = controllers.routes.ApplicationController.logout()) {
+        <button class="govuk-button margin-bottom-default" id="submit" type="submit">@messages("ated.same-account.sign-out")</button>
         }
 
-        <p><a id="old-details" href="@controllers.routes.SameAccountController.viewInform()">@messages("ated.same-account.old-details")</a></p>
+        <p class="govuk-body"><a id="old-details" href="@controllers.routes.SameAccountController.viewInform()">@messages("ated.same-account.old-details")</a></p>
     </div>
 }

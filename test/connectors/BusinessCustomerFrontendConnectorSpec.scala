@@ -18,7 +18,7 @@ package connectors
 
 import builders.AuthBuilder
 import models._
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -56,8 +56,8 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with GuiceOneServer
         businessType = "Corporate Body",
         businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
         sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-      when(mockWSHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(),
-        ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(reviewDetails).toString())))
+      when(mockWSHttp.GET[HttpResponse](any())(any(), any(), any()))
+        .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(reviewDetails).toString())))
 
       val response = await(testBusinessCustomerFrontendConnector.getBusinessCustomerDetails)
       response.status must be(OK)
