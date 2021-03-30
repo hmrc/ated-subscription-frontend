@@ -15,21 +15,19 @@
  *@
 
 @import models.AtedSubscriptionAuthData
-@import uk.gov.hmrc.play.views.html._
 @import views.html.helpers._
-@import utils.AuthUtils._
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+@import _root_.utils.AuthUtils._
 @import views.html.helpers._
 
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
+@import views.html.helper.form
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
 @(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
 @pageScripts = {
-  <script src='@routes.Assets.at("javascript/accessible-autocomplete.min.js")'></script>
+  <script src='@routes.Assets.versioned("javascript/accessible-autocomplete.min.js")'></script>
   <script>
     $(document).ready(function() {
       accessibleAutocomplete.enhanceSelectElement({
@@ -44,20 +42,20 @@
   "correspondence-address-header", if(isAgent) {messages("ated.correspondence-address.agent.header")} else {messages("ated.correspondence-address.header")},
     Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address-error.general")))
 
-  <div class="form-group">
-    <p id="correspondence-address-lede">
+  <div class="govuk-hint">
+    <div id="correspondence-address-lede">
     @if(isAgent) {
       @messages("ated.correspondence-address.agent.lede")
     } else {
       @messages("ated.correspondence-address.lede")
     }
-    </p>
+    </div>
   </div>
 
-  @form(action = controllers.routes.CorrespondenceAddressController.submit(mode)) {
+  @formHelper(action = controllers.routes.CorrespondenceAddressController.submit(mode)) {
 
-      <fieldset id="correspondence-address-form">
-          <legend class="visuallyhidden">
+      <fieldset id="correspondence-address-form" class="govuk-fieldset">
+          <legend class="govuk-visually-hidden">
               @if(isAgent) {
               @messages("ated.correspondence-address.agent.header")
               } else {
@@ -103,7 +101,7 @@
       </fieldset>
 
 
-      <button class="button" id="submit" type="submit">@messages("ated.correspondence-address.continue")</button>
+      <button class="govuk-button" id="submit" type="submit">@messages("ated.correspondence-address.continue")</button>
 
   }
 }

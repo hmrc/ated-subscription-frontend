@@ -15,17 +15,19 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedNoAuthMain: atedNoAuthMain)
-@(previousSubmittedForm: Form[models.PreviousSubmittedForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
+@import views.html.helper.form
 @import views.html.helpers._
 @import utils._
+
+@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF)
+@(previousSubmittedForm: Form[models.PreviousSubmittedForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
+
+
 
 @implicitFormInstance = @{ Some(previousSubmittedForm) }
 
 @pageScripts = {
-  <script src='@routes.Assets.at("javascript/show-hide-content.js")'></script>
+  <script src='@routes.Assets.versioned("javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
       // Where .multiple-choice uses the data-target attribute
@@ -43,25 +45,25 @@
 @pageHeadersAndError(backLink, "client-appoint-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.prev-submitted.title"),
     Some(atedErrorSummary(previousSubmittedForm, "ated.previous-submitted.general")))
 
-  <p>@messages("ated.prev-submitted.p1")</p>
+  <div class="govuk-hint">@messages("ated.prev-submitted.p1")</div>
 
-  @form(action = controllers.routes.PreviousSubmittedController.continue()) {
+  @formHelper(action = controllers.routes.PreviousSubmittedController.continue()) {
 
-    <div class="form-group" id="previousSubmitted">
+    <div class="govuk-form-group" id="previousSubmitted">
       @atedInputRadioGroupReveal(previousSubmittedForm("previousSubmitted"),
         Seq("true" -> (messages("ated.radio.yes.label"), None),
             "false" -> (messages("ated.radio.no.label"), None)),
       '_legend -> messages("ated.prev-submitted.title"),
-      '_legendClass -> "visuallyhidden",
-      '_groupClass -> "inline",
-      '_labelClass -> "block-label",
+      '_legendClass -> "govuk-visually-hidden",
+      '_groupClass -> "inline govuk-fieldset",
+      '_labelClass -> "govuk-label govuk-radios__label",
       '_labelAfter -> true,
       '_trackGA -> true)
 
 
     </div>
 
-    <button class="button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - Previously Submitted', 'button clicked')">@messages("ated.continue")</button>
+    <button class="govuk-button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - Previously Submitted', 'button clicked')">@messages("ated.continue")</button>
 
   }
 

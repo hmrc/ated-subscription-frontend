@@ -14,16 +14,37 @@
  * limitations under the License.
  *@
 
-@this(global_error_wrapper: global_error_wrapper)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, applicationConfig: config.ApplicationConfig)
+@this(layout: layout)
 
+@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
 
 @contentHeader = {
- <h1 class="column-two-thirds">@messages(heading)</h1>
+ <h1 class="govuk-heading-xl">@heading</h1>
 }
 
 @mainContent = {
- <p class="column-two-thirds">@Html(messages(message))</p>
+ <p class="govuk-body">@message</p>
 }
 
-@global_error_wrapper(appConfig = applicationConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), mainContent = mainContent)
+
+@content = {
+  @contentHeader
+
+  @mainContent
+}
+
+@scriptElement = {
+ <script src='@routes.Assets.versioned("jquery/jquery-3.6.0.min.js")'></script>
+ <script src='@routes.Assets.versioned("jquery/jquery-ui.min.js")'></script>
+ <script src='@routes.Assets.versioned("jquery/jquery-ui-1.12.1.min.js")'></script>
+ <script src='@routes.Assets.versioned("javascript/ated.js")'></script>
+  <!--[if lte IE 8]><link href='@routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
+  <!--[if gt IE 8]><!--><link href='@routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" /><!--<![endif]-->
+ <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/palette.css")'/>
+ <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/focus.css")'/>
+ <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/ated-subscription.css")'/>
+ <link rel="stylesheet" href='@routes.Assets.versioned("jquery/jquery-ui.min.css")'/>
+ <link rel="stylesheet" href='@routes.Assets.versioned("jquery/jquery-ui.structure.min.css")'/>
+}
+
+@layout(Some(messages(pageTitle)), Some(scriptElement))(content)

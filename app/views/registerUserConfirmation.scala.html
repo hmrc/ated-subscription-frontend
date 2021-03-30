@@ -15,38 +15,40 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedMain: atedMain)
-@(date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-@import uk.gov.hmrc.play.views.html._
-@import uk.gov.hmrc.play.views.html.helpers._
 @import views.html.helpers._
+@import views.html.helper.form
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF)
+
+@(date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
+
 
 @atedMain(title = messages("ated.registered-user.title")) {
 
-  <div id="banner" class="transaction-banner--complete">
+  <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
 
-    <h1 id="header">
+    <h1 id="header" class="govuk-panel__title">
       @messages("ated.registered-user.confirmation.message", date)
     </h1>
 
   </div>
 
-  <div class="form-group">
+  <div class="govuk-form-group">
 
-      <p id="happens-next">
+      <p class="govuk-body" id="happens-next">
         @messages("ated.registered-user.confirmation.you-can")
       </p>
 
 
-    <ul class="list list-bullet">
+    <ul class="govuk-list govuk-list--bullet">
       <li id="instruction-1">@messages("ated.registered-user.confirmation.instruction1")</li>
       <li id="instruction-2">@messages("ated.registered-user.confirmation.instruction2")</li>
     </ul>
 
   </div>
 
-    @form(action = controllers.routes.RegisterUserController.redirectToAted) {
-      <button class="button" id="submit" type="submit">@messages("ated.continue")</button>
+    @formHelper(action = controllers.routes.RegisterUserController.redirectToAted) {
+      <button class="govuk-button" id="submit" type="submit">@messages("ated.continue")</button>
     }
 
 }

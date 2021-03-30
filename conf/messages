@@ -1,3 +1,5 @@
+service.name = Register for ATED
+
 ##### COMMON MESSAGES
 
 ated.radio.yes.label = Yes
@@ -360,3 +362,9 @@ ated.already-registered-error.p4.1 = If your administrator does not see ATED on 
 ated.already-registered-error.p4.2 = contact the Online Services Helpdesk
 ated.already-registered-error.p4.3 = to recover or reset these sign-in details for your organisation.
 ated.already-registered-error.p5 = If you cannot get past this page again, or if you are the only person in your organisation who has registered for ATED, please use the ‘Get help with this page’ link to tell us what seems to be the problem.
+
+footer.links.accessibility.text   = Accessibility statement
+footer.links.cookies.text         = Cookies
+footer.links.privacy_policy.text         = Privacy policy
+footer.links.terms_and_conditions.text = Terms and conditions
+footer.links.help_page.text       = Help using GOV.UK

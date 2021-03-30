@@ -89,10 +89,10 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Are you an agent acting for a client? - GOV.UK")
+              document.title() must be("Are you an agent acting for a client?")
               document.getElementById("client-startpage-header").text() must be("Are you an agent acting for a client?")
               document.getElementById("submit").text() must be("Continue")
-              assert(document.select(".header__menu__proposition-name").attr("href") === "/ated-subscription/start-subscription")
+              assert(document.select(".govuk-header__link--service-name").attr("href") === "/ated-subscription/start-subscription")
 
 
           }
@@ -104,7 +104,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Are you an agent acting for a client? - GOV.UK")
+              document.title() must be("Are you an agent acting for a client?")
           }
         }
       }
@@ -138,14 +138,14 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Set up your agency for the new ATED online service - GOV.UK")
+              document.title() must be("Set up your agency for the new ATED online service")
               document.getElementById("subtitle").text() must be("This section is: ATED agency set up")
               document.getElementById("agent-startpage-header").text() must be("Set up your agency for the new ATED online service")
               document.getElementById("lede-paragraph").text() must include("Before you can submit ATED returns on behalf of your clients you must set up your agency")
               document.getElementById("agent-startpage-text1").text() must be("You must enter your agency’s registered name and Unique Taxpayer Reference (UTR).")
               document.getElementById("agent-startpage-text2").text() must be("After setting up your details, you can add your clients.")
               document.getElementById("submit").text() must be("Set up your agency")
-              assert(document.select(".header__menu__proposition-name").attr("href") === "/ated-subscription/start-subscription")
+              assert(document.select(".govuk-header__link--service-name").attr("href") === "/ated-subscription/start-subscription")
           }
         }
       }

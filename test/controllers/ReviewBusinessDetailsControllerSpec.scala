@@ -100,7 +100,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Check your business details - GOV.UK")
+            document.title() must be("Check your business details")
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
@@ -113,7 +113,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("client-display-name-label").text() must be("Display name")
             document.getElementById("backLinkHref").text() must be("Back")
             document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
-            document.select(".button").text must be("Confirm and register")
+            document.select(".govuk-button").text must be("Confirm and register")
           }
         }
 
@@ -123,7 +123,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Check your client’s ATED details are correct - GOV.UK")
+            document.title() must be("Check your client’s ATED details are correct")
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
@@ -135,7 +135,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("contact-details-label").text() must be("Who we will contact about ATED")
             document.getElementById("backLinkHref").text() must be("Back")
             document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
-            document.select(".button").text must be("Confirm and continue")
+            document.select(".govuk-button").text must be("Confirm and continue")
           }
         }
 

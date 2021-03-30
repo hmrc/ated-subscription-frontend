@@ -25,7 +25,7 @@
 @parentElements = @{parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )}
 
 @labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
-<div class="form-group">
+<div class="govuk-form-group">
 <label for="@if( elements.args.get('id) ) {@elements.args.get('id)} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")}" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}" id="@if( elements.args.get('id) ) {@elements.args.get('id)_field} else {@elements.field.name.replaceAll("""[\.\[\]]""", "-")_field}">
 
     @elements.errors.collect { case error: String => <span class="error-notification">@Messages(error)</span>}

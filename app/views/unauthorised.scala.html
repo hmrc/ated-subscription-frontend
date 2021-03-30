@@ -18,10 +18,10 @@
 @this(atedNoAuthMain: atedNoAuthMain)
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@import uk.gov.hmrc.play.views.html._
+
 
 @atedNoAuthMain(title = messages("unauthorised.title"), supportLinkEnabled = false, userLoggedIn=true) {
 
-  <h1>@messages("unauthorised.header")</h1>
+  <h1 class="govuk-heading-xl">@messages("unauthorised.header")</h1>
 
 }
