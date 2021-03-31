@@ -54,7 +54,7 @@
 
   <div id = "email-consent-risk">
     <details class="govuk-details" data-module="govuk-details">
-      <summary class="summary govuk-details__summary" id="email-risk-question" data-journey-click="ated-subscription:click:email-risk-question">
+      <summary class="summary govuk-details__summary" id="email-risk-question">
         @messages("ated.contact-details.email.risk.help.text")
       </summary>
       <div id="details-content-0" class="panel-indent govuk-details__text">
@@ -79,9 +79,7 @@
       '_legendClass -> "govuk-visually-hidden",
       '_groupClass -> "inline govuk-fieldset",
       '_labelClass -> "govuk-label govuk-radios__label",
-        '_labelAfter -> true,
-        '_trackGA -> true
-      )
+        '_labelAfter -> true)
 
       <div id="email-contact-hidden" class="form-group js-hidden">
         <div class="panel-indent govuk-radios__conditional">

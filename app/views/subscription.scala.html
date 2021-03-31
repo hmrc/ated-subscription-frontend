@@ -56,14 +56,13 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
         '_legendClass -> "govuk-visually-hidden",
         '_groupClass -> "inline govuk-fieldset",
         '_labelClass -> "govuk-label govuk-radios__label",
-        '_labelAfter -> true,
-        '_trackGA -> true)
+        '_labelAfter -> true)
 
         <div id="hidden-isAnAgent" class="js-hidden govuk-radios__conditional govuk-body">
           @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
         </div>
     </div>
-    <button class="govuk-button" id="submit" type="submit" onclick="ga('send', 'event', 'Client - registration - start', 'button clicked')">@messages("ated.client-startpage-continue")</button>
+    <button class="govuk-button" id="submit" type="submit">@messages("ated.client-startpage-continue")</button>
 
   }
 }

@@ -14,7 +14,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-partials" % "7.1.0-play-27",
     "uk.gov.hmrc" %% "domain" % "5.11.0-play-27",
     "uk.gov.hmrc" %% "http-caching-client" % "9.2.0-play-27",
-    "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-27"
+    "uk.gov.hmrc" %% "auth-client" % "3.3.0-play-27"
   )
 
   trait TestDependencies {
@@ -30,7 +30,7 @@ private object AppDependencies {
         "org.jsoup" % "jsoup" % "1.13.1" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "uk.gov.hmrc" %% "hmrctest" % "3.10.0-play-26",
-        "org.mockito" % "mockito-core" % "3.3.3" % scope,
+        "org.mockito" % "mockito-core" % "3.8.0" % scope,
         "com.github.tomakehurst" % "wiremock-jre8" % "2.27.2" % "test,it"
       )
     }.test
