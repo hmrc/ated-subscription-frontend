@@ -51,11 +51,11 @@
             "false" -> (messages("ated.radio.no.label"), Some("hidden-appointAgent-false"))),
       '_legend -> messages("ated.client-startpage-appoint-header"),
       '_legendClass -> "govuk-visually-hidden",
-      '_groupClass -> "inline govuk-fieldset",
+      '_groupClass -> "inline govuk-fieldset govuk-!-padding-bottom-3",
       '_labelClass -> "govuk-label govuk-radios__label",
       '_labelAfter -> true)
 
-        <div id="hidden-appointAgent-true" class="govuk-radios__conditional govuk-body js-hidden">
+        <div id="hidden-appointAgent-true" class="govuk-body js-hidden">
             <ul class="govuk-list govuk-list--bullet">
                 <li id="appoint-agent-text1">@messages("ated.appoint-agent.question.true.info1")</li>
                 <li id="appoint-agent-text2">@messages("ated.appoint-agent.question.true.info2")</li>
@@ -63,7 +63,7 @@
             </ul>
         </div>
 
-        <div id="hidden-appointAgent-false" class="govuk-radios__conditional govuk-body js-hidden">
+        <div id="hidden-appointAgent-false" class="govuk-body js-hidden">
             <ul class="govuk-list govuk-list--bullet">
                 <li id="appoint-agent-text5">@messages("ated.appoint-agent.question.false.info1")</li>
                 <li id="appoint-agent-text6">@messages("ated.appoint-agent.question.false.info2")</li>

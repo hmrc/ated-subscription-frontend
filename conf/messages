@@ -237,7 +237,7 @@ ated.correspondence-address-error.general.country = There is a problem with the 
 
 ated.review-details.correspondence-address = Where we will send letters about ATED
 ated.review-details.contact-details = Who we will contact about ATED
-ated.review-details.edit = Edit
+ated.review-details.change = Change
 ated.review-details.contact-preference = Email address
 ated.review-details.contact-preference-not-provided = Not provided
 ated.review-details.display-name = Display name
