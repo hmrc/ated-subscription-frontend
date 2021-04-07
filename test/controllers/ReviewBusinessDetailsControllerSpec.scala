@@ -154,27 +154,27 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("overseas-issuingInstitution").text() must be("InstTest")
 
             document.getElementById("correspondence-address").text() must be("line_1 line_2 United Kingdom")
-            document.getElementById("correspondence-edit").text() must be("Edit Where we will send letters about ATED")
-            document.getElementById("correspondence-edit").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
+            document.getElementById("correspondence-change").text() must be("Change Where we will send letters about ATED")
+            document.getElementById("correspondence-change").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
 
-            document.getElementById("contact-edit").attr("href") must be("/ated-subscription/contact-details?mode=edit")
+            document.getElementById("contact-change").attr("href") must be("/ated-subscription/contact-details?mode=edit")
 
             document.getElementById("contact-pref").text() must be("abc@test.com")
-            document.getElementById("contact-pref-edit").attr("href") must be("/ated-subscription/contact-details-email-edit")
+            document.getElementById("contact-pref-change").attr("href") must be("/ated-subscription/contact-details-email-edit")
 
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
-            document.getElementById("agent-email-address-edit").attr("href") must be("http://localhost:9959/mandate/agent/email/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
-            document.getElementById("correspondence-edit").text() must be("Edit Where we will send letters about ATED")
-            document.getElementById("client-display-name-edit").attr("href") must be("http://localhost:9959/mandate/agent/client-display-name/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
+            document.getElementById("agent-email-address-change").attr("href") must be("http://localhost:9959/mandate/agent/email/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
+            document.getElementById("correspondence-change").text() must be("Change Where we will send letters about ATED")
+            document.getElementById("client-display-name-change").attr("href") must be("http://localhost:9959/mandate/agent/client-display-name/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("client-display-name").text() must be("client display name")
-            document.getElementById("contact-edit").text() must be("Edit Who we will contact about ATED")
+            document.getElementById("contact-change").text() must be("Change Who we will contact about ATED")
             document.getElementById("backLinkHref").text() must be("Back")
             document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
 
 
-            document.getElementById("business-name-edit").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
-            document.getElementById("register-address-edit").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
+            document.getElementById("business-name-change").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
+            document.getElementById("register-address-change").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
 
             verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -207,11 +207,11 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
           getWithAuthorisedUser (Some(testContactLetter), Some(testContactNoEmail), testAddress = Some(testAddress2)) { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("business-name").text() must be("test Name")
-            document.getElementById("correspondence-edit").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
+            document.getElementById("correspondence-change").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
             document.getElementById("correspondence-address").text() must be("line_1 line_2 line_3 line_3 NE1 1AB United Kingdom")
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
-            document.getElementById("contact-edit").text() must be("Edit Who we will contact about ATED")
+            document.getElementById("contact-change").text() must be("Change Who we will contact about ATED")
             document.getElementById("backLinkHref").text() must be("Back")
             document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
 

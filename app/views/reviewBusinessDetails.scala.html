@@ -104,7 +104,7 @@
 
       @if(businessDetails.isBusinessDetailsEditable){
         <dd class="govuk-summary-list__actions">
-          <a href='@appConfig.businessNameAndAddressEditUrl' id="business-name-edit">@messages("ated.review-details.edit")
+          <a href='@appConfig.businessNameAndAddressEditUrl' id="business-name-change">@messages("ated.review-details.change")
             <span class="govuk-visually-hidden">@messages("ated.review-details.business")</span>
           </a>
         </dd>
@@ -130,8 +130,8 @@
         </dd>
 
         <dd class="govuk-summary-list__actions">
-          <a href='@appConfig.businessNameAndAddressEditUrl' id="register-address-edit">
-            @messages("ated.review-details.edit")
+          <a href='@appConfig.businessNameAndAddressEditUrl' id="register-address-change">
+            @messages("ated.review-details.change")
             <span class="govuk-visually-hidden">@messages("ated.review-details.registered-address")</span>
           </a>
         </dd>
@@ -154,8 +154,8 @@
         </dd>
 
         <dd class="govuk-summary-list__actions">
-          <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-tax-reference-edit">
-            @messages("ated.review-details.edit")
+          <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-tax-reference-change">
+            @messages("ated.review-details.change")
             <span class="govuk-visually-hidden">@messages("ated.review-details.overseas-tax-reference")</span>
           </a>
         </dd>
@@ -172,8 +172,8 @@
           </dd>
 
           <dd class="govuk-summary-list__actions">
-            <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-country-edit">
-              @messages("ated.review-details.edit")
+            <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-country-change">
+              @messages("ated.review-details.change")
               <span class="govuk-visually-hidden">@messages("ated.review-details.issuing-country")</span>
             </a>
           </dd>
@@ -190,8 +190,8 @@
           </dd>
 
           <dd class="govuk-summary-list__actions">
-            <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-institution-edit">
-              @messages("ated.review-details.edit")
+            <a href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-institution-change">
+              @messages("ated.review-details.change")
               <span class="govuk-visually-hidden">@messages("ated.review-details.issuing-institution")</span>
             </a>
           </dd>
@@ -236,8 +236,8 @@
 
       <dd class="govuk-summary-list__actions">
         <a href="@controllers.routes.CorrespondenceAddressController.editAddress(Some("edit"))"
-            id="correspondence-edit">
-          @messages("ated.review-details.edit")
+            id="correspondence-change">
+          @messages("ated.review-details.change")
           <span class="govuk-visually-hidden">@messages("ated.review-details.correspondence-address")</span>
         </a>
       </dd>
@@ -255,8 +255,8 @@
 
       <dd class="govuk-summary-list__actions">
         <a href="@controllers.routes.ContactDetailsController.editDetails(Some("edit"))"
-            id="contact-edit">
-          @messages("ated.review-details.edit")
+            id="contact-change">
+          @messages("ated.review-details.change")
           <span class="govuk-visually-hidden">@messages("ated.review-details.contact-details")</span>
         </a>
       </dd>
@@ -273,8 +273,8 @@
 
       <dd class="govuk-summary-list__actions">
         <a href="@controllers.routes.ContactDetailsEmailController.editDetailsEmail"
-            id="contact-pref-edit">
-          @messages("ated.review-details.edit")
+            id="contact-pref-change">
+          @messages("ated.review-details.change")
           <span class="govuk-visually-hidden">@messages("ated.review-details.contact-preference")</span>
         </a>
       </dd>
@@ -292,8 +292,8 @@
 
         <dd class="govuk-summary-list__actions">
           <a href="@appConfig.clientDisplayNameEditPath"
-              id="client-display-name-edit">
-            @messages("ated.review-details.edit")
+              id="client-display-name-change">
+            @messages("ated.review-details.change")
             <span class="govuk-visually-hidden">@messages("ated.review-details.display-name")</span>
           </a>
         </dd>
@@ -312,8 +312,8 @@
 
         <dd class="govuk-summary-list__actions">
           <a href="@appConfig.agentEmailEditPath"
-              id="agent-email-address-edit">
-            @messages("ated.review-details.edit")
+              id="agent-email-address-change">
+            @messages("ated.review-details.change")
             <span class="govuk-visually-hidden">@messages("ated.review-details.email-address")</span>
           </a>
         </dd>

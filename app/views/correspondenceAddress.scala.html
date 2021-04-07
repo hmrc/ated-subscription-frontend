@@ -42,7 +42,7 @@
   "correspondence-address-header", if(isAgent) {messages("ated.correspondence-address.agent.header")} else {messages("ated.correspondence-address.header")},
     Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address-error.general")))
 
-  <div class="govuk-hint">
+  <div class="govuk-body">
     <div id="correspondence-address-lede">
     @if(isAgent) {
       @messages("ated.correspondence-address.agent.lede")

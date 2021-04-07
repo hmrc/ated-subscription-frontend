@@ -58,8 +58,10 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
         '_labelClass -> "govuk-label govuk-radios__label",
         '_labelAfter -> true)
 
-        <div id="hidden-isAnAgent" class="js-hidden govuk-radios__conditional govuk-body">
-          @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
+        <div id="hidden-isAnAgent" class="js-hidden govuk-body">
+            <p>
+            @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
+            </p>
         </div>
     </div>
     <button class="govuk-button" id="submit" type="submit">@messages("ated.client-startpage-continue")</button>

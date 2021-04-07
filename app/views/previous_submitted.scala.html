@@ -45,7 +45,7 @@
 @pageHeadersAndError(backLink, "client-appoint-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.prev-submitted.title"),
     Some(atedErrorSummary(previousSubmittedForm, "ated.previous-submitted.general")))
 
-  <div class="govuk-hint">@messages("ated.prev-submitted.p1")</div>
+  <div class="govuk-body">@messages("ated.prev-submitted.p1")</div>
 
   @formHelper(action = controllers.routes.PreviousSubmittedController.continue()) {
 
