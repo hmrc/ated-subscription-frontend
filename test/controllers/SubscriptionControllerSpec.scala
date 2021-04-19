@@ -232,6 +232,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           registerWithAuthorisedUser(inputForm) { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("appointAgent-true-error").text() must be("There is a problem with the appoint an agent question")
+            document.getElementById("backLinkHref").text() must be("Back")
+            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/start-subscription")
             status(result) must be(BAD_REQUEST)
           }
         }

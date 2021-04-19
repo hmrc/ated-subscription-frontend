@@ -74,7 +74,8 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
   def register: Action[AnyContent] = Action.async { implicit req =>
     clientAction { implicit user =>
       appointAgentForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(templateAppointAgent(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(templateAppointAgent(formWithErrors,
+          Some(controllers.routes.SubscriptionController.subscribe().url)))),
         _ => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
       )
     }
