@@ -48,7 +48,7 @@ Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general"))
 
   @formHelper(action = controllers.routes.SubscriptionController.continue) {
 
-    <div class="govuk-form-group" id="isAgent">
+    <div class="govuk-form-group" id="f-0">
       @atedInputRadioGroupReveal(areYouAnAgentForm("isAgent"),
         Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-isAnAgent")),
             "false" -> (messages("ated.radio.no.label"), None)),

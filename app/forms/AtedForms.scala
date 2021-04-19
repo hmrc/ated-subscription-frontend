@@ -43,35 +43,60 @@ object AtedForms {
 
 
 
-  val AreYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
+  val areYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
     model.isAgent match {
       case Some(false) => Valid
-      case Some(true) => Invalid("ated.claim-relief.error.agent-claiming-true", "isAgent")
-      case _ => Invalid("ated.claim-relief.error.agent-claiming", "isAgent")
+      case Some(true) => Invalid("ated.claim-relief.error.agent-claiming-true", "isAgent-true")
+      case _ => Invalid("ated.claim-relief.error.agent-claiming", "isAgent-true")
+    }
+  })
+
+
+  val appointAgentConstraint: Constraint[AppointAgentForm] = Constraint({ model =>
+    model.isAgent match {
+      case Some(_) => Valid
+      case _ => Invalid("ated.claim-relief.error.agent-appoint", "appointAgent-true")
+    }
+  })
+
+  val previousSubmittedConstraint: Constraint[PreviousSubmittedForm] = Constraint({ model =>
+    model.isPreviousSubmitted match {
+      case Some(_) => Valid
+      case _ => Invalid("ated.claim-relief.error.previous-submitted", "previousSubmitted-true")
+    }
+  })
+
+  val businessAddressConstraint: Constraint[BusinessAddress] = Constraint({ model =>
+    model.isCorrespondenceAddress match {
+      case Some(_) => Valid
+      case _ => Invalid("ated.registered-business-address-error.correspondenceAddress", "isCorrespondenceAddress-true")
     }
   })
 
   val areYouAnAgentForm = Form(mapping(
     "isAgent" -> optional(boolean)
   )(AreYouAnAgent.apply)(AreYouAnAgent.unapply)
-    .verifying(AreYouAnAgentFalseConstraint)
+    .verifying(areYouAnAgentFalseConstraint)
   )
 
   val appointAgentForm = Form(mapping(
     "appointAgent" -> optional(boolean)
-      .verifying("ated.claim-relief.error.agent-appoint", result => result.isDefined)
-  )(AppointAgentForm.apply)(AppointAgentForm.unapply))
+  )(AppointAgentForm.apply)(AppointAgentForm.unapply)
+    .verifying(appointAgentConstraint)
+  )
 
   val previousSubmittedForm = Form(mapping(
     "previousSubmitted" -> optional(boolean)
-      .verifying("ated.claim-relief.error.previous-submitted", result => result.isDefined)
-  )(PreviousSubmittedForm.apply)(PreviousSubmittedForm.unapply))
+  )(PreviousSubmittedForm.apply)(PreviousSubmittedForm.unapply)
+    .verifying(previousSubmittedConstraint)
+  )
 
 
   val businessAddressForm = Form(mapping(
     "isCorrespondenceAddress" -> optional(boolean)
-      .verifying("ated.registered-business-address-error.correspondenceAddress", result => result.isDefined)
-  )(BusinessAddress.apply)(BusinessAddress.unapply))
+  )(BusinessAddress.apply)(BusinessAddress.unapply)
+    .verifying(businessAddressConstraint)
+  )
 
   val correspondenceAddressForm = Form(
     mapping(
@@ -128,12 +153,19 @@ object AtedForms {
 
   )(ContactDetails.apply)(ContactDetails.unapply))
 
+  val emailConstraint: Constraint[ContactDetailsEmail] = Constraint({ model =>
+    model.emailConsent match {
+      case Some(_) => Valid
+      case _ => Invalid("ated.contact-details.email.error", "emailConsent-true")
+    }
+  })
 
   val contactDetailsEmailForm = Form(mapping(
-    "emailConsent" -> optional(boolean)
-      .verifying("ated.contact-details.email.error", result => result.isDefined),
+    "emailConsent" -> optional(boolean),
     "email" -> text
-  )(ContactDetailsEmail.apply)(ContactDetailsEmail.unapply))
+  )(ContactDetailsEmail.apply)(ContactDetailsEmail.unapply)
+    .verifying(emailConstraint)
+  )
 
   def validateEmail(f: Form[ContactDetailsEmail]): Form[ContactDetailsEmail] = {
     if (!f.hasErrors) {

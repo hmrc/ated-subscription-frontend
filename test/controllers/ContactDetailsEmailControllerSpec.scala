@@ -162,7 +162,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
           status(result) must be(BAD_REQUEST)
-          contentAsString(result) must include("You must answer the can we contact them by email question")
+          contentAsString(result) must include("There is a problem with the can we contact them by email question")
         }
       }
 
