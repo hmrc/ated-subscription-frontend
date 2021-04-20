@@ -198,8 +198,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           val inputForm = Seq(("isAgent", "true"))
           submitWithAuthorisedUser(inputForm) { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("isAgent-error").text() must be("There is a problem with the agent question")
-            document.getElementById("isAgent-error-0").text() must be("You must sign in with your agent details if you are an agent")
+            document.getElementById("isAgent-true-error").text() must be("There is a problem with the agent question")
             document.getElementById("hidden-isAnAgent").text() must include("If you are an agent acting for a client you need to sign in using your agent Government Gateway details.")
             document.getElementById("hidden-isAnAgent").getElementsByTag("a").first().attr("href") must be("http://localhost:9025/gg/sign-in?continue=http://localhost:9933/ated-subscription/start-subscription")
             status(result) must be(BAD_REQUEST)
@@ -232,8 +231,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           val inputForm = Seq(("", ""))
           registerWithAuthorisedUser(inputForm) { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("appointAgent-error").text() must be("There is a problem with the appoint an agent question")
-            document.getElementById("appointAgent-error-0").text() must be("You must answer the appoint an agent question")
+            document.getElementById("appointAgent-true-error").text() must be("There is a problem with the appoint an agent question")
             status(result) must be(BAD_REQUEST)
           }
         }
