@@ -1,7 +1,7 @@
 ated-subscription-frontend
 ==========================
 
-[![Build Status](https://travis-ci.org/hmrc/ated-subscription-frontend.svg)](https://travis-ci.org/hmrc/ated-subscription-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/ated-subscription-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/ated-subscription-frontend/_latestVersion)
+[![Build Status](https://travis-ci.org/hmrc/ated-subscription-frontend.svg)](https://travis-ci.org/hmrc/ated-subscription-frontend)
 
 This service provides the ability for UK-based or Non-UK based ATED clients (or agents on behalf of clients) to subscribe to ATED service.
 Users subscribing must also register in ETMP (using business-customer-frontend) before subscribing (ROSM).
