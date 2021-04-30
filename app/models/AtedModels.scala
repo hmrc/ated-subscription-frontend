@@ -56,7 +56,16 @@ case class Address(
 
 
 object Address {
-  implicit val formats: OFormat[Address] = Json.format[Address]
+  implicit val writes: OWrites[Address] = Json.format[Address]
+  implicit val reads: Reads[Address] = (
+    (JsPath \ "line_1").read[String] and
+    (JsPath \ "line_2").read[String] and
+    (JsPath \ "line_3").readNullable[String] and
+    (JsPath \ "line_4").readNullable[String] and
+    (JsPath \ "postcode").readNullable[String] and
+    (JsPath \ "country").read[String].map (c => if(c.isEmpty) {
+     throw new RuntimeException("[models][AtedModels][Address] - Missing country code from business partner match")
+    } else { c }))(Address.apply _)
 }
 
 case class Identification(idNumber: String, issuingInstitution: String, issuingCountryCode: String)

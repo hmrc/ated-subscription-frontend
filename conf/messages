@@ -21,9 +21,13 @@ ated.error.mandatory.ated.address.country = You must enter Country
 ated.error.mandatory.ated.address.line-1 = You must enter Address line 1
 ated.error.mandatory.ated.address.line-2 = You must enter Address line 2
 ated.error.length.ated.address.line-1 = Address line 1 must not be more than 35 characters
+ated.error.address.addressline1.format = Address line 3 must not contain invalid characters
 ated.error.length.ated.address.line-2 = Address line 2 must not be more than 35 characters
+ated.error.address.addressline2.format = Address line 2 must not contain invalid characters
 ated.error.length.ated.address.line-3 = Address line 3 (optional) must not be more than 35 characters
+ated.error.address.addressline3.format = Address line 3 must not contain invalid characters
 ated.error.length.ated.address.line-4 = Address line 4 (optional) must not be more than 35 characters
+ated.error.address.addressline4.format = Address line 4 must not contain invalid characters
 
 ated.error.length = {0} must not be more than {1} characters
 

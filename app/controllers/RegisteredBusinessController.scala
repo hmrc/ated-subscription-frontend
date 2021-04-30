@@ -48,13 +48,18 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
   def registeredBusinessAddress: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        registeredBusinessService.getBusinessCustomerDetails flatMap { customerDetails =>
-          dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession flatMap { businessReg =>
-            registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress)) flatMap { address =>
-              validateAndRedirect(customerDetails, businessReg, address)
-            }
+
+        (
+          for {
+            customerDetails <- registeredBusinessService.getBusinessCustomerDetails
+            businessReg <- dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession
+            address <- registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress))
+            res <- validateAndRedirect(customerDetails, businessReg, address)
+          } yield res)
+          .recover {
+            case _ => Redirect(controllers.routes.PreviousSubmittedController.view())
           }
-        }
+
       }
   }
 

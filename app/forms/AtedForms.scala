@@ -34,6 +34,7 @@ object AtedForms {
   val addressLineLength = 35
   val PostcodeLength = 10
   val PostCodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}|BFPO\\s?[0-9]{1,10}$"
+  val addressLineRegex = "^[A-Za-z0-9 \\-,.&']{1,35}$"
   val countryLength = 2
   val emailLength = 241
   val lengthZero = 0
@@ -100,20 +101,20 @@ object AtedForms {
 
   val correspondenceAddressForm = Form(
     mapping(
-      "line_1" -> text.
-        verifying("ated.error.mandatory.ated.address.line-1", x => x.trim.length > lengthZero)
-        .verifying("ated.error.length.ated.address.line-1",
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
-      "line_2" -> text.
-        verifying("ated.error.mandatory.ated.address.line-2", x => x.trim.length > lengthZero)
-        .verifying("ated.error.length.ated.address.line-2",
-          x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength)),
+      "line_1" -> text
+        .verifying("ated.error.mandatory.ated.address.line-1", x => x.trim.length > lengthZero)
+        .verifying("ated.error.length.ated.address.line-1", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+        .verifying("ated.error.address.addressline1.format", x => x.matches(addressLineRegex)),
+      "line_2" -> text
+        .verifying("ated.error.mandatory.ated.address.line-2", x => x.trim.length > lengthZero)
+        .verifying("ated.error.length.ated.address.line-2", x => x.isEmpty || (x.nonEmpty && x.length <= addressLineLength))
+        .verifying("ated.error.address.addressline2.format", x => x.matches(addressLineRegex)),
       "line_3" -> optional(text)
-        .verifying("ated.error.length.ated.address.line-3",
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+        .verifying("ated.error.length.ated.address.line-3", x => checkFieldLengthIfPopulated(x, addressLineLength))
+        .verifying("ated.error.address.addressline3.format", x => x.fold(true)(x => x.matches(addressLineRegex))),
       "line_4" -> optional(text)
-        .verifying("ated.error.length.ated.address.line-4",
-          x => checkFieldLengthIfPopulated(x, addressLineLength)),
+        .verifying("ated.error.length.ated.address.line-4", x => checkFieldLengthIfPopulated(x, addressLineLength))
+        .verifying("ated.error.address.addressline4.format", x => x.fold(true)(x => x.matches(addressLineRegex))),
       "postcode" -> optional(text)
         .verifying("ated.error.address.postalcode.format", x => x.fold(true)(v => v.isEmpty || v.matches(PostCodeRegex))),
       "country" -> text.
