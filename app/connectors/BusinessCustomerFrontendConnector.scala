@@ -17,9 +17,10 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
@@ -34,10 +35,8 @@ class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
   val reviewDetailsUri = "fetch-review-details"
   val service = "ATED"
 
-  override def crypto: String => String = identity
-
   def getBusinessCustomerDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
-    http.GET(getUrl)
+    http.GET(getUrl, Seq.empty, Seq.empty)
   }
 }

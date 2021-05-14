@@ -41,7 +41,7 @@ class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$createMandateURI"""
-    http.POST[JsValue, HttpResponse](postURL, data) map { response =>
+    http.POST[JsValue, HttpResponse](postURL, data, Seq.empty) map { response =>
       response.status match {
         case CREATED => response
         case status =>
@@ -56,7 +56,7 @@ class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$updateMandateURI"""
-    http.POST[JsValue, HttpResponse](postURL, data) map { response =>
+    http.POST[JsValue, HttpResponse](postURL, data, Seq.empty) map { response =>
       response.status match {
         case CREATED => response
         case status =>

@@ -16,14 +16,11 @@
 
 package config
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
 
-
-class CachedStaticHtmlPartialProvider @Inject()(val httpGet: DefaultHttpClient) extends CachedStaticHtmlPartialRetriever
+import javax.inject.Inject
 
 class AtedSessionCache @Inject()(val conf: ServicesConfig,
                                  val http: DefaultHttpClient) extends SessionCache {

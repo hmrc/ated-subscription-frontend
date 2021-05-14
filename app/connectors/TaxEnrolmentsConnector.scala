@@ -49,7 +49,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
 
-    http.POST[JsValue, HttpResponse](postUrl, jsonData)(implicitly, HttpReads.Implicits.readRaw,implicitly,implicitly) map { response =>
+    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty)(implicitly, HttpReads.Implicits.readRaw,implicitly,implicitly) map { response =>
       timerContext.stop()
       auditEnrolUser(postUrl, requestPayload, response)
       logger.debug(s"PostUrl::$postUrl ---- requestBody:: $jsonData --- responseBody::${response.body} --- responseStatus:: ${response.status}")
