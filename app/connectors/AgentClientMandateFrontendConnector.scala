@@ -36,19 +36,17 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
   val mandateDetails = "mandate/agent/old-nonuk-mandate-from-session"
   val service = "ATED"
 
-  override def crypto: String => String = identity
-
   def getAgentEmail(implicit request: Request[_], ec: ExecutionContext): Future[Option[AgentEmail]] = {
     val getUrl = s"$serviceUrl/$emailUri/"
-    http.GET[Option[AgentEmail]](getUrl)
+    http.GET[Option[AgentEmail]](getUrl, Seq.empty, Seq.empty)
   }
   def getClientDisplayName(implicit request: Request[_], ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     val getUrl = s"$serviceUrl/$displayNameUri/"
-    http.GET[Option[ClientDisplayName]](getUrl)
+    http.GET[Option[ClientDisplayName]](getUrl, Seq.empty, Seq.empty)
   }
   def getOldMandateDetails(implicit request: Request[_], ec: ExecutionContext): Future[Option[OldMandateReference]] = {
     val getUrl = s"$serviceUrl/$mandateDetails/"
-    http.GET(getUrl)(readRaw, implicitly, implicitly) map { _.json.asOpt[OldMandateReference]}
+    http.GET(getUrl, Seq.empty, Seq.empty)(readRaw, implicitly, implicitly) map { _.json.asOpt[OldMandateReference]}
   }
 
 }

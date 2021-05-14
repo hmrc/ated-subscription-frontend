@@ -36,7 +36,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
                 (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
-    http.GET[HttpResponse](s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType")
+    http.GET[HttpResponse](s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType", Seq.empty, Seq.empty)
   }
 
   def retrieveSubscriptionData(atedRefNumber: String)
@@ -44,7 +44,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""
-    http.GET[HttpResponse](getUrl)
+    http.GET[HttpResponse](getUrl, Seq.empty, Seq.empty)
   }
 
 }

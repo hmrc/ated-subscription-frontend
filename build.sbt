@@ -12,7 +12,6 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 val appName = "ated-subscription-frontend"
 
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala)
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
 val silencerVersion = "1.7.1"
 
@@ -27,16 +26,16 @@ lazy val scoverageSettings: Seq[Def.Setting[_ >: String with Double with Boolean
 }
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins: _*)
+  .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin): _*)
   .settings(playSettings: _*)
-  .settings( majorVersion := 2 )
+  .settings(majorVersion := 2 )
   .settings(scalaSettings: _*)
   .settings(publishingSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(scalacOptions += "-Ywarn-unused:-explicits,-implicits")
   .settings(
-    scalaVersion := "2.12.11",
+    scalaVersion := "2.12.12",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     parallelExecution in Test := false,

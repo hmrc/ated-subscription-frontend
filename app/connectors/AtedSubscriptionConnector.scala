@@ -38,7 +38,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
   def subscribeAted(data: JsValue)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
     val authLink = AuthUtils.getAuthLink
     val postURL = s"""$serviceURL$authLink/$subscriptionURI"""
-    http.POST[JsValue, HttpResponse](postURL, data) map { response =>
+    http.POST[JsValue, HttpResponse](postURL, data, Seq.empty) map { response =>
       response.status match {
         case OK =>
           response.json.as[SubscribeSuccessResponse]
@@ -56,7 +56,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
                                                     hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
     val postURL = s"""$serviceURL/$checkEtmpUri"""
 
-    http.POST[JsValue, HttpResponse](postURL, data) map { response: HttpResponse =>
+    http.POST[JsValue, HttpResponse](postURL, data, Seq.empty) map { response: HttpResponse =>
       response.status match {
         case OK => Some(response.json.as[SelfHealSubscriptionResponse])
         case _ => None
