@@ -19,7 +19,6 @@ package services
 import builders.AuthBuilder
 import connectors.{AgentClientMandateConnector, AgentClientMandateFrontendConnector, AtedSubscriptionDataCacheConnector}
 import models._
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach

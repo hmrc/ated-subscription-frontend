@@ -17,10 +17,9 @@
 package connectors
 
 import config.ApplicationConfig
-
 import javax.inject.Inject
 import play.api.mvc.Request
-import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 

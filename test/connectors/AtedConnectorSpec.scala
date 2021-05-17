@@ -16,9 +16,10 @@
 
 package connectors
 
+import java.util.UUID
+
 import builders._
 import models.AtedSubscriptionAuthData
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -29,7 +30,6 @@ import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
 
-import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

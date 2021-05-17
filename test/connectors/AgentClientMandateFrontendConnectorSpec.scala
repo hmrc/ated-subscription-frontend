@@ -18,7 +18,6 @@ package connectors
 
 import builders.AuthBuilder
 import models.{AgentEmail, AtedSubscriptionAuthData, ClientDisplayName, OldMandateReference}
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
