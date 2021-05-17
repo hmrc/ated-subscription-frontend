@@ -55,17 +55,12 @@ class BusinessCustomerFrontendConnectorSpec extends PlaySpec with GuiceOneServer
       val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
         businessType = "Corporate Body",
         businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
-        sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-      when(mockWSHttp.GET[HttpResponse](any())(any(), any(), any()))
+        sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = Some("JARN1234567"))
+      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(reviewDetails).toString())))
 
       val response = await(testBusinessCustomerFrontendConnector.getBusinessCustomerDetails)
       response.status must be(OK)
-    }
-
-    "crypto" in {
-      val testString = "I 5! stay 6? the 7π same"
-      testBusinessCustomerFrontendConnector.crypto(testString) must be(testString)
     }
   }
 
