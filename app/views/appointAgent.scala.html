@@ -18,16 +18,20 @@
 @import views.html.helpers._
 @import utils._
 @import views.html.helper.form
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF)
+@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
+
 @(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
 @pageScripts = {
-  <script src='@routes.Assets.versioned("javascript/show-hide-content.js")'></script>
+    <script src='@routes.Assets.versioned("javascript/show-hide-content.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascript/subscription.js")'></script>
   <script>
     $(document).ready(function() {
+        showHideAppointAgentSection();
       // Where .multiple-choice uses the data-target attribute
       // to toggle hidden content
       var showHideContent = new GOVUK.ShowHideContent()
@@ -45,32 +49,43 @@
 
   @formHelper(action = controllers.routes.SubscriptionController.register) {
 
-    <div class="govuk-form-group" id="appointAgent">
-      @atedInputRadioGroupReveal(appointAgentForm("appointAgent"),
-        Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-appointAgent-true")),
-            "false" -> (messages("ated.radio.no.label"), Some("hidden-appointAgent-false"))),
-      '_legend -> messages("ated.client-startpage-appoint-header"),
-      '_legendClass -> "govuk-visually-hidden",
-      '_groupClass -> "inline govuk-fieldset govuk-!-padding-bottom-3",
-      '_labelClass -> "govuk-label govuk-radios__label",
-      '_labelAfter -> true)
+      @govukRadios(
+          Radios(
+              fieldset = Some(Fieldset(
+                  classes = "govuk-radios--inline",
+                  legend = Some(Legend(
+                      classes = "govuk-visually-hidden",
+                      content = Text(Messages("ated.client-startpage-appoint-header"))
+                  ))
+              )),
+              items = Seq(
+                  RadioItem(
+                      content = Text(Messages("ated.radio.yes.label")),
+                      value = Some("true")
+                  ),
+                  RadioItem(
+                      content = Text(Messages("ated.radio.no.label")),
+                      value = Some("false")
+                  )
+              )
+          ).withFormField(appointAgentForm("appointAgent"))
+      )
 
-        <div id="hidden-appointAgent-true" class="govuk-body js-hidden">
-            <ul class="govuk-list govuk-list--bullet">
-                <li id="appoint-agent-text1">@messages("ated.appoint-agent.question.true.info1")</li>
-                <li id="appoint-agent-text2">@messages("ated.appoint-agent.question.true.info2")</li>
-                <li id="appoint-agent-text3">@messages("ated.appoint-agent.question.true.info3")</li>
-            </ul>
-        </div>
+      <div id="hidden-appointAgent-true" class="govuk-body js-hidden">
+          <ul class="govuk-list govuk-list--bullet">
+              <li id="appoint-agent-text1">@messages("ated.appoint-agent.question.true.info1")</li>
+              <li id="appoint-agent-text2">@messages("ated.appoint-agent.question.true.info2")</li>
+              <li id="appoint-agent-text3">@messages("ated.appoint-agent.question.true.info3")</li>
+          </ul>
+      </div>
 
-        <div id="hidden-appointAgent-false" class="govuk-body js-hidden">
-            <ul class="govuk-list govuk-list--bullet">
-                <li id="appoint-agent-text5">@messages("ated.appoint-agent.question.false.info1")</li>
-                <li id="appoint-agent-text6">@messages("ated.appoint-agent.question.false.info2")</li>
-                <li id="appoint-agent-text7">@messages("ated.appoint-agent.question.false.info3")</li>
-            </ul>
-        </div>
-    </div>
+      <div id="hidden-appointAgent-false" class="govuk-body js-hidden">
+          <ul class="govuk-list govuk-list--bullet">
+              <li id="appoint-agent-text5">@messages("ated.appoint-agent.question.false.info1")</li>
+              <li id="appoint-agent-text6">@messages("ated.appoint-agent.question.false.info2")</li>
+              <li id="appoint-agent-text7">@messages("ated.appoint-agent.question.false.info3")</li>
+          </ul>
+      </div>
 
     <button class="govuk-button" id="submit" type="submit">@messages("ated.client-startpage-register")</button>
 

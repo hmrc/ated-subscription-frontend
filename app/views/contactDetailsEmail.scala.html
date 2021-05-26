@@ -19,7 +19,10 @@
 @import views.html.helpers._
 @import _root_.utils.AuthUtils.isAgent
 @import views.html.helper.form
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput, govukRadios: GovukRadios)
 @(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(contactDetailsEmailForm) }
@@ -46,6 +49,16 @@
   </script>
 }
 
+@conditionalHtml = {
+    @govukInput(
+        Input(
+            label = Label(
+                content = Text(Messages("ated.contact-details.email"))
+            )
+        ).withFormField(contactDetailsEmailForm("email"))
+    )
+}
+
 @atedMain(title = messages("ated.contact-details-email-title"), pageScripts = Some(pageScripts)) {
     @pageHeadersAndError(backLink, "subtitle", if(isAgent) {messages("ated.contact-details.agent.subheader")} else {messages("ated.contact-details.subheader")}, "contact-details-email.header", messages("ated.contact-details-email-header"),
         Some(atedErrorSummary(contactDetailsEmailForm, "ated.contact-details-error.general")))
@@ -70,29 +83,27 @@
 
   @formHelper(action = controllers.routes.ContactDetailsEmailController.submit(mode)) {
 
-    <div class="govuk-form-group" id="emailConsent">
-
-      @atedInputRadioGroupReveal(contactDetailsEmailForm("emailConsent"),
-        Seq("true" -> (messages("ated.radio.yes.label"), Some("email-contact-hidden")),
-            "false" -> (messages("ated.radio.no.label"), None)),
-        '_legend -> messages("ated.contact-details-email-header"),
-      '_legendClass -> "govuk-visually-hidden",
-      '_groupClass -> "inline govuk-fieldset",
-      '_labelClass -> "govuk-label govuk-radios__label",
-        '_labelAfter -> true)
-
-      <div id="email-contact-hidden" class="form-group js-hidden">
-        <div class="panel-indent govuk-radios__conditional">
-          @atedInput(contactDetailsEmailForm("email"),
-            '_label ->  Html(messages("ated.contact-details.email")),
-            '_labelClass -> "form-label",
-            '_inputClass -> "form-control-indent",
-            '_type -> "text",
-            '_showConstraints -> false)
-        </div>
-    </div>
-
-    </div>
+    @govukRadios(
+        Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    classes = "govuk-visually-hidden",
+                    content = Text(Messages("ated.contact-details-email-header"))
+                ))
+            )),
+            items = Seq(
+                RadioItem(
+                    content = Text(Messages("ated.radio.yes.label")),
+                    value = Some("true"),
+                    conditionalHtml = Some(conditionalHtml)
+                ),
+                RadioItem(
+                    content = Text(Messages("ated.radio.no.label")),
+                    value = Some("false")
+                )
+            )
+        ).withFormField(contactDetailsEmailForm("emailConsent"))
+    )
 
     <button class="govuk-button" id="submit" type="submit">@messages("ated.contact-details.continue")</button>
 

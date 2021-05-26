@@ -458,9 +458,8 @@ p.margin-bottom-default {
  }
 }
 
-.autocomplete__input,
-.autocomplete__menu {
-  border-color: #6f777b;
+.autocomplete__input--default {
+    font-family: "GDS Transport",arial,sans-serif;
 }
 
 .autocomplete__option {

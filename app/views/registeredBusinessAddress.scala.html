@@ -24,8 +24,9 @@
 @import _root_.utils.AuthUtils.isAgent
 @import controllers.auth._
 @import views.html.helper.form
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
 
 @(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 
@@ -53,22 +54,27 @@
 
   @formHelper(action = controllers.routes.RegisteredBusinessController.continue) {
 
-    <div id="isCorrespondenceAddress">
-
-      @atedInputRadioGroupReveal(
-      businessAddressForm("isCorrespondenceAddress"),
-      Seq("true" -> (messages("ated.registered-business-address.correspondence-address.yes"), None),
-      "false" -> (messages("ated.registered-business-address.correspondence-address.no"), None)),
-      '_legend -> header,
-      '_legendClass -> "govuk-visually-hidden",
-      '_groupClass -> "govuk-fieldset",
-      '_labelClass -> "govuk-label govuk-radios__label",
-      '_labelAfter -> true
-      )
-
-    </div>
-
-      <br />
+    @govukRadios(
+        Radios(
+            fieldset = Some(Fieldset(
+                classes = "govuk-radios--inline",
+                legend = Some(Legend(
+                    classes = "govuk-visually-hidden",
+                    content = Text(header)
+                ))
+            )),
+            items = Seq(
+                RadioItem(
+                    content = Text(Messages("ated.radio.yes.label")),
+                    value = Some("true")
+                ),
+                RadioItem(
+                    content = Text(Messages("ated.radio.no.label")),
+                    value = Some("false")
+                )
+            )
+        ).withFormField(businessAddressForm("isCorrespondenceAddress"))
+    )
 
     <button class="govuk-button" id="submit" type="submit">@messages("ated.registered-business-address.continue")</button>
 

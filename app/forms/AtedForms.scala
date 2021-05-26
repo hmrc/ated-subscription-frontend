@@ -43,59 +43,54 @@ object AtedForms {
 
 
 
-  val areYouAnAgentFalseConstraint: Constraint[AreYouAnAgent] = Constraint({ model =>
-    model.isAgent match {
+  val areYouAnAgentFalseConstraint: Constraint[Option[Boolean]] = Constraint({ model =>
+    model match {
       case Some(false) => Valid
-      case Some(true) => Invalid("ated.claim-relief.error.agent-claiming-true", "isAgent-true")
-      case _ => Invalid("ated.claim-relief.error.agent-claiming", "isAgent-true")
+      case Some(true) => Invalid("ated.claim-relief.error.agent-claiming-true")
+      case _ => Invalid("ated.claim-relief.error.agent-claiming")
     }
   })
 
 
-  val appointAgentConstraint: Constraint[AppointAgentForm] = Constraint({ model =>
-    model.isAgent match {
+  val appointAgentConstraint: Constraint[Option[Boolean]] = Constraint({ model =>
+    model match {
       case Some(_) => Valid
-      case _ => Invalid("ated.claim-relief.error.agent-appoint", "appointAgent-true")
+      case _ => Invalid("ated.claim-relief.error.agent-appoint")
     }
   })
 
-  val previousSubmittedConstraint: Constraint[PreviousSubmittedForm] = Constraint({ model =>
-    model.isPreviousSubmitted match {
+  val previousSubmittedConstraint: Constraint[Option[Boolean]] = Constraint({ model =>
+    model match {
       case Some(_) => Valid
-      case _ => Invalid("ated.claim-relief.error.previous-submitted", "previousSubmitted-true")
+      case _ => Invalid("ated.claim-relief.error.previous-submitted")
     }
   })
 
-  val businessAddressConstraint: Constraint[BusinessAddress] = Constraint({ model =>
-    model.isCorrespondenceAddress match {
+  val businessAddressConstraint: Constraint[Option[Boolean]] = Constraint({ model =>
+    model match {
       case Some(_) => Valid
-      case _ => Invalid("ated.registered-business-address-error.correspondenceAddress", "isCorrespondenceAddress-true")
+      case _ => Invalid("ated.registered-business-address-error.correspondenceAddress")
     }
   })
 
   val areYouAnAgentForm = Form(mapping(
-    "isAgent" -> optional(boolean)
+    "isAgent" -> optional(boolean).verifying(areYouAnAgentFalseConstraint)
   )(AreYouAnAgent.apply)(AreYouAnAgent.unapply)
-    .verifying(areYouAnAgentFalseConstraint)
   )
 
   val appointAgentForm = Form(mapping(
-    "appointAgent" -> optional(boolean)
+    "appointAgent" -> optional(boolean).verifying(appointAgentConstraint)
   )(AppointAgentForm.apply)(AppointAgentForm.unapply)
-    .verifying(appointAgentConstraint)
   )
 
   val previousSubmittedForm = Form(mapping(
-    "previousSubmitted" -> optional(boolean)
+    "previousSubmitted" -> optional(boolean).verifying(previousSubmittedConstraint)
   )(PreviousSubmittedForm.apply)(PreviousSubmittedForm.unapply)
-    .verifying(previousSubmittedConstraint)
   )
 
-
   val businessAddressForm = Form(mapping(
-    "isCorrespondenceAddress" -> optional(boolean)
+    "isCorrespondenceAddress" -> optional(boolean).verifying(businessAddressConstraint)
   )(BusinessAddress.apply)(BusinessAddress.unapply)
-    .verifying(businessAddressConstraint)
   )
 
   val correspondenceAddressForm = Form(
@@ -153,18 +148,17 @@ object AtedForms {
 
   )(ContactDetails.apply)(ContactDetails.unapply))
 
-  val emailConstraint: Constraint[ContactDetailsEmail] = Constraint({ model =>
-    model.emailConsent match {
+  val emailConstraint: Constraint[Option[Boolean]] = Constraint({ model =>
+    model match {
       case Some(_) => Valid
-      case _ => Invalid("ated.contact-details.email.error", "emailConsent-true")
+      case _ => Invalid("ated.contact-details.email.error")
     }
   })
 
   val contactDetailsEmailForm = Form(mapping(
-    "emailConsent" -> optional(boolean),
+    "emailConsent" -> optional(boolean).verifying(emailConstraint),
     "email" -> text
   )(ContactDetailsEmail.apply)(ContactDetailsEmail.unapply)
-    .verifying(emailConstraint)
   )
 
   def validateEmail(f: Form[ContactDetailsEmail]): Form[ContactDetailsEmail] = {

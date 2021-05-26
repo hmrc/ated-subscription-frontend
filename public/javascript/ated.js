@@ -120,20 +120,3 @@ $(function() {
 });
 
 }
-
-$(document).ready(function() {
-    // =====================================================
-    // Adds data-focuses attribute to all containers of inputs listed in an error summary
-    // This allows validatorFocus to bring viewport to correct scroll point
-    // =====================================================
-    function assignFocus () {
-        var counter = 0;
-        $('.govuk-error-summary__list a').each(function(){
-            var linkhash = $(this).attr("href").split('#')[1];
-            $('#' + linkhash).parents('.govuk-form-group').first().attr('id', 'f-' + counter);
-            $(this).attr('data-focuses', 'f-' + counter);
-            counter++;
-        });
-    }
-    assignFocus();
-})
