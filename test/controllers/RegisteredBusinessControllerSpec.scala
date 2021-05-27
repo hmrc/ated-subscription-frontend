@@ -115,8 +115,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
             val document = Jsoup.parse(contentAsString(result))
             document.select(".govuk-radios__label").text() must include("Yes")
             document.select(".govuk-radios__label").text() must include("No")
-            document.getElementById("isCorrespondenceAddress-true").attr("checked") must be("")
-            document.getElementById("isCorrespondenceAddress-false").attr("checked") must be("")
+            document.getElementById("isCorrespondenceAddress").outerHtml() must not include "checked"
+            document.getElementById("isCorrespondenceAddress-2").outerHtml() must not include "checked"
           }
         }
 
@@ -125,8 +125,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
             val document = Jsoup.parse(contentAsString(result))
             document.select(".govuk-radios__label").text() must include("Yes")
             document.select(".govuk-radios__label").text() must include("No")
-            document.getElementById("isCorrespondenceAddress-true").attr("checked") must be("checked")
-            document.getElementById("isCorrespondenceAddress-false").attr("checked") must be("")
+            document.getElementById("isCorrespondenceAddress").outerHtml() must include("checked")
+            document.getElementById("isCorrespondenceAddress-2").outerHtml() must not include "checked"
           }
         }
 

@@ -112,8 +112,8 @@ ated.appoint-agent.question.true.info3 = Enter the unique authorisation number w
 ated.appoint-agent.question.false.info1 = Register to use the new ATED online service.
 ated.appoint-agent.question.false.info2 = Select the correct relief for your property or tell us about a property that is liable for an ATED charge.
 ated.appoint-agent.question.false.info3 = Confirm and submit the relief declaration or ATED return.
-ated.appoint-agent-error.general.appointAgent-true = There is a problem with the appoint an agent question
-ated.are-you-an-agent-error.general.isAgent-true = There is a problem with the agent question
+ated.appoint-agent-error.general.appointAgent = There is a problem with the appoint an agent question
+ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
 
 ated.claim-relief.error.agent.false = You have entered agent details but indicated that you are not an agent. Check your details and try again.
 ated.claim-relief.error.agent.true = The details you entered do not allow you to proceed as an agent. Check your details and try again.
@@ -204,7 +204,7 @@ ated.address.country = Country
 ated.correspondence-address.continue = Continue
 
 ated.contact-details-error.general.email = There is a problem with the email address. Check it and try again.
-ated.contact-details-error.general.emailConsent-true = There is a problem with the can we contact them by email question
+ated.contact-details-error.general.emailConsent = There is a problem with the can we contact them by email question
 
 ated.error.address.postalcode.format = You must enter a valid postcode
 ated.error.address.postalcode.missing-space = The postcode must contain a space
@@ -311,8 +311,8 @@ ated.nonUKReg.confirmation.view-client.button = View all my clients
 
 ated.prev-submitted.title = Has this company submitted ATED returns before?
 ated.prev-submitted.p1 = This means returns submitted online by you or by an agent on your behalf (it does not include paper returns).
-ated.claim-relief.error.previous-submitted.previousSubmitted-true = Select yes if this company has submitted ATED returns before
-ated.previous-submitted.general.previousSubmitted-true = Select yes if this company has submitted ATED returns before
+ated.claim-relief.error.previous-submitted = Select yes if this company has submitted ATED returns before
+ated.previous-submitted.general.previousSubmitted = Select yes if this company has submitted ATED returns before
 
 #### SAME ACCOUNT PAGE
 
@@ -339,7 +339,7 @@ ated.business-registration-error.duplicate.identifier.message = If you require a
 ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.title = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
-ated.business-address-error.general.isCorrespondenceAddress-true = Select an option for the correspondence address
+ated.business-address-error.general.isCorrespondenceAddress = Select an option for the correspondence address
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
 
 ated.business-registration.generic.error.header = Sorry, there is a problem with the service

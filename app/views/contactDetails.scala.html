@@ -20,8 +20,9 @@
 @import models.AtedSubscriptionAuthData
 @import views.html.helper.form
 @import config.ApplicationConfig
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput)
 
 @(contactDetailsForm: Form[ContactDetails],
     mode: Option[String],
@@ -57,22 +58,28 @@
 
     @formHelper(action = controllers.routes.ContactDetailsController.submit(mode)) {
 
-        @atedInput(contactDetailsForm("firstName"),
-            '_label ->  messages("ated.contact-details.firstName"),
-            '_labelClass -> "form-label",
-            '_showConstraints -> false
+        @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.contact-details.firstName"))
+                )
+            ).withFormField(contactDetailsForm("firstName"))
         )
 
-        @atedInput(contactDetailsForm("lastName"),
-            '_label ->  messages("ated.contact-details.lastName"),
-            '_labelClass -> "form-label",
-            '_showConstraints -> false
+        @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.contact-details.lastName"))
+                )
+            ).withFormField(contactDetailsForm("lastName"))
         )
 
-        @atedInput(contactDetailsForm("telephone"),
-            '_label ->  messages("ated.contact-details.telephone"),
-            '_labelClass -> "form-label",
-            '_showConstraints -> false
+        @govukInput(
+            Input(
+                label = Label(
+                    content = Text(Messages("ated.contact-details.telephone"))
+                )
+            ).withFormField(contactDetailsForm("telephone"))
         )
 
         <button class="govuk-button" id="submit" type="submit">

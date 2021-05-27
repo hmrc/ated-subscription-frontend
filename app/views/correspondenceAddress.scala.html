@@ -21,7 +21,10 @@
 
 @import config.ApplicationConfig
 @import views.html.helper.form
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+
+@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput, govukSelect: GovukSelect)
 @(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
@@ -63,40 +66,60 @@
               }
           </legend>
 
-        @atedInput(correspondenceAddressForm("line_1"),
-        '_label ->  Html(messages("ated.address.line-1")),
-          '_labelClass -> "form-label",
-        '_showConstraints -> false)
+          @govukInput(
+              Input(
+                  label = Label(
+                      content = Text(Messages("ated.address.line-1"))
+                  )
+              ).withFormField(correspondenceAddressForm("line_1"))
+          )
 
-        @atedInput(correspondenceAddressForm("line_2"),
-        '_label ->  Html(messages("ated.address.line-2")),
-        '_labelClass ->  "form-label",
-        '_showConstraints -> false)
+          @govukInput(
+              Input(
+                  label = Label(
+                      content = Text(Messages("ated.address.line-2"))
+                  )
+              ).withFormField(correspondenceAddressForm("line_2"))
+          )
 
-        @atedInput(correspondenceAddressForm("line_3"),
-        '_label ->  Html(messages("ated.address.line-3")),
-        '_labelClass ->  "form-label",
-        '_showConstraints -> false)
+          @govukInput(
+              Input(
+                  label = Label(
+                      content = Text(Messages("ated.address.line-3"))
+                  )
+              ).withFormField(correspondenceAddressForm("line_3"))
+          )
 
-        @atedInput(correspondenceAddressForm("line_4"),
-        '_label ->  Html(messages("ated.address.line-4")),
-        '_labelClass ->  "form-label",
-        '_showConstraints -> false)
+          @govukInput(
+              Input(
+                  label = Label(
+                      content = Text(Messages("ated.address.line-4"))
+                  )
+              ).withFormField(correspondenceAddressForm("line_4"))
+          )
 
-        @atedInput(correspondenceAddressForm("postcode"),
-        '_label ->  Html(messages("ated.address.postcode")),
-        '_size ->  "10",
-        '_labelClass ->  "form-label",
-        '_inputClass -> "field-1-4",
-        '_showConstraints -> false)
+          @govukInput(
+              Input(
+                  classes = "govuk-input--width-10",
+                  label = Label(
+                      content = Text(Messages("ated.address.postcode"))
+                  )
+              ).withFormField(correspondenceAddressForm("postcode"))
+          )
 
-        @atedDropdown(correspondenceAddressForm("country"),
-        elementOptions = isoCodeList,
-        displayEmptyValue = true,
-        '_emptyValueText -> "",
-        '_label -> Html(messages("ated.address.country")),
-        '_labelClass -> "form-label"
-        )
+          @govukSelect(
+              Select(
+                  label = Label(
+                      content = Text(messages("ated.address.country"))
+                  ),
+                  items = Seq(SelectItem(Some(""), "")) ++ isoCodeList.map {
+                      case (code, country) => SelectItem(
+                          value = Some(code),
+                          text = country
+                      )
+                  }
+              ).withFormField(correspondenceAddressForm("country"))
+          )
 
       </fieldset>
 

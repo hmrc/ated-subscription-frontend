@@ -17,8 +17,10 @@
 @import config.ApplicationConfig
 @import views.html.helper.form
 @import views.html.helpers._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF)
+@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF, govukRadios: govukRadios)
+
 
 @(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
@@ -44,26 +46,38 @@
 @atedNoAuthMain(title = messages("ated.client-startpage-title"), userLoggedIn = true, pageScripts = Some(pageScripts)) {
 
   @pageHeadersAndError(None, "client-startpage-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.client-startpage-header"),
-Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general")))
+    Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general")))
 
   @formHelper(action = controllers.routes.SubscriptionController.continue) {
 
-    <div class="govuk-form-group">
-      @atedInputRadioGroupReveal(areYouAnAgentForm("isAgent"),
-        Seq("true" -> (messages("ated.radio.yes.label"), Some("hidden-isAnAgent")),
-            "false" -> (messages("ated.radio.no.label"), None)),
-        '_legend -> messages("ated.client-startpage-header"),
-        '_legendClass -> "govuk-visually-hidden",
-        '_groupClass -> "inline govuk-fieldset",
-        '_labelClass -> "govuk-label govuk-radios__label",
-        '_labelAfter -> true)
+      @govukRadios(
+          Radios(
+              fieldset = Some(Fieldset(
+                  classes = "govuk-radios--inline",
+                  legend = Some(Legend(
+                      classes = "govuk-visually-hidden",
+                      content = Text(Messages("ated.client-startpage-header"))
+                  ))
+              )),
+              items = Seq(
+                  RadioItem(
+                      content = Text(Messages("ated.radio.yes.label")),
+                      value = Some("true")
+                  ),
+                  RadioItem(
+                      content = Text(Messages("ated.radio.no.label")),
+                      value = Some("false")
+                  )
+              )
+          ).withFormField(areYouAnAgentForm("isAgent"))
+      )
 
-        <div id="hidden-isAnAgent" class="js-hidden govuk-body">
-            <p>
-            @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
-            </p>
-        </div>
-    </div>
+      <div id="hidden-isAnAgent" class="js-hidden govuk-body">
+          <p>
+          @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
+          </p>
+      </div>
+
     <button class="govuk-button" id="submit" type="submit">@messages("ated.client-startpage-continue")</button>
 
   }

@@ -92,7 +92,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
           document.getElementById("lede").text() must be("If we can use email rather than letters there will be less delays in dealing with enquiries.")
           document.getElementById("email-risk-question").text() must be("What are the risks of email and why we need your consent")
           document.getElementById("details-content-0").text() must include("HMRC may need to send emails to you about your ATED account")
-          document.getElementById("email-contact-hidden").text() must be("Email address")
+          document.getElementsByAttributeValue("for", "email").text() must be("Email address")
           document.getElementById("submit").text must be("Continue")
         }
       }
@@ -107,8 +107,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
           document.getElementById("backLinkHref").text() must be("Back")
           document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")
 
-          document.getElementById("emailConsent-true").attr("checked") must be("checked")
-          document.getElementById("emailConsent-false").attr("checked") must be("")
+          document.getElementById("emailConsent-2").outerHtml() must not include "checked"
+          document.getElementById("emailConsent").attr("checked") must be("")
           document.getElementById("email").attr("value") must be("abc@test.com")
 
           document.getElementById("submit").text must be("Continue")
@@ -120,8 +120,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
           val document = Jsoup.parse(contentAsString(result))
 
           document.title() must be("Can we use an email address as a point of contact?")
-          document.getElementById("emailConsent-true").attr("checked") must be("")
-          document.getElementById("emailConsent-false").attr("checked") must be("")
+          document.getElementById("emailConsent").attr("checked") must be("")
+          document.getElementById("emailConsent-2").attr("checked") must be("")
           document.getElementById("email").attr("value") must be("")
 
           document.getElementById("submit").text must be("Continue")

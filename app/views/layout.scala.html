@@ -26,8 +26,11 @@
 @this(
         appConfig: ApplicationConfig,
         govukLayout: GovukLayout,
+        hmrcHead: HmrcHead,
+        hmrcScripts: HmrcScripts,
         govukHeader: HmrcStandardHeader,
         problemLink: HmrcReportTechnicalIssue,
+        hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
         languageSelection: hmrcComponents.hmrcLanguageSelect,
         accessibilityStatementConfig: AccessibilityStatementConfig,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
@@ -53,8 +56,6 @@
 }
 
 @allScripts = {
-    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
-    <script>window.GOVUKFrontend.initAll();</script>
     @scripts
 }
 
@@ -67,7 +68,9 @@
 
 @govukLayout(
     pageTitle = pageTitle,
-    headBlock = Some(headBlock),
+    headBlock = Some(hmrcHead(
+        headBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url))
+    )),
     headerBlock = Some(siteHeader),
     beforeContentBlock = Some(beforeContentBlock),
     footerItems = Seq(
@@ -77,6 +80,6 @@
         FooterItem(href = Some(appConfig.termsConditions), text = Some(messages("footer.links.terms_and_conditions.text"))),
         FooterItem(href = Some(appConfig.govukHelp), text = Some(messages("footer.links.help_page.text")))
     ),
-    scriptsBlock = Some(allScripts),
+    scriptsBlock = Some(hmrcScripts(Some(allScripts))),
     bodyEndBlock = None
 )(content)

@@ -89,9 +89,9 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: ATED registration")
           document.getElementById("text").text() must be("This can be your authorised agent.")
-          document.getElementById("firstName_field").text() must be("First name")
-          document.getElementById("lastName_field").text() must be("Last name")
-          document.getElementById("telephone_field").text() must be("Telephone number")
+          document.getElementsByAttributeValue("for", "firstName").text() must be("First name")
+          document.getElementsByAttributeValue("for", "lastName").text() must be("Last name")
+          document.getElementsByAttributeValue("for", "telephone").text() must be("Telephone number")
 
           document.getElementById("submit").text must be("Continue")
         }
@@ -109,9 +109,9 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: Add a client")
           document.getElementById("text").text() must be("This could be your contact details as their authorised agent.")
-          document.getElementById("firstName_field").text() must be("First name")
-          document.getElementById("lastName_field").text() must be("Last name")
-          document.getElementById("telephone_field").text() must be("Telephone number")
+          document.getElementsByAttributeValue("for", "firstName").text() must be("First name")
+          document.getElementsByAttributeValue("for", "lastName").text() must be("Last name")
+          document.getElementsByAttributeValue("for", "telephone").text() must be("Telephone number")
 
           document.getElementById("submit").text must be("Continue")
         }
@@ -130,9 +130,9 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: ATED registration")
           document.getElementById("text").text() must be("This can be your authorised agent.")
-          document.getElementById("firstName_field").text() must be("First name")
-          document.getElementById("lastName_field").text() must be("Last name")
-          document.getElementById("telephone_field").text() must be("Telephone number")
+          document.getElementsByAttributeValue("for", "firstName").text() must be("First name")
+          document.getElementsByAttributeValue("for", "lastName").text() must be("Last name")
+          document.getElementsByAttributeValue("for", "telephone").text() must be("Telephone number")
           document.getElementById("firstName").attr("value") must be("ABC")
           document.getElementById("lastName").attr("value") must be("DEF")
           document.getElementById("telephone").attr("value") must be("1234567890")
