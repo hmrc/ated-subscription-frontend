@@ -8,10 +8,10 @@ private object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     ws,
     "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "5.2.0",
-    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.64.0-play-27",
+    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.76.0-play-27",
     "uk.gov.hmrc" %% "play-partials" % "8.1.0-play-27",
     "uk.gov.hmrc" %% "domain" % "5.11.0-play-27",
-    "uk.gov.hmrc" %% "http-caching-client" % "9.4.0-play-27"
+    "uk.gov.hmrc" %% "http-caching-client" % "9.5.0-play-27"
   )
 
   trait TestDependencies {
