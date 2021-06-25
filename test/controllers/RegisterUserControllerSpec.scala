@@ -102,8 +102,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
                 document.title() must be("Sorry, there is a problem with the service")
-                document.getElementsByTag("h1").text must be("ated.business-registration.generic.error.title")
-                document.getElementsByTag("p").text must be ("ated.business-registration.generic.error.message")
+                document.getElementsByTag("h1").text must be("Sorry, there is a problem with the service")
+                document.getElementsByTag("p").text must be ("Try again later.")
             }
           }
 

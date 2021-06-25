@@ -22,6 +22,7 @@ import controllers.auth.AuthFunctionality
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.Logging
+import play.api.i18n.{Messages, MessagesProvider}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest, Result}
 import services.RegisterUserService
 import uk.gov.hmrc.http.HttpResponse
@@ -93,8 +94,8 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-  private def formatEmacErrorMessage(key: String): (String, String, String) =
-    (s"ated.business-registration$key.header",
-      s"ated.business-registration$key.title",
-      s"ated.business-registration$key.message")
+  private def formatEmacErrorMessage(key: String)(implicit messagesProvider: MessagesProvider): (String, String, String) =
+    (Messages(s"ated.business-registration$key.header"),
+      Messages(s"ated.business-registration$key.title"),
+      Messages(s"ated.business-registration$key.message"))
 }
