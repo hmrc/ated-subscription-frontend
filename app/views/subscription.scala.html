@@ -19,7 +19,7 @@
 @import views.html.helpers._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 
-@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF, govukRadios: govukRadios)
+@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
 
 
 @(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
