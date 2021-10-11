@@ -1,6 +1,5 @@
 GET                 /assets/*file                               controllers.Assets.versioned(path="/public", file)
 
-->                  /govuk-frontend                             govuk.Routes
 ->                  /hmrc-frontend                              hmrcfrontend.Routes
 
 GET                 /unauthorised                               controllers.ApplicationController.unauthorised
