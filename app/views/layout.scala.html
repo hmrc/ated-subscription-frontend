@@ -64,12 +64,11 @@
 
 @hmrcLayout(
     pageTitle = pageTitle,
-    additionalHeadBlock = Some(hmrcHead(
-        headBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url))
-    )),
+    additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)),
     signOutUrl = Some(routes.ApplicationController.logout.url),
     serviceUrl = Some(routes.SubscriptionController.subscribe().url),
+    accessibilityStatementUrl = Some(routes.SubscriptionController.subscribe().url),
     beforeContentBlock = Some(beforeContentBlock),
-    additionalScriptsBlock = Some(hmrcScripts(Some(allScripts))),
+    additionalScriptsBlock = Some(allScripts),
     nonce = CSPNonce.get
 )(content)
