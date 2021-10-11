@@ -39,12 +39,6 @@
 
 @(pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-@headBlock = {
-    @hmrcTrackingConsentSnippet()
-    <!--[if lte IE 8]><link href='@routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
-    <!--[if gt IE 8]><!--><link href='@routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" /><!--<![endif]-->
-}
-
 @beforeContentBlock = {
 }
 
@@ -67,7 +61,6 @@
     additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)),
     signOutUrl = Some(routes.ApplicationController.logout.url),
     serviceUrl = Some(routes.SubscriptionController.subscribe().url),
-    accessibilityStatementUrl = Some(routes.SubscriptionController.subscribe().url),
     beforeContentBlock = Some(beforeContentBlock),
     additionalScriptsBlock = Some(allScripts),
     nonce = CSPNonce.get
