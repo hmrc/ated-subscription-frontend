@@ -21,7 +21,9 @@ import models.AtedSubscriptionAuthData
 import play.api.test.Helpers._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}
@@ -29,13 +31,12 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with AuthFunctionality with
-  UnitSpec with MockitoSugar with GuiceOneAppPerSuite {
+class AtedSubscriptionAuthHelpersSpec extends PlaySpec with AtedSubscriptionAuthHelpers with AuthFunctionality with
+  MockitoSugar with GuiceOneAppPerSuite {
 
   override val authConnector: AuthConnector = mock[AuthConnector]
   override implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
@@ -85,7 +86,7 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
     )
   }
 
-  "agentAction" should {
+  "agentAction" must {
     "redirect to the unauthorised agent assistant page" when {
       "the user has an agent affinity group" when {
         "the agent has an assistant cred role" when {
@@ -114,7 +115,7 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
               ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
 
-            val response = await(agentAction(func))
+            val response = agentAction(func)
             contentAsString(response) shouldBe "test"
 
           }
@@ -128,7 +129,7 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
               ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
 
-            val response = await(agentAction(func))
+            val response = agentAction(func)
             contentAsString(response) shouldBe "test"
 
           }
@@ -229,7 +230,7 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
 
   }
 
-  "clientAction" should {
+  "clientAction" must {
     "redirect to the unauthorised agent assistant page" when {
       "the user has an agent affinity group" when {
         "the agent has an assistant cred role" when {
@@ -287,7 +288,7 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
               ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
 
-            val response = await(clientAction(func))
+            val response = clientAction(func)
             contentAsString(response) shouldBe "test"
           }
         }
@@ -336,7 +337,7 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
               ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
 
-            val response = await(clientAction(func))
+            val response = clientAction(func)
             contentAsString(response) shouldBe "test"
           }
         }
@@ -355,7 +356,7 @@ class AtedSubscriptionAuthHelpersSpec extends AtedSubscriptionAuthHelpers with A
               ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
 
-            val response = await(clientAction(func))
+            val response = clientAction(func)
             contentAsString(response) shouldBe "test"
           }
         }

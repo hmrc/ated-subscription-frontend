@@ -20,20 +20,22 @@ import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.FakeRequest
+import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with GuiceOneAppPerSuite {
+class AuthFunctionalitySpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite {
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
@@ -73,7 +75,7 @@ class AuthFunctionalitySpec extends UnitSpec with MockitoSugar with GuiceOneAppP
     )
   }
 
-  "authoriseFor" should {
+  "authoriseFor" must {
     "authorise a user" when {
       "they have an ated enrolment" in new Setup {
         val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
