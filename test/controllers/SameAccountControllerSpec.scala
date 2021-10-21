@@ -126,6 +126,9 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
       "Authorised users" must {
 
         "respond with OK" in {
+          when(mockAppConfig.nrlPath)
+            .thenReturn("testnrlurl")
+
           getWithAuthorisedUserNRL() { result =>
             status(result) must be(SEE_OTHER)
           }

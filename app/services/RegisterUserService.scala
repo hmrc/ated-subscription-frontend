@@ -18,12 +18,13 @@ package services
 
 import config.ApplicationConfig
 import connectors._
+
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, SubscribeSuccessResponse, _}
 import play.api.Logging
+import play.api.http.Status.OK
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
-import play.api.test.Helpers.OK
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
