@@ -149,9 +149,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
               status(result) must be(BAD_REQUEST)
-              contentAsString(result) must include("You must enter Address line 1")
-              contentAsString(result) must include("You must enter Address line 2")
-              contentAsString(result) must include("You must enter Country")
+              contentAsString(result) must include("Enter address line 1")
+              contentAsString(result) must include("Enter address line 2")
+              contentAsString(result) must include("Enter a country")
             }
           }
 
@@ -221,7 +221,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
               result =>
                 status(result) must be(BAD_REQUEST)
-                contentAsString(result) must include("You must enter Country")
+                contentAsString(result) must include("Enter a country")
             }
           }
 

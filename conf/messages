@@ -17,9 +17,9 @@ ated.screen-reader.section = This section is:
 ##### VALIDATION FAILED TEMPLATE
 ated.error.summaryHeader = There is a problem with the form
 ated.error.mandatory = You must enter {0}
-ated.error.mandatory.ated.address.country = You must enter Country
-ated.error.mandatory.ated.address.line-1 = You must enter Address line 1
-ated.error.mandatory.ated.address.line-2 = You must enter Address line 2
+ated.error.mandatory.ated.address.country = Enter a country
+ated.error.mandatory.ated.address.line-1 = Enter address line 1
+ated.error.mandatory.ated.address.line-2 = Enter address line 2
 ated.error.length.ated.address.line-1 = Address line 1 must not be more than 35 characters
 ated.error.length.ated.address.line-2 = Address line 2 must not be more than 35 characters
 ated.error.length.ated.address.line-3 = Address line 3 (optional) must not be more than 35 characters
@@ -101,7 +101,7 @@ unauthorised.assistant.p4 = If no one in your organisation or your agency has ac
 
 ##### CLAIM RELIEF
 
-ated.claim-relief.error.agent-claiming = You must answer the agent question
+ated.claim-relief.error.agent-claiming = Select yes if you are an agent acting for a client
 ated.claim-relief.error.agent-claiming-true = You must sign in with your agent details if you are an agent
 
 ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href = "{0}">you need to sign in using your agent Government Gateway details</a>.
@@ -112,12 +112,12 @@ ated.appoint-agent.question.true.info3 = Enter the unique authorisation number w
 ated.appoint-agent.question.false.info1 = Register to use the new ATED online service.
 ated.appoint-agent.question.false.info2 = Select the correct relief for your property or tell us about a property that is liable for an ATED charge.
 ated.appoint-agent.question.false.info3 = Confirm and submit the relief declaration or ATED return.
-ated.appoint-agent-error.general.appointAgent = There is a problem with the appoint an agent question
-ated.are-you-an-agent-error.general.isAgent = There is a problem with the agent question
+ated.appoint-agent-error.general.appointAgent = Select yes if you want to appoint an agent to act for you
+ated.are-you-an-agent-error.general.isAgent = Select yes if you are an agent acting for a client
 
 ated.claim-relief.error.agent.false = You have entered agent details but indicated that you are not an agent. Check your details and try again.
 ated.claim-relief.error.agent.true = The details you entered do not allow you to proceed as an agent. Check your details and try again.
-ated.claim-relief.error.agent-appoint = You must answer the appoint an agent question
+ated.claim-relief.error.agent-appoint = Select yes if you want to appoint an agent to act for you
 
 ##### REGISTERED BUSINESS ADDRESS
 
@@ -132,7 +132,7 @@ ated.registered-business-address.agent.lede-text = This can be your address as t
 ated.registered-business-address.correspondence-address.yes = Yes
 ated.registered-business-address.correspondence-address.no = No
 ated.registered-business-address.continue = Continue
-ated.registered-business-address-error.correspondenceAddress = Select an option for the correspondence address
+ated.registered-business-address-error.correspondenceAddress = Select yes if this where you want us to send any letters about ATED
 
 ##### CONTACT DETAILS FORM
 
@@ -148,9 +148,9 @@ ated.contact-details.telephone = Telephone number
 
 ated.contact-details.continue = Continue
 
-ated.contact-details-first-name.error = You must enter a first name
-ated.contact-details-last-name.error = You must enter a last name
-ated.contact-details-telephone.error = You must enter a telephone number
+ated.contact-details-first-name.error = Enter a first name
+ated.contact-details-last-name.error = Enter a last name
+ated.contact-details-telephone.error = Enter a telephone number
 
 ated.contact-details-first-name.length = The first name cannot be more than 35 characters
 ated.contact-details-last-name.length = The last name cannot be more than 35 characters
@@ -173,15 +173,15 @@ ated.contact-details.email.risk.p5 = Note: If we need to send any confidential i
 
 ated.contact-details.email = Email address
 
-ated.contact-details-error.general.firstName = There is a problem with the first name. Check it and try again.
-ated.contact-details-error.general.lastName = There is a problem with the last name. Check it and try again.
-ated.contact-details-error.general.telephone = There is a problem with the telephone number. Check it and try again.
+ated.contact-details-error.general.firstName = Enter a first name
+ated.contact-details-error.general.lastName = Enter a last name
+ated.contact-details-error.general.telephone = Enter a telephone number
 
-ated.contact-details.email.error = You must answer the can we contact them by email question
+ated.contact-details.email.error = Select yes if we can use an email address as a point of contact
 
 ated.contact-details-email.length = The email address cannot be more than 241 characters.
-ated.contact-details-email.error = You must enter an email address
-ated.contact-details-emailx.error = The email address is not valid
+ated.contact-details-email.error = Enter an email address
+ated.contact-details-emailx.error = Enter a valid email address
 
 ##### CORRESPONDENCE ADDRESS
 
@@ -203,8 +203,8 @@ ated.address.postcode.field = Postcode
 ated.address.country = Country
 ated.correspondence-address.continue = Continue
 
-ated.contact-details-error.general.email = There is a problem with the email address. Check it and try again.
-ated.contact-details-error.general.emailConsent = There is a problem with the can we contact them by email question
+ated.contact-details-error.general.email = Enter an email address
+ated.contact-details-error.general.emailConsent = Select yes if we can use an email address as a point of contact
 
 ated.error.address.postalcode.format = You must enter a valid postcode
 ated.error.address.postalcode.missing-space = The postcode must contain a space
@@ -228,12 +228,12 @@ ated.review-details.overseas-tax-reference = Overseas company registration numbe
 ated.review-details.issuing-institution = Institution that issued the number
 ated.review-details.issuing-country = Country that issued the number
 
-ated.correspondence-address-error.general.line_1 = There is a problem with address line 1
-ated.correspondence-address-error.general.line_2 = There is a problem with address line 2
-ated.correspondence-address-error.general.line_3 = There is a problem with address line 3
-ated.correspondence-address-error.general.line_4 = There is a problem with address line 4
-ated.correspondence-address-error.general.postcode = There is a problem with the postcode
-ated.correspondence-address-error.general.country = There is a problem with the country field
+ated.correspondence-address-error.general.line_1 = Enter address line 1
+ated.correspondence-address-error.general.line_2 = Enter address line 2
+ated.correspondence-address-error.general.line_3 = Enter address line 3
+ated.correspondence-address-error.general.line_4 = Enter address line 4
+ated.correspondence-address-error.general.postcode = Enter a postcode
+ated.correspondence-address-error.general.country = Enter a country
 
 ated.review-details.correspondence-address = Where we will send letters about ATED
 ated.review-details.contact-details = Who we will contact about ATED
@@ -339,7 +339,7 @@ ated.business-registration-error.duplicate.identifier.message = If you require a
 ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.title = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
-ated.business-address-error.general.isCorrespondenceAddress = Select an option for the correspondence address
+ated.business-address-error.general.isCorrespondenceAddress = Select yes if this where you want us to send any letters about ATED
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
 
 ated.business-registration.generic.error.header = Sorry, there is a problem with the service
