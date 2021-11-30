@@ -79,7 +79,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
           Redirect(appConfig.loginURL, loginParams)
         case er: AuthorisationException =>
           logger.error(s"[authoriseFor] Auth exception: $er")
-          Redirect(controllers.routes.ApplicationController.unauthorised().url)
+          Redirect(controllers.routes.ApplicationController.unauthorised.url)
       }
   }
 }

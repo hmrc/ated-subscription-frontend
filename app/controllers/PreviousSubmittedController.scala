@@ -64,12 +64,12 @@ class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
               case Some(prevSubmitted) =>
                 overseasCompanyService.savePreviouslySubmitted(success) map { _ =>
                   if (prevSubmitted) {
-                    Redirect(routes.SameAccountController.viewSameAccount())
+                    Redirect(routes.SameAccountController.viewSameAccount)
                   } else {
                     Redirect(appConfig.nrlPath)
                   }
                 }
-              case _ => Future.successful(Redirect(routes.PreviousSubmittedController.view()))
+              case _ => Future.successful(Redirect(routes.PreviousSubmittedController.view))
             }
           }
         )

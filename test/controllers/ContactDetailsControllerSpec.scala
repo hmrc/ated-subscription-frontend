@@ -151,9 +151,9 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
           submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
             status(result) must be(BAD_REQUEST)
-            contentAsString(result) must include("You must enter a first name")
-            contentAsString(result) must include("You must enter a last name")
-            contentAsString(result) must include("You must enter a telephone number")
+            contentAsString(result) must include("Enter a first name")
+            contentAsString(result) must include("Enter a last name")
+            contentAsString(result) must include("Enter a telephone number")
             contentAsString(result) must not include "The telephone number is not valid"
           }
         }

@@ -37,13 +37,13 @@ trait AtedSubscriptionAuthHelpers {
           f(authContext)
         } else if (isAssistant) {
           if (isAgent) {
-            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantAgent()))
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantAgent))
           } else {
-            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantOrg()))
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantOrg))
           }
 
         } else {
-          Future.successful(Redirect(controllers.routes.ApplicationController.unauthorised()))
+          Future.successful(Redirect(controllers.routes.ApplicationController.unauthorised))
         }
     }
   }
@@ -61,9 +61,9 @@ trait AtedSubscriptionAuthHelpers {
           Future.successful(redirectToSubscription("microservice.services.business-customer.agentServiceRedirectUrl"))
         } else if (isAssistant) {
           if (isAgent) {
-            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantAgent()))
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantAgent))
           } else {
-            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantOrg()))
+            Future.successful(Redirect(controllers.routes.ApplicationController.unauthorisedAssistantOrg))
           }
         } else {
           f(authContext)

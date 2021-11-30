@@ -37,10 +37,10 @@
 
         <p class="govuk-body margin-bottom-default">@messages("ated.same-account.p2")</p>
 
-        @formHelper(action = controllers.routes.ApplicationController.logout()) {
+        @formHelper(action = controllers.routes.ApplicationController.logout) {
         <button class="govuk-button margin-bottom-default" id="submit" type="submit">@messages("ated.same-account.sign-out")</button>
         }
 
-        <p class="govuk-body"><a id="old-details" href="@controllers.routes.SameAccountController.viewInform()">@messages("ated.same-account.old-details")</a></p>
+        <p class="govuk-body"><a id="old-details" href="@controllers.routes.SameAccountController.viewInform">@messages("ated.same-account.old-details")</a></p>
     </div>
 }

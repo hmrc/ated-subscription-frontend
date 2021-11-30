@@ -144,7 +144,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
           status(result) must be(BAD_REQUEST)
-          contentAsString(result) must include("The email address is not valid")
+          contentAsString(result) must include("Enter a valid email address")
         }
       }
 
@@ -153,7 +153,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
           status(result) must be(BAD_REQUEST)
-          contentAsString(result) must include("You must enter an email address")
+          contentAsString(result) must include("Enter an email address")
         }
       }
 
@@ -162,7 +162,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
           status(result) must be(BAD_REQUEST)
-          contentAsString(result) must include("There is a problem with the can we contact them by email question")
+          contentAsString(result) must include("Select yes if we can use an email address as a point of contact")
         }
       }
 

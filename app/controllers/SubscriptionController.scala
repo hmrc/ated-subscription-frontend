@@ -40,7 +40,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
   def subscribe: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit data =>
       if (AuthUtils.isAgent) {
-        Future.successful(Redirect(controllers.routes.SubscriptionController.subscribeAgent()))
+        Future.successful(Redirect(controllers.routes.SubscriptionController.subscribeAgent))
       } else {
         Future.successful(Ok(templateSubscription(areYouAnAgentForm)))
       }
@@ -51,7 +51,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         Future.successful(
-          Ok(templateAppointAgent(appointAgentForm, Some(controllers.routes.SubscriptionController.subscribe().url)))
+          Ok(templateAppointAgent(appointAgentForm, Some(controllers.routes.SubscriptionController.subscribe.url)))
         )
       }
   }
@@ -66,7 +66,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
     clientAction { implicit user =>
       areYouAnAgentForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(templateSubscription(formWithErrors))),
-        _ => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint()))
+        _ => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint))
       )
     }
   }
@@ -75,7 +75,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
     clientAction { implicit user =>
       appointAgentForm.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(templateAppointAgent(formWithErrors,
-          Some(controllers.routes.SubscriptionController.subscribe().url)))),
+          Some(controllers.routes.SubscriptionController.subscribe.url)))),
         _ => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
       )
     }

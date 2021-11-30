@@ -37,14 +37,14 @@ class SameAccountController @Inject()(mcc: MessagesControllerComponents,
   def viewSameAccount: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(templateSameAccount(Some(controllers.routes.PreviousSubmittedController.view().url))))
+        Future.successful(Ok(templateSameAccount(Some(controllers.routes.PreviousSubmittedController.view.url))))
       }
   }
 
   def viewInform: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(templateInform(Some(controllers.routes.SameAccountController.viewSameAccount().url))))
+        Future.successful(Ok(templateInform(Some(controllers.routes.SameAccountController.viewSameAccount.url))))
       }
   }
 

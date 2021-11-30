@@ -50,7 +50,7 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
   def subscribeAndEnrolForAted: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit data =>
       if (isAgent) {
-        Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view()))
+        Future.successful(Redirect(controllers.nonUKReg.routes.DeclarationController.view))
       } else {
         for {
           subscribeAtedSuccess <- registerUserService.subscribeAted()
@@ -65,7 +65,7 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
 
   def handleEnrolResponse(enrolAtedResponse: HttpResponse)(implicit request: MessagesRequest[AnyContent]): Future[Result] = {
     enrolAtedResponse.status match {
-      case CREATED => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation()))
+      case CREATED => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation))
       case CONFLICT =>
         logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
         Future.successful(Ok(templateAlreadyRegistered()))
