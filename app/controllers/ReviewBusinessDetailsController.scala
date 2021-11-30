@@ -55,7 +55,7 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
           contactDetailsEmail,
           agentEmail,
           clientDisplayName,
-          Some(controllers.routes.ContactDetailsEmailController.editDetailsEmail().url)
+          Some(controllers.routes.ContactDetailsEmailController.editDetailsEmail.url)
         ))
       }
     }

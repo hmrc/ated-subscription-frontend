@@ -60,7 +60,7 @@
     pageTitle = pageTitle,
     additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)),
     signOutUrl = Some(routes.ApplicationController.logout.url),
-    serviceUrl = Some(routes.SubscriptionController.subscribe().url),
+    serviceUrl = Some(routes.SubscriptionController.subscribe.url),
     beforeContentBlock = Some(beforeContentBlock),
     additionalScriptsBlock = Some(allScripts),
     nonce = CSPNonce.get

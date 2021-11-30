@@ -50,13 +50,13 @@ class DeclarationController @Inject()(mcc: MessagesControllerComponents,
         agentClientFrontendMandateConnector.getOldMandateDetails flatMap {
           case Some(mandateFound) =>
             mandateService.updateMandateForNonUK(mandateFound.atedRefNumber, mandateFound.mandateId) flatMap { _ =>
-              Future.successful(Redirect(routes.ConfirmationController.view()))
+              Future.successful(Redirect(routes.ConfirmationController.view))
             }
           case None =>
             registerUserService.subscribeAted(isNonUKClientRegisteredByAgent = true) flatMap { etmpSubscriptionResponse =>
               val atedRefNo = etmpSubscriptionResponse.atedRefNumber.getOrElse(throw new RuntimeException("ated reference number not found"))
               mandateService.createMandateForNonUK(atedRefNo) flatMap { _ =>
-                Future.successful(Redirect(routes.ConfirmationController.view()))
+                Future.successful(Redirect(routes.ConfirmationController.view))
               }
             }
         }
@@ -64,6 +64,6 @@ class DeclarationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def getBackLink: Some[String] = {
-    Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
+    Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
   }
 }

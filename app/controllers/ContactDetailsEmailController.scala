@@ -66,7 +66,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
             for {
               _ <- contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
             } yield {
-              Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
+              Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
             }
           }
         )
@@ -75,7 +75,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
 
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(edit) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
+      case Some(edit) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
       case _ => Some(controllers.routes.ContactDetailsController.editDetails(None).url)
     }
   }
