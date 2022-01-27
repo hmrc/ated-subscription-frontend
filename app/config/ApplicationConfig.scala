@@ -85,9 +85,4 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val toBusinessAccountUrl: String = servicesConfig.getConfString("business-tax-account.serviceRedirectUrl", "/business-account")
 
-  lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
-  lazy val accessibilityStatement: String = servicesConfig.getString("urls.footer.accessibility_statement")
-  lazy val privacy: String = servicesConfig.getString("urls.footer.privacy_policy")
-  lazy val termsConditions: String = servicesConfig.getString("urls.footer.terms_and_conditions")
-  lazy val govukHelp: String = servicesConfig.getString("urls.footer.help_page")
 }

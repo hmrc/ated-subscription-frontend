@@ -14,42 +14,23 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.config.AccessibilityStatementConfig
-@import uk.gov.hmrc.hmrcfrontend.views.Aliases.ReportTechnicalIssue
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcReportTechnicalIssue
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, LanguageSelect}
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardHeader
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukLayout
-@import config.ApplicationConfig
 @import views.html.helper.CSPNonce
 
 @this(
-        appConfig: ApplicationConfig,
         hmrcLayout: HmrcLayout,
-        hmrcHead: HmrcHead,
-        hmrcScripts: HmrcScripts,
-        govukHeader: HmrcStandardHeader,
-        problemLink: HmrcReportTechnicalIssue,
+        problemLinkHelper: HmrcReportTechnicalIssueHelper,
         hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
-        accessibilityStatementConfig: AccessibilityStatementConfig,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
-
 @(pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-@beforeContentBlock = {
-}
-
 @content = {
-@contentBlock
-
-@problemLink(
-    ReportTechnicalIssue(serviceCode = "awrs-lookup-frontend", language = messages.lang.code match {
-        case "en" => En
-    }, classes = Some("print-hidden"))
-)
+    @contentBlock
+    @problemLinkHelper()
 }
 
 @allScripts = {
@@ -61,7 +42,6 @@
     additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)),
     signOutUrl = Some(routes.ApplicationController.logout.url),
     serviceUrl = Some(routes.SubscriptionController.subscribe.url),
-    beforeContentBlock = Some(beforeContentBlock),
     additionalScriptsBlock = Some(allScripts),
     nonce = CSPNonce.get
 )(content)
