@@ -20,7 +20,7 @@ import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessC
 
 import javax.inject.Inject
 import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, EtmpRegistrationDetails, SubscriptionData}
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.HeaderCarrier

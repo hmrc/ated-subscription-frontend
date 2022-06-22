@@ -8,10 +8,10 @@ private object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     ws,
     "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.16.0",
-    "uk.gov.hmrc" %% "play-frontend-hmrc"         % "1.27.0-play-28",
-    "uk.gov.hmrc" %% "play-partials"              % "8.2.0-play-28",
-    "uk.gov.hmrc" %% "domain"                     % "6.2.0-play-28",
-    "uk.gov.hmrc" %% "http-caching-client"        % "9.5.0-play-28"
+    "uk.gov.hmrc" %% "play-frontend-hmrc"         % "1.31.0-play-28",
+    "uk.gov.hmrc" %% "play-partials"              % "8.3.0-play-28",
+    "uk.gov.hmrc" %% "domain"                     % "8.1.0-play-28",
+    "uk.gov.hmrc" %% "http-caching-client"        % "9.6.0-play-28"
   )
 
   trait TestDependencies {
@@ -25,12 +25,12 @@ private object AppDependencies {
         "uk.gov.hmrc"                  %% "bootstrap-test-play-28" % "5.16.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"     % "5.1.0"             % scope,
         "org.pegdown"                  %  "pegdown"                % "1.6.0"             % scope,
-        "org.jsoup"                    %  "jsoup"                  % "1.14.3"            % scope,
+        "org.jsoup"                    %  "jsoup"                  % "1.15.1"            % scope,
         "com.typesafe.play"            %% "play-test"              % PlayVersion.current % scope,
         "org.scalatestplus"            %% "mockito-3-12"           % "3.2.10.0"          % scope,
-        "org.mockito"                  %  "mockito-core"           % "4.1.0"             % scope,
-        "com.fasterxml.jackson.module" %% "jackson-module-scala"   % "2.13.0"            % scope,
-        "com.github.tomakehurst"       %  "wiremock-jre8"          % "2.32.0"            % scope
+        "org.mockito"                  %  "mockito-core"           % "4.6.1"             % scope,
+        "com.fasterxml.jackson.module" %% "jackson-module-scala"   % "2.13.3"            % scope,
+        "com.github.tomakehurst"       %  "wiremock-jre8"          % "2.33.2"            % scope
       )
     }.test
   }
