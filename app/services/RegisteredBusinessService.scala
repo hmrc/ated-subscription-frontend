@@ -17,8 +17,10 @@
 package services
 
 import connectors.{AgentClientMandateFrontendConnector, AtedConnector, BusinessCustomerFrontendConnector}
+
 import javax.inject.Inject
 import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, EtmpRegistrationDetails, SubscriptionData}
+import play.api.{Logger, Logging}
 import play.api.mvc.Request
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: BusinessCustomerFrontendConnector,
                                           atedConnector: AtedConnector,
-                                          agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector)  {
+                                          agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector) extends Logging {
 
   def getBusinessCustomerDetails(implicit request: Request[_], user: AtedSubscriptionAuthData,
                                  hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessCustomerDetails] = {
@@ -38,7 +40,14 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
         }
         case NOT_FOUND =>
           agentClientMandateFrontendConnector.getOldMandateDetails flatMap  { mandateRef =>
-            val atedRefNumber = mandateRef.map(_.atedRefNumber).getOrElse(throw new RuntimeException("No Old Mandate Reference found for the client!"))
+            val atedRefNumber = mandateRef.map(_.atedRefNumber).getOrElse {
+              val agentRefNo = user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
+              val log = s"No Old Mandate Reference found for the client! - Cred Role: ${user.credentialRole} - Affinity Group: ${user.affinityGroup} - Agent Ref: $agentRefNo"
+
+              logger.error(log)
+              throw new RuntimeException(log)
+            }
+
             atedConnector.retrieveSubscriptionData(atedRefNumber) flatMap { resp =>
               resp.status match {
                 case OK =>
