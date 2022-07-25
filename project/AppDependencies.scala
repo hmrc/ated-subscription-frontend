@@ -8,7 +8,7 @@ private object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     ws,
     "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.16.0",
-    "uk.gov.hmrc" %% "play-frontend-hmrc"         % "1.31.0-play-28",
+    "uk.gov.hmrc" %% "play-frontend-hmrc"         % "3.22.0-play-28",
     "uk.gov.hmrc" %% "play-partials"              % "8.3.0-play-28",
     "uk.gov.hmrc" %% "domain"                     % "8.1.0-play-28",
     "uk.gov.hmrc" %% "http-caching-client"        % "9.6.0-play-28"
@@ -25,7 +25,7 @@ private object AppDependencies {
         "uk.gov.hmrc"                  %% "bootstrap-test-play-28" % "5.16.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"     % "5.1.0"             % scope,
         "org.pegdown"                  %  "pegdown"                % "1.6.0"             % scope,
-        "org.jsoup"                    %  "jsoup"                  % "1.15.1"            % scope,
+        "org.jsoup"                    %  "jsoup"                  % "1.15.2"            % scope,
         "com.typesafe.play"            %% "play-test"              % PlayVersion.current % scope,
         "org.scalatestplus"            %% "mockito-3-12"           % "3.2.10.0"          % scope,
         "org.mockito"                  %  "mockito-core"           % "4.6.1"             % scope,
