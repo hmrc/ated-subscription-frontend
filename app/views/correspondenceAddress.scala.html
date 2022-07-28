@@ -34,6 +34,7 @@
   <script>
     $(document).ready(function() {
       accessibleAutocomplete.enhanceSelectElement({
+        defaultValue: '',
         selectElement: document.querySelector('#country')
       })
     });
@@ -47,11 +48,11 @@
 
   <div class="govuk-body">
     <div id="correspondence-address-lede">
-    @if(isAgent) {
-      @messages("ated.correspondence-address.agent.lede")
-    } else {
-      @messages("ated.correspondence-address.lede")
-    }
+        @if(isAgent) {
+            @messages("ated.correspondence-address.agent.lede")
+        } else {
+            @messages("ated.correspondence-address.lede")
+        }
     </div>
   </div>
 
@@ -60,9 +61,9 @@
       <fieldset id="correspondence-address-form" class="govuk-fieldset">
           <legend class="govuk-visually-hidden">
               @if(isAgent) {
-              @messages("ated.correspondence-address.agent.header")
+                @messages("ated.correspondence-address.agent.header")
               } else {
-              @messages("ated.correspondence-address.header")
+                @messages("ated.correspondence-address.header")
               }
           </legend>
 
@@ -112,7 +113,7 @@
                   label = Label(
                       content = Text(messages("ated.address.country"))
                   ),
-                  items = Seq(SelectItem(Some(""), "")) ++ isoCodeList.map {
+                  items = Seq(SelectItem(Some(""), "Select a country")) ++ isoCodeList.map {
                       case (code, country) => SelectItem(
                           value = Some(code),
                           text = country
@@ -122,7 +123,6 @@
           )
 
       </fieldset>
-
 
       <button class="govuk-button" id="submit" type="submit">@messages("ated.correspondence-address.continue")</button>
 
