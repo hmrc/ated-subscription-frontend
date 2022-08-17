@@ -28,7 +28,7 @@ private object AppDependencies {
         "org.jsoup"                    %  "jsoup"                  % "1.15.2"            % scope,
         "com.typesafe.play"            %% "play-test"              % PlayVersion.current % scope,
         "org.scalatestplus"            %% "mockito-3-12"           % "3.2.10.0"          % scope,
-        "org.mockito"                  %  "mockito-core"           % "4.6.1"             % scope,
+        "org.mockito"                  %  "mockito-core"           % "4.7.0"             % scope,
         "com.fasterxml.jackson.module" %% "jackson-module-scala"   % "2.13.3"            % scope,
         "com.github.tomakehurst"       %  "wiremock-jre8"          % "2.33.2"            % scope
       )
@@ -37,5 +37,3 @@ private object AppDependencies {
 
   def apply(): Seq[ModuleID] = compile ++ Test()
 }
-
-

@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AuthUtils
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
@@ -33,7 +33,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        templateAppointAgent: views.html.appointAgent,
                                        templateAgentSubscription: views.html.agentSubscription,
                                        implicit val appConfig: ApplicationConfig
-                                      ) extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality {
+                                      ) extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality with WithDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
