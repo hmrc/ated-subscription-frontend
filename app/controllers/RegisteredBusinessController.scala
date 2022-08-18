@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedSubscriptionUtils
-
+import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
@@ -40,7 +40,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              val authConnector: DefaultAuthConnector,
                                              template: views.html.registeredBusinessAddress,
                                              implicit val appConfig: ApplicationConfig
-                                            ) extends FrontendController(mcc) with AuthFunctionality {
+                                            ) extends FrontendController(mcc) with AuthFunctionality with WithDefaultFormBinding {
 
   implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
   implicit val ec: ExecutionContext = mcc.executionContext
