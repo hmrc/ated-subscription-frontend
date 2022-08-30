@@ -30,7 +30,7 @@ class AtedSubscriptionUtilsSpec extends PlaySpec with GuiceOneServerPerSuite {
     "getSelectedCountry" must {
       "bring the correct country from the file" in new Setup {
         atedSubUtil.getSelectedCountry("GB") must be("United Kingdom")
-        atedSubUtil.getSelectedCountry("US") must be("USA")
+        atedSubUtil.getSelectedCountry("US") must be("United States")
         atedSubUtil.getSelectedCountry("VG") must be("British Virgin Islands")
         atedSubUtil.getSelectedCountry("UG") must be("Uganda")
         atedSubUtil.getSelectedCountry("zz") must be("zz")
@@ -39,7 +39,7 @@ class AtedSubscriptionUtilsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "getIsoCodeMap" must {
       "return map of country iso-code to country name" in new Setup {
-        atedSubUtil.getIsoCodeTupleList must contain(("US" , "USA :United States of America"))
+        atedSubUtil.getIsoCodeTupleList must contain(("US" , "United States"))
         atedSubUtil.getIsoCodeTupleList must contain(("GB" , "United Kingdom :UK, GB, Great Britain"))
         atedSubUtil.getIsoCodeTupleList must contain(("UG" , "Uganda"))
       }
