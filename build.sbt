@@ -36,17 +36,17 @@ lazy val microservice = Project(appName, file("."))
     scalaVersion := "2.12.12",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
-    parallelExecution in Test := false,
-    fork in Test := false
+    Test / parallelExecution := false,
+    Test / fork := false
   )
   .settings(inConfig(TemplateTest)(Defaults.testSettings): _*)
   .settings(inConfig(TemplateItTest)(Defaults.itSettings): _*)
   .configs(IntegrationTest)
   .settings(
-    Keys.fork in IntegrationTest := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
+    IntegrationTest / Keys.fork := false,
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
     addTestReportOption(IntegrationTest, "int-test-reports"),
-    parallelExecution in IntegrationTest := false,
+    IntegrationTest / parallelExecution := false,
     // ***************
     // Use the silencer plugin to suppress warnings from unused imports in compiled twirl templates
     scalacOptions += "-P:silencer:pathFilters=views;routes",
