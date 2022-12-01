@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
 import models._
 import org.jsoup.Jsoup
@@ -31,6 +30,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
+import views.html.reviewBusinessDetails
 
 import scala.concurrent.Future
 
@@ -41,20 +41,25 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
   val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
   val mockMandateService: MandateService = mock[MandateService]
 
-  val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val testAddress2 = Address("line_1", "line_2", Some("line_3"), Some("line_3"), Some("NE1 1AB"), "GB")
-  val testIdentification = Identification(idNumber = "ID123", issuingInstitution = "InstTest", issuingCountryCode = "FR")
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "LLP", businessAddress = testAddress,
-    sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None,
+  val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
+  val testAddress2: Address = Address("line_1", "line_2", Some("line_3"), Some("line_3"), Some("NE1 1AB"), "GB")
+  val testIdentification: Identification = Identification(idNumber = "ID123", issuingInstitution = "InstTest", issuingCountryCode = "FR")
+  val testReviewBusinessDetails: BusinessCustomerDetails = BusinessCustomerDetails(
+    businessName = "test Name",
+    businessType = "LLP",
+    businessAddress = testAddress,
+    sapNumber = "1234567890",
+    safeId = "EX0012345678909",
+    agentReferenceNumber = None,
     identification = Some(testIdentification)
   )
-  val testContact = ContactDetails("ABC", "DEF", "1234567890")
-  val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
-  val testContactNoEmail = ContactDetailsEmail(Some(false), "")
-  val testContactLetter = ContactDetails("ABC", "DEF", "1234567890")
-  val emailAddress = AgentEmail("test@mail.com")
-  val clientDisplayName = ClientDisplayName("client display name")
-  val injectedViewInstance = app.injector.instanceOf[views.html.reviewBusinessDetails]
+  val testContact: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
+  val testContactEmail: ContactDetailsEmail = ContactDetailsEmail(Some(true), "abc@test.com")
+  val testContactNoEmail: ContactDetailsEmail = ContactDetailsEmail(Some(false), "")
+  val testContactLetter: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
+  val emailAddress: AgentEmail = AgentEmail("test@mail.com")
+  val clientDisplayName: ClientDisplayName = ClientDisplayName("client display name")
+  val injectedViewInstance: reviewBusinessDetails = app.injector.instanceOf[views.html.reviewBusinessDetails]
 
   val testReviewDetailsController = new ReviewBusinessDetailsController(
     mockMCC,
@@ -140,7 +145,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
         }
 
         "contain details fetched from Keystore with editable business detail" in {
-          getWithAuthorisedUser (Some(testContact), Some(testContactEmail), testReviewBusinessDetails.copy(isBusinessDetailsEditable = true), testAddress = Some(testAddress)) { result =>
+          getWithAuthorisedUser (Some(testContact), Some(testContactEmail),
+            testReviewBusinessDetails.copy(isBusinessDetailsEditable = true), testAddress = Some(testAddress)) { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("business-name").text() must be("test Name")
 
@@ -148,12 +154,12 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("overseas-issuing-country-label").text() must be("Country that issued the number")
             document.getElementById("overseas-issuing-institution-label").text() must be("Institution that issued the number")
 
-            document.getElementById("registered-address").text() must be("line_1 line_2 United Kingdom")
+            document.getElementById("registered-address").text() must be("line_1 line_2 United Kingdom of Great Britain and Northern Ireland (the)")
             document.getElementById("overseas-id-number").text() must be("ID123")
             document.getElementById("overseas-issuingCountryCode").text() must be("France")
             document.getElementById("overseas-issuingInstitution").text() must be("InstTest")
 
-            document.getElementById("correspondence-address").text() must be("line_1 line_2 United Kingdom")
+            document.getElementById("correspondence-address").text() must be("line_1 line_2 United Kingdom of Great Britain and Northern Ireland (the)")
             document.getElementById("correspondence-change").text() must be("Change Where we will send letters about ATED")
             document.getElementById("correspondence-change").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
 
@@ -164,9 +170,11 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
 
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
-            document.getElementById("agent-email-address-change").attr("href") must be("http://localhost:9959/mandate/agent/email/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
+            document.getElementById("agent-email-address-change").attr("href") must be(
+              "http://localhost:9959/mandate/agent/email/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("correspondence-change").text() must be("Change Where we will send letters about ATED")
-            document.getElementById("client-display-name-change").attr("href") must be("http://localhost:9959/mandate/agent/client-display-name/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
+            document.getElementById("client-display-name-change").attr("href") must be(
+              "http://localhost:9959/mandate/agent/client-display-name/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("client-display-name").text() must be("client display name")
             document.getElementById("contact-change").text() must be("Change Who we will contact about ATED")
             document.getElementById("backLinkHref").text() must be("Back")
@@ -176,11 +184,15 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("business-name-change").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("register-address-change").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
 
-            verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(
+              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(
+              ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockMandateService, times(1)).fetchClientDisplayName(
+              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockMandateService, times(1)).fetchEmailAddress(
+              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
 
@@ -194,12 +206,15 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("backLinkHref").text() must be("Back")
             document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
 
-            verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(
+              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockMandateService, times(1)).fetchClientDisplayName(
+              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockMandateService, times(1)).fetchEmailAddress(
+              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
 
@@ -208,7 +223,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             val document = Jsoup.parse(contentAsString(result))
             document.getElementById("business-name").text() must be("test Name")
             document.getElementById("correspondence-change").attr("href") must be("/ated-subscription/correspondence-address?mode=edit")
-            document.getElementById("correspondence-address").text() must be("line_1 line_2 line_3 line_3 NE1 1AB United Kingdom")
+            document.getElementById("correspondence-address").text() must be(
+              "line_1 line_2 line_3 line_3 NE1 1AB United Kingdom of Great Britain and Northern Ireland (the)")
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
             document.getElementById("contact-change").text() must be("Change Who we will contact about ATED")
@@ -217,7 +233,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
 
             document.getElementById("contact-pref").text() must be("Not provided")
 
-            verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(
+              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockContactDetailsService, times(1)).fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
           }
@@ -239,41 +256,51 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
 
   }
 
-  def getWithAuthorisedUser(contactDetails: Option[ContactDetails], contactDetailsEmail: Option[ContactDetailsEmail], reviewDetails: BusinessCustomerDetails = testReviewBusinessDetails, testAddress: Option[Address])(test: Future[Result] => Any) {
+  def getWithAuthorisedUser(contactDetails: Option[ContactDetails], contactDetailsEmail: Option[ContactDetailsEmail],
+                            reviewDetails: BusinessCustomerDetails = testReviewBusinessDetails,
+                            testAddress: Option[Address])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(reviewDetails))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(
+      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(reviewDetails))
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetails))
     when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetailsEmail))
-    when(mockMandateService.fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(emailAddress)))
-    when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(clientDisplayName)))
+    when(mockMandateService.fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(emailAddress)))
+    when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(clientDisplayName)))
     val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
+  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def getWithAuthorisedAgent(test: Future[Result] => Any) {
+  def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(testAddress)))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(
+      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
-    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContactEmail)))
-    when(mockMandateService.fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(emailAddress)))
-    when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(clientDisplayName)))
+    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(testContactEmail)))
+    when(mockMandateService.fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(emailAddress)))
+    when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(clientDisplayName)))
     val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)

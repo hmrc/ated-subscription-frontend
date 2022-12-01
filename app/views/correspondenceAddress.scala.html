@@ -30,15 +30,15 @@
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
 @pageScripts = {
-  <script src='@routes.Assets.versioned("javascript/accessible-autocomplete.min.js")'></script>
-  <script>
-    $(document).ready(function() {
-      accessibleAutocomplete.enhanceSelectElement({
+
+    <script type="text/javascript" src='@routes.Assets.versioned("javascript/location-autocomplete.min.js")'></script>
+    <script type="text/javascript">
+      openregisterLocationPicker({
         defaultValue: '',
-        selectElement: document.querySelector('#country')
+        selectElement: document.getElementById('country'),
+        url: '@controllers.routes.Assets.versioned("location-autocomplete-graph.json")'
       })
-    });
-  </script>
+    </script>
 }
 
 @atedMain(title = if(isAgent) { messages("ated.correspondence-address.agent.title") } else { messages("ated.correspondence-address.title") }, pageScripts = Some(pageScripts)) {

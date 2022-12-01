@@ -29,19 +29,23 @@ class AtedSubscriptionUtilsSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "getSelectedCountry" must {
       "bring the correct country from the file" in new Setup {
-        atedSubUtil.getSelectedCountry("GB") must be("United Kingdom")
-        atedSubUtil.getSelectedCountry("US") must be("United States")
-        atedSubUtil.getSelectedCountry("VG") must be("British Virgin Islands")
+        atedSubUtil.getSelectedCountry("GB") must be("United Kingdom of Great Britain and Northern Ireland (the)")
+        atedSubUtil.getSelectedCountry("US") must be("United States of America (the)")
+        atedSubUtil.getSelectedCountry("VG") must be("Virgin Islands (British)")
         atedSubUtil.getSelectedCountry("UG") must be("Uganda")
+        atedSubUtil.getSelectedCountry("CI") must be("Côte d'Ivoire")
+        atedSubUtil.getSelectedCountry("AX") must be("Åland Islands")
         atedSubUtil.getSelectedCountry("zz") must be("zz")
       }
     }
 
     "getIsoCodeMap" must {
       "return map of country iso-code to country name" in new Setup {
-        atedSubUtil.getIsoCodeTupleList must contain(("US" , "United States"))
-        atedSubUtil.getIsoCodeTupleList must contain(("GB" , "United Kingdom :UK, GB, Great Britain"))
+        atedSubUtil.getIsoCodeTupleList must contain(("US" , "United States of America (the)"))
+        atedSubUtil.getIsoCodeTupleList must contain(("GB" , "United Kingdom of Great Britain and Northern Ireland (the)"))
         atedSubUtil.getIsoCodeTupleList must contain(("UG" , "Uganda"))
+        atedSubUtil.getIsoCodeTupleList must contain(("CI" , "Côte d'Ivoire"))
+        atedSubUtil.getIsoCodeTupleList must contain(("AX" , "Åland Islands"))
       }
     }
 
