@@ -19,12 +19,13 @@
 
 @import views.html.helpers._
 @import views.html.helper.form
+@import views.ViewUtils.titleBuilder
 
 @this(atedMain: atedMain, formHelper: FormWithCSRF)
 
 @(clientName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.nonUKReg.confirmation.title")) {
+@atedMain(title = titleBuilder(messages("ated.nonUKReg.confirmation.title"))) {
 
   <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
     <h1 id="confirmation-message" class="govuk-panel__title">
@@ -40,5 +41,4 @@
         @messages("ated.nonUKReg.confirmation.view-client.button")
       </button>
     }
-
 }
