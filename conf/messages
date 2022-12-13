@@ -11,6 +11,7 @@ ated.navTitle = Register for ATED
 ated.confirm-and-register = Confirm and register
 ated.confirm-and-continue = Confirm and continue
 ated.full-stop = .
+error.title.prefix = Error:
 
 ated.screen-reader.section = This section is:
 
