@@ -40,7 +40,7 @@ import scala.concurrent.Future
 class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
-  val testContact = ContactDetails("ABC", "DEF", "1234567890")
+  val testContact: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
   val injectedViewInstance: contactDetails = app.injector.instanceOf[views.html.contactDetails]
 
   val testContactDetailsController = new ContactDetailsController(mockMCC, mockContactDetailsService, mockAuthConnector, injectedViewInstance, mockAppConfig)
@@ -81,18 +81,15 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getWithAuthorisedUser(None){ result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED?")
-
-          document.getElementById("backLinkHref").text() must be("Back")
-          document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/correspondence-address")
-
-          document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
+          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.getElementsByClass("govuk-back-link").text() must be("Back")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/correspondence-address")
+          document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: ATED registration")
           document.getElementById("text").text() must be("This can be your authorised agent.")
           document.getElementsByAttributeValue("for", "firstName").text() must be("First name")
           document.getElementsByAttributeValue("for", "lastName").text() must be("Last name")
           document.getElementsByAttributeValue("for", "telephone").text() must be("Telephone number")
-
           document.getElementById("submit").text must be("Continue")
         }
       }
@@ -101,18 +98,15 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getWithAuthorisedAgent(Some("skip")) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED?")
-
-          document.getElementById("backLinkHref").text() must be("Back")
-          document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/registered-business-address")
-
-          document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
+          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.getElementsByClass("govuk-back-link").text() must be("Back")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/registered-business-address")
+          document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: Add a client")
           document.getElementById("text").text() must be("This could be your contact details as their authorised agent.")
           document.getElementsByAttributeValue("for", "firstName").text() must be("First name")
           document.getElementsByAttributeValue("for", "lastName").text() must be("Last name")
           document.getElementsByAttributeValue("for", "telephone").text() must be("Telephone number")
-
           document.getElementById("submit").text must be("Continue")
         }
       }
@@ -121,13 +115,10 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getEditWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-
-          document.title() must be("Who should we contact about ATED?")
-
-          document.getElementById("backLinkHref").text() must be("Back")
-          document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")
-
-          document.getElementById("contact-details.header").text() must be("Who should we contact about ATED?")
+          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.getElementsByClass("govuk-back-link").text() must be("Back")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/review-business-details")
+          document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: ATED registration")
           document.getElementById("text").text() must be("This can be your authorised agent.")
           document.getElementsByAttributeValue("for", "firstName").text() must be("First name")
@@ -136,7 +127,6 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           document.getElementById("firstName").attr("value") must be("ABC")
           document.getElementById("lastName").attr("value") must be("DEF")
           document.getElementById("telephone").attr("value") must be("1234567890")
-
           document.getElementById("submit").text must be("Continue")
         }
       }

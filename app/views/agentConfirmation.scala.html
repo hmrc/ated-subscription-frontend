@@ -17,13 +17,13 @@
 @import config.ApplicationConfig
 @import views.html.helpers._
 @import views.html.helper.form
+@import views.ViewUtils.titleBuilder
 
 @this(atedMain: atedMain, formHelper: FormWithCSRF)
 
 @(businessName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-
-@atedMain(title = messages("ated.business-agent.confirmation.title")) {
+@atedMain(title = titleBuilder(messages("ated.business-agent.confirmation.title"))) {
 
   <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
 
@@ -32,6 +32,6 @@
   </div>
 
     @formHelper(action = controllers.routes.AgentConfirmationController.continue) {
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.business-agent.confirmation.finish")</button>
+    <button class="govuk-button govuk-!-margin-top-5" id="submit" type="submit">@messages("ated.business-agent.confirmation.finish")</button>
     }
 }

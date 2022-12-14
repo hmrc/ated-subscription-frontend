@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
 import org.jsoup.Jsoup
 import org.mockito.Mockito._
@@ -28,15 +27,14 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-
+import views.html.{agentSubscription, appointAgent, subscription}
 import scala.concurrent.Future
-
 
 class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val injectedViewInstanceSubscription = app.injector.instanceOf[views.html.subscription]
-  val injectedViewInstanceAppointAgent = app.injector.instanceOf[views.html.appointAgent]
-  val injectedViewInstanceAgentSubscription = app.injector.instanceOf[views.html.agentSubscription]
+  val injectedViewInstanceSubscription: subscription = app.injector.instanceOf[views.html.subscription]
+  val injectedViewInstanceAppointAgent: appointAgent = app.injector.instanceOf[views.html.appointAgent]
+  val injectedViewInstanceAgentSubscription: agentSubscription = app.injector.instanceOf[views.html.agentSubscription]
   val testSubscriptionController = new SubscriptionController(mockMCC, mockAuthConnector, injectedViewInstanceSubscription, injectedViewInstanceAppointAgent, injectedViewInstanceAgentSubscription, mockAppConfig)
 
   override def beforeEach(): Unit = {
@@ -138,9 +136,9 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Set up your agency for the new ATED online service")
+              document.title() must be("Set up your agency for the new ATED online service - GOV.UK")
               document.getElementById("subtitle").text() must be("This section is: ATED agency set up")
-              document.getElementById("agent-startpage-header").text() must be("Set up your agency for the new ATED online service")
+              document.getElementById("agent-startpage-header").text() must include("Set up your agency for the new ATED online service")
               document.getElementById("lede-paragraph").text() must include("Before you can submit ATED returns on behalf of your clients you must set up your agency")
               document.getElementById("agent-startpage-text1").text() must be("You must enter your agency’s registered name and Unique Taxpayer Reference (UTR).")
               document.getElementById("agent-startpage-text2").text() must be("After setting up your details, you can add your clients.")
@@ -177,9 +175,9 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           appointWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("client-startpage-header").text() must be("Do you want to appoint an agent to act for you?")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/start-subscription")
+            document.getElementById("client-startpage-header").text() must include("Do you want to appoint an agent to act for you?")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/start-subscription")
             document.getElementById("appoint-agent-text1").text() must be("Make sure your agent has set up their agency for ATED and given you their unique authorisation number.")
             document.getElementById("appoint-agent-text2").text() must be("Register to use the new ATED online service.")
             document.getElementById("appoint-agent-text3").text() must be("Enter the unique authorisation number when asked.")
@@ -190,7 +188,6 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           }
         }
       }
-
 
       "Continue" must {
 
@@ -231,9 +228,9 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           val inputForm = Seq(("", ""))
           registerWithAuthorisedUser(inputForm) { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("appointAgent-error").text() must be("Select yes if you want to appoint an agent to act for you")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/start-subscription")
+            document.getElementById("appointAgent-error").text() must be("Error: Select yes if you want to appoint an agent to act for you")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/start-subscription")
             status(result) must be(BAD_REQUEST)
           }
         }

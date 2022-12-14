@@ -33,6 +33,7 @@ import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.HttpResponse
 import utils.Dates
+import views.html.agentConfirmation
 
 import java.util.UUID
 import scala.concurrent.Future
@@ -40,7 +41,7 @@ import scala.concurrent.Future
 class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
-  val injectedViewInstance = app.injector.instanceOf[views.html.agentConfirmation]
+  val injectedViewInstance: agentConfirmation = app.injector.instanceOf[views.html.agentConfirmation]
   val testAgentConfirmationController: AgentConfirmationController = new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
   override def beforeEach(): Unit = {
@@ -74,7 +75,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("You have successfully set up this agency for ATED")
+            document.title() must be("You have successfully set up this agency for ATED - GOV.UK")
             document.getElementById("agent-reference").text() must be(s"You have successfully set up ACME LTD for ATED on ${Dates.formatDate(LocalDate.now())}")
             document.getElementById("submit").text() must be("Add my ATED clients")
           }

@@ -21,8 +21,14 @@
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput, govukRadios: GovukRadios)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukInput: GovukInput,
+    govukRadios: GovukRadios,
+    govukErrorSummary : GovukErrorSummary,
+    govukBackLink : GovukBackLink)
 @(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(contactDetailsEmailForm) }
@@ -59,9 +65,37 @@
     )
 }
 
-@atedMain(title = messages("ated.contact-details-email-title"), pageScripts = Some(pageScripts)) {
-    @pageHeadersAndError(backLink, "subtitle", if(isAgent) {messages("ated.contact-details.agent.subheader")} else {messages("ated.contact-details.subheader")}, "contact-details-email.header", messages("ated.contact-details-email-header"),
-        Some(atedErrorSummary(contactDetailsEmailForm, "ated.contact-details-error.general")))
+@subTitleText = @{
+    if(isAgent) {messages("ated.contact-details.agent.subheader")} else {messages("ated.contact-details.subheader")}
+}
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@atedMain(title = titleBuilder(messages("ated.contact-details-email-title"), Some(contactDetailsEmailForm)), pageScripts = Some(pageScripts)) {
+
+  @backLinkHtml
+
+  @if(contactDetailsEmailForm.hasErrors) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(contactDetailsEmailForm))
+  }
+  <header>
+      <h1 id="contact-details-email.header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+          <span id="subtitle" class="govuk-caption-xl">
+              <span class="govuk-visually-hidden">
+                  @messages("ated.screen-reader.section")
+              </span>
+              @subTitleText
+          </span>
+          @messages("ated.contact-details-email-header")
+      </h1>
+  </header>
 
   <div id="lede" class="govuk-body">@messages("ated.contact-details-email-lede")</div>
 

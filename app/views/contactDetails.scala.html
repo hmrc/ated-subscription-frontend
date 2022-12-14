@@ -21,8 +21,13 @@
 @import views.html.helper.form
 @import config.ApplicationConfig
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput)
+@this(atedMain: atedMain,
+        formHelper: FormWithCSRF,
+        govukInput: GovukInput,
+        govukErrorSummary : GovukErrorSummary,
+        govukBackLink : GovukBackLink)
 
 @(contactDetailsForm: Form[ContactDetails],
     mode: Option[String],
@@ -45,14 +50,34 @@
     }
 }
 
-@atedMain(title = messages("ated.contact-details.title")) {
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
-    @pageHeadersAndError(
-        backLink,
-        "subtitle", subTitleText,
-        "contact-details.header", messages("ated.contact-details.header"),
-        Some(atedErrorSummary(contactDetailsForm, "ated.contact-details-error.general"))
-    )
+@atedMain(title = titleBuilder(messages("ated.contact-details.title"), Some(contactDetailsForm))) {
+
+    @backLinkHtml
+
+    @if(contactDetailsForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(contactDetailsForm))
+    }
+
+    <header>
+        <h1 id="contact-details.header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+             <span id="subtitle" class="govuk-caption-xl">
+                 <span class="govuk-visually-hidden">
+                     @messages("ated.screen-reader.section")
+                 </span>
+                 @subTitleText
+            </span>
+            @messages("ated.contact-details.header")
+        </h1>
+    </header>
 
     <div id="text" class="govuk-body">@ledeText</div>
 

@@ -40,7 +40,7 @@ import scala.concurrent.Future
 class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
-  val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
+  val testContactEmail: ContactDetailsEmail = ContactDetailsEmail(Some(true), "abc@test.com")
   val injectedViewInstance: contactDetailsEmail = app.injector.instanceOf[views.html.contactDetailsEmail]
 
   val testContactDetailsEmailController: ContactDetailsEmailController = new ContactDetailsEmailController(
@@ -82,12 +82,10 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
         getWithAuthorisedAgent { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Can we use an email address as a point of contact?")
-
-          document.getElementById("backLinkHref").text() must be("Back")
-          document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details")
-
-          document.getElementById("contact-details-email.header").text() must be("Can we use an email address as a point of contact?")
+          document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
+          document.getElementsByClass("govuk-back-link").text() must be("Back")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details")
+          document.getElementById("contact-details-email.header").text() must include("Can we use an email address as a point of contact?")
           document.getElementById("subtitle").text() must be("This section is: Add a client")
           document.getElementById("lede").text() must be("If we can use email rather than letters there will be less delays in dealing with enquiries.")
           document.getElementById("email-risk-question").text() must be("What are the risks of email and why we need your consent")
@@ -101,16 +99,12 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
         getWithAuthorisedAgentEdit { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-
-          document.title() must be("Can we use an email address as a point of contact?")
-
-          document.getElementById("backLinkHref").text() must be("Back")
-          document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")
-
+          document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
+          document.getElementsByClass("govuk-back-link").text() must be("Back")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/review-business-details")
           document.getElementById("emailConsent-2").outerHtml() must not include "checked"
           document.getElementById("emailConsent").attr("checked") must be("")
           document.getElementById("email").attr("value") must be("abc@test.com")
-
           document.getElementById("submit").text must be("Continue")
         }
       }
@@ -118,12 +112,10 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
         getWithAuthorisedAgentEditNoData { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-
-          document.title() must be("Can we use an email address as a point of contact?")
+          document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
           document.getElementById("emailConsent").attr("checked") must be("")
           document.getElementById("emailConsent-2").attr("checked") must be("")
           document.getElementById("email").attr("value") must be("")
-
           document.getElementById("submit").text must be("Continue")
         }
       }

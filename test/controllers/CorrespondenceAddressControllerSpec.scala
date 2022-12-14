@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
 import models.Address
 import org.jsoup.Jsoup
@@ -33,6 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
 import testHelpers.AtedTestHelper
+import views.html.correspondenceAddress
 
 import scala.concurrent.Future
 
@@ -40,8 +40,8 @@ import scala.concurrent.Future
 class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
-  val testAddress = Address("line_1", "line_2", None, None, None, "GB")
-  val injectedViewInstance = app.injector.instanceOf[views.html.correspondenceAddress]
+  val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
+  val injectedViewInstance: correspondenceAddress = app.injector.instanceOf[views.html.correspondenceAddress]
 
   val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(mockMCC, mockCorrespondenceAddressService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
@@ -65,9 +65,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           getWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Where should we send your letters about ATED?")
+            document.title() must be("Where should we send your letters about ATED? - GOV.UK")
             document.getElementById("subtitle").text() must be("This section is: ATED registration")
-            document.getElementById("correspondence-address-header").text() must be("Where should we send your letters about ATED?")
+            document.getElementById("correspondence-address-header").text() must include("Where should we send your letters about ATED?")
             document.getElementById("correspondence-address-lede").text() must be("This can be the address of your authorised agent.")
             document.getElementsByAttributeValue("for", "line_1").text() must be("Address line 1")
             document.getElementById("line_1").text() must be("")
@@ -78,8 +78,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("postcode").text() must be("")
             document.getElementsByAttributeValue("for", "country").text() must include("Country")
             document.getElementById("submit").text() must be("Continue")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/registered-business-address")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/registered-business-address")
           }
         }
 
@@ -87,10 +87,10 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           getWithAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Where should we send your client’s letters about ATED?")
+            document.title() must be("Where should we send your client’s letters about ATED? - GOV.UK")
             document.getElementById("subtitle").text() must be("This section is: Add a client")
             document.getElementById("correspondence-address-lede").text() must be("This can be your address as their authorised agent.")
-            document.getElementById("correspondence-address-header").text() must be("Where should we send your client’s letters about ATED?")
+            document.getElementById("correspondence-address-header").text() must include("Where should we send your client’s letters about ATED?")
             document.getElementsByAttributeValue("for", "line_1").text() must be("Address line 1")
             document.getElementById("line_1").text() must be("")
             document.getElementById("line_2").text() must be("")
@@ -106,17 +106,16 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
         "if data exists in keystore, fill the form with that data in the page" in {
           editWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Where should we send your letters about ATED?")
-            document.getElementById("correspondence-address-header").text() must be("Where should we send your letters about ATED?")
+            document.title() must be("Where should we send your letters about ATED? - GOV.UK")
+            document.getElementById("correspondence-address-header").text() must include("Where should we send your letters about ATED?")
             document.getElementById("correspondence-address-lede").text() must be("This can be the address of your authorised agent.")
             document.getElementById("line_1").attr("value") must be("line_1")
             document.getElementById("line_2").attr("value") must be("line_2")
             document.getElementById("line_3").attr("value") must be("")
             document.getElementById("line_4").attr("value") must be("")
             document.getElementById("postcode").attr("value") must be("")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/review-business-details")
-
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/review-business-details")
             document.getElementById("submit").text() must be("Continue")
           }
         }
@@ -174,7 +173,6 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 contentAsString(result) must include("Address line 2 must not be more than 35 characters")
             }
           }
-
 
           "Address line 3 is optional but if entered, must be maximum of 35 characters" in {
             val line3 = "a" * 36
