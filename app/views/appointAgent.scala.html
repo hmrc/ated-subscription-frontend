@@ -15,7 +15,6 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import utils._
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
@@ -25,7 +24,8 @@
         formHelper: FormWithCSRF,
         govukRadios: GovukRadios,
         govukErrorSummary : GovukErrorSummary,
-        govukBackLink : GovukBackLink)
+        govukBackLink : GovukBackLink,
+        govukButton : GovukButton)
 
 @(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
@@ -58,11 +58,11 @@
                 userLoggedIn = true,
                 pageScripts = Some(pageScripts)) {
 
-@backLinkHtml
+    @backLinkHtml
 
-@if(appointAgentForm.hasErrors) {
-    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(appointAgentForm))
-}
+    @if(appointAgentForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(appointAgentForm))
+    }
 
     <header>
         <h1 id="client-startpage-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
@@ -116,7 +116,10 @@
           </ul>
       </div>
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.client-startpage-register")</button>
+    @govukButton(Button(
+        content = Text(messages("ated.client-startpage-register")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+    ))
 
   }
 }

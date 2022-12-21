@@ -87,8 +87,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Are you an agent acting for a client?")
-              document.getElementById("client-startpage-header").text() must be("Are you an agent acting for a client?")
+              document.title() must be("Are you an agent acting for a client? - GOV.UK")
+              document.getElementById("client-startpage-header").text() must include("Are you an agent acting for a client?")
               document.getElementById("submit").text() must be("Continue")
               assert(document.select(".hmrc-header__service-name").attr("href") === "/ated-subscription/start-subscription")
 
@@ -102,7 +102,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Are you an agent acting for a client?")
+              document.title() must be("Are you an agent acting for a client? - GOV.UK")
           }
         }
       }
@@ -195,7 +195,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           val inputForm = Seq(("isAgent", "true"))
           submitWithAuthorisedUser(inputForm) { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("isAgent-error").text() must be("Select yes if you are an agent acting for a client")
+            document.getElementById("isAgent-error").text() must be("Error: You must sign in with your agent details if you are an agent")
             document.getElementById("hidden-isAnAgent").text() must include("If you are an agent acting for a client you need to sign in using your agent Government Gateway details.")
             document.getElementById("hidden-isAnAgent").getElementsByTag("a").first().attr("href") must be("http://localhost:9025/gg/sign-in?continue=http://localhost:9933/ated-subscription/start-subscription")
             status(result) must be(BAD_REQUEST)

@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import views.html.helpers._
 @import _root_.utils.AuthUtils.isAgent
 @import models._
 @import models.AtedSubscriptionAuthData
@@ -27,7 +26,8 @@
         formHelper: FormWithCSRF,
         govukInput: GovukInput,
         govukErrorSummary : GovukErrorSummary,
-        govukBackLink : GovukBackLink)
+        govukBackLink : GovukBackLink,
+        govukButton : GovukButton)
 
 @(contactDetailsForm: Form[ContactDetails],
     mode: Option[String],
@@ -107,8 +107,9 @@
             ).withFormField(contactDetailsForm("telephone"))
         )
 
-        <button class="govuk-button" id="submit" type="submit">
-            @messages("ated.contact-details.continue")
-        </button>
+        @govukButton(Button(
+            content = Text(messages("ated.contact-details.continue")),
+            attributes = Map("id" -> "submit", "type" -> "submit")
+        ))
     }
 }

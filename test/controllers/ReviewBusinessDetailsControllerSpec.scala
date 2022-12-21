@@ -105,7 +105,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Check your business details")
+            document.title() must be("Check your business details - GOV.UK")
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
@@ -116,8 +116,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("email-address-label").text() must be("Agent’s email address")
             document.getElementById("contact-pref-label").text() must be("Email address")
             document.getElementById("client-display-name-label").text() must be("Display name")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details-email-edit")
             document.select(".govuk-button").text must be("Confirm and register")
           }
         }
@@ -128,7 +128,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
 
-            document.title() must be("Check your client’s ATED details are correct")
+            document.title() must be("Check your client’s ATED details are correct - GOV.UK")
             document.getElementById("business-name-label").text() must be("Business name")
             document.getElementById("business-address-label").text() must be("Registered address")
             document.getElementById("overseas-tax-reference-label") must be(null)
@@ -138,8 +138,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("correspondence-address-label").text() must be("Where we will send letters about ATED")
             document.getElementById("contact-pref-label").text() must be("Email address")
             document.getElementById("contact-details-label").text() must be("Who we will contact about ATED")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details-email-edit")
             document.select(".govuk-button").text must be("Confirm and continue")
           }
         }
@@ -177,8 +177,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
               "http://localhost:9959/mandate/agent/client-display-name/ated?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
             document.getElementById("client-display-name").text() must be("client display name")
             document.getElementById("contact-change").text() must be("Change Who we will contact about ATED")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details-email-edit")
 
 
             document.getElementById("business-name-change").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
@@ -203,8 +203,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
 
             document.getElementById("business-name-edit") must be(null)
             document.getElementById("register-address-edit") must be(null)
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details-email-edit")
 
             verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(
               ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
@@ -228,8 +228,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
             document.getElementById("contact-change").text() must be("Change Who we will contact about ATED")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be("/ated-subscription/contact-details-email-edit")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details-email-edit")
 
             document.getElementById("contact-pref").text() must be("Not provided")
 

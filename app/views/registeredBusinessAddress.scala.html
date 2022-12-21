@@ -17,7 +17,6 @@
 @import _root_.models.Address
 @import _root_.utils.AtedSubscriptionUtils
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import utils._
 @import _root_.utils.AuthUtils.isAgent
 @import controllers.auth._
@@ -30,7 +29,8 @@
     formHelper: FormWithCSRF,
     govukRadios: GovukRadios,
     govukErrorSummary : GovukErrorSummary,
-    govukBackLink : GovukBackLink)
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
 
 @(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 
@@ -53,11 +53,11 @@
 
 @atedMain(title = titleBuilder(pageTitle, Some(businessAddressForm))) {
 
-@backLinkHtml
+    @backLinkHtml
 
-@if(businessAddressForm.hasErrors) {
-    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessAddressForm))
-}
+    @if(businessAddressForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessAddressForm))
+    }
 
     <header>
         <h1 id="registered-business-address-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
@@ -108,7 +108,9 @@
         ).withFormField(businessAddressForm("isCorrespondenceAddress"))
     )
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.registered-business-address.continue")</button>
-
+    @govukButton(Button(
+        content = Text(messages("ated.registered-business-address.continue")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+    ))
   }
 }

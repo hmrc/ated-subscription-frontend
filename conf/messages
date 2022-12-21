@@ -272,20 +272,6 @@ ated.agent-startpage-text1 = You must enter your agency’s registered name and 
 ated.agent-startpage-text2 = After setting up your details, you can add your clients.
 ated.agent-startpage-continue = Set up your agency
 
-##### SUBSCRIPTION START PAGE SIDEBAR AGENT 
-
-ated.agent-startpage-sidebar.ated-return-title = ATED return
-ated.agent-startpage-sidebar.ated-return-text = If your property is not covered by one of the reliefs it will be liable for an ATED charge.
-ated.agent-startpage-sidebar.relief-declaration-title = Relief declaration return
-ated.agent-startpage-sidebar.relief-declaration-text = Claiming a relief may mean you do not have to pay any charge on your property.
-ated.agent-startpage-sidebar.relief-declaration-link = View a list of reliefs for ATED.
-ated.agent-startpage-sidebar.about-return-title = About your returns
-ated.agent-startpage-sidebar.about-return-text = Each chargeable or relief return will be treated as an individual return whether you send them individually or together.
-ated.agent-startpage-sidebar.ated-1-title = ATED-1
-ated.agent-startpage-sidebar.ated-1-text = The ATED-1 form authorises your agent to act on your behalf with HMRC for Annual Tax on Enveloped Dwellings (ATED) or ATED related Capital Gains Tax. The ATED-1 form does not cover the new ATED service.
-ated.agent-startpage-sidebar.64-title = 64-8
-ated.agent-startpage-sidebar.64-text = The 64-8 form authorises HM Revenue and Customs (HMRC) to communicate with an accountant, tax agent or adviser acting on your behalf. The 64-8 form does not cover the new ATED online service.
-
 ##### AGENT CONFIRMATION 
 
 ated.business-agent.confirmation.finish = Add my ATED clients

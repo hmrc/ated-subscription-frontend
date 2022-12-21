@@ -17,13 +17,16 @@
 @import models._
 
 
-@import views.html.helpers._
 @import utils._
 
 @import config.ApplicationConfig
 @import _root_.utils.AtedSubscriptionUtils
 @import _root_.utils.AuthUtils.isAgent
-@this(atedMain: atedMain)
+@import views.ViewUtils.titleBuilder
+
+@this(atedMain: atedMain,
+  govukBackLink : GovukBackLink,
+  govukButton : GovukButton)
 
 @(businessDetails: BusinessCustomerDetails,
   correspondenceAddress: models.Address,
@@ -72,12 +75,30 @@
   }
 }
 
-@atedMain(title = title) {
-  @pageHeadersAndError(
-    backLink,
-    "subtitle", subtitle,
-    "review-business-details-header", header
-  )
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@atedMain(title = titleBuilder(title)) {
+
+  @backLinkHtml
+
+  <header>
+    <h1 id="review-business-details-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+      <span id="subtitle" class="govuk-caption-xl">
+          <span class="govuk-visually-hidden">
+              @messages("ated.screen-reader.section")
+          </span>
+          @subtitle
+      </span>
+      @header
+    </h1>
+  </header>
 
   <dl class="govuk-summary-list">
     <div class="govuk-summary-list__row">
@@ -321,13 +342,13 @@
     }
   </dl>
 
-  <a href="@controllers.routes.RegisterUserController.subscribeAndEnrolForAted.url"
-      class="govuk-button"
-      id="submit"
-      role="button">
-    @buttonText
-  </a>
 
-  <br />
+  <div class="govuk-from-group">
+    @govukButton(Button(
+      href = Some(controllers.routes.RegisterUserController.subscribeAndEnrolForAted.url),
+      content = Text(buttonText),
+      attributes = Map("id" -> "submit")
+    ))
+  </div>
 
 }

@@ -16,7 +16,6 @@
 
 @import config.ApplicationConfig
 @import views.html.helper.form
-@import views.html.helpers._
 @import utils._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import views.ViewUtils.titleBuilder
@@ -25,7 +24,8 @@
     formHelper: FormWithCSRF,
     govukRadios: GovukRadios,
     govukErrorSummary : GovukErrorSummary,
-    govukBackLink : GovukBackLink)
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
 @(previousSubmittedForm: Form[models.PreviousSubmittedForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(previousSubmittedForm) }
@@ -99,7 +99,10 @@
           ).withFormField(previousSubmittedForm("previousSubmitted"))
       )
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.continue")</button>
+     @govukButton(Button(
+        content = Text(messages("ated.continue")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+     ))
 
   }
 }

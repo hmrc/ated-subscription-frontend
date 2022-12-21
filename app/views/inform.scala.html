@@ -15,13 +15,14 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import views.html.helper.form
 @import views.ViewUtils.titleBuilder
 
 @this(atedMain: atedMain,
     formHelper: FormWithCSRF,
-    govukBackLink : GovukBackLink)
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
+
 @(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @backLinkHtml = {
@@ -58,6 +59,9 @@
     <p class="govuk-body margin-bottom-default">@messages("ated.inform.p3")</p>
 
     @formHelper(action = controllers.routes.SameAccountController.toNRLQuestionPage) {
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.inform.continue-to-create")</button>
+        @govukButton(Button(
+            content = Text(messages("ated.inform.continue-to-create")),
+            attributes = Map("id" -> "submit", "type" -> "submit")
+        ))
     }
 }

@@ -16,10 +16,14 @@
 
 @import config.ApplicationConfig
 @import views.html.helper.form
-@import views.html.helpers._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils.titleBuilder
 
-@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
+@this(atedNoAuthMain: atedNoAuthMain,
+    formHelper: FormWithCSRF,
+    govukRadios: GovukRadios,
+    govukErrorSummary : GovukErrorSummary,
+    govukButton : GovukButton)
 
 
 @(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
@@ -43,10 +47,23 @@
   </script>
 }
 
-@atedNoAuthMain(title = messages("ated.client-startpage-title"), userLoggedIn = true, pageScripts = Some(pageScripts)) {
+@atedNoAuthMain(title = titleBuilder(messages("ated.client-startpage-title"), Some(areYouAnAgentForm)), userLoggedIn = true, pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(None, "client-startpage-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.client-startpage-header"),
-    Some(atedErrorSummary(areYouAnAgentForm, "ated.are-you-an-agent-error.general")))
+    @if(areYouAnAgentForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(areYouAnAgentForm))
+    }
+
+    <header>
+      <h1 id="client-startpage-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+        <span id="client-startpage-subheader" class="govuk-caption-xl">
+            <span class="govuk-visually-hidden">
+                @messages("ated.screen-reader.section")
+            </span>
+            @messages("ated.registration-subheader")
+        </span>
+        @messages("ated.client-startpage-header")
+      </h1>
+  </header>
 
   @formHelper(action = controllers.routes.SubscriptionController.continue) {
 
@@ -78,7 +95,9 @@
           </p>
       </div>
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.client-startpage-continue")</button>
-
+      @govukButton(Button(
+          content = Text(messages("ated.client-startpage-continue")),
+          attributes = Map("id" -> "submit", "type" -> "submit")
+      ))
   }
 }

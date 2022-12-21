@@ -15,9 +15,7 @@
  *@
 
 @import models.AtedSubscriptionAuthData
-@import views.html.helpers._
 @import _root_.utils.AuthUtils._
-@import views.html.helpers._
 
 @import config.ApplicationConfig
 @import views.html.helper.form
@@ -30,7 +28,9 @@
     govukInput: GovukInput,
     govukSelect: GovukSelect,
     govukErrorSummary : GovukErrorSummary,
-    govukBackLink : GovukBackLink)
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
+
 @(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
@@ -166,7 +166,10 @@
 
       </fieldset>
 
-      <button class="govuk-button" id="submit" type="submit">@messages("ated.correspondence-address.continue")</button>
+      @govukButton(Button(
+        content = Text(messages("ated.correspondence-address.continue")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+      ))
 
   }
 }

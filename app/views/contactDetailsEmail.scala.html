@@ -16,7 +16,6 @@
 
 @import models._
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import _root_.utils.AuthUtils.isAgent
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
@@ -28,7 +27,9 @@
     govukInput: GovukInput,
     govukRadios: GovukRadios,
     govukErrorSummary : GovukErrorSummary,
-    govukBackLink : GovukBackLink)
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
+
 @(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(contactDetailsEmailForm) }
@@ -139,7 +140,10 @@
         ).withFormField(contactDetailsEmailForm("emailConsent"))
     )
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.contact-details.continue")</button>
+    @govukButton(Button(
+        content = Text(messages("ated.contact-details.continue")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+    ))
 
   }
 }
