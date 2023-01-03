@@ -21,7 +21,8 @@
 
 @this(atedMain: atedMain,
     govukBackLink : GovukBackLink,
-    formHelper: FormWithCSRF)
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton)
 
 @(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
@@ -57,6 +58,10 @@
   </p>
 
   @formHelper(action = controllers.nonUKReg.routes.DeclarationController.submit) {
-      <button class="govuk-button" id="submit" type="submit">@messages("ated.confirm-and-register")</button>
+
+    @govukButton(Button(
+        content = Text(messages("ated.confirm-and-register")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+    ))
   }
 }

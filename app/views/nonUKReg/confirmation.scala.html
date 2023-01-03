@@ -20,7 +20,9 @@
 @import views.html.helper.form
 @import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton)
 
 @(clientName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
@@ -36,8 +38,10 @@
     <p id="happens-next-message" class="govuk-body">@messages("ated.nonUKReg.confirmation.what-next.text")</p>
 
     @formHelper(action = controllers.nonUKReg.routes.ConfirmationController.continue) {
-      <button class="govuk-button" id="submit" type="submit">
-        @messages("ated.nonUKReg.confirmation.view-client.button")
-      </button>
+
+      @govukButton(Button(
+          content = Text(messages("ated.nonUKReg.confirmation.view-client.button")),
+          attributes = Map("id" -> "submit", "type" -> "submit")
+      ))
     }
 }
