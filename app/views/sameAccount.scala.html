@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,39 @@
 
 @import config.ApplicationConfig
 @import views.html.helper.form
-@import views.html.helpers._
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
+
 @(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
+@atedMain(title = titleBuilder(messages("ated.same-account.title"))) {
 
+    @backLinkHtml
 
-@atedMain(title = messages("ated.same-account.title")) {
-
-    <a id="backLinkHref" class="govuk-back-link" href='@backLink'>@Messages("ated.back")</a>
-    <div class="page-header page-header-margin">
-        <span class="govuk-caption-l govuk-heading-l"><span class="govuk-visually-hidden">@Messages("ated.screen-reader.section") </span>@messages("ated.registration-subheader")</span>
-        <h1 class="govuk-heading-xl">@messages("ated.same-account.title")</h1>
-    </div>
+    <header>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+          <span class="govuk-caption-xl">
+              <span class="govuk-visually-hidden">
+                  @messages("ated.screen-reader.section")
+              </span>
+              @messages("ated.registration-subheader")
+          </span>
+          @messages("ated.same-account.title")
+      </h1>
+    </header>
 
     <div>
         <p class="govuk-body">@messages("ated.same-account.p1")</p>
@@ -38,7 +56,10 @@
         <p class="govuk-body margin-bottom-default">@messages("ated.same-account.p2")</p>
 
         @formHelper(action = controllers.routes.ApplicationController.logout) {
-        <button class="govuk-button margin-bottom-default" id="submit" type="submit">@messages("ated.same-account.sign-out")</button>
+            @govukButton(Button(
+                 content = Text(messages("ated.same-account.sign-out")),
+                 attributes = Map("id" -> "submit", "type" -> "submit")
+            ))
         }
 
         <p class="govuk-body"><a id="old-details" href="@controllers.routes.SameAccountController.viewInform">@messages("ated.same-account.old-details")</a></p>

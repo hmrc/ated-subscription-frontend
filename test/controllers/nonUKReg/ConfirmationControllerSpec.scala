@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeA
         viewWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Your client has been successfully added to your ATED clients")
+          document.title() must be("Your client has been successfully added to your ATED clients - GOV.UK")
         }
       }
     }

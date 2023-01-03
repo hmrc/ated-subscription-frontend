@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  *@
 
 @import config.ApplicationConfig
-@this(atedNoAuthMain: atedNoAuthMain)
+@import views.ViewUtils.titleBuilder
+
+@this(atedNoAuthMain: atedNoAuthMain, govukButton : GovukButton)
+
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-
-
-@atedNoAuthMain(title = messages("unauthorised.assistant.agent.title"), userLoggedIn = true) {
+@atedNoAuthMain(title = titleBuilder(messages("unauthorised.assistant.agent.title")), userLoggedIn = true) {
 
   <h1 class="govuk-heading-xl" id="unauthorised-agent-header">@messages("unauthorised.assistant.agent.header")</h1>
 
@@ -28,7 +29,8 @@
 
   <p class="govuk-body">@messages("unauthorised.assistant.agent.p1.a")
       <a href=@messages("unauthorised.assistant.agent.p1.link")>@messages("unauthorised.assistant.agent.p1.link-text")</a>@messages("ated.full-stop")
-      @messages("unauthorised.assistant.agent.p1.b")</p>
+      @messages("unauthorised.assistant.agent.p1.b")
+  </p>
 
   <ol class="govuk-list govuk-list--number">
    <li>@messages("unauthorised.assistant.agent.ol1.li1")
@@ -44,9 +46,10 @@
       @messages("unauthorised.assistant.agent.p3") <a href=@appConfig.agentAtedSummaryPath>@messages("unauthorised.assistant.agent.p3.link-text")</a>@messages("ated.full-stop")
   </p>
 
-    <p class="govuk-body">@messages("unauthorised.assistant.agent.p4.a")
-  <a href=@appConfig.helpdeskUrl>@messages("unauthorised.assistant.agent.p4.a.link-text")</a>
-     @messages("unauthorised.assistant.agent.p4.b")</p>
+   <p class="govuk-body">@messages("unauthorised.assistant.agent.p4.a")
+       <a href=@appConfig.helpdeskUrl>@messages("unauthorised.assistant.agent.p4.a.link-text")</a>
+       @messages("unauthorised.assistant.agent.p4.b")
+   </p>
 
   <p class="govuk-body">@messages("unauthorised.assistant.agent.p5.a")</p>
 
@@ -57,6 +60,12 @@
    <li>@messages("unauthorised.assistant.agent.ul2.li4")</li>
   </ul>
 
-  <a href="@controllers.routes.ApplicationController.redirectToGuidance" id="submit" class="govuk-button" role="button">@messages("ated.sign-out")</a>
-    <br />
+   <div class="govuk-form-group">
+       @govukButton(Button(
+           href = Some(controllers.routes.ApplicationController.redirectToGuidance.url),
+           content = Text(messages("ated.sign-out")),
+           attributes = Map("id" -> "submit")
+       ))
+   </div>
+
 }

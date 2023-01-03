@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,17 @@
 
 @import config.ApplicationConfig
 @import views.html.helper.form
-@import views.html.helpers._
 @import utils._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils.titleBuilder
 
-@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
+@this(atedNoAuthMain: atedNoAuthMain,
+    formHelper: FormWithCSRF,
+    govukRadios: GovukRadios,
+    govukErrorSummary : GovukErrorSummary,
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
 @(previousSubmittedForm: Form[models.PreviousSubmittedForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
-
-
 
 @implicitFormInstance = @{ Some(previousSubmittedForm) }
 
@@ -39,12 +42,36 @@
   </script>
 }
 
-@atedNoAuthMain(title = messages("ated.prev-submitted.title"),
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@atedNoAuthMain(title = titleBuilder(messages("ated.prev-submitted.title"), Some(previousSubmittedForm)),
                 userLoggedIn = true,
                 pageScripts = Some(pageScripts)) {
 
-@pageHeadersAndError(backLink, "client-appoint-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.prev-submitted.title"),
-    Some(atedErrorSummary(previousSubmittedForm, "ated.previous-submitted.general")))
+  @backLinkHtml
+
+  @if(previousSubmittedForm.hasErrors) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(previousSubmittedForm))
+  }
+
+  <header>
+      <h1 id="client-startpage-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+          <span id="client-appoint-subheader" class="govuk-caption-xl">
+              <span class="govuk-visually-hidden">
+                  @messages("ated.screen-reader.section")
+              </span>
+              @messages("ated.registration-subheader")
+          </span>
+          @messages("ated.prev-submitted.title")
+      </h1>
+  </header>
 
   <div class="govuk-body">@messages("ated.prev-submitted.p1")</div>
 
@@ -72,8 +99,10 @@
           ).withFormField(previousSubmittedForm("previousSubmitted"))
       )
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.continue")</button>
+     @govukButton(Button(
+        content = Text(messages("ated.continue")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+     ))
 
   }
-
 }

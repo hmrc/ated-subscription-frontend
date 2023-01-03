@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.BusinessCustomerFrontendConnector
 import models.PreviousSubmittedForm
@@ -32,6 +31,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import services.OverseasCompanyService
 import testHelpers.AtedTestHelper
+import views.html.previous_submitted
 
 import scala.concurrent.Future
 
@@ -39,7 +39,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
   val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
   val mockOverseasService: OverseasCompanyService = mock[OverseasCompanyService]
-  val injectedViewInstance = app.injector.instanceOf[views.html.previous_submitted]
+  val injectedViewInstance: previous_submitted = app.injector.instanceOf[views.html.previous_submitted]
   val testPreviousSubmittedController: PreviousSubmittedController = new PreviousSubmittedController(mockMCC, mockBCConnector, mockOverseasService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
   override def beforeEach(): Unit = {
@@ -74,7 +74,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Has this company submitted ATED returns before?")
+            document.title() must be("Has this company submitted ATED returns before? - GOV.UK")
           }
         }
 
@@ -83,7 +83,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Has this company submitted ATED returns before?")
+            document.title() must be("Has this company submitted ATED returns before? - GOV.UK")
           }
         }
       }
@@ -144,7 +144,6 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
     test(result)
   }
 
-
   def getWithAuthorisedUser(businessName: String, data: Option[PreviousSubmittedForm] = None)(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
@@ -168,7 +167,6 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
     val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
-
 
   def continueWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"

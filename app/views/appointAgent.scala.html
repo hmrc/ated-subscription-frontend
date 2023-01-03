@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,17 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import utils._
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import views.ViewUtils.titleBuilder
 
-@this(atedNoAuthMain: atedNoAuthMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
+@this(atedNoAuthMain: atedNoAuthMain,
+        formHelper: FormWithCSRF,
+        govukRadios: GovukRadios,
+        govukErrorSummary : GovukErrorSummary,
+        govukBackLink : GovukBackLink,
+        govukButton : GovukButton)
 
 @(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
@@ -29,23 +34,47 @@
 @pageScripts = {
     <script src='@routes.Assets.versioned("javascript/show-hide-content.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascript/subscription.js")'></script>
-  <script>
-    $(document).ready(function() {
-        showHideAppointAgentSection();
-      // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
+     <script>
+       $(document).ready(function() {
+           showHideAppointAgentSection();
+         // Where .multiple-choice uses the data-target attribute
+         // to toggle hidden content
+         var showHideContent = new GOVUK.ShowHideContent()
+         showHideContent.init()
+       });
+     </script>
 }
 
-@atedNoAuthMain(title = messages("ated.client-startpage-appoint-title"),
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@atedNoAuthMain(title = titleBuilder(messages("ated.client-startpage-appoint-title"), Some(appointAgentForm)),
                 userLoggedIn = true,
                 pageScripts = Some(pageScripts)) {
 
-  @pageHeadersAndError(backLink, "client-appoint-subheader", messages("ated.registration-subheader"), "client-startpage-header", messages("ated.client-startpage-appoint-header"),
-    Some(atedErrorSummary(appointAgentForm, "ated.appoint-agent-error.general")))
+    @backLinkHtml
+
+    @if(appointAgentForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(appointAgentForm))
+    }
+
+    <header>
+        <h1 id="client-startpage-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+             <span id="client-appoint-subheader" class="govuk-caption-xl">
+                 <span class="govuk-visually-hidden">
+                     @messages("ated.screen-reader.section")
+                 </span>
+                 @messages("ated.registration-subheader")
+            </span>
+            @messages("ated.client-startpage-appoint-header")
+        </h1>
+    </header>
 
   @formHelper(action = controllers.routes.SubscriptionController.register) {
 
@@ -87,8 +116,10 @@
           </ul>
       </div>
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.client-startpage-register")</button>
+    @govukButton(Button(
+        content = Text(messages("ated.client-startpage-register")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+    ))
 
   }
-
 }

@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  *@
 
 @import config.ApplicationConfig
+@import views.ViewUtils.titleBuilder
+
 @this(atedNoAuthMain: atedNoAuthMain)
+
 @()(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-
-
-@atedNoAuthMain(title = messages("unauthorised.title"), supportLinkEnabled = false, userLoggedIn=true) {
+@atedNoAuthMain(title = titleBuilder(messages("unauthorised.title")), supportLinkEnabled = false, userLoggedIn=true) {
 
   <h1 class="govuk-heading-xl">@messages("unauthorised.header")</h1>
 

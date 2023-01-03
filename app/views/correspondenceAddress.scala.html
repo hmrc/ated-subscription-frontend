@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,22 @@
  *@
 
 @import models.AtedSubscriptionAuthData
-@import views.html.helpers._
 @import _root_.utils.AuthUtils._
-@import views.html.helpers._
 
 @import config.ApplicationConfig
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF, govukInput: GovukInput, govukSelect: GovukSelect)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukInput: GovukInput,
+    govukSelect: GovukSelect,
+    govukErrorSummary : GovukErrorSummary,
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
+
 @(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
@@ -41,10 +47,46 @@
     </script>
 }
 
-@atedMain(title = if(isAgent) { messages("ated.correspondence-address.agent.title") } else { messages("ated.correspondence-address.title") }, pageScripts = Some(pageScripts)) {
-  @pageHeadersAndError(backLink, "subtitle", if(isAgent) {messages("ated.correspondence-address.agent.subheader")} else {messages("ated.correspondence-address.subheader")},
-  "correspondence-address-header", if(isAgent) {messages("ated.correspondence-address.agent.header")} else {messages("ated.correspondence-address.header")},
-    Some(atedErrorSummary(correspondenceAddressForm, "ated.correspondence-address-error.general")))
+@pageTitle = @{
+    if(isAgent) {messages("ated.correspondence-address.agent.title")} else {messages("ated.correspondence-address.title")}
+}
+
+@subTitleText = @{
+    if(isAgent) {messages("ated.correspondence-address.agent.subheader")} else {messages("ated.correspondence-address.subheader")}
+}
+
+@header = @{
+    if(isAgent) {messages("ated.correspondence-address.agent.header")} else {messages("ated.correspondence-address.header")}
+}
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@atedMain(title = titleBuilder(pageTitle, Some(correspondenceAddressForm)), pageScripts = Some(pageScripts)) {
+
+  @backLinkHtml
+
+  @if(correspondenceAddressForm.hasErrors) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(correspondenceAddressForm))
+  }
+
+  <header>
+      <h1 id="correspondence-address-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+          <span id="subtitle" class="govuk-caption-xl">
+              <span class="govuk-visually-hidden">
+                  @messages("ated.screen-reader.section")
+              </span>
+              @subTitleText
+          </span>
+          @header
+      </h1>
+  </header>
 
   <div class="govuk-body">
     <div id="correspondence-address-lede">
@@ -124,7 +166,10 @@
 
       </fieldset>
 
-      <button class="govuk-button" id="submit" type="submit">@messages("ated.correspondence-address.continue")</button>
+      @govukButton(Button(
+        content = Text(messages("ated.correspondence-address.continue")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+      ))
 
   }
 }

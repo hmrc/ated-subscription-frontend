@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,20 +80,20 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           when(mockAppConfig.backToBusinessCustomerUrl).thenReturn(backToBusinessCustomerUrl)
           withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where you want us to send any letters about ATED?")
+            document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
-            document.getElementById("registered-business-address-header").text() must be("Is this where you want us to send any letters about ATED?")
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be(backToBusinessCustomerUrl)
+            document.getElementById("registered-business-address-header").text() must include("Is this where you want us to send any letters about ATED?")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be(backToBusinessCustomerUrl)
           }
         }
 
         "contain title and header as Your correspondence address for agent registering non-uk client" in {
           withAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where we should send your client’s letters about ATED?")
+            document.title() must be("Is this where we should send your client’s letters about ATED? - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: Add a client")
-            document.getElementById("registered-business-address-header").text() must be("Is this where we should send your client’s letters about ATED?")
+            document.getElementById("registered-business-address-header").text() must include("Is this where we should send your client’s letters about ATED?")
           }
         }
 
@@ -186,8 +186,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           val inputJson = Json.parse( """{ "isCorrespondenceAddress": "1111" }""")
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be(backToBusinessCustomerUrl)
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be(backToBusinessCustomerUrl)
             status(result) must be(BAD_REQUEST)
           }
         }
@@ -196,8 +196,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           val inputJson = Json.parse( """{ "isCorrespondenceAddress": "" }""")
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("backLinkHref").text() must be("Back")
-            document.getElementById("backLinkHref").attr("href") must be(backToBusinessCustomerUrl)
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be(backToBusinessCustomerUrl)
             status(result) must be(BAD_REQUEST)
           }
         }

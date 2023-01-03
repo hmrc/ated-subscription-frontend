@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,40 +15,43 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import views.html.helper.form
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukPanel : GovukPanel,
+    govukButton : GovukButton)
 
 @(date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 
-@atedMain(title = messages("ated.registered-user.title")) {
+@atedMain(title = titleBuilder(messages("ated.registered-user.title"))) {
 
-  <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
+    @govukPanel(Panel(
+        title = Text(messages("ated.registered-user.confirmation.message", date)),
+        attributes = Map("id" -> "banner")
+    ))
 
-    <h1 id="header" class="govuk-panel__title">
-      @messages("ated.registered-user.confirmation.message", date)
-    </h1>
+    <div class="govuk-form-group">
 
-  </div>
-
-  <div class="govuk-form-group">
-
-      <p class="govuk-body" id="happens-next">
-        @messages("ated.registered-user.confirmation.you-can")
-      </p>
+        <p class="govuk-body" id="happens-next">
+          @messages("ated.registered-user.confirmation.you-can")
+        </p>
 
 
-    <ul class="govuk-list govuk-list--bullet">
-      <li id="instruction-1">@messages("ated.registered-user.confirmation.instruction1")</li>
-      <li id="instruction-2">@messages("ated.registered-user.confirmation.instruction2")</li>
-    </ul>
+      <ul class="govuk-list govuk-list--bullet">
+        <li id="instruction-1">@messages("ated.registered-user.confirmation.instruction1")</li>
+        <li id="instruction-2">@messages("ated.registered-user.confirmation.instruction2")</li>
+      </ul>
 
-  </div>
+    </div>
 
     @formHelper(action = controllers.routes.RegisterUserController.redirectToAted) {
-      <button class="govuk-button" id="submit" type="submit">@messages("ated.continue")</button>
+        @govukButton(Button(
+            content = Text(messages("ated.continue")),
+            attributes = Map("id" -> "submit", "type" -> "submit")
+        ))
     }
 
 }

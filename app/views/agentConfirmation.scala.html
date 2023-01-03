@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,29 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import views.html.helper.form
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton,
+    govukPanel : GovukPanel)
 
 @(businessName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
+@atedMain(title = titleBuilder(messages("ated.business-agent.confirmation.title"))) {
 
-@atedMain(title = messages("ated.business-agent.confirmation.title")) {
-
-  <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
-
-    <h1 id="agent-reference" class="govuk-panel__title">@messages("ated.business-agent.confirmation.reference", businessName, date)</h1>
-
-  </div>
+      @govukPanel(Panel(
+      title = Text(messages("ated.business-agent.confirmation.reference", businessName, date)),
+      attributes = Map("id" -> "banner")
+      ))
 
     @formHelper(action = controllers.routes.AgentConfirmationController.continue) {
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.business-agent.confirmation.finish")</button>
+    <div class="govuk-!-margin-top-5">
+      @govukButton(Button(
+          content = Text(messages("ated.business-agent.confirmation.finish")),
+          attributes = Map("id" -> "submit", "type" -> "submit")
+      ))
+    </div>
     }
 }

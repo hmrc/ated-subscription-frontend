@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,20 @@
 @import _root_.models.Address
 @import _root_.utils.AtedSubscriptionUtils
 @import config.ApplicationConfig
-
-
-@import views.html.helpers._
 @import utils._
 @import _root_.utils.AuthUtils.isAgent
 @import controllers.auth._
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF, govukRadios: GovukRadios)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukRadios: GovukRadios,
+    govukErrorSummary : GovukErrorSummary,
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
 
 @(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 
@@ -34,10 +38,38 @@
 
 @header = @{if(isAgent) {messages("ated.registered-business-address.agent.header")} else {messages("ated.registered-business-address.header")}}
 
-@atedMain(title = if(isAgent) { messages("ated.registered-business-address.agent.title") } else { messages("ated.registered-business-address.title") }) {
-  @pageHeadersAndError(backLink, "business-registered-text", if(isAgent) {messages("ated.registered-business-address.agent.sub-header")} else {messages("ated.registered-business-address.sub-header")},
-    "registered-business-address-header", header,
-    Some(atedErrorSummary(businessAddressForm, "ated.business-address-error.general")))
+@subHeader = @{if(isAgent) {messages("ated.registered-business-address.agent.sub-header")} else {messages("ated.registered-business-address.sub-header")}}
+
+@pageTitle = @{if(isAgent) {messages("ated.registered-business-address.agent.title")} else {messages("ated.registered-business-address.title")}}
+
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
+
+@atedMain(title = titleBuilder(pageTitle, Some(businessAddressForm))) {
+
+    @backLinkHtml
+
+    @if(businessAddressForm.hasErrors) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessAddressForm))
+    }
+
+    <header>
+        <h1 id="registered-business-address-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+             <span id="business-registered-text" class="govuk-caption-xl">
+                 <span class="govuk-visually-hidden">
+                     @messages("ated.screen-reader.section")
+                 </span>
+                 @subHeader
+            </span>
+            @header
+        </h1>
+    </header>
 
     @if(isAgent) {
       <div id="lede-agent-text" class="govuk-body">@messages("ated.registered-business-address.agent.lede-text") </div>
@@ -76,8 +108,9 @@
         ).withFormField(businessAddressForm("isCorrespondenceAddress"))
     )
 
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.registered-business-address.continue")</button>
-
+    @govukButton(Button(
+        content = Text(messages("ated.registered-business-address.continue")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+    ))
   }
-
 }

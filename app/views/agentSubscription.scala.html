@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,34 @@
 @this(atedNoAuthMain: atedNoAuthMain)
 @()(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-
-@import views.html.helpers._
 @import utils._
+@import views.ViewUtils.titleBuilder
 
-@atedNoAuthMain(title = messages("ated.agent-startpage-title"), userLoggedIn = true) {
+@atedNoAuthMain(title = titleBuilder(messages("ated.agent-startpage-title")), userLoggedIn = true) {
 
-    @pageHeadersAndError(
-        None,
-        "subtitle",
-        messages("ated.agent-startpage-subheader"),
-        "agent-startpage-header",
-        messages("ated.agent-startpage-header")
-    )
+    <header>
+        <h1 id="agent-startpage-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+             <span id="subtitle" class="govuk-caption-xl">
+                 <span class="govuk-visually-hidden">
+                     @messages("ated.screen-reader.section")
+                 </span>
+                 @messages("ated.agent-startpage-subheader")
+            </span>
+            @messages("ated.agent-startpage-header")
+        </h1>
+    </header>
 
     <p id="lede-paragraph" class="govuk-body">@messages("ated.agent-startpage-lede")</p>
 
     <p id="agent-startpage-text1" class="govuk-body">@messages("ated.agent-startpage-text1")</p>
     <p id="agent-startpage-text2" class="govuk-body margin-bottom-default">@messages("ated.agent-startpage-text2")</p>
 
-    <a href="@controllers.routes.SubscriptionController.continue.url"
-        class="govuk-button"
-        id="submit"
-        role="button">
-            @messages("ated.agent-startpage-continue")
-    </a>
-
-    <br />
+    <div class="govuk-form-group">
+        <a href="@controllers.routes.SubscriptionController.continue.url"
+            class="govuk-button"
+            id="submit"
+            role="button">
+                @messages("ated.agent-startpage-continue")
+        </a>
+    </div>
 }

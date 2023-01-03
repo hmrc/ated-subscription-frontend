@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,31 @@
 @import config.ApplicationConfig
 
 
-@import views.html.helpers._
 @import views.html.helper.form
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton,
+    govukPanel : GovukPanel)
 
 @(clientName: String, date: String)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@atedMain(title = messages("ated.nonUKReg.confirmation.title")) {
+@atedMain(title = titleBuilder(messages("ated.nonUKReg.confirmation.title"))) {
 
-  <div id="banner" class="transaction-banner--complete govuk-panel govuk-panel--confirmation">
-    <h1 id="confirmation-message" class="govuk-panel__title">
-      @messages("ated.nonUKReg.confirmation.header", clientName, date)
-    </h1>
-     </div>
+    @govukPanel(Panel(
+      title = Text(messages("ated.nonUKReg.confirmation.header", clientName, date)),
+      attributes = Map("id" -> "banner")
+    ))
 
     <h2 id="what-happens-next" class="govuk-heading-l">@messages("ated.nonUKReg.confirmation.what-next")</h2>
     <p id="happens-next-message" class="govuk-body">@messages("ated.nonUKReg.confirmation.what-next.text")</p>
 
     @formHelper(action = controllers.nonUKReg.routes.ConfirmationController.continue) {
-      <button class="govuk-button" id="submit" type="submit">
-        @messages("ated.nonUKReg.confirmation.view-client.button")
-      </button>
-    }
 
+      @govukButton(Button(
+          content = Text(messages("ated.nonUKReg.confirmation.view-client.button")),
+          attributes = Map("id" -> "submit", "type" -> "submit")
+      ))
+    }
 }

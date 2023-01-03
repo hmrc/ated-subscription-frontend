@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,40 @@
  *@
 
 @import config.ApplicationConfig
-@import views.html.helpers._
 @import views.html.helper.form
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain,
+    formHelper: FormWithCSRF,
+    govukBackLink : GovukBackLink,
+    govukButton : GovukButton)
+
 @(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
+@atedMain(title = titleBuilder(messages("ated.inform.title"))) {
 
+    @backLinkHtml
 
-@atedMain(title = messages("ated.inform.title")) {
-
-    <a id="backLinkHref" class="govuk-back-link" href='@backLink'>@Messages("ated.back")</a>
-    <div class="page-header page-header-margin">
-        <span class="govuk-caption-l govuk-heading-l"><span class="govuk-visually-hidden">@Messages("ated.screen-reader.section") </span>@messages("ated.registration-subheader")</span>
-        <h1 class="govuk-heading-xl">@messages("ated.inform.title")</h1>
-    </div>
+    <header>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
+          <span class="govuk-caption-xl">
+              <span class="govuk-visually-hidden">
+                  @messages("ated.screen-reader.section")
+              </span>
+              @messages("ated.registration-subheader")
+          </span>
+          @messages("ated.inform.title")
+      </h1>
+    </header>
 
     <p class="govuk-body">@messages("ated.inform.p1")</p>
 
@@ -41,6 +59,9 @@
     <p class="govuk-body margin-bottom-default">@messages("ated.inform.p3")</p>
 
     @formHelper(action = controllers.routes.SameAccountController.toNRLQuestionPage) {
-    <button class="govuk-button" id="submit" type="submit">@messages("ated.inform.continue-to-create")</button>
+        @govukButton(Button(
+            content = Text(messages("ated.inform.continue-to-create")),
+            attributes = Map("id" -> "submit", "type" -> "submit")
+        ))
     }
 }

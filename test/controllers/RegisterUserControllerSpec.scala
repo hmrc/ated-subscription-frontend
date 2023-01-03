@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,15 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import views.html.{alreadyRegistered, global_error, registerUserConfirmation}
+
 import scala.concurrent.Future
 
 class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite with BeforeAndAfterEach with AtedTestHelper {
 
-  val injectedViewInstanceAlreadyRegistered = app.injector.instanceOf[views.html.alreadyRegistered]
-  val injectedViewInstanceRegisterUserConfirmation = app.injector.instanceOf[views.html.registerUserConfirmation]
-  val injectedViewInstanceError = app.injector.instanceOf[views.html.global_error]
+  val injectedViewInstanceAlreadyRegistered: alreadyRegistered = app.injector.instanceOf[views.html.alreadyRegistered]
+  val injectedViewInstanceRegisterUserConfirmation: registerUserConfirmation = app.injector.instanceOf[views.html.registerUserConfirmation]
+  val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
   val testRegisterUserWithEMACController = new RegisterUserController(mockMCC, mockRegisterUserService, mockAuthConnector,injectedViewInstanceAlreadyRegistered, injectedViewInstanceRegisterUserConfirmation, injectedViewInstanceError, mockAppConfig)
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -92,7 +94,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               result =>
                 status(result) must be(OK)
                 val document = Jsoup.parse(contentAsString(result))
-                document.title() must be("Somebody has already registered from your organisation")
+                document.title() must be("Somebody has already registered from your organisation - GOV.UK")
             }
           }
 
@@ -123,8 +125,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           confirmationWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("You have successfully registered for ATED")
-            document.getElementById("header").text() must include("You have successfully registered for ATED")
+            document.title() must be("You have successfully registered for ATED - GOV.UK")
+            document.getElementById("banner").text() must include("You have successfully registered for ATED")
             document.getElementById("happens-next").text() must be("Use this service to:")
             document.getElementById("instruction-1").text() must be("create an ATED return")
             document.getElementById("instruction-2").text() must be("appoint an ATED-registered agent")
@@ -147,7 +149,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   val enrolResp: JsValue = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
   val userId = s"user-${UUID.randomUUID}"
-  val successResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
+  val successResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
 
   def registerWithUnAuthorisedUser(test: Future[Result] => Any) {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)

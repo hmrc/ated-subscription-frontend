@@ -1,5 +1,5 @@
 @*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,39 @@
 @import models._
 @import config.ApplicationConfig
 @import views.html.helper.form
-@import views.html.helpers._
+@import views.ViewUtils.titleBuilder
 
-@this(atedMain: atedMain, formHelper: FormWithCSRF)
+@this(atedMain: atedMain,
+    govukBackLink : GovukBackLink,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton)
+
 @(backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
+@backLinkHtml = {
+    @if(backLink.isDefined) {
+        @govukBackLink(BackLink(
+            href = backLink.get,
+            content = Text("Back")
+        ))
+    }
+}
 
+@atedMain(title = titleBuilder(messages("ated.nonUKReg.declaration.title"))) {
 
-@atedMain(title = messages("ated.nonUKReg.declaration.title")) {
+  @backLinkHtml
 
-  @pageHeadersAndError(backLink, "subtitle", messages("ated.nonUKReg.declaration.sub-header"), "declaration-header", messages("ated.nonUKReg.declaration.header"))
+  <header>
+     <h1 id="declaration-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+         <span id="subtitle" class="govuk-caption-xl">
+             <span class="govuk-visually-hidden">
+                 @messages("ated.screen-reader.section")
+             </span>
+             @messages("ated.nonUKReg.declaration.sub-header")
+         </span>
+         @messages("ated.nonUKReg.declaration.header")
+     </h1>
+  </header>
 
   <p id="declaration-lede" class="govuk-body"> @messages("ated.nonUKReg.declaration.before-declaration-text") </p>
 
@@ -36,8 +59,9 @@
 
   @formHelper(action = controllers.nonUKReg.routes.DeclarationController.submit) {
 
-      <button class="govuk-button" id="submit" type="submit">@messages("ated.confirm-and-register")</button>
-
+    @govukButton(Button(
+        content = Text(messages("ated.confirm-and-register")),
+        attributes = Map("id" -> "submit", "type" -> "submit")
+    ))
   }
-
 }

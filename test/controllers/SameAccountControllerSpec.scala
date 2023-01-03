@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
-
 import org.jsoup.Jsoup
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -29,13 +27,14 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
+import views.html.{inform, sameAccount}
 
 import scala.concurrent.Future
 
 class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val injectedViewInstanceSameAccount = app.injector.instanceOf[views.html.sameAccount]
-  val injectedViewInstanceInform = app.injector.instanceOf[views.html.inform]
+  val injectedViewInstanceSameAccount: sameAccount = app.injector.instanceOf[views.html.sameAccount]
+  val injectedViewInstanceInform: inform = app.injector.instanceOf[views.html.inform]
   val testSameAccountController: SameAccountController = new SameAccountController(mockMCC, mockAuthConnector, injectedViewInstanceSameAccount, injectedViewInstanceInform, mockAppConfig)
 
   override def beforeEach(): Unit = {
@@ -68,9 +67,9 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("You need to use the same account as before")
+            document.title() must be("You need to use the same account as before - GOV.UK")
 
-            document.getElementById("backLinkHref").attr("href") must include("previous")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("previous")
           }
         }
       }
@@ -99,9 +98,9 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Inform HMRC as soon as you create a new ATED account")
+            document.title() must be("Inform HMRC as soon as you create a new ATED account - GOV.UK")
 
-            document.getElementById("backLinkHref").attr("href") must include("existing")
+            document.getElementsByClass("govuk-back-link").attr("href") must include("existing")
           }
         }
       }
@@ -149,7 +148,6 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     test(result)
   }
 
-
   def getWithAuthorisedUser()(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
@@ -171,7 +169,6 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     test(result)
   }
 
-
   def getWithAuthorisedUserInform()(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
@@ -192,7 +189,6 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     val result = testSameAccountController.toNRLQuestionPage().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
-
 
   def getWithAuthorisedUserNRL()(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
