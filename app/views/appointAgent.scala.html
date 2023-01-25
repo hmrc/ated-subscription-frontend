@@ -32,17 +32,17 @@
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
 @pageScripts = {
-    <script src='@routes.Assets.versioned("javascript/show-hide-content.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("javascript/subscription.js")'></script>
-     <script>
-       $(document).ready(function() {
-           showHideAppointAgentSection();
-         // Where .multiple-choice uses the data-target attribute
-         // to toggle hidden content
-         var showHideContent = new GOVUK.ShowHideContent()
-         showHideContent.init()
-       });
-     </script>
+    <script src='@routes.Assets.versioned("../assets/javascript/show-hide-content.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
+  <script>
+    $(document).ready(function() {
+        showHideAppointAgentSection();
+      // Where .multiple-choice uses the data-target attribute
+      // to toggle hidden content
+      var showHideContent = new GOVUK.ShowHideContent()
+      showHideContent.init()
+    });
+  </script>
 }
 
 @backLinkHtml = {
