@@ -61,5 +61,4 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
     }
   }
 
-
 }
