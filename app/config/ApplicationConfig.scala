@@ -31,7 +31,7 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val serviceUrlGG: String = servicesConfig.baseUrl("government-gateway")
   lazy val serviceUrlTaxEnrol: String = servicesConfig.baseUrl("tax-enrolments")
   lazy val serviceUrlBC: String = servicesConfig.baseUrl("business-customer-frontend")
-  
+
   private val contactFormServiceIdentifier: String = "ATED"
   private val contactHost: String = servicesConfig.getConfString("contact-frontend.host", "")
   def betaFeedbackUrl(returnUri: String): String = servicesConfig.getConfString("beta-feedback-url", defaultBetaFeedbackUrl) + "?return=" + returnUri
