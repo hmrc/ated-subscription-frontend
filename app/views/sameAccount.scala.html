@@ -53,7 +53,9 @@
     <div>
         <p class="govuk-body">@messages("ated.same-account.p1")</p>
 
-        <p class="govuk-body margin-bottom-default">@messages("ated.same-account.p2")</p>
+        <p class="govuk-body margin-bottom-default">@messages("ated.same-account.p2")
+            <a id="create-new" class="govuk-link" href="@controllers.routes.SameAccountController.viewInform">@messages("ated.same-account.link")</a>.
+        </p>
 
         @formHelper(action = controllers.routes.ApplicationController.logout) {
             @govukButton(Button(
@@ -61,7 +63,5 @@
                  attributes = Map("id" -> "submit", "type" -> "submit")
             ))
         }
-
-        <p class="govuk-body"><a id="old-details" href="@controllers.routes.SameAccountController.viewInform">@messages("ated.same-account.old-details")</a></p>
     </div>
 }
