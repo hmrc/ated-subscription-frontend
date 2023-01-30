@@ -303,11 +303,11 @@ ated.previous-submitted.general.previousSubmitted = Select yes if this company h
 
 #### SAME ACCOUNT PAGE
 
-ated.same-account.title = You need to use the same account as before
-ated.same-account.p1 = You need to find the Government Gateway details you used before to sign back into your existing account at https://www.tax.service.gov.uk/ated/home.
-ated.same-account.p2 = These details may be held by a colleague or by an agent who helped you register for ATED.
+ated.same-account.title = Your company may already have registered for an ATED account
+ated.same-account.p1 = You need to sign in with the Government Gateway user ID that was used for an existing ATED registration if you have one.
+ated.same-account.p2 = If your sign in details are not available you can
+ated.same-account.link = continue to create a new ATED account
 ated.same-account.sign-out = Sign out
-ated.same-account.old-details = The old sign in details are not available
 
 #### INFORM PAGE
 
