@@ -36,10 +36,9 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
 
  implicit val ec: ExecutionContext = mcc.executionContext
 
-  def view: Action[AnyContent] = Action.async {
+  def view(mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        val mode = None
         Future.successful(Ok(template(contactDetailsEmailForm, mode, getBackLink(mode))))
       }
   }
@@ -73,10 +72,9 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-  def getBackLink(mode: Option[String]): Some[String] = {
+  def getBackLink(mode: Option[String]): Some[String] =
     mode match {
-      case Some(edit) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
-      case _ => Some(controllers.routes.ContactDetailsController.editDetails(None).url)
+      case Some("edit") => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case _ => Some(controllers.routes.ContactDetailsController.editDetails(mode).url)
     }
-  }
 }

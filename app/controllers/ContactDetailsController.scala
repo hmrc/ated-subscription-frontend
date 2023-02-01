@@ -58,7 +58,7 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
             contactDetailsService.saveContactDetails(contactDetails.copy(telephone = telephoneWithoutSpaces)) map {_ =>
               mode match {
                 case Some(modeType) if modeType == "edit" => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
-                case _ => Redirect(controllers.routes.ContactDetailsEmailController.view)
+                case _ => Redirect(controllers.routes.ContactDetailsEmailController.view(mode))
               }
             }
           }
