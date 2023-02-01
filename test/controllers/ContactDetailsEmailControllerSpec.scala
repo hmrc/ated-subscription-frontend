@@ -84,7 +84,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
           document.getElementsByClass("govuk-back-link").text() must be("Back")
-          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details?mode=skip")
           document.getElementById("contact-details-email.header").text() must include("Can we use an email address as a point of contact?")
           document.getElementById("subtitle").text() must be("This section is: Add a client")
           document.getElementById("lede").text() must be("If we can use email rather than letters there will be less delays in dealing with enquiries.")
