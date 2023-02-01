@@ -36,7 +36,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
 
  implicit val ec: ExecutionContext = mcc.executionContext
 
-  def view(mode: Option[String]): Action[AnyContent] = Action.async {
+  def view(mode: Option[String] = Some("skip")): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
         Future.successful(Ok(template(contactDetailsEmailForm, mode, getBackLink(mode))))
