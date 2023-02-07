@@ -28,13 +28,13 @@
   <p class="govuk-body" id="unauthorised-agent-message">@messages("unauthorised.assistant.agent.lede-paragraph")</p>
 
   <p class="govuk-body">@messages("unauthorised.assistant.agent.p1.a")
-      <a href=@messages("unauthorised.assistant.agent.p1.link")>@messages("unauthorised.assistant.agent.p1.link-text")</a>@messages("ated.full-stop")
+      <a class="govuk-link" href=@messages("unauthorised.assistant.agent.p1.link")>@messages("unauthorised.assistant.agent.p1.link-text")</a>@messages("ated.full-stop")
       @messages("unauthorised.assistant.agent.p1.b")
   </p>
 
   <ol class="govuk-list govuk-list--number">
    <li>@messages("unauthorised.assistant.agent.ol1.li1")
-       <a href=@appConfig.agentAccountPortalUrl>@appConfig.agentAccountPortalUrl</a></li>
+       <a class="govuk-link" href=@appConfig.agentAccountPortalUrl>@appConfig.agentAccountPortalUrl</a></li>
    <li>@messages("unauthorised.assistant.agent.ol1.li2")</li>
    <li>@messages("unauthorised.assistant.agent.ol1.li3")</li>
    <li>@messages("unauthorised.assistant.agent.ol1.li4")</li>
@@ -43,11 +43,11 @@
   <p class="govuk-body">@messages("unauthorised.assistant.agent.p2")</p>
 
   <p class="govuk-body">
-      @messages("unauthorised.assistant.agent.p3") <a href=@appConfig.agentAtedSummaryPath>@messages("unauthorised.assistant.agent.p3.link-text")</a>@messages("ated.full-stop")
+      @messages("unauthorised.assistant.agent.p3") <a class="govuk-link" href=@appConfig.agentAtedSummaryPath>@messages("unauthorised.assistant.agent.p3.link-text")</a>@messages("ated.full-stop")
   </p>
 
    <p class="govuk-body">@messages("unauthorised.assistant.agent.p4.a")
-       <a href=@appConfig.helpdeskUrl>@messages("unauthorised.assistant.agent.p4.a.link-text")</a>
+       <a class="govuk-link" href=@appConfig.helpdeskUrl>@messages("unauthorised.assistant.agent.p4.a.link-text")</a>
        @messages("unauthorised.assistant.agent.p4.b")
    </p>
 

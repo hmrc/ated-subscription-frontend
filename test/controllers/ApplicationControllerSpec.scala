@@ -62,7 +62,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     "unauthorised respond with an OK and load unauthorised page" in {
       val result = testApplicationController.unauthorised().apply(FakeRequest())
       status(result) must equal(OK)
-      contentAsString(result) must include("UNAUTHORISED")
+      contentAsString(result) must include("You are not authorised to use this service")
     }
 
     "Cancel" must {

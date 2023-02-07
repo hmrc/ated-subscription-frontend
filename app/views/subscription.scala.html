@@ -32,7 +32,6 @@
 
 @pageScripts = {
   <script src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
-  <script src='@controllers.routes.Assets.versioned("../assets/javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
 
@@ -90,8 +89,9 @@
       )
 
       <div id="hidden-isAnAgent" class="js-hidden govuk-body">
-          <p>
-          @Html(messages("ated.claim-relief.agent-claiming-true.info", appConfig.signIn))
+          <p class="govuk-body">
+            @messages("ated.claim-relief.agent-claiming-true.info")
+            <a class="govuk-link govuk-body" href="@appConfig.signIn">@messages("ated.claim-relief.agent-claiming-true.link")</a>.
           </p>
       </div>
 
