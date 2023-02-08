@@ -28,7 +28,7 @@ ated.error.length.ated.address.line-4 = Address line 4 (optional) must not be mo
 
 ated.error.length = {0} must not be more than {1} characters
 
-unauthorised.title = UNAUTHORISED
+unauthorised.title = You are not authorised to use this service
 unauthorised.header = You are not authorised to use this service
 
 ##### UNAUTHORISED ASSISTANT AGENT
@@ -105,7 +105,8 @@ unauthorised.assistant.p4 = If no one in your organisation or your agency has ac
 ated.claim-relief.error.agent-claiming = Select yes if you are an agent acting for a client
 ated.claim-relief.error.agent-claiming-true = You must sign in with your agent details if you are an agent
 
-ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client <a href = "{0}">you need to sign in using your agent Government Gateway details</a>.
+ated.claim-relief.agent-claiming-true.info = If you are an agent acting for a client
+ated.claim-relief.agent-claiming-true.link = you need to sign in using your agent Government Gateway details
 
 ated.appoint-agent.question.true.info1 = Make sure your agent has set up their agency for ATED and given you their unique authorisation number.
 ated.appoint-agent.question.true.info2 = Register to use the new ATED online service.
@@ -169,7 +170,6 @@ ated.contact-details.email.risk.p1 = HMRC may need to send emails to you about y
 ated.contact-details.email.risk.p2 = Any emails from HMRC are not secure and are always at risk of being read by others.
 ated.contact-details.email.risk.p3 = If you have doubts about the authenticity of an email, which claims to come from HMRC, do not respond to it. Forward it to us at:
 ated.contact-details.email.risk.p4 = In order for us to send you emails in the future you must confirm (for yourself or on behalf of your agent) that you are happy for us to do so, and you understand the risks involved.
-ated.contact-details.email.risk.email = <a href = "mailto:phishing@hmrc.gsi.gov.uk">phishing@hmrc.gsi.gov.uk</a>
 ated.contact-details.email.risk.p5 = Note: If we need to send any confidential information, we will only do this by letter or telephone. Corresponding by letter may lead to delays in dealing with enquiries.
 
 ated.contact-details.email = Email address
@@ -322,10 +322,10 @@ ated.inform.continue-to-create = Continue to create new account
 
 ated.business-registration-error.duplicate.identifier.header = Somebody has already registered from your organisation
 ated.business-registration-error.duplicate.identifier.title = Somebody has already registered from your organisation
-ated.business-registration-error.duplicate.identifier.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
+ated.business-registration-error.duplicate.identifier.message = If you require access you need to <a class="govuk-link" href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" rel="noreferrer noopener" target = "_blank">add administrators to your account in Government Gateway</a>.
 ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.title = You must be logged in as an administrator to submit an ATED return
-ated.business-registration-error.wrong.role.message = If you require access you need to <a href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" target = "_blank">add administrators to your account in Government Gateway.</a>
+ated.business-registration-error.wrong.role.message = If you require access you need to <a class="govuk-link" href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" rel="noreferrer noopener" target = "_blank">add administrators to your account in Government Gateway</a>.
 ated.business-address-error.general.isCorrespondenceAddress = Select yes if this where you want us to send any letters about ATED
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
 

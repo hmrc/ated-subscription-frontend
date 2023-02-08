@@ -35,7 +35,6 @@
 @implicitFormInstance = @{ Some(contactDetailsEmailForm) }
 
 @pageScripts = {
-  <script src='@routes.Assets.versioned("../assets/javascript/show-hide-content.js")'></script>
   <script>
     $(document).ready(function() {
       // Where .multiple-choice uses the data-target attribute
@@ -109,7 +108,7 @@
         <p>@messages("ated.contact-details.email.risk.p1")</p>
         <p>@messages("ated.contact-details.email.risk.p2")</p>
         <p>@messages("ated.contact-details.email.risk.p3")</p>
-        <p>@Html(messages("ated.contact-details.email.risk.email"))</p>
+        <p><a class="govuk-link" href = "mailto:phishing@@hmrc.gsi.gov.uk">phishing@@hmrc.gsi.gov.uk</a></p>
         <p>@messages("ated.contact-details.email.risk.p4")</p>
         <p>@messages("ated.contact-details.email.risk.p5")</p>
       </div>
