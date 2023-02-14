@@ -32,7 +32,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(scalacOptions += "-Ywarn-unused:-explicits,-implicits")
   .settings(
-    scalaVersion := "2.13.8",
+    scalaVersion := "2.12.15",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     Test / parallelExecution := false,
