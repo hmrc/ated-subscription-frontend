@@ -68,15 +68,15 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
       case CREATED => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation))
       case CONFLICT =>
         logger.warn(s"[RegisterUserController][registerUser] - allocation failed - organisation has already enrolled in EMAC")
-        Future.successful(Ok(templateAlreadyRegistered()))
+        Future.successful(Conflict(templateAlreadyRegistered()))
       case FORBIDDEN =>
         val (pageTitle, heading, message) = formatEmacErrorMessage(WrongRoleUserError)
         logger.warn(s"[RegisterUserController][registerUser] - allocation failed - wrong role for user enrolling in EMAC")
-        Future.successful(Ok(templateError(pageTitle, heading, message)))
+        Future.successful(Forbidden(templateError(pageTitle, heading, message)))
       case _ =>
         val (pageTitle, heading, message) = formatEmacErrorMessage(GenericError)
         logger.warn("[RegisterUserController][registerUser] - allocation failed - no definite reason found")
-        Future.successful(Ok(templateError(pageTitle, heading, message)))
+        Future.successful(InternalServerError(templateError(pageTitle, heading, message)))
     }
   }
 
