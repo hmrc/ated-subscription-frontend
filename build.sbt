@@ -4,14 +4,13 @@ import sbt.Keys._
 import sbt.{Def, inConfig, _}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "ated-subscription-frontend"
 
 lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val playSettings: Seq[Setting[_]] = Seq.empty
-val silencerVersion = "1.7.1"
+val silencerVersion = "1.7.12"
 
 lazy val scoverageSettings: Seq[Def.Setting[_ >: String with Double with Boolean]] = {
   import scoverage.ScoverageKeys
@@ -32,7 +31,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(scalacOptions += "-Ywarn-unused:-explicits,-implicits")
   .settings(
-    scalaVersion := "2.12.12",
+    scalaVersion := "2.12.15",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     Test / parallelExecution := false,

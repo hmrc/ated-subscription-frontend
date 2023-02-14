@@ -83,7 +83,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           "return to generic error page" in {
             registerWithBadRequest {
               result =>
-                status(result) must be(OK)
+                status(result) must be(INTERNAL_SERVER_ERROR)
                 val document = Jsoup.parse(contentAsString(result))
                 document.title() must be("Sorry, there is a problem with the service")
             }
@@ -92,7 +92,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           "return to error page for duplicate users" in {
             registerWithDuplicateUser {
               result =>
-                status(result) must be(OK)
+                status(result) must be(CONFLICT)
                 val document = Jsoup.parse(contentAsString(result))
                 document.title() must be("Somebody has already registered from your organisation - GOV.UK")
             }
@@ -101,7 +101,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           "return to error page where Internal Error thrown" in {
             registerWithInvalidUser {
               result =>
-                status(result) must be(OK)
+                status(result) must be(INTERNAL_SERVER_ERROR)
                 val document = Jsoup.parse(contentAsString(result))
                 document.title() must be("Sorry, there is a problem with the service")
                 document.getElementsByTag("h1").text must be("Sorry, there is a problem with the service")
@@ -112,7 +112,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           "return to error page for wrong role users" in {
             registerWithWrongRoleUser {
               result =>
-                status(result) must be(OK)
+                status(result) must be(FORBIDDEN)
                 val document = Jsoup.parse(contentAsString(result))
                 document.title() must be("You must be logged in as an administrator to submit an ATED return")
             }
