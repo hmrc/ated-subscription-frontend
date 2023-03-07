@@ -60,7 +60,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
           response
         case status =>
           metrics.incrementFailedCounter(MetricsEnum.API4Enrolment)
-          logger.warn(s"[TaxEnrolmentsConnector][enrol] - status: $status")
+          logger.warn(s"[TaxEnrolmentsConnector][enrol] - status: $status, response: ${response.body}")
           auditable.doFailedAudit("enrolFailed", jsonData.toString, response.body)
           response
       }
