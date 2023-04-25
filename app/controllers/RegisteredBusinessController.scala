@@ -17,11 +17,12 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.AtedSubscriptionDataCacheConnector
+import connectors.{AtedConnector, AtedSubscriptionDataCacheConnector}
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
+
 import javax.inject.Inject
-import models.{Address, AtedSubscriptionAuthData, BusinessAddress, BusinessCustomerDetails}
+import models.{Address, AtedSubscriptionAuthData, AtedUsers, BusinessAddress, BusinessCustomerDetails}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
@@ -30,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedSubscriptionUtils
 import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
@@ -37,8 +39,10 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              correspondenceAddressService: CorrespondenceAddressService,
                                              dataCacheConnector: AtedSubscriptionDataCacheConnector,
                                              etmpCheckService: EtmpCheckService,
+                                             atedConnector: AtedConnector,
                                              val authConnector: DefaultAuthConnector,
                                              template: views.html.registeredBusinessAddress,
+                                             templateAlreadyRegistered: views.html.alreadyRegistered,
                                              implicit val appConfig: ApplicationConfig
                                             ) extends FrontendController(mcc) with AuthFunctionality with WithDefaultFormBinding {
 
@@ -49,35 +53,47 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         registeredBusinessService.getBusinessCustomerDetails flatMap { customerDetails =>
-          dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession flatMap { businessReg =>
-            registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress)) flatMap { address =>
-              validateAndRedirect(customerDetails, businessReg, address)
+          atedConnector.checkUsersEnrolments(customerDetails.safeId) flatMap { atedUsers =>
+            dataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession flatMap { businessReg =>
+              registeredBusinessService.getDefaultCorrespondenceAddress(Some(customerDetails.businessAddress)) flatMap { address =>
+                validateAndRedirect(customerDetails, businessReg, address, atedUsers)
+              }
             }
           }
         }
       }
   }
 
-  private def validateAndRedirect(bcDetails: BusinessCustomerDetails, businessReg: Option[BusinessAddress], address: Address)
-                                 (implicit hc: HeaderCarrier, ec: ExecutionContext, auth: AtedSubscriptionAuthData,
+  private def validateAndRedirect(bcDetails: BusinessCustomerDetails, businessReg: Option[BusinessAddress], address: Address, atedUsers: Option[AtedUsers])
+                                 (implicit hc: HeaderCarrier, ec: ExecutionContext,
+                                  auth: AtedSubscriptionAuthData,
                                   req: Request[AnyContent], messages: Messages): Future[Result] = {
     val standardView =
       Future.successful(Ok(template(businessAddressForm.fill(
         businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
       ))
 
-    etmpCheckService.validateBusinessDetails(bcDetails) flatMap { etmpRegistered =>
-      if (etmpRegistered) {
-        authoriseFor { newAuthDetails =>
-          if (newAuthDetails.enrolments.getEnrolment("HMRC-ATED-ORG").isDefined) {
-            Future.successful(Redirect(appConfig.atedStartPath))
-          } else {
-            standardView
+    atedUsers match {
+      case Some(users) =>
+        if(users.principalUserIds == Nil && users.delegatedUserIds == Nil) {
+          etmpCheckService.validateBusinessDetails(bcDetails) flatMap { etmpRegistered =>
+            if (etmpRegistered) {
+              authoriseFor { newAuthDetails =>
+                if (newAuthDetails.enrolments.getEnrolment("HMRC-ATED-ORG").isDefined) {
+                  Future.successful(Redirect(appConfig.atedStartPath))
+                } else {
+                  standardView
+                }
+              }
+            } else {
+              standardView
+            }
           }
         }
-      } else {
-        standardView
-      }
+        else {
+          Future.successful(Ok(templateAlreadyRegistered()))
+        }
+      case _ => standardView
     }
   }
 

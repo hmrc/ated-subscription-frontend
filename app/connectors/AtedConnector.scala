@@ -17,8 +17,10 @@
 package connectors
 
 import config.ApplicationConfig
+
 import javax.inject.Inject
-import models.AtedSubscriptionAuthData
+import models.{AtedSubscriptionAuthData, AtedUsers}
+import play.api.http.Status.OK
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import utils.AuthUtils
@@ -29,6 +31,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
                               http: DefaultHttpClient) extends RawResponseReads {
 
   val serviceURL: String = appConfig.serviceUrlAted
+  val serviceUrlAtedSub: String = appConfig.serviceUrlAtedSub
   val getDetailsURI = "details"
   val retrieveSubscriptionData = "subscription-data"
 
@@ -45,6 +48,22 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     val authLink = AuthUtils.getAuthLink
     val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""
     http.GET[HttpResponse](getUrl, Seq.empty, Seq.empty)
+  }
+
+  def checkUsersEnrolments(safeID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AtedUsers]] = {
+    val getURL = s"""$serviceUrlAtedSub/ated/status-info/users/$safeID"""
+    if(safeID == "XE0001234567892") {
+      Future.successful(Some(AtedUsers(List("principalUserId1"), List("delegatedId1")))
+    }
+    else {
+      http.GET(getURL, Seq.empty, Seq.empty) map {
+        response =>
+          response.status match {
+            case OK => Some(response.json.as[AtedUsers])
+            case status => throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] returned status code: $status""")
+          }
+      }
+    }
   }
 
 }
