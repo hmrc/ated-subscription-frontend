@@ -53,7 +53,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
   def checkUsersEnrolments(safeID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AtedUsers]] = {
     val getURL = s"""$serviceUrlAtedSub/ated/status-info/users/$safeID"""
     if(safeID == "XE0001234567892") {
-      Future.successful(Some(AtedUsers(List("principalUserId1"), List("delegatedId1")))
+      Future.successful(Some(AtedUsers(List("principalUserId1"), List("delegatedId1"))))
     }
     else {
       http.GET(getURL, Seq.empty, Seq.empty) map {
