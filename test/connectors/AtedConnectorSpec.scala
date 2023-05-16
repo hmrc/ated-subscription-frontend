@@ -17,15 +17,15 @@
 package connectors
 
 import java.util.UUID
-
 import builders._
-import models.AtedSubscriptionAuthData
+import models.{AtedSubscriptionAuthData, AtedUsers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
@@ -71,6 +71,24 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
         when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
         val result = testAtedConnector.retrieveSubscriptionData("XN1200000100001")
         await(result).status must be(OK)
+        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+      }
+
+      "GET user enrolments for a given safeID should return the list of enrolments" in {
+        val atedUsersList = AtedUsers(List("principalUserId1"), List("delegatedId1"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        val jsOnData = Json.toJson(atedUsersList)
+        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(OK, jsOnData.toString())))
+        val result = testAtedConnector.checkUsersEnrolments("XN1200000100001")
+        await(result) must be(Some(atedUsersList))
+        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+      }
+
+      "GET user enrolments for a given safeID should return internal server error if ETMP returns an error" in {
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.failed(new InternalServerException("ggghu")))
+        val result = testAtedConnector.checkUsersEnrolments("XN1200000100001")
+        the[InternalServerException] thrownBy await(result)
         verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
       }
     }

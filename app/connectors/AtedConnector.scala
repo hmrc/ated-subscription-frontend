@@ -60,7 +60,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
         response =>
           response.status match {
             case OK => Some(response.json.as[AtedUsers])
-            case status => throw new InternalServerException(s"""[awrs-frontend][checkUsersEnrolments] returned status code: $status""")
+            case status => throw new InternalServerException(s"""[ated-frontend][checkUsersEnrolments] returned status code: $status""")
           }
       }
     }

@@ -349,3 +349,9 @@ ated.already-registered-error.p4.1 = If your administrator does not see ATED on 
 ated.already-registered-error.p4.2 = contact the Online Services Helpdesk
 ated.already-registered-error.p4.3 = to recover or reset these sign-in details for your organisation.
 ated.already-registered-error.p5 = If you are the only person in your organisation who has registered, you can contact us using the link below if you still have a problem signing in to ATED.
+
+ated.already-registered-differentgg-error.title = Somebody has already registered from your organisation
+ated.already-registered-differentgg-error.header = {0} has already applied for ATED
+ated.already-registered-differentgg-error.p1 = {0} has an existing ATED application created using another Government Gateway user ID. You cannot apply again.
+ated.already-registered-differentgg-error.p2 = You need to login with the Government Gateway user ID that was used for the existing application.
+ated.already-registered-differentgg-error.p3 = Find the user ID or password that was used to apply for ATED.

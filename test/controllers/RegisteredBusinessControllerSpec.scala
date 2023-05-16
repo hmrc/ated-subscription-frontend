@@ -17,9 +17,9 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
-import models.{Address, BusinessAddress, BusinessCustomerDetails}
+import connectors.AtedConnector
+import models.{Address, AtedUsers, BusinessAddress, BusinessCustomerDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -34,6 +34,7 @@ import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
+import views.html.{alreadyRegistered, registeredWithDifferentGG}
 
 import scala.concurrent.Future
 
@@ -42,9 +43,11 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
   val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
   val mockEtmpCheckService: EtmpCheckService = mock[EtmpCheckService]
+  val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
   val testAddressForm: BusinessAddress = BusinessAddress(Some(true))
   val injectedViewInstance = app.injector.instanceOf[views.html.registeredBusinessAddress]
+  val injectedViewInstanceAlreadyRegistered: registeredWithDifferentGG = app.injector.instanceOf[views.html.registeredWithDifferentGG]
   val backToBusinessCustomerUrl = "someBackToBusinessCustomerUrl"
 
   val testRegisteredBusinessController = new RegisteredBusinessController(
@@ -53,8 +56,10 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     mockCorrespondenceAddressService,
     mockDataCacheConnector,
     mockEtmpCheckService,
+    mockAtedConnector,
     mockAuthConnector,
     injectedViewInstance,
+    injectedViewInstanceAlreadyRegistered,
     mockAppConfig
   )
 
@@ -143,6 +148,13 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           }
         }
 
+        "with already existing User enrolments" in {
+          withExistingAtedEnrolledUsers { result =>
+            val document = Jsoup.parse(contentAsString(result))
+            document.html() must include("Somebody has already registered from your organisation")
+          }
+        }
+
       }
 
       "unauthorised users" must {
@@ -223,6 +235,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "LLP",
     businessAddress = testAddress, sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
+  val testEmptyAtedUsers = AtedUsers(List(), List())
+  val testExistingAtedUsers = AtedUsers(List("principalUserId1"), List("dlegatedUserId1"))
+
   def withAuthorisedUser(test: Future[Result] => Any) {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
@@ -232,6 +247,26 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       .thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+      .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+      .thenReturn(Future.successful(false))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+
+  def withExistingAtedEnrolledUsers(test: Future[Result] => Any) {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+      .thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+      .thenReturn(Future.successful(Some(testExistingAtedUsers)))
     when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
       .thenReturn(Future.successful(false))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))

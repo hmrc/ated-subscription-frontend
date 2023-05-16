@@ -42,7 +42,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              atedConnector: AtedConnector,
                                              val authConnector: DefaultAuthConnector,
                                              template: views.html.registeredBusinessAddress,
-                                             templateAlreadyRegistered: views.html.alreadyRegistered,
+                                             templateAlreadyRegistered: views.html.registeredWithDifferentGG,
                                              implicit val appConfig: ApplicationConfig
                                             ) extends FrontendController(mcc) with AuthFunctionality with WithDefaultFormBinding {
 
@@ -91,7 +91,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
           }
         }
         else {
-          Future.successful(Ok(templateAlreadyRegistered()))
+          Future.successful(Ok(templateAlreadyRegistered(bcDetails.businessName)))
         }
       case _ => standardView
     }

@@ -1,0 +1,41 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.ApplicationConfig
+@import views.ViewUtils.titleBuilder
+
+@this(alreadyRegisteredMain: alreadyRegisteredMain, govukButton : GovukButton)
+@(businessName : String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
+
+@alreadyRegisteredMain(title = titleBuilder(messages("ated.already-registered-differentgg-error.title")), supportLinkEnabled = true, userLoggedIn=true) {
+
+<h1 class="govuk-heading-xl">@messages("ated.already-registered-differentgg-error.header", businessName)</h1>
+<div>
+    <p class="govuk-body">@messages("ated.already-registered-differentgg-error.p1", businessName)</p>
+    <p class="govuk-body">@messages("ated.already-registered-differentgg-error.p2")
+    </p>
+    <p class="govuk-body">
+        <a class="govuk-link" href= "@appConfig.toSigninProblemsUrl"> @messages("ated.already-registered-differentgg-error.p3")</a>
+    </p>
+</div>
+<div class="govuk-form-group">
+    @govukButton(Button(
+    href = Some(controllers.routes.ApplicationController.redirectToGuidance.url),
+    content = Text(messages("ated.sign-out")),
+    attributes = Map("id" -> "submit")
+    ))
+</div>
+}
