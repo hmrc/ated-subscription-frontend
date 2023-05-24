@@ -20,7 +20,7 @@
 @this(alreadyRegisteredMain: alreadyRegisteredMain, govukButton : GovukButton)
 @(businessName : String)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
-@alreadyRegisteredMain(title = titleBuilder(messages("ated.already-registered-differentgg-error.title")), supportLinkEnabled = true, userLoggedIn=true) {
+@alreadyRegisteredMain(title = titleBuilder(messages("ated.already-registered-differentgg-error.title", businessName)), supportLinkEnabled = true, userLoggedIn=true) {
 
 <h1 class="govuk-heading-xl">@messages("ated.already-registered-differentgg-error.header", businessName)</h1>
 <div>

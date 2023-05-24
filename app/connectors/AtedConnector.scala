@@ -52,18 +52,12 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
 
   def checkUsersEnrolments(safeID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AtedUsers]] = {
     val getURL = s"""$serviceUrlAtedSub/ated/status-info/users/$safeID"""
-    if(safeID == "XE0001234567892") {
-      Future.successful(Some(AtedUsers(List("principalUserId1"), List("delegatedId1"))))
-    }
-    else {
-      http.GET(getURL, Seq.empty, Seq.empty) map {
-        response =>
-          response.status match {
-            case OK => Some(response.json.as[AtedUsers])
-            case status => throw new InternalServerException(s"""[ated-frontend][checkUsersEnrolments] returned status code: $status""")
-          }
-      }
+    http.GET(getURL, Seq.empty, Seq.empty) map {
+      response =>
+        response.status match {
+          case OK => Some(response.json.as[AtedUsers])
+          case status => None
+        }
     }
   }
-
 }

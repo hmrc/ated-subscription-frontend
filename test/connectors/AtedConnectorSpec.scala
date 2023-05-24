@@ -84,6 +84,16 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
         verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
       }
 
+      "GET user enrolments for a given safeID should return the null if the call returns anything other than 200" in {
+        val atedUsersList = AtedUsers(List("principalUserId1"), List("delegatedId1"))
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+        val jsOnData = Json.toJson(atedUsersList)
+        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, jsOnData.toString())))
+        val result = testAtedConnector.checkUsersEnrolments("XN1200000100001")
+        await(result) must be(None)
+        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+      }
+
       "GET user enrolments for a given safeID should return internal server error if ETMP returns an error" in {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.failed(new InternalServerException("ggghu")))

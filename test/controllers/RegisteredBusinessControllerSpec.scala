@@ -151,7 +151,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         "with already existing User enrolments" in {
           withExistingAtedEnrolledUsers { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.html() must include("Somebody has already registered from your organisation")
+            document.html() must include("test Name has already applied for ATED")
           }
         }
 
