@@ -85,4 +85,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val toBusinessAccountUrl: String = servicesConfig.getConfString("business-tax-account.serviceRedirectUrl", "/business-account")
 
+  lazy val toSigninProblemsUrl: String = servicesConfig.getConfString("business-tax-account.signinProblemsUrl", "/business-account")
+
 }
