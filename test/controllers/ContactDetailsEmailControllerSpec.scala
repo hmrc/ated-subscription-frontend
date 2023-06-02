@@ -56,6 +56,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
     "Authorised users" must {
 
       "respond with OK" in {
+        when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(testContactEmail)))
         getWithAuthorisedAgent { result =>
           status(result) must be(OK)
         }
@@ -79,6 +81,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
     "Authorised Users" must {
 
       "email consent page" in {
+        when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(testContactEmail)))
         getWithAuthorisedAgent { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
@@ -96,12 +100,14 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
       }
 
       "email consent page filled with details after edit" in {
+        when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(testContactEmail)))
         getWithAuthorisedAgentEdit { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be("Can we use an email address as a point of contact? - GOV.UK")
           document.getElementsByClass("govuk-back-link").text() must be("Back")
-          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/review-business-details")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details?mode=edit")
           document.getElementById("emailConsent-2").outerHtml() must not include "checked"
           document.getElementById("emailConsent").attr("checked") must be("")
           document.getElementById("email").attr("value") must be("abc@test.com")
