@@ -22,7 +22,7 @@ GET                 /contact-details                            controllers.Cont
 POST                /submit                                     controllers.ContactDetailsController.submit(mode: Option[String] ?= None)
 
 GET                 /contact-details-email                      controllers.ContactDetailsEmailController.view(mode: Option[String] ?= None)
-GET                 /email-submit                               controllers.ContactDetailsEmailController.submit(mode: Option[String] ?= None)
+POST                /email-submit                               controllers.ContactDetailsEmailController.submit(mode: Option[String] ?= None)
 
 GET                 /review-business-details                    controllers.ReviewBusinessDetailsController.reviewDetails
 
