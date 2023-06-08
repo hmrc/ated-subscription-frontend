@@ -56,7 +56,10 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
           contactDetails => {
             val telephoneWithoutSpaces = contactDetails.telephone.replaceAll(" ", "")
             contactDetailsService.saveContactDetails(contactDetails.copy(telephone = telephoneWithoutSpaces)) map {_ =>
-              Redirect(controllers.routes.ContactDetailsEmailController.view(mode))
+              mode match {
+                case Some(modeType) if modeType == "edit" => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
+                case _ => Redirect(controllers.routes.ContactDetailsEmailController.view(mode))
+              }
             }
           }
         )
@@ -65,7 +68,8 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
 
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(_)  => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
+      case Some(modeType) if modeType == "edit" => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case Some(modeType) if modeType == "skip" => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
       case _ => Some(controllers.routes.CorrespondenceAddressController.editAddress().url)
     }
   }

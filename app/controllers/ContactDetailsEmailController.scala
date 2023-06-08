@@ -76,5 +76,8 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def getBackLink(mode: Option[String]): Some[String] =
-    Some(controllers.routes.ContactDetailsController.editDetails(mode).url)
+    mode match {
+      case Some("edit") => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case _ => Some(controllers.routes.ContactDetailsController.editDetails(mode).url)
+    }
 }

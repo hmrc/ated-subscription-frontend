@@ -117,7 +117,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be("Who should we contact about ATED? - GOV.UK")
           document.getElementsByClass("govuk-back-link").text() must be("Back")
-          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/registered-business-address")
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/review-business-details")
           document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: ATED registration")
           document.getElementById("text").text() must be("This can be your authorised agent.")
@@ -210,7 +210,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           submitEditWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
             result =>
               status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/ated-subscription/contact-details-email?mode=edit")
+              redirectLocation(result).get must include("/ated-subscription/review-business-details")
               verify(mockContactDetailsService, times(1)).saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
