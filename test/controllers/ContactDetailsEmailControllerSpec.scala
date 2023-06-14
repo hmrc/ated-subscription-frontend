@@ -56,6 +56,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
     "Authorised users" must {
 
       "respond with OK" in {
+        when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(testContactEmail)))
         getWithAuthorisedAgent { result =>
           status(result) must be(OK)
         }
@@ -79,6 +81,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
     "Authorised Users" must {
 
       "email consent page" in {
+        when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(testContactEmail)))
         getWithAuthorisedAgent { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
@@ -96,6 +100,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
       }
 
       "email consent page filled with details after edit" in {
+        when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future.successful(Some(testContactEmail)))
         getWithAuthorisedAgentEdit { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
