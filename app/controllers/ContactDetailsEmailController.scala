@@ -39,7 +39,10 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
   def view(mode: Option[String] = Some("skip")): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(template(contactDetailsEmailForm, mode, getBackLink(mode))))
+        contactDetailsService.fetchContactDetailsEmail map {
+          case Some(formData) => Ok(template(contactDetailsEmailForm.fill(formData), mode, getBackLink(mode)))
+          case _ => Ok(template(contactDetailsEmailForm, mode, getBackLink(mode)))
+        }
       }
   }
 
