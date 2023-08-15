@@ -37,7 +37,7 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite wi
   val mockAuditable: Auditable = mock[Auditable]
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockWSHttp)
     reset(mockAuditable)

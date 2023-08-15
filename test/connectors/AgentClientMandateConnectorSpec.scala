@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class AgentClientMandateConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  val dto = NonUKClientDto("safeid", "atedRefNum", "ated", "aa@mail.com", "arn", "bb@mail.com", "client display name")
+  val dto: NonUKClientDto = NonUKClientDto("safeid", "atedRefNum", "ated", "aa@mail.com", "arn", "bb@mail.com", "client display name")
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
 
@@ -45,7 +45,7 @@ class AgentClientMandateConnectorSpec extends PlaySpec with GuiceOneServerPerSui
     override lazy val serviceURL: String = "test"
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockWSHttp)
   }

@@ -33,12 +33,12 @@ import scala.concurrent.Future
 class ContactDetailsServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
   val mockDataCacheConnector: AtedSubscriptionDataCacheConnector = mock[AtedSubscriptionDataCacheConnector]
-  val testContact = ContactDetails("ABC", "DEF", "1234567890")
-  val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
+  val testContact: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
+  val testContactEmail: ContactDetailsEmail = ContactDetailsEmail(Some(true), "abc@test.com")
 
   val testContactDetailsService: ContactDetailsService = new ContactDetailsService(mockDataCacheConnector)
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockDataCacheConnector)
   }
 

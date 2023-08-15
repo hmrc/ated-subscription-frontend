@@ -39,7 +39,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
     override val serviceURL = "test"
   }
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockWSHttp)
   }

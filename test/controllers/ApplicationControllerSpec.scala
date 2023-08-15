@@ -40,7 +40,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   val injectedViewInstanceUnauthorisedAssistantOrg: unauthorisedAssistantOrg = app.injector.instanceOf[views.html.unauthorisedAssistantOrg]
   val injectedViewInstanceUnauthorisedAssistantAgent: unauthorisedAssistantAgent = app.injector.instanceOf[views.html.unauthorisedAssistantAgent]
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockDataCacheConnector)
     reset(mockAuthConnector)
   }

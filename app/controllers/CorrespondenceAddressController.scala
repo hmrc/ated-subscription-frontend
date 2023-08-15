@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.CorrespondenceAddressService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -32,7 +32,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 val authConnector: DefaultAuthConnector,
                                                 template: views.html.correspondenceAddress,
                                                 implicit val appConfig: ApplicationConfig
-                                               ) extends FrontendController(mcc)  with AuthFunctionality with WithDefaultFormBinding {
+                                               ) extends FrontendController(mcc)  with AuthFunctionality with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -51,7 +51,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
   def submit(mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        correspondenceAddressForm.bindFromRequest.fold(
+        correspondenceAddressForm.bindFromRequest().fold(
           formWithErrors =>
             Future.successful(BadRequest(template(formWithErrors,mode,appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))),
           addressData => {

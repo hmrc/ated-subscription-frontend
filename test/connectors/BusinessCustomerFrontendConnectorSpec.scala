@@ -37,7 +37,7 @@ import scala.concurrent.Future
 
 class BusinessCustomerFrontendConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockWSHttp)
   }

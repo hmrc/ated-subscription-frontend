@@ -100,7 +100,7 @@ object AuthBuilder {
     createAgentAuthority(Assistant, agentRefNo)
   }
 
-  def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector, secondExtraEnrolments: Set[Enrolment] = Set.empty) {
+  def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector, secondExtraEnrolments: Set[Enrolment] = Set.empty): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
       None,
       Some(AffinityGroup.Organisation),
@@ -119,14 +119,14 @@ object AuthBuilder {
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)), Future.successful(buildRetrieval(secondData)))
   }
 
-  def mockAuthorisedAgent(userId: String, mockAuthConnector: AuthConnector) {
+  def mockAuthorisedAgent(userId: String, mockAuthConnector: AuthConnector): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(agentRefNo = Some("JARN1234567"))
 
     when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
-  def mockAuthorisedOrgAssistant(userId: String, mockAuthConnector: AuthConnector) {
+  def mockAuthorisedOrgAssistant(userId: String, mockAuthConnector: AuthConnector): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createOrganisationAuthority(
       credRole = Assistant
     )
@@ -135,7 +135,7 @@ object AuthBuilder {
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
-  def mockAuthorisedAgentAssistant(userId: String, mockAuthConnector: AuthConnector) {
+  def mockAuthorisedAgentAssistant(userId: String, mockAuthConnector: AuthConnector): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(
       agentRole = Assistant,
       agentRefNo = Some("JARN1234567")
@@ -145,12 +145,12 @@ object AuthBuilder {
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
-  def mockUnAuthorisedUser(userId: String, mockAuthConnector: AuthConnector) {
+  def mockUnAuthorisedUser(userId: String, mockAuthConnector: AuthConnector): Unit = {
     when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.failed(InvalidBearerToken("message")))
   }
 
-  def mockUnAuthorisedUserNotLogged(mockAuthConnector: AuthConnector) {
+  def mockUnAuthorisedUserNotLogged(mockAuthConnector: AuthConnector): Unit = {
     when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.failed(MissingBearerToken("message")))
   }

@@ -60,7 +60,7 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     reset(mockAgentClientFrontendMandateConnector)
   }
 
-  def viewWithAuthorisedUser(test: Future[Result] => Any) {
+  def viewWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testDeclarationControllerWithEMAC.view().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -71,7 +71,7 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   val enrolResp: JsValue = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
 
   def submitWithAuthorisedUserForEmac(request: FakeRequest[AnyContentAsFormUrlEncoded], ated: Option[String] = None,
-                                      oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any) {
+                                      oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(any(), any()))

@@ -105,20 +105,20 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
     }
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def getWithUnAuthorisedUser(test: Future[Result] => Any) : Unit ={
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
+  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
 
-  def getWithAuthorisedUser(businessName: String)(test: Future[Result] => Any) {
+  def getWithAuthorisedUser(businessName: String)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
@@ -135,20 +135,20 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
     test(result)
   }
 
-  def continueWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def continueWithUnAuthorisedUser(test: Future[Result] => Any) : Unit ={
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def continueWithUnAuthenticated(test: Future[Result] => Any) {
+  def continueWithUnAuthenticated(test: Future[Result] => Any) : Unit ={
     val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
 
-  def continueWithAuthorisedUser(refreshStatus: Int)(test: Future[Result] => Any) {
+  def continueWithAuthorisedUser(refreshStatus: Int)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))

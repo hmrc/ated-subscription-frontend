@@ -42,7 +42,7 @@ class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         businessCustomerFEConnector.getBusinessCustomerDetails.map(response =>
-          response.status match {
+          (response.status: @unchecked) match {
             case OK =>
               val reviewDetails = response.json.as[BusinessCustomerDetails]
               Ok(template(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
