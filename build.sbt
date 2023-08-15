@@ -32,7 +32,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     scalaVersion := "2.13.8",
     scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s"),
-    scalacOptions += "-Wconf:cat=lint-multiarg-infix:silent",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     Test / parallelExecution := false,

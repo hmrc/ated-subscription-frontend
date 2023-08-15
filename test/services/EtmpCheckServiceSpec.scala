@@ -29,17 +29,17 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
-  val mockTaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
-  val mockAtedSubscriptionConnector = mock[AtedSubscriptionConnector]
-  val mockRegisterUserService = mock[RegisterUserService]
+  val mockTaxEnrolmentsConnector: TaxEnrolmentsConnector = mock[TaxEnrolmentsConnector]
+  val mockAtedSubscriptionConnector: AtedSubscriptionConnector = mock[AtedSubscriptionConnector]
+  val mockRegisterUserService: RegisterUserService = mock[RegisterUserService]
   lazy val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
   implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "user name")
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   val etmpCheckService = new EtmpCheckService(mockAtedSubscriptionConnector, mockTaxEnrolmentsConnector, mockRegisterUserService, mockAppConfig)
 
@@ -56,7 +56,7 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
 
         when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
             .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("test"))))
-        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any()))
+        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any(), any()))
             .thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
 
         await(etmpCheckService.validateBusinessDetails(reviewDetails)) mustBe true
@@ -74,7 +74,7 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
 
         when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
             .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("test"))))
-        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any()))
+        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any(), any()))
             .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
 
         await(etmpCheckService.validateBusinessDetails(reviewDetails)) mustBe false
