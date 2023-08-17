@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.OverseasCompanyService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
@@ -34,7 +34,7 @@ class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
                                             val authConnector: DefaultAuthConnector,
                                             template: views.html.previous_submitted,
                                             implicit val appConfig: ApplicationConfig
-                                           ) extends FrontendController(mcc) with AuthFunctionality with WithDefaultFormBinding {
+                                           ) extends FrontendController(mcc) with AuthFunctionality with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

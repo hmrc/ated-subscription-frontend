@@ -34,7 +34,7 @@ import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
-import views.html.{alreadyRegistered, registeredWithDifferentGG}
+import views.html.{registeredBusinessAddress, registeredWithDifferentGG}
 
 import scala.concurrent.Future
 
@@ -46,7 +46,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val mockAtedConnector: AtedConnector = mock[AtedConnector]
   val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
   val testAddressForm: BusinessAddress = BusinessAddress(Some(true))
-  val injectedViewInstance = app.injector.instanceOf[views.html.registeredBusinessAddress]
+  val injectedViewInstance: registeredBusinessAddress = app.injector.instanceOf[views.html.registeredBusinessAddress]
   val injectedViewInstanceAlreadyRegistered: registeredWithDifferentGG = app.injector.instanceOf[views.html.registeredWithDifferentGG]
   val backToBusinessCustomerUrl = "someBackToBusinessCustomerUrl"
 
@@ -232,13 +232,13 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     }
   }
 
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "LLP",
+  val testReviewBusinessDetails: BusinessCustomerDetails = BusinessCustomerDetails(businessName = "test Name", businessType = "LLP",
     businessAddress = testAddress, sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
-  val testEmptyAtedUsers = AtedUsers(List(), List())
-  val testExistingAtedUsers = AtedUsers(List("principalUserId1"), List("dlegatedUserId1"))
+  val testEmptyAtedUsers: AtedUsers = AtedUsers(List(), List())
+  val testExistingAtedUsers: AtedUsers = AtedUsers(List("principalUserId1"), List("dlegatedUserId1"))
 
-  def withAuthorisedUser(test: Future[Result] => Any) {
+  def withAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
@@ -256,7 +256,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withExistingAtedEnrolledUsers(test: Future[Result] => Any) {
+  def withExistingAtedEnrolledUsers(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
@@ -274,7 +274,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withETMPRegistration(test: Future[Result] => Any) {
+  def withETMPRegistration(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, Set(Enrolment("HMRC-ATED-ORG", Seq(EnrolmentIdentifier("AtedRefNumber", "test")), "Activated")))
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
@@ -290,7 +290,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withAuthorisedUserWithSavedData(test: Future[Result] => Any) {
+  def withAuthorisedUserWithSavedData(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
@@ -306,7 +306,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withAuthorisedAgent(test: Future[Result] => Any) {
+  def withAuthorisedAgent(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
@@ -322,20 +322,20 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withUnAuthorisedUser(test: Future[Result] => Any) {
+  def withUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def withUnAuthenticated(test: Future[Result] => Any) {
+  def withUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
 
-  def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+  def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
@@ -345,14 +345,14 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def continueWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def continueWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def continueWithUnAuthenticated(test: Future[Result] => Any) {
+  def continueWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }

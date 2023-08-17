@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ContactDetailsService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
@@ -32,7 +32,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
                                               val authConnector: DefaultAuthConnector,
                                               template: views.html.contactDetailsEmail,
                                               implicit val appConfig: ApplicationConfig
-                                             ) extends FrontendController(mcc) with AuthFunctionality with WithDefaultFormBinding {
+                                             ) extends FrontendController(mcc) with AuthFunctionality with WithUnsafeDefaultFormBinding {
 
  implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -60,7 +60,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
   def submit(mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        validateEmail(contactDetailsEmailForm.bindFromRequest).fold(
+        validateEmail(contactDetailsEmailForm.bindFromRequest()).fold(
           formWithErrors => {
             Future.successful(BadRequest(template(formWithErrors, mode, getBackLink(mode))))
           },

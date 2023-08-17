@@ -17,7 +17,6 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, LanguageSelect}
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
-@import views.html.helper.CSPNonce
 
 @this(
         hmrcLayout: HmrcLayout,
@@ -42,6 +41,5 @@
     additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)),
     signOutUrl = Some(routes.ApplicationController.logout.url),
     serviceUrl = Some(routes.SubscriptionController.subscribe.url),
-    additionalScriptsBlock = Some(allScripts),
-    nonce = CSPNonce.get
+    additionalScriptsBlock = Some(allScripts)
 )(content)

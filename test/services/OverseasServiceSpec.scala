@@ -35,9 +35,9 @@ class OverseasServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mock
   val mockDataCacheConnector: AtedSubscriptionDataCacheConnector = mock[AtedSubscriptionDataCacheConnector]
   val testOverseasCompanyService: OverseasCompanyService = new OverseasCompanyService(mockDataCacheConnector)
 
-  val testPreviouslySubmitted = PreviousSubmittedForm(Some(true))
+  val testPreviouslySubmitted: PreviousSubmittedForm = PreviousSubmittedForm(Some(true))
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockDataCacheConnector)
   }
 

@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedSubscriptionUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,7 +44,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              template: views.html.registeredBusinessAddress,
                                              templateAlreadyRegistered: views.html.registeredWithDifferentGG,
                                              implicit val appConfig: ApplicationConfig
-                                            ) extends FrontendController(mcc) with AuthFunctionality with WithDefaultFormBinding {
+                                            ) extends FrontendController(mcc) with AuthFunctionality with WithUnsafeDefaultFormBinding {
 
   implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
   implicit val ec: ExecutionContext = mcc.executionContext
@@ -100,7 +100,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
   def continue: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        businessAddressForm.bindFromRequest.fold(
+        businessAddressForm.bindFromRequest().fold(
           formWithErrors => {
             registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
               BadRequest(template(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))

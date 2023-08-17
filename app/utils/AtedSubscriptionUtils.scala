@@ -17,12 +17,11 @@
 package utils
 
 import java.util.Properties
-
 import javax.inject.Inject
 import play.api.Environment
 
-import scala.collection.JavaConverters
 import scala.io.Source
+import scala.jdk.CollectionConverters._
 
 class AtedSubscriptionUtilsImpl @Inject()(val environment: Environment) extends AtedSubscriptionUtils
 
@@ -41,7 +40,7 @@ trait AtedSubscriptionUtils {
   p.load(readJson)
 
   def getIsoCodeTupleList: List[(String, String)] = {
-    JavaConverters.propertiesAsScalaMapConverter(p).asScala.toList.sortBy(_._2)
+    p.asScala.toList.sortBy(_._2)
   }
 
   def getSelectedCountry(isoCode: String): String = {

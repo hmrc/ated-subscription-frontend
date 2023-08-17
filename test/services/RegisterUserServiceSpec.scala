@@ -35,40 +35,40 @@ import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit val request: Request[_] = FakeRequest(GET, "")
-  implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
 
-  val subscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
+  val subscribeSuccessResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
   val enrolSuccessResponse: JsValue = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
-  val testAddress = Address("line_1", "line_2", None, None, postcode = Some("XX11XX"), "GB")
-  val testAddressNoPOstCode = Address("line_1", "line_2", None, None, postcode = None, "GB")
-  val testContact = ContactDetails("ABC", "DEF", "1234567890")
-  val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
+  val testAddress: Address = Address("line_1", "line_2", None, None, postcode = Some("XX11XX"), "GB")
+  val testAddressNoPOstCode: Address = Address("line_1", "line_2", None, None, postcode = None, "GB")
+  val testContact: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
+  val testContactEmail: ContactDetailsEmail = ContactDetailsEmail(Some(true), "abc@test.com")
 
-  val testReviewBusinessDetails = BusinessCustomerDetails(businessName = "test Name", utr = Some("1111111111"),
+  val testReviewBusinessDetails: BusinessCustomerDetails = BusinessCustomerDetails(businessName = "test Name", utr = Some("1111111111"),
     businessType = "Corporate Body", businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
-  val testReviewBusinessDetailsforPartnership = BusinessCustomerDetails(businessName = "test Name", utr = Some("1111111111"),
+  val testReviewBusinessDetailsforPartnership: BusinessCustomerDetails = BusinessCustomerDetails(businessName = "test Name", utr = Some("1111111111"),
     businessType = "Partnership", businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
-  val testReviewBusinessDetailsNoPostCode = BusinessCustomerDetails(businessName = "test Name", utr = Some("1111111111"),
+  val testReviewBusinessDetailsNoPostCode: BusinessCustomerDetails = BusinessCustomerDetails(businessName = "test Name", utr = Some("1111111111"),
     businessType = "Non UK-based Company", businessAddress = testAddressNoPOstCode,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
-  val testReviewBusinessDetailsNoUtrPostCode = BusinessCustomerDetails(businessName = "test Name",
+  val testReviewBusinessDetailsNoUtrPostCode: BusinessCustomerDetails = BusinessCustomerDetails(businessName = "test Name",
     businessType = "LLP", businessAddress = testAddressNoPOstCode,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
-  val testReviewBusinessDetailsNoUtr = BusinessCustomerDetails(businessName = "test Name", utr = None,
+  val testReviewBusinessDetailsNoUtr: BusinessCustomerDetails = BusinessCustomerDetails(businessName = "test Name", utr = None,
     businessType = "Non UK-based Company", businessAddress = testAddress,
     sapNumber = "1234567890", safeId = "EX0012345678909", agentReferenceNumber = None)
 
@@ -80,7 +80,7 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
                      correspondenceAddress: Option[Address] = Some(testAddress),
                      contactDetails: Option[ContactDetails] = Some(testContact),
                      contactEmail: Option[ContactDetailsEmail] = Some(testContactEmail),
-                     subscribeAtedResponse: Future[SubscribeSuccessResponse] = Future.successful(subscribeSuccessResponse)) = {
+                     subscribeAtedResponse: Future[SubscribeSuccessResponse] = Future.successful(subscribeSuccessResponse)): OngoingStubbing[Future[SubscribeSuccessResponse]] = {
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(
       ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(businessCustomerDetails))
@@ -108,7 +108,7 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(businessCustomerDetails))
     when(mockTaxEnrolmentConnector.enrol(
-      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(CREATED, enrolSuccessResponse.toString())))
   }
 

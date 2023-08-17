@@ -261,7 +261,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     }
   }
 
-  def getWithAuthorisedUser(test: Future[Result] => Any) {
+  def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -270,7 +270,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     test(result)
   }
 
-  def getWithAuthorisedAgent(test: Future[Result] => Any) {
+  def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -279,19 +279,19 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
+  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testCorrespondenceAddressController.editAddress(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+  def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
@@ -300,19 +300,19 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     test(result)
   }
 
-  def submitWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testCorrespondenceAddressController.submit(None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def submitWithUnAuthenticated(test: Future[Result] => Any) {
+  def submitWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testCorrespondenceAddressController.submit(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def editWithAuthorisedUser(test: Future[Result] => Any) {
+  def editWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
@@ -321,7 +321,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     test(result)
   }
 
-  def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+  def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))

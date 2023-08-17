@@ -151,18 +151,18 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
   val userId = s"user-${UUID.randomUUID}"
   val successResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(Some("2001-12-17T09:30:47Z"), Some("ABCDEabcde12345"), Some("123456789012345"))
 
-  def registerWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def registerWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def registerWithUnAuthenticated(test: Future[Result] => Any) {
+  def registerWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def registerWithAuthorisedUser(test: Future[Result] => Any) {
+  def registerWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
@@ -172,7 +172,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     test(result)
   }
 
-  def registerWithBadRequest(test: Future[Result] => Any) {
+  def registerWithBadRequest(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
@@ -182,7 +182,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     test(result)
   }
 
-  def registerWithDuplicateUser(test: Future[Result] => Any) {
+  def registerWithDuplicateUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
@@ -192,7 +192,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     test(result)
   }
 
-  def registerWithWrongRoleUser(test: Future[Result] => Any) {
+  def registerWithWrongRoleUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
@@ -202,7 +202,7 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     test(result)
   }
 
-  def registerWithInvalidUser(test: Future[Result] => Any) {
+  def registerWithInvalidUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
@@ -212,19 +212,19 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     test(result)
   }
 
-  def registerWithAuthorisedAgent(test: Future[Result] => Any) {
+  def registerWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def confirmationWithAuthorisedUser(test: Future[Result] => Any) {
+  def confirmationWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisterUserWithEMACController.confirmation.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def redirectToAtedWithAuthorisedUser(test: Future[Result] => Any) {
+  def redirectToAtedWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisterUserWithEMACController.redirectToAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

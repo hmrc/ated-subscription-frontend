@@ -40,7 +40,7 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServ
   implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
   implicit val request: Request[_] = FakeRequest(GET, "")
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockWSHttp)
   }

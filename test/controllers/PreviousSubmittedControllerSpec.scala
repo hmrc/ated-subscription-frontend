@@ -132,19 +132,19 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
     }
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testPreviousSubmittedController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
+  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testPreviousSubmittedController.view().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def getWithAuthorisedUser(businessName: String, data: Option[PreviousSubmittedForm] = None)(test: Future[Result] => Any) {
+  def getWithAuthorisedUser(businessName: String, data: Option[PreviousSubmittedForm] = None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
@@ -156,19 +156,19 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
     test(result)
   }
 
-  def continueWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def continueWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def continueWithUnAuthenticated(test: Future[Result] => Any) {
+  def continueWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def continueWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any) {
+  def continueWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 

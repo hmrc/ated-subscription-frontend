@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AuthUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithDefaultFormBinding
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
@@ -33,7 +33,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        templateAppointAgent: views.html.appointAgent,
                                        templateAgentSubscription: views.html.agentSubscription,
                                        implicit val appConfig: ApplicationConfig
-                                      ) extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality with WithDefaultFormBinding {
+                                      ) extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -64,7 +64,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
 
   def continue: Action[AnyContent] = Action.async { implicit req =>
     clientAction { implicit user =>
-      areYouAnAgentForm.bindFromRequest.fold(
+      areYouAnAgentForm.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(templateSubscription(formWithErrors))),
         _ => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint))
       )
@@ -73,7 +73,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
 
   def register: Action[AnyContent] = Action.async { implicit req =>
     clientAction { implicit user =>
-      appointAgentForm.bindFromRequest.fold(
+      appointAgentForm.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(templateAppointAgent(formWithErrors,
           Some(controllers.routes.SubscriptionController.subscribe.url)))),
         _ => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")

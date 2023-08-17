@@ -219,7 +219,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     }
   }
 
-  def getWithAuthorisedUser(mode:Option[String])(test: Future[Result] => Any) {
+  def getWithAuthorisedUser(mode:Option[String])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -228,7 +228,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     test(result)
   }
 
-  def getWithAuthorisedAgent(mode:Option[String])(test: Future[Result] => Any) {
+  def getWithAuthorisedAgent(mode:Option[String])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
@@ -237,19 +237,19 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any) {
+  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testContactDetailsController.editDetails(None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any) {
+  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     val result = testContactDetailsController.editDetails(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+  def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val sessionId = s"session-${UUID.randomUUID}"
     val userId = s"user-${UUID.randomUUID}"
 
@@ -264,7 +264,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     test(result)
   }
 
-  def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any) {
+  def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val sessionId = s"session-${UUID.randomUUID}"
     val userId = s"user-${UUID.randomUUID}"
 
@@ -279,7 +279,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     test(result)
   }
 
-  def getEditWithAuthorisedUser(test: Future[Result] => Any) {
+  def getEditWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))

@@ -18,7 +18,6 @@ package connectors
 
 import audit.Auditable
 import config.ApplicationConfig
-import javax.inject.Inject
 import metrics.{Metrics, MetricsEnum}
 import models.RequestEMACPayload
 import play.api.Logging
@@ -28,8 +27,8 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.EventTypes
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
                                        auditable: Auditable,
@@ -42,7 +41,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
 
   def enrol(requestPayload: RequestEMACPayload,
             groupId: String,
-            atedRefNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+            atedRefNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
     val jsonData = Json.toJson(requestPayload)
     val enrolmentKey = s"HMRC-ATED-ORG~ATEDRefNumber~$atedRefNumber"
@@ -77,7 +76,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
 
   private def auditEnrolUser(postUrl: String,
                              enrolRequest: RequestEMACPayload,
-                             response: HttpResponse)(implicit hc: HeaderCarrier): Unit = {
+                             response: HttpResponse)(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val eventType = response.status match {
       case CREATED => EventTypes.Succeeded
       case _ => EventTypes.Failed

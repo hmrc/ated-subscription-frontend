@@ -36,7 +36,7 @@ import scala.concurrent.Future
 class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with
   BeforeAndAfterEach with AtedTestHelper with TestJson {
 
-  override def beforeEach: Unit = {
+  override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockWSHttp)
   }
@@ -46,13 +46,13 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
 
-  val subscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
+  val subscribeSuccessResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
   val subscribeFailureResponseJson: JsValue = Json.parse( """{"reason" : "Error happened"}""")
   val subscribeSuccessResponseJson: JsValue = Json.toJson(subscribeSuccessResponse)
-  val subscribeData = AtedSubscriptionRequest(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
+  val subscribeData: AtedSubscriptionRequest = AtedSubscriptionRequest(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
     address = List(EtmpCorrespondence(name1 = "Joe", name2 = "Bloggs",
       addressDetails = EtmpAddressDetails("Correspondence", "line1", "line2", None, None, None, "GB"),
       contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true,

@@ -7,11 +7,12 @@ private object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.25.0",
-    "uk.gov.hmrc" %% "play-frontend-hmrc"         % "6.6.0-play-28",
-    "uk.gov.hmrc" %% "play-partials"              % "8.3.0-play-28",
-    "uk.gov.hmrc" %% "domain"                     % "8.1.0-play-28",
-    "uk.gov.hmrc" %% "http-caching-client"        % "9.6.0-play-28"
+    "uk.gov.hmrc"   %% "bootstrap-frontend-play-28" % "7.21.0",
+    "uk.gov.hmrc"   %% "play-frontend-hmrc"         % "7.16.0-play-28",
+    "uk.gov.hmrc"   %% "play-partials"              % "8.4.0-play-28",
+    "uk.gov.hmrc"   %% "domain"                     % "8.3.0-play-28",
+    "uk.gov.hmrc"   %% "http-caching-client"        % "9.6.0-play-28",
+    "commons-codec" %  "commons-codec"               % "1.16.0"
   )
 
   trait TestDependencies {
@@ -22,13 +23,13 @@ private object AppDependencies {
   object Test {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
-        "uk.gov.hmrc"                  %% "bootstrap-test-play-28" % "5.25.0"            % scope,
+        "uk.gov.hmrc"                  %% "bootstrap-test-play-28" % "7.21.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"     % "5.1.0"             % scope,
-        "org.jsoup"                    %  "jsoup"                  % "1.15.3"            % scope,
+        "org.jsoup"                    %  "jsoup"                  % "1.16.1"            % scope,
         "com.typesafe.play"            %% "play-test"              % PlayVersion.current % scope,
-        "org.scalatestplus"            %% "mockito-3-12"           % "3.2.10.0"          % scope,
-        "org.mockito"                  %  "mockito-core"           % "4.11.0"            % scope,
-        "com.fasterxml.jackson.module" %% "jackson-module-scala"   % "2.14.2"            % scope,
+        "org.scalatestplus"            %% "mockito-4-11"           % "3.2.16.0"          % scope,
+        "org.mockito"                  %  "mockito-core"           % "5.4.0"            % scope,
+        "com.fasterxml.jackson.module" %% "jackson-module-scala"   % "2.15.2"            % scope,
         "com.github.tomakehurst"       %  "wiremock-jre8"          % "2.35.0"            % scope
       )
     }.test
