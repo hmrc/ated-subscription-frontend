@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import views.html.helper.CSPNonce
+
 @this(layout: layout)
 
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
@@ -34,7 +36,7 @@
 }
 
 @scriptElement = {
- <script src='@routes.Assets.versioned("../assets/jquery/jquery-3.6.0.min.js")'></script>
+ <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/jquery/jquery-3.6.0.min.js")'></script>
  <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/ated-subscription.css")'/>
 }
 

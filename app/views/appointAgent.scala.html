@@ -19,6 +19,7 @@
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import views.ViewUtils.titleBuilder
+@import views.html.helper.CSPNonce
 
 @this(atedNoAuthMain: atedNoAuthMain,
         formHelper: FormWithCSRF,
@@ -32,8 +33,8 @@
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
 @pageScripts = {
-    <script src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
-  <script>
+  <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
+  <script @CSPNonce.attr>
     $(document).ready(function() {
         showHideAppointAgentSection();
       // Where .multiple-choice uses the data-target attribute
