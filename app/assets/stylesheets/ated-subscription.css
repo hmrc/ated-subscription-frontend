@@ -10,3 +10,9 @@
     font-family: "GDS Transport",arial,sans-serif;
     font-weight: normal;
 }
+
+/*  -- Temporary fix for the js-hidden class bug ----- */
+
+.js-hidden.govuk-body.js-visible {
+    display: block!important;
+}

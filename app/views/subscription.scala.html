@@ -89,7 +89,7 @@
           ).withFormField(areYouAnAgentForm("isAgent"))
       )
 
-      <div id="hidden-isAnAgent" class="js-hidden govuk-body">
+      <div id="hidden-isAnAgent" class="js-hidden govuk-body" aria-live="polite">
           <p class="govuk-body">
             @messages("ated.claim-relief.agent-claiming-true.info")
             <a class="govuk-link govuk-body" href="@appConfig.signIn">@messages("ated.claim-relief.agent-claiming-true.link")</a>.
