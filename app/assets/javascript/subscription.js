@@ -10,10 +10,10 @@ function showHideIsAnAgentSection() {
        if(this.value === 'true') {
           signOutButton.show();
           submitButton.hide();
-          hiddenisAgent.removeClass("js-hidden");
+          hiddenisAgent.show();
        } else {
           submitButton.show();
-          hiddenisAgent.addClass("js-hidden");
+          hiddenisAgent.hide();
           signOutButton.hide();
        }
    });
@@ -27,11 +27,11 @@ function showHideAppointAgentSection() {
 
     $('input[type=radio][name=appointAgent]').change(function(){
         if(this.value === 'true') {
-            appointAgentTrue.removeClass("js-hidden");
-            appointAgentFalse.addClass("js-hidden");;
+            appointAgentTrue.show();
+            appointAgentFalse.hide();
         } else {
-            appointAgentTrue.addClass("js-hidden");
-            appointAgentFalse.removeClass("js-hidden");
+            appointAgentTrue.hide();
+            appointAgentFalse.show();
         }
     });
 
