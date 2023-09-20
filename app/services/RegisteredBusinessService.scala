@@ -42,7 +42,8 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
           agentClientMandateFrontendConnector.getOldMandateDetails flatMap  { mandateRef =>
             val atedRefNumber = mandateRef.map(_.atedRefNumber).getOrElse {
               val agentRefNo = user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
-              val log = s"No Old Mandate Reference found for the client! - Cred Role: ${user.credentialRole} - Affinity Group: ${user.affinityGroup} - Agent Ref: $agentRefNo"
+              val log = s"No Old Mandate Reference found for the client! " +
+                s"- Cred Role: ${user.credentialRole} - Affinity Group: ${user.affinityGroup} - Agent Ref: $agentRefNo"
 
               logger.error(log)
               throw new RuntimeException(log)
