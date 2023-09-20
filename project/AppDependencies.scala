@@ -7,8 +7,8 @@ private object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"   %% "bootstrap-frontend-play-28" % "7.21.0",
-    "uk.gov.hmrc"   %% "play-frontend-hmrc"         % "7.19.0-play-28",
+    "uk.gov.hmrc"   %% "bootstrap-frontend-play-28" % "7.22.0",
+    "uk.gov.hmrc"   %% "play-frontend-hmrc"         % "7.20.0-play-28",
     "uk.gov.hmrc"   %% "play-partials"              % "8.4.0-play-28",
     "uk.gov.hmrc"   %% "domain"                     % "8.3.0-play-28",
     "uk.gov.hmrc"   %% "http-caching-client"        % "10.0.0-play-28",
@@ -23,7 +23,7 @@ private object AppDependencies {
   object Test {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
-        "uk.gov.hmrc"                  %% "bootstrap-test-play-28" % "7.21.0"            % scope,
+        "uk.gov.hmrc"                  %% "bootstrap-test-play-28" % "7.22.0"            % scope,
         "org.scalatestplus.play"       %% "scalatestplus-play"     % "5.1.0"             % scope,
         "org.jsoup"                    %  "jsoup"                  % "1.16.1"            % scope,
         "com.typesafe.play"            %% "play-test"              % PlayVersion.current % scope,
