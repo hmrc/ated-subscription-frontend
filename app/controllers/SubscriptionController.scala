@@ -33,7 +33,8 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        templateAppointAgent: views.html.appointAgent,
                                        templateAgentSubscription: views.html.agentSubscription,
                                        implicit val appConfig: ApplicationConfig
-                                      ) extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality with WithUnsafeDefaultFormBinding {
+                                      )
+  extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality with WithUnsafeDefaultFormBinding {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

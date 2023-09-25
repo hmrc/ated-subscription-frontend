@@ -19,6 +19,7 @@
 @import utils._
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import views.ViewUtils.titleBuilder
+@import views.html.helper.CSPNonce
 
 @this(atedNoAuthMain: atedNoAuthMain,
     formHelper: FormWithCSRF,
@@ -31,7 +32,7 @@
 @implicitFormInstance = @{ Some(previousSubmittedForm) }
 
 @pageScripts = {
-  <script>
+  <script @CSPNonce.attr>
     $(document).ready(function() {
       // Where .multiple-choice uses the data-target attribute
       // to toggle hidden content

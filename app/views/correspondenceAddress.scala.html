@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 @import views.ViewUtils.titleBuilder
+@import views.html.helper.CSPNonce
 
 @this(atedMain: atedMain,
     formHelper: FormWithCSRF,
@@ -36,8 +37,8 @@
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
 @pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.versioned("../assets/javascript/location-autocomplete.min.js")'></script>
-    <script type="text/javascript">
+    <script @CSPNonce.attr type="text/javascript" src='@routes.Assets.versioned("../assets/javascript/location-autocomplete.min.js")'></script>
+    <script @CSPNonce.attr type="text/javascript">
       openregisterLocationPicker({
         defaultValue: '',
         selectElement: document.getElementById('country'),

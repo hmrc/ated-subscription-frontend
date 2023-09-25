@@ -26,20 +26,20 @@ import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
                              val configuration: Configuration,
                              implicit val appConfig: ApplicationConfig,
-														 val templateError: views.html.global_error
+                             val templateError: views.html.global_error
                             ) extends FrontendErrorHandler with I18nSupport {
 
-	override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
-																		(implicit request: Request[_]): Html = {
-		templateError(pageTitle, heading, message)
-	}
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
+    (implicit request: Request[_]): Html = {
+      templateError(pageTitle, heading, message)
+    }
 
-	override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
-		templateError(
-			Messages("ated.business-registration.generic.error.header"),
-			Messages("ated.business-registration.generic.error.title"),
-			Messages("ated.business-registration.generic.error.message")
-		)
-	}
+  override def internalServerErrorTemplate(implicit request: Request[_]): Html = {
+   templateError(
+      Messages("ated.business-registration.generic.error.header"),
+      Messages("ated.business-registration.generic.error.title"),
+      Messages("ated.business-registration.generic.error.message")
+   )
+  }
 
 }

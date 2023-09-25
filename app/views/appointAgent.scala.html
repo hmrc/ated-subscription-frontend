@@ -19,6 +19,7 @@
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import views.ViewUtils.titleBuilder
+@import views.html.helper.CSPNonce
 
 @this(atedNoAuthMain: atedNoAuthMain,
         formHelper: FormWithCSRF,
@@ -32,8 +33,8 @@
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
 @pageScripts = {
-    <script src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
-  <script>
+  <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
+  <script @CSPNonce.attr>
     $(document).ready(function() {
         showHideAppointAgentSection();
       // Where .multiple-choice uses the data-target attribute
@@ -99,7 +100,7 @@
           ).withFormField(appointAgentForm("appointAgent"))
       )
 
-      <div id="hidden-appointAgent-true" class="govuk-body js-hidden">
+      <div id="hidden-appointAgent-true" class="js-hidden govuk-body">
           <ul class="govuk-list govuk-list--bullet">
               <li id="appoint-agent-text1">@messages("ated.appoint-agent.question.true.info1")</li>
               <li id="appoint-agent-text2">@messages("ated.appoint-agent.question.true.info2")</li>
@@ -107,7 +108,7 @@
           </ul>
       </div>
 
-      <div id="hidden-appointAgent-false" class="govuk-body js-hidden">
+      <div id="hidden-appointAgent-false" class="js-hidden govuk-body">
           <ul class="govuk-list govuk-list--bullet">
               <li id="appoint-agent-text5">@messages("ated.appoint-agent.question.false.info1")</li>
               <li id="appoint-agent-text6">@messages("ated.appoint-agent.question.false.info2")</li>

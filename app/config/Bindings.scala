@@ -24,13 +24,13 @@ import utils.{AtedSubscriptionUtils, AtedSubscriptionUtilsImpl}
 import play.api.inject.{bind => playBind}
 
 class Bindings extends Module {
-	override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
-		bindDeps()
-	}
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
+   bindDeps()
+  }
 
-	private def bindDeps() = Seq(
-		playBind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
-		playBind(classOf[AtedSubscriptionUtils]).to(classOf[AtedSubscriptionUtilsImpl])
-	)
+  private def bindDeps() = Seq(
+    playBind(classOf[HttpClient]).to(classOf[DefaultHttpClient]),
+    playBind(classOf[AtedSubscriptionUtils]).to(classOf[AtedSubscriptionUtilsImpl])
+  )
 
 }

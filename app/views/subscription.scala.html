@@ -18,6 +18,7 @@
 @import views.html.helper.form
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichRadios
 @import views.ViewUtils.titleBuilder
+@import views.html.helper.CSPNonce
 
 @this(atedNoAuthMain: atedNoAuthMain,
     formHelper: FormWithCSRF,
@@ -31,8 +32,8 @@
 @implicitFormInstance = @{ Some(areYouAnAgentForm) }
 
 @pageScripts = {
-  <script src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
-  <script>
+  <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
+  <script @CSPNonce.attr>
     $(document).ready(function() {
 
       showHideIsAnAgentSection();
@@ -88,7 +89,7 @@
           ).withFormField(areYouAnAgentForm("isAgent"))
       )
 
-      <div id="hidden-isAnAgent" class="js-hidden govuk-body">
+      <div id="hidden-isAnAgent" class="js-hidden govuk-body" aria-live="polite">
           <p class="govuk-body">
             @messages("ated.claim-relief.agent-claiming-true.info")
             <a class="govuk-link govuk-body" href="@appConfig.signIn">@messages("ated.claim-relief.agent-claiming-true.link")</a>.
