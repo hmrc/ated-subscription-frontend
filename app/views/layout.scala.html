@@ -17,6 +17,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, LanguageSelect}
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
+@import views.html.helper.CSPNonce
 
 @this(
         hmrcLayout: HmrcLayout,
@@ -32,13 +33,21 @@
     @problemLinkHelper()
 }
 
+@head = {
+    @hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)
+    <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/ated-subscription.css")'/>
+    <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/location-autocomplete.min.css")'/>
+}
+
 @allScripts = {
+    <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/jquery/jquery-3.6.0.min.js")'></script>
+    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
     @scripts
 }
 
 @hmrcLayout(
     pageTitle = pageTitle,
-    additionalHeadBlock = Some(hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)),
+    additionalHeadBlock = Some(head),
     signOutUrl = Some(routes.ApplicationController.logout.url),
     serviceUrl = Some(routes.SubscriptionController.subscribe.url),
     additionalScriptsBlock = Some(allScripts)

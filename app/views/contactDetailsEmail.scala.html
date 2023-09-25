@@ -38,10 +38,6 @@
 @pageScripts = {
   <script @CSPNonce.attr>
     $(document).ready(function() {
-      // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
 
       //Clear input when selecting 'No'
       $('input[type=radio][name=emailConsent]').change(function(){
