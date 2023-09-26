@@ -28,8 +28,6 @@
 )(mainContent: Html)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @scriptElement = {
-    <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/jquery/jquery-3.6.0.min.js")'></script>
-    <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/ated-subscription.css")'/>
     @pageScripts
 }
 

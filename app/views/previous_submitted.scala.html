@@ -31,17 +31,6 @@
 
 @implicitFormInstance = @{ Some(previousSubmittedForm) }
 
-@pageScripts = {
-  <script @CSPNonce.attr>
-    $(document).ready(function() {
-      // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -52,8 +41,7 @@
 }
 
 @atedNoAuthMain(title = titleBuilder(messages("ated.prev-submitted.title"), Some(previousSubmittedForm)),
-                userLoggedIn = true,
-                pageScripts = Some(pageScripts)) {
+                userLoggedIn = true) {
 
   @backLinkHtml
 
