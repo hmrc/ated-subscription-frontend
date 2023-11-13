@@ -143,7 +143,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
         logger.info(s"[RegisterUserService][createEnrolmentVerifiers] - $utrType and no postcode")
         List(Verifier(utrType, uniqueTaxRef))
       case (_, _) =>
-        throw new Exception(s"[RegisterUserService][createEnrolmentVerifiers] - postcode or utr must be supplied")
+        throw new RuntimeException(s"[RegisterUserService][createEnrolmentVerifiers] - postcode or utr must be supplied")
     }
   }
 

@@ -252,21 +252,10 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
         createRequest(Some("TF2 6JN"), None) must be(RequestEMACPayload("testID", "ATED Enrolment", "principal", List(Verifier("NonUKPostalCode", "TF2 6JN"))))
       }
       "should throw an exception when no postcode is provided" in {
-        val result = createRequest(None, None)
-        try {
-          result
-        } catch {
-          case e: Exception => succeed
-          case _: Throwable => fail()
-        }
-        //assertThrows[RuntimeException]{result}
-//        val result = "test"
-//          try {
-//            result.charAt(4)
-//             } catch {
-//                 case e: IndexOutOfBoundsException => succeed
-//                 case _: Throwable => fail()
-//          }
+          val thrown = intercept[RuntimeException] {
+          createRequest(None, None)
+          }
+          thrown.getMessage mustBe "[RegisterUserService][createEnrolmentVerifiers] - postcode or utr must be supplied"
       }
     }
   }
