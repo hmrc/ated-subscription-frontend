@@ -114,27 +114,19 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
   def createEnrolmentRequest(businessType: String, gGCredId: String, utr: Option[String],
                              postcode: Option[String], safeId: String): RequestEMACPayload = {
 
-    case postcode.isEmpty =>
-      val utrType: String = getUtrType(businessType)
+    val trimPostcode = postcode.getOrElse("").trim
 
-      logger.info("[RegisterUserService][createEnrolmentRequest] - creating enrolment request")
+    val utrType: String = getUtrType(businessType)
 
-      RequestEMACPayload(
-        userId = gGCredId,
-        friendlyName = "ATED Enrolment",
-        `type` = enrolmentType,
-        verifiers = createEnrolmentVerifiers(utrType, utr, None))
+    logger.info("[RegisterUserService][createEnrolmentRequest] - creating enrolment request")
 
-    case _ =>
-      val utrType: String = getUtrType(businessType)
+    trimPostcode.isEmpty match {
 
-      logger.info("[RegisterUserService][createEnrolmentRequest] - creating enrolment request")
-
-      RequestEMACPayload(
-        userId = gGCredId,
-        friendlyName = "ATED Enrolment",
-        `type` = enrolmentType,
-        verifiers = createEnrolmentVerifiers(utrType, utr, postcode))
+      case true =>
+         RequestEMACPayload(userId = gGCredId, friendlyName = "ATED Enrolment", `type` = enrolmentType, verifiers = createEnrolmentVerifiers(utrType, utr, None))
+      case false =>
+         RequestEMACPayload(userId = gGCredId, friendlyName = "ATED Enrolment", `type` = enrolmentType, verifiers = createEnrolmentVerifiers(utrType, utr, postcode))
+    }
   }
 
   def createEnrolmentVerifiers(utrType: String, utr: Option[String], postcode: Option[String]): List[Verifier] = {
