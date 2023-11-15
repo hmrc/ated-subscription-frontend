@@ -112,6 +112,10 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       .thenReturn(Future.successful(HttpResponse.apply(CREATED, enrolSuccessResponse.toString())))
   }
 
+  def createRequest(postcode: Option[String], utr: Option[String] = Some("0123456789")): RequestEMACPayload = {
+    testRegisterUserService.createEnrolmentRequest("Corporate Body", "testID", utr, postcode, "safeID" )
+  }
+
   override def beforeEach(): Unit = {
     reset(mockAtedSubscriptionConnector)
     reset(mockDataCacheConnector)
@@ -229,6 +233,31 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       result.json must be(Json.parse("""{ "serviceName" : "ated","state" : "NotEnroled","identifiers" : [ ]}"""))
     }
 
+  }
+
+  "createEnrolmentRequest" when {
+    "a utr is provided" must {
+      "return correct payload when a valid postcode is provided" in {
+        createRequest(Some("TF2 6JN")) must be(RequestEMACPayload("testID", "ATED Enrolment", "principal", List(Verifier("Postcode", "TF2 6JN"), Verifier("CTUTR", "0123456789"))))
+      }
+      "return correct payload when an empty postcode is provided" in {
+        createRequest(Some("")) must be(RequestEMACPayload("testID", "ATED Enrolment", "principal", List(Verifier("CTUTR", "0123456789"))))
+      }
+      "return correct payload when no postcode is provided" in {
+        createRequest(None) must be(RequestEMACPayload("testID", "ATED Enrolment", "principal", List(Verifier("CTUTR", "0123456789"))))
+      }
+    }
+    "no utr is provided" must {
+      "return correct payload when a valid postcode is provided" in {
+        createRequest(Some("TF2 6JN"), None) must be(RequestEMACPayload("testID", "ATED Enrolment", "principal", List(Verifier("NonUKPostalCode", "TF2 6JN"))))
+      }
+      "should throw an exception when no postcode is provided" in {
+          val thrown = intercept[RuntimeException] {
+          createRequest(None, None)
+          }
+          thrown.getMessage mustBe "[RegisterUserService][createEnrolmentVerifiers] - postcode or utr must be supplied"
+      }
+    }
   }
 
   "toEtmpAddress" must {
