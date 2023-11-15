@@ -123,9 +123,11 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
     trimPostcode.isEmpty match {
 
       case true =>
-         RequestEMACPayload(userId = gGCredId, friendlyName = "ATED Enrolment", `type` = enrolmentType, verifiers = createEnrolmentVerifiers(utrType, utr, None))
+         RequestEMACPayload(userId = gGCredId, friendlyName = "ATED Enrolment", `type` = enrolmentType,
+           verifiers = createEnrolmentVerifiers(utrType, utr, None))
       case false =>
-         RequestEMACPayload(userId = gGCredId, friendlyName = "ATED Enrolment", `type` = enrolmentType, verifiers = createEnrolmentVerifiers(utrType, utr, postcode))
+         RequestEMACPayload(userId = gGCredId, friendlyName = "ATED Enrolment", `type` = enrolmentType,
+           verifiers = createEnrolmentVerifiers(utrType, utr, postcode))
     }
   }
 
