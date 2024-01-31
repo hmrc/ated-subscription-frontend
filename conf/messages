@@ -134,7 +134,7 @@ ated.registered-business-address.agent.lede-text = This can be your address as t
 ated.registered-business-address.correspondence-address.yes = Yes
 ated.registered-business-address.correspondence-address.no = No
 ated.registered-business-address.continue = Continue
-ated.registered-business-address-error.correspondenceAddress = Select yes if this where you want us to send any letters about ATED
+ated.registered-business-address-error.correspondenceAddress = Select yes if this is where you want us to send any letters about ATED
 
 ##### CONTACT DETAILS FORM
 
@@ -326,7 +326,6 @@ ated.business-registration-error.duplicate.identifier.message = If you require a
 ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.title = You must be logged in as an administrator to submit an ATED return
 ated.business-registration-error.wrong.role.message = If you require access you need to <a class="govuk-link" href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" rel="noreferrer noopener" target = "_blank">add administrators to your account in Government Gateway</a>.
-ated.business-address-error.general.isCorrespondenceAddress = Select yes if this where you want us to send any letters about ATED
 ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
 
 ated.business-registration.generic.error.header = Sorry, there is a problem with the service
