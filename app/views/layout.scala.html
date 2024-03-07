@@ -18,9 +18,11 @@
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, LanguageSelect}
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
 @import views.html.helper.CSPNonce
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 
 @this(
-        hmrcLayout: HmrcLayout,
+        hmrcStandardPage: HmrcStandardPage,
         problemLinkHelper: HmrcReportTechnicalIssueHelper,
         hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
@@ -45,10 +47,16 @@
     @scripts
 }
 
-@hmrcLayout(
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        serviceURLs = ServiceURLs(
+            signOutUrl = Some(routes.ApplicationController.logout.url),
+            serviceUrl = Some(routes.SubscriptionController.subscribe.url)
+            ),
+        templateOverrides = TemplateOverrides(
+            additionalHeadBlock = Some(head),
+            additionalScriptsBlock = Some(allScripts)
+            ),
     pageTitle = pageTitle,
-    additionalHeadBlock = Some(head),
-    signOutUrl = Some(routes.ApplicationController.logout.url),
-    serviceUrl = Some(routes.SubscriptionController.subscribe.url),
-    additionalScriptsBlock = Some(allScripts)
+    )
 )(content)
