@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,13 +70,8 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                   req: Request[AnyContent], messages: Messages): Future[Result] = {
     val standardView =
       Future.successful(Ok(template(businessAddressForm.fill(
-        //businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.serviceRedirectUrl("agent-client-mandate-frontend.searchPreviousNrlUrl")))
         businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToSearchPreviousNrlUrl))
-        //businessReg.getOrElse(BusinessAddress())), address, Some(controllers.routes.RegisteredBusinessController.continue.url))
       ))
-
-//    def test (redirectName: String): Future[Result] = {
-//      Future.successful(Redirect(appConfig.serviceRedirectUrl(redirectName)))
 
     atedUsers match {
       case Some(users) =>
@@ -108,11 +103,9 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
         businessAddressForm.bindFromRequest().fold(
           formWithErrors => {
             registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
-              //BadRequest(template(formWithErrors, address, Some(appConfig.serviceRedirectUrl("agent-client-mandate-frontend.searchPreviousNrlUrl"))))
               BadRequest(template(formWithErrors, address, Some(appConfig.backToSearchPreviousNrlUrl)))
-              //BadRequest(template(formWithErrors, address, Some(controllers.routes.RegisteredBusinessController.continue.url)))
             }
-          }// _ => test("agent-client-mandate-frontend.searchPreviousNrlUrl")
+          }
           ,
           businessAddressData => {
             dataCacheConnector.saveRegisteredBusinessDetails(businessAddressData)
