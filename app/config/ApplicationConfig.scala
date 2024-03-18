@@ -16,6 +16,8 @@
 
 package config
 
+import play.api.routing.sird.?
+
 import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedSubscriptionUtils
@@ -82,6 +84,9 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val backToBusinessCustomerUrl: String = servicesConfig.getConfString("business-customer.backLinkUrl",
     "/business-customer/back-link/ATED")
+
+  lazy val backToSearchPreviousNrlUrl: String = servicesConfig.getConfString("agent-client-mandate-frontend.searchPreviousNrlUrl",
+    "/mandate/agent/search-previous/nrl")
 
   lazy val toBusinessAccountUrl: String = servicesConfig.getConfString("business-tax-account.serviceRedirectUrl", "/business-account")
 
