@@ -68,10 +68,18 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                  (implicit hc: HeaderCarrier, ec: ExecutionContext,
                                   auth: AtedSubscriptionAuthData,
                                   req: Request[AnyContent], messages: Messages): Future[Result] = {
-    val standardView =
+    val backLinkUrlFromAcm: Option[String] = req.queryString.get("backLinkUrl").map(s => s.headOption.getOrElse(""))
+    val standardView = {
+      if (backLinkUrlFromAcm.getOrElse("") contains "/mandate/agent/search-previous/nrl") {
       Future.successful(Ok(template(businessAddressForm.fill(
         businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToSearchPreviousNrlUrl))
       ))
+    }
+      else {
+        Future.successful(Ok(template(businessAddressForm.fill(
+          businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
+        ))
+      }}
 
     atedUsers match {
       case Some(users) =>
@@ -103,7 +111,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
         businessAddressForm.bindFromRequest().fold(
           formWithErrors => {
             registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
-              BadRequest(template(formWithErrors, address, Some(appConfig.backToSearchPreviousNrlUrl)))
+              BadRequest(template(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
             }
           }
           ,
