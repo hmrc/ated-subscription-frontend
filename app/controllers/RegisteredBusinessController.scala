@@ -113,8 +113,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
             registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
               BadRequest(template(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
             }
-          }
-          ,
+          },
           businessAddressData => {
             dataCacheConnector.saveRegisteredBusinessDetails(businessAddressData)
             val isCorrespondenceAddress = businessAddressData.isCorrespondenceAddress.getOrElse(false)
