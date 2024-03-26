@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,9 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
 
   lazy val backToBusinessCustomerUrl: String = servicesConfig.getConfString("business-customer.backLinkUrl",
     "/business-customer/back-link/ATED")
+
+  lazy val backToSearchPreviousNrlUrl: String = servicesConfig.getConfString("agent-client-mandate-frontend.searchPreviousNrlUrl",
+    "/mandate/agent/search-previous/nrl")
 
   lazy val toBusinessAccountUrl: String = servicesConfig.getConfString("business-tax-account.serviceRedirectUrl", "/business-account")
 
