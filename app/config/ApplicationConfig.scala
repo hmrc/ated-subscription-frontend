@@ -28,32 +28,19 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val serviceUrlACM: String = servicesConfig.baseUrl("agent-client-mandate")
   lazy val serviceUrlAted: String = servicesConfig.baseUrl("ated")
   lazy val serviceUrlAtedSub: String = servicesConfig.baseUrl("ated-subscription")
-  lazy val serviceUrlGG: String = servicesConfig.baseUrl("government-gateway")
   lazy val serviceUrlTaxEnrol: String = servicesConfig.baseUrl("tax-enrolments")
   lazy val serviceUrlBC: String = servicesConfig.baseUrl("business-customer-frontend")
-
-  private val contactFormServiceIdentifier: String = "ATED"
-  private val contactHost: String = servicesConfig.getConfString("contact-frontend.host", "")
-  def betaFeedbackUrl(returnUri: String): String = servicesConfig.getConfString("beta-feedback-url", defaultBetaFeedbackUrl) + "?return=" + returnUri
-
-  lazy val defaultBetaFeedbackUrl: String = s"$contactHost/contact/beta-feedback"
-  lazy val betaFeedbackUnauthenticatedUrl: String = s"$contactHost/contact/beta-feedback-unauthenticated"
-  lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  lazy val defaultTimeoutSeconds: Int = servicesConfig.getInt("defaultTimeoutSeconds")
-  lazy val timeoutCountdown: Int = servicesConfig.getInt("timeoutCountdown")
 
 
   //ExternalUrls
   def serviceRedirectUrl(redirectName: String): String = servicesConfig.getString(redirectName)
 
   lazy val cancelRedirectUrl: String = servicesConfig.getConfString("cancelRedirectUrl", "https://www.gov.uk/")
-  lazy val companyAuthHost: String = s"${servicesConfig.getConfString("auth.company-auth.host", "")}"
-  lazy val loginCallback: String = servicesConfig.getConfString("auth.login-callback.url", "/ated-subscription/start")
-  lazy val loginPath: String = s"${servicesConfig.getConfString("auth.login-path", "")}"
+  private lazy val companyAuthHost: String = s"${servicesConfig.getConfString("auth.company-auth.host", "")}"
+  private lazy val loginCallback: String = servicesConfig.getConfString("auth.login-callback.url", "/ated-subscription/start")
+  private lazy val loginPath: String = s"${servicesConfig.getConfString("auth.login-path", "")}"
   lazy val signIn: String = s"$companyAuthHost/gg/$loginPath?continue=$loginCallback"
   lazy val loginURL: String = s"$companyAuthHost/gg/$loginPath"
-  lazy val signOut: String = s"$companyAuthHost/gg/sign-out"
   lazy val guidanceUrl: String = servicesConfig.getString("guidanceUrl")
 
   lazy val helpdeskUrl: String = servicesConfig.getString("helpdeskUrl")
@@ -62,8 +49,6 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val logoutPath: String = servicesConfig.getConfString("ated-frontend.logoutUrl", "/ated/logout")
   lazy val atedStartPath: String = servicesConfig.getConfString("ated-frontend.atedStartRedirectUrl", "/ated/home")
 
-  lazy val reviewDetailsPath: String = servicesConfig.getConfString(
-    "business-customer.reviewDetailsUrl","/business-customer/review-details/ATED")
   lazy val nrlPath: String = servicesConfig.getConfString(
     "business-customer.nrlUrl","/business-customer/nrl/ATED")
   lazy val agentAtedSummaryPath: String = servicesConfig.getConfString(

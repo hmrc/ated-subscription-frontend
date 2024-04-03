@@ -45,7 +45,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     Test / parallelExecution := false,
-    Test / fork := false
+    Test / fork := true
   )
   .settings(inConfig( TemplateTest )( Defaults.testSettings ) *)
   .settings(
