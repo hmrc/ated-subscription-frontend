@@ -42,43 +42,34 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
     Ok(templateUnauthorised())
   }
 
-  def cancel: Action[AnyContent] = Action { implicit _ =>
+  def cancel: Action[AnyContent] = Action {
     Redirect(appConfig.cancelRedirectUrl)
   }
 
-  def logout: Action[AnyContent] = Action { implicit _ =>
+  def logout: Action[AnyContent] = Action {
     Redirect(appConfig.logoutPath)
   }
 
-  def keepAlive: Action[AnyContent] = Action { implicit _ =>
+  def keepAlive: Action[AnyContent] = Action {
     Ok("OK")
   }
-
   def redirectToAtedStart: Action[AnyContent] = Action {
-    implicit _ =>
-      Redirect(appConfig.atedStartPath).discardingCookies(DiscardingCookie("mdtp"))
+    Redirect(appConfig.atedStartPath).discardingCookies(DiscardingCookie("mdtp"))
   }
-
   def redirectToLogout: Action[AnyContent] = Action {
-    implicit _ =>
       Redirect(appConfig.logoutPath)
   }
-
   def redirectToGuidance: Action[AnyContent] = Action {
-    implicit _ =>
       Redirect(appConfig.guidanceUrl).withNewSession
   }
-
   def unauthorisedAssistantOrg: Action[AnyContent] = Action {
     implicit request => Ok(templateUnauthorisedAssistantOrg())
   }
-
   def unauthorisedAssistantAgent: Action[AnyContent] = Action {
     implicit request => Ok(templateUnauthorisedAssistantAgent())
   }
-
   def clearCache: Action[AnyContent] = Action.async { implicit request =>
-    authoriseFor { implicit _ =>
+    authoriseFor { _ =>
       dataCacheConnector.clearCache.map { x =>
         x.status match {
           case OK | NO_CONTENT =>

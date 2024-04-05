@@ -21,8 +21,6 @@ private object AppDependencies {
     "uk.gov.hmrc"                  %% "bootstrap-test-play-30"% "8.5.0",
   ).map(_ % Test)
 
-  val itDependencies: Seq[ModuleID] = Seq(
-    "org.wiremock" % "wiremock" % "3.4.2" % Test
-  )
+  val itDependencies: Seq[ModuleID] = Seq()
   def apply(): Seq[ModuleID] = compile ++ test
 }
