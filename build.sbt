@@ -47,7 +47,7 @@ lazy val microservice = Project(appName, file("."))
     Test / parallelExecution := false,
     Test / fork := true
   )
-  .settings(inConfig( TemplateTest )( Defaults.testSettings ) *)
+  .settings(inConfig(TemplateTest )(Defaults.testSettings) *)
   .settings(
 
     TwirlKeys.templateImports ++= Seq(
@@ -56,7 +56,6 @@ lazy val microservice = Project(appName, file("."))
       "uk.gov.hmrc.hmrcfrontend.views.html.helpers._",
       "uk.gov.hmrc.govukfrontend.views.html.components._"
     )
-    // ***************
   )
   .settings(
     resolvers += Resolver.jcenterRepo
