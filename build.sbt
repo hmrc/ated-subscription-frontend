@@ -1,5 +1,3 @@
-
-import TestPhases.*
 import sbt.Keys.*
 import sbt.{Def, inConfig, *}
 import uk.gov.hmrc.DefaultBuildSettings
@@ -47,7 +45,6 @@ lazy val microservice = Project(appName, file("."))
     Test / parallelExecution := false,
     Test / fork := true
   )
-  .settings(inConfig(TemplateTest )(Defaults.testSettings) *)
   .settings(
 
     TwirlKeys.templateImports ++= Seq(
