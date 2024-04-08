@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,47 +38,38 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def unauthorised(): Action[AnyContent] = Action { implicit request =>
+  def unauthorised: Action[AnyContent] = Action { implicit request =>
     Ok(templateUnauthorised())
   }
 
-  def cancel(): Action[AnyContent] = Action { implicit request =>
+  def cancel: Action[AnyContent] = Action {
     Redirect(appConfig.cancelRedirectUrl)
   }
 
-  def logout: Action[AnyContent] = Action { implicit request =>
+  def logout: Action[AnyContent] = Action {
     Redirect(appConfig.logoutPath)
   }
 
-  def keepAlive: Action[AnyContent] = Action { implicit request =>
+  def keepAlive: Action[AnyContent] = Action {
     Ok("OK")
   }
-
   def redirectToAtedStart: Action[AnyContent] = Action {
-    implicit request =>
-      Redirect(appConfig.atedStartPath).discardingCookies(DiscardingCookie("mdtp"))
+    Redirect(appConfig.atedStartPath).discardingCookies(DiscardingCookie("mdtp"))
   }
-
   def redirectToLogout: Action[AnyContent] = Action {
-    implicit request =>
       Redirect(appConfig.logoutPath)
   }
-
   def redirectToGuidance: Action[AnyContent] = Action {
-    implicit request =>
       Redirect(appConfig.guidanceUrl).withNewSession
   }
-
   def unauthorisedAssistantOrg: Action[AnyContent] = Action {
     implicit request => Ok(templateUnauthorisedAssistantOrg())
   }
-
   def unauthorisedAssistantAgent: Action[AnyContent] = Action {
     implicit request => Ok(templateUnauthorisedAssistantAgent())
   }
-
   def clearCache: Action[AnyContent] = Action.async { implicit request =>
-    authoriseFor { implicit auth =>
+    authoriseFor { _ =>
       dataCacheConnector.clearCache.map { x =>
         x.status match {
           case OK | NO_CONTENT =>
