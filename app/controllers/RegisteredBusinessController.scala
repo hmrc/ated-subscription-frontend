@@ -83,7 +83,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
 
     atedUsers match {
       case Some(users) =>
-        if(users.principalUserIds == Nil && users.delegatedUserIds == Nil) {
+        if(users.principalGroupIds == Nil) {
           etmpCheckService.validateBusinessDetails(bcDetails) flatMap { etmpRegistered =>
             if (etmpRegistered) {
               authoriseFor { newAuthDetails =>

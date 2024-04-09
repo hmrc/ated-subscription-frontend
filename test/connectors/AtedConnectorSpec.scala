@@ -74,7 +74,7 @@ class AtedConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with Mockit
         verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
       }
 
-      "GET user enrolments for a given safeID should return the list of enrolments" in {
+      "GET user enrolments for a given safeID should return the list of group IDs" in {
         val atedUsersList = AtedUsers(List("principalUserId1"), List("delegatedId1"))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val jsOnData = Json.toJson(atedUsersList)
