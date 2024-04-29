@@ -20,7 +20,6 @@ import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
 
 import javax.inject.Inject
-import org.joda.time.LocalDate
 import play.api.Logging
 import play.api.i18n.{Messages, MessagesProvider}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest, Result}
@@ -31,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AuthUtils._
 import utils.Dates
 
+import java.time.{ZoneId, ZonedDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
@@ -83,7 +83,7 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
   def confirmation: Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        Future.successful(Ok(templateRegisterUserConfirmation(Dates.formatDate(LocalDate.now()))))
+        Future.successful(Ok(templateRegisterUserConfirmation(Dates.formatDate(ZonedDateTime.now(ZoneId.of("UTC"))))))
       }
   }
 

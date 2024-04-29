@@ -18,7 +18,6 @@ package controllers.nonUKReg
 
 import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
-import org.joda.time.LocalDate
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.RegisteredBusinessService
@@ -26,6 +25,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Dates
 
+import java.time.{ZoneId, ZonedDateTime}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,7 +41,7 @@ class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         registeredBusinessService.getBusinessCustomerDetails.map(_.businessName) map { name =>
-          Ok(template(name, Dates.formatDate(LocalDate.now())))
+          Ok(template(name, Dates.formatDate(ZonedDateTime.now(ZoneId.of("UTC")))))
         }
       }
   }

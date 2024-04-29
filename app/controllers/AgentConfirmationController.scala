@@ -20,12 +20,12 @@ import config.ApplicationConfig
 import connectors.BusinessCustomerFrontendConnector
 import controllers.auth.AuthFunctionality
 import models.BusinessCustomerDetails
-import org.joda.time.LocalDate
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Dates
 
+import java.time.{ZoneId, ZonedDateTime}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,7 +45,7 @@ class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
           (response.status: @unchecked) match {
             case OK =>
               val reviewDetails = response.json.as[BusinessCustomerDetails]
-              Ok(template(reviewDetails.businessName, Dates.formatDate(LocalDate.now())))
+              Ok(template(reviewDetails.businessName, Dates.formatDate(ZonedDateTime.now(ZoneId.of("UTC")))))
           }
         )
       }
