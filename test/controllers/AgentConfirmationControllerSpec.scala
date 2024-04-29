@@ -19,7 +19,6 @@ package controllers
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.BusinessCustomerFrontendConnector
 import models.{Address, BusinessCustomerDetails}
-import org.joda.time.LocalDate
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -35,6 +34,7 @@ import uk.gov.hmrc.http.HttpResponse
 import utils.Dates
 import views.html.agentConfirmation
 
+import java.time.{ZoneId, ZonedDateTime}
 import java.util.UUID
 import scala.concurrent.Future
 
@@ -76,7 +76,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
             val document = Jsoup.parse(contentAsString(result))
             document.title() must be("You have successfully set up this agency for ATED - GOV.UK")
-            document.getElementById("banner").text() must be(s"You have successfully set up ACME LTD for ATED on ${Dates.formatDate(LocalDate.now())}")
+            document.getElementById("banner").text() must be(s"You have successfully set up ACME LTD for ATED on ${Dates.formatDate(ZonedDateTime.now(ZoneId.of("UTC")))}")
             document.getElementById("submit").text() must be("Add my ATED clients")
           }
         }
