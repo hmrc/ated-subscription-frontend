@@ -86,7 +86,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
               //Ramesh TO DO :: Exception handling
               //logger
               //logger.error ("dsnckdcnkdwc")
-              Future.successful(Ok(templateAlreadyRegistered(bcDetails.businessName)))
+              Future.successful(Ok(templateAlreadyRegistered(bcDetails.businessName))) //Mohan added for compilation purpose
           })
       }}
 
