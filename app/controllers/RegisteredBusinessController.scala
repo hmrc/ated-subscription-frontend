@@ -17,7 +17,7 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.{AtedConnector, AtedSubscriptionDataCacheConnector}
+import connectors.{AtedConnector, AtedSubscriptionDataCacheConnector, BusinessCustomerFrontendConnector}
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
 
@@ -38,6 +38,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              registeredBusinessService: RegisteredBusinessService,
                                              correspondenceAddressService: CorrespondenceAddressService,
                                              dataCacheConnector: AtedSubscriptionDataCacheConnector,
+                                             businessCustomerFEConnector: BusinessCustomerFrontendConnector,
                                              etmpCheckService: EtmpCheckService,
                                              atedConnector: AtedConnector,
                                              val authConnector: DefaultAuthConnector,
@@ -76,9 +77,17 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
       ))
     }
       else {
-        Future.successful(Ok(template(businessAddressForm.fill(
-          businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
-        ))
+        businessCustomerFEConnector.getBackLinkStatus.flatMap(response =>
+          (response.status: @unchecked) match {
+            case OK => Future.successful(Ok(template(businessAddressForm.fill(
+              businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
+            ))
+            case _ =>
+              //Ramesh TO DO :: Exception handling
+              //logger
+              //logger.error ("dsnckdcnkdwc")
+              Future.successful(Ok(templateAlreadyRegistered(bcDetails.businessName)))
+          })
       }}
 
     atedUsers match {

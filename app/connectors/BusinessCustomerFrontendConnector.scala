@@ -32,10 +32,17 @@ class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
   val serviceUrl: String = appConfig.serviceUrlBC
   val businessCustomerUri = "business-customer"
   val reviewDetailsUri = "fetch-review-details"
+  val backLinkUri = "back-link"
   val service = "ATED"
 
   def getBusinessCustomerDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
     http.GET(getUrl, Seq.empty, Seq.empty)
+  }
+
+  def getBackLinkStatus(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+    val getUrl = s"$serviceUrl/$businessCustomerUri/$backLinkUri/$service"
+    http.GET(getUrl, Seq.empty, Seq.empty)
+    //Ramesh TO DO :: Exception handling
   }
 }
