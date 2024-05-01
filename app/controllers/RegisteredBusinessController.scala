@@ -79,7 +79,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
       else {
         businessCustomerFEConnector.getBackLinkStatus.flatMap(response =>
           (response.status: @unchecked) match {
-            case OK => Future.successful(Ok(template(businessAddressForm.fill(
+            case SEE_OTHER => Future.successful(Ok(template(businessAddressForm.fill(
               businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
             ))
             case _ =>
