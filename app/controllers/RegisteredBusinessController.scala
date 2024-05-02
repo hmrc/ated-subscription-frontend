@@ -26,6 +26,7 @@ import models.{Address, AtedSubscriptionAuthData, AtedUsers, BusinessAddress, Bu
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.backlink.BackLink
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -79,14 +80,13 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
       else {
         businessCustomerFEConnector.getBackLinkStatus.flatMap(response =>
           (response.status: @unchecked) match {
-            case SEE_OTHER => Future.successful(Ok(template(businessAddressForm.fill(
+            case OK => Future.successful(Ok(template(businessAddressForm.fill(
               businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
             ))
             case _ =>
-              //Ramesh TO DO :: Exception handling
-              //logger
-              //logger.error ("dsnckdcnkdwc")
-              Future.successful(Ok(templateAlreadyRegistered(bcDetails.businessName))) //Mohan added for compilation purpose
+              Future.successful(Ok(template(businessAddressForm.fill(
+                businessReg.getOrElse(BusinessAddress())), address, Some(BackLink.mimicsBrowserBackButtonViaJavaScript.toString))
+              ))
           })
       }}
 
