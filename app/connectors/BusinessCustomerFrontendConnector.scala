@@ -30,9 +30,9 @@ class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
   extends RawResponseReads with HeaderCarrierForPartialsConverter {
 
   val serviceUrl: String = appConfig.serviceUrlBC
-  val businessCustomerUri = "business-customer"
-  val reviewDetailsUri = "fetch-review-details"
-  val backLinkUri = "back-link"
+  private val businessCustomerUri = "business-customer"
+  private val reviewDetailsUri = "fetch-review-details"
+  private val backLinkUri = "back-link"
   val service = "ATED"
 
   def getBusinessCustomerDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
