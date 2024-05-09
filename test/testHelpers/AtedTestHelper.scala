@@ -17,7 +17,7 @@
 package testHelpers
 
 import config.ApplicationConfig
-import connectors.AtedSubscriptionDataCacheConnector
+import connectors.{AtedSubscriptionDataCacheConnector, BusinessCustomerFrontendConnector}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatest.TestSuite
@@ -37,6 +37,7 @@ trait AtedTestHelper extends MockitoSugar  with GuiceOneServerPerSuite { this: T
   val mockRegisterUserService: RegisterUserService = mock[RegisterUserService]
   val mockAtedSubUtils: AtedSubscriptionUtilsImpl = mock[AtedSubscriptionUtilsImpl]
   val mockDataCacheConnector: AtedSubscriptionDataCacheConnector = mock[AtedSubscriptionDataCacheConnector]
+  val mockBusinessCustomerFrontendConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
   val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
 

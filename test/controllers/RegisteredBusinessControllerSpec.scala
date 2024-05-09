@@ -34,6 +34,7 @@ import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
+import uk.gov.hmrc.http.HttpResponse
 import views.html.{registeredBusinessAddress, registeredWithDifferentGG}
 
 import scala.concurrent.Future
@@ -55,6 +56,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     mockRegisteredBusinessService,
     mockCorrespondenceAddressService,
     mockDataCacheConnector,
+    mockBusinessCustomerFrontendConnector,
     mockEtmpCheckService,
     mockAtedConnector,
     mockAuthConnector,
@@ -247,6 +249,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       .thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockBusinessCustomerFrontendConnector.getBackLinkStatus(any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(OK, "")))
     when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
       .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
     when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))

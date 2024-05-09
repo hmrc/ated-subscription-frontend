@@ -20,19 +20,17 @@ import config.ApplicationConfig
 import connectors.{AtedConnector, AtedSubscriptionDataCacheConnector, BusinessCustomerFrontendConnector}
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
-
-import javax.inject.Inject
-import models.{Address, AtedSubscriptionAuthData, AtedUsers, BusinessAddress, BusinessCustomerDetails}
+import models._
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.backlink.BackLink
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AtedSubscriptionUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
@@ -66,8 +64,8 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-  private def validateAndRedirect(bcDetails: BusinessCustomerDetails, businessReg: Option[BusinessAddress], address: Address, atedUsers: Option[AtedUsers])
-                                 (implicit hc: HeaderCarrier, ec: ExecutionContext,
+   private def validateAndRedirect(bcDetails: BusinessCustomerDetails, businessReg: Option[BusinessAddress], address: Address, atedUsers: Option[AtedUsers])
+                                  (implicit hc: HeaderCarrier, ec: ExecutionContext,
                                   auth: AtedSubscriptionAuthData,
                                   req: Request[AnyContent], messages: Messages): Future[Result] = {
     val backLinkUrlFromAcm: Option[String] = req.queryString.get("backLinkUrl").map(s => s.headOption.getOrElse(""))
