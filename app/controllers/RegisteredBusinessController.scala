@@ -70,15 +70,14 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                   req: Request[AnyContent], messages: Messages): Future[Result] = {
     val backLinkUrlFromAcm: Option[String] = req.queryString.get("backLinkUrl").map(s => s.headOption.getOrElse(""))
     val standardView = {
-      if ((backLinkUrlFromAcm.getOrElse("") contains "/mandate/agent/search-previous/nrl") ||
-        (backLinkUrlFromAcm.getOrElse("") contains "/mandate/agent/search-previous/paySA")) {
+      if (backLinkUrlFromAcm.getOrElse("") contains "/mandate/agent/search-previous"){
           Future.successful(Ok(template(businessAddressForm.fill(
             businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToSearchPreviousNrlUrl))
           ))
     }
       else {
         businessCustomerFEConnector.getBackLinkStatus.flatMap(response =>
-          (response.status: @unchecked) match {
+          response.status match {
             case OK => Future.successful(Ok(template(businessAddressForm.fill(
               businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
             ))
