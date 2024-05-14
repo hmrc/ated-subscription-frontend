@@ -1,5 +1,5 @@
 import sbt.Keys.*
-import sbt.{Def, inConfig, *}
+import sbt.{Def, *}
 import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin

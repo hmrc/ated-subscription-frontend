@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,18 @@ class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
   extends RawResponseReads with HeaderCarrierForPartialsConverter {
 
   val serviceUrl: String = appConfig.serviceUrlBC
-  val businessCustomerUri = "business-customer"
-  val reviewDetailsUri = "fetch-review-details"
+  private val businessCustomerUri = "business-customer"
+  private val reviewDetailsUri = "fetch-review-details"
+  private val backLinkUri = "back-link"
   val service = "ATED"
 
   def getBusinessCustomerDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
+    http.GET(getUrl, Seq.empty, Seq.empty)
+  }
+
+  def getBackLinkStatus(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+    val getUrl = s"$serviceUrl/$businessCustomerUri/$backLinkUri/$service"
     http.GET(getUrl, Seq.empty, Seq.empty)
   }
 }

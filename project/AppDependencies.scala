@@ -1,9 +1,8 @@
+
+import play.sbt.PlayImport.*
 import sbt.*
 
 private object AppDependencies {
-
-  import play.core.PlayVersion
-  import play.sbt.PlayImport.*
 
   val compile: Seq[ModuleID] = Seq(
     ws,
@@ -12,9 +11,7 @@ private object AppDependencies {
     "uk.gov.hmrc"   %% "play-partials-play-30"       % "9.1.0",
     "uk.gov.hmrc"   %% "domain-play-30"              % "9.0.0",
     "uk.gov.hmrc"   %% "http-caching-client-play-30" % "11.2.0",
-    "commons-codec" %  "commons-codec"               % "1.16.1",
-    "joda-time"     % "joda-time"                    % "2.12.7",
-    "org.joda"      % "joda-convert"                 % "2.2.3"
+    "commons-codec" %  "commons-codec"               % "1.17.0",
   )
 
   val test: Seq[ModuleID] = Seq(

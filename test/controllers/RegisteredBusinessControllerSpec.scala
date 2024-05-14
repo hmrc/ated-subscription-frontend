@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
+import uk.gov.hmrc.http.HttpResponse
 import views.html.{registeredBusinessAddress, registeredWithDifferentGG}
 
 import scala.concurrent.Future
@@ -49,12 +50,14 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val injectedViewInstance: registeredBusinessAddress = app.injector.instanceOf[views.html.registeredBusinessAddress]
   val injectedViewInstanceAlreadyRegistered: registeredWithDifferentGG = app.injector.instanceOf[views.html.registeredWithDifferentGG]
   val backToBusinessCustomerUrl = "someBackToBusinessCustomerUrl"
+  val backToSearchPreviousNrlUrl = "backToSearchPreviousNrlUrl"
 
   val testRegisteredBusinessController = new RegisteredBusinessController(
     mockMCC,
     mockRegisteredBusinessService,
     mockCorrespondenceAddressService,
     mockDataCacheConnector,
+    mockBusinessCustomerFrontendConnector,
     mockEtmpCheckService,
     mockAtedConnector,
     mockAuthConnector,
@@ -90,6 +93,30 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
             document.getElementById("registered-business-address-header").text() must include("Is this where you want us to send any letters about ATED?")
             document.getElementsByClass("govuk-back-link").text() must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must be(backToBusinessCustomerUrl)
+          }
+        }
+
+        "contain title and header as Your correspondence address and no Back Link due to expired link returned from business-customer-frontend" in {
+          when(mockAppConfig.backToBusinessCustomerUrl).thenReturn(backToBusinessCustomerUrl)
+          withAuthorisedUserAndNoBackLink { result =>
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
+            document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
+            document.getElementById("registered-business-address-header").text() must include("Is this where you want us to send any letters about ATED?")
+            document.getElementsByClass("govuk-back-link").text() must be("")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("")
+          }
+        }
+
+        "be redirected to nrl page" in {
+          when(mockAppConfig.backToSearchPreviousNrlUrl).thenReturn(backToSearchPreviousNrlUrl)
+          withAuthorisedUserWithRedirectNRLlink { result =>
+            val document = Jsoup.parse(contentAsString(result))
+            document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
+            document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
+            document.getElementById("registered-business-address-header").text() must include("Is this where you want us to send any letters about ATED?")
+            document.getElementsByClass("govuk-back-link").text() must be("Back")
+            document.getElementsByClass("govuk-back-link").attr("href") must be("backToSearchPreviousNrlUrl")
           }
         }
 
@@ -247,11 +274,53 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       .thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockBusinessCustomerFrontendConnector.getBackLinkStatus(any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(OK, "")))
     when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
       .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
     when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
       .thenReturn(Future.successful(false))
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+
+  def withAuthorisedUserAndNoBackLink(test: Future[Result] => Any): Unit = {
+    val userId = s"user-${UUID.randomUUID}"
+
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+      .thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockBusinessCustomerFrontendConnector.getBackLinkStatus(any(), any()))
+      .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
+    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+      .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+      .thenReturn(Future.successful(false))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+
+    test(result)
+  }
+
+  def withAuthorisedUserWithRedirectNRLlink(test: Future[Result] => Any): Unit = {
+    val userId = s"user-${UUID.randomUUID}"
+
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+      .thenReturn(Future.successful(None))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testAddress))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+      .thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+      .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+      .thenReturn(Future.successful(false))
+    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSessionAndACMUrl(userId))
 
     test(result)
   }
