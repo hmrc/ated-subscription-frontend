@@ -320,14 +320,6 @@ ated.inform.continue-to-create = Continue to create new account
 
 ##### ERROR MESSAGES
 
-ated.business-registration-error.duplicate.identifier.header = Somebody has already registered from your organisation
-ated.business-registration-error.duplicate.identifier.title = Somebody has already registered from your organisation
-ated.business-registration-error.duplicate.identifier.message = If you require access you need to <a class="govuk-link" href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" rel="noreferrer noopener" target = "_blank">add administrators to your account in Government Gateway</a>.
-ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
-ated.business-registration-error.wrong.role.title = You must be logged in as an administrator to submit an ATED return
-ated.business-registration-error.wrong.role.message = If you require access you need to <a class="govuk-link" href = "https://myaccount.gateway.gov.uk/Pages/Credentials/Admin/List.aspx" rel="noreferrer noopener" target = "_blank">add administrators to your account in Government Gateway</a>.
-ated.business-registration.error.bad.gateway.other = No matching ErrorNumber from GG Enrolment BAD_GATEWAY Exception
-
 ated.business-registration.generic.error.header = Sorry, there is a problem with the service
 ated.business-registration.generic.error.title = Sorry, there is a problem with the service
 ated.business-registration.generic.error.message = Try again later.
