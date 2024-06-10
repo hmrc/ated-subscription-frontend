@@ -320,6 +320,9 @@ ated.inform.continue-to-create = Continue to create new account
 
 ##### ERROR MESSAGES
 
+ated.business-registration-error.wrong.role.header = You must be logged in as an administrator to submit an ATED return
+
+
 ated.business-registration.generic.error.header = Sorry, there is a problem with the service
 ated.business-registration.generic.error.title = Sorry, there is a problem with the service
 ated.business-registration.generic.error.message = Try again later.
