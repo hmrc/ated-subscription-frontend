@@ -89,7 +89,6 @@
     @govukRadios(
         Radios(
             fieldset = Some(Fieldset(
-                classes = "govuk-radios--inline",
                 legend = Some(Legend(
                     classes = "govuk-visually-hidden",
                     content = Text(header)
@@ -104,7 +103,8 @@
                     content = Text(Messages("ated.radio.no.label")),
                     value = Some("false")
                 )
-            )
+            ),
+            classes = "govuk-radios--inline"
         ).withFormField(businessAddressForm("isCorrespondenceAddress"))
     )
 
