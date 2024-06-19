@@ -33,5 +33,4 @@ class OverseasCompanyService @Inject()(dataCacheConnector: AtedSubscriptionDataC
   def fetchPreviouslySubmitted(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] = {
     dataCacheConnector.fetchPreviouslySubmittedForSession
   }
-
 }
