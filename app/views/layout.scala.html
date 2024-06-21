@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, LanguageSelect}
 @import views.html.helper.CSPNonce
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
@@ -55,6 +54,6 @@
             additionalHeadBlock = Some(head),
             additionalScriptsBlock = Some(allScripts)
             ),
-    pageTitle = pageTitle,
+    pageTitle = pageTitle
     )
 )(content)
