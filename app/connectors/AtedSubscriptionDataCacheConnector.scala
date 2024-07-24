@@ -19,8 +19,7 @@ package connectors
 import config.AtedSessionCache
 import javax.inject.Inject
 import models._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-
+import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -77,7 +76,7 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: AtedSessionCach
     sessionCache.fetchAndGetEntry[ContactDetailsEmail](contactEmailFormId)
   }
 
-  def clearCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  def clearCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     sessionCache.remove()
   }
 

@@ -29,77 +29,78 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AtedConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val testAtedConnector: AtedConnector = new AtedConnector(mockAppConfig, mockWSHttp) {
-    override val serviceURL = "test"
+  class Test extends ConnectorMocks {
+    when(mockAppConfig.serviceUrlAtedSub).thenReturn("http://localhost:9020/")
+    val testAtedConnector: AtedConnector = new AtedConnector(mockAppConfig, mockHttpClient) {
+      override val serviceURL = "http://localhost:9020/test"
+    }
   }
-
   override def beforeEach(): Unit = {
     reset(mockAppConfig)
-    reset(mockWSHttp)
   }
 
   "AtedConnector" must {
 
     "getDetails" must {
-      "GET agent details from ETMP for a user" in {
+      "GET agent details from ETMP for a user" in new Test {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
         val result = testAtedConnector.getDetails("ARN1234567", "arn")
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+        verify(mockHttpClient, times(1)).get(any())(any())
       }
 
-      "GET user details from ETMP for an agent" in {
+      "GET user details from ETMP for an agent" in new Test {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
         val result = testAtedConnector.getDetails("XN1200000100001", "arn")
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+        verify(mockHttpClient, times(1)).get(any())(any())
       }
 
-      "GET subscription data from ETMP for an agent" in {
+      "GET subscription data from ETMP for an agent" in new Test {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(OK, "")))
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, "")))
         val result = testAtedConnector.retrieveSubscriptionData("XN1200000100001")
         await(result).status must be(OK)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+        verify(mockHttpClient, times(1)).get(any())(any())
       }
 
-      "GET user enrolments for a given safeID should return the list of group IDs" in {
+      "GET user enrolments for a given safeID should return the list of group IDs" in new Test {
         val atedUsersList = AtedUsers(List("principalUserId1"), List("delegatedId1"))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val jsOnData = Json.toJson(atedUsersList)
-        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(OK, jsOnData.toString())))
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, jsOnData.toString())))
+
         val result = testAtedConnector.checkUsersEnrolments("XN1200000100001")
         await(result) must be(Some(atedUsersList))
-        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+        verify(mockHttpClient, times(1)).get(any())(any())
       }
 
-      "GET user enrolments for a given safeID should return the null if the call returns anything other than 200" in {
+      "GET user enrolments for a given safeID should return the null if the call returns anything other than 200" in new Test {
         val atedUsersList = AtedUsers(List("principalUserId1"), List("delegatedId1"))
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
         val jsOnData = Json.toJson(atedUsersList)
-        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(NOT_FOUND, jsOnData.toString())))
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(NOT_FOUND, jsOnData.toString())))
         val result = testAtedConnector.checkUsersEnrolments("XN1200000100001")
         await(result) must be(None)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+        verify(mockHttpClient, times(1)).get(any())(any())
       }
 
-      "GET user enrolments for a given safeID should return internal server error if ETMP returns an error" in {
+      "GET user enrolments for a given safeID should return internal server error if ETMP returns an error" in new Test {
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
-        when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.failed(new InternalServerException("ggghu")))
+        when(execute[HttpResponse]).thenReturn(Future.failed(new InternalServerException("ggghu")))
         val result = testAtedConnector.checkUsersEnrolments("XN1200000100001")
         the[InternalServerException] thrownBy await(result)
-        verify(mockWSHttp, times(1)).GET[HttpResponse](any(), any(), any())(any(), any(), any())
+        verify(mockHttpClient, times(1)).get(any())(any())
       }
     }
 

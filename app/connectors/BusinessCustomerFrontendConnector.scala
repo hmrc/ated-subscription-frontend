@@ -19,15 +19,14 @@ package connectors
 import config.ApplicationConfig
 import javax.inject.Inject
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.{StringContextOps, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
-                                                   http: DefaultHttpClient)
-  extends RawResponseReads with HeaderCarrierForPartialsConverter {
+class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig, http: HttpClientV2)
+  extends HeaderCarrierForPartialsConverter {
 
   val serviceUrl: String = appConfig.serviceUrlBC
   private val businessCustomerUri = "business-customer"
@@ -37,11 +36,11 @@ class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
 
   def getBusinessCustomerDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
-    http.GET(getUrl, Seq.empty, Seq.empty)
+    http.get(url"$getUrl").execute[HttpResponse]
   }
 
   def getBackLinkStatus(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$backLinkUri/$service"
-    http.GET(getUrl, Seq.empty, Seq.empty)
+    http.get(url"$getUrl").execute[HttpResponse]
   }
 }

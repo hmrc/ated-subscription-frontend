@@ -25,7 +25,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
@@ -34,17 +34,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  val mockAuditable: Auditable = mock[Auditable]
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-
-  override def beforeEach(): Unit = {
-    reset(mockAppConfig)
-    reset(mockWSHttp)
-    reset(mockAuditable)
+  class Test extends ConnectorMocks {
+    val mockAuditable: Auditable = mock[Auditable]
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+    when(mockAppConfig.serviceUrlTaxEnrol).thenReturn("http://localhost:9020/")
+    val testTaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockAppConfig, mockAuditable, mockHttpClient, new Metrics)
   }
-
-  val testTaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockAppConfig, mockAuditable, mockWSHttp, new Metrics)
 
   "TaxEnrolmentsConnector" must {
 
@@ -55,52 +51,40 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite wi
     val subscribeFailureResponseJson = Json.parse( """{"reason" : "Error happened"}""")
 
     "enrol user" must {
-      "works for a user" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-          thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
+      "works for a user" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(CREATED, "")))
         val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(CREATED)
       }
 
-      "return CONFLICT when retrieving a bad request exception from tax enrolments" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-          thenReturn(Future.failed(new ConflictException("Error")))
+      "return CONFLICT when retrieving a bad request exception from tax enrolments" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.failed(new ConflictException("Error")))
         val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(CONFLICT)
       }
 
-      "return Internal server error when retrieving a Internal Server Exception from tax enrolments" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-          thenReturn(Future.failed(new InternalServerException("Error")))
+      "return Internal server error when retrieving a Internal Server Exception from tax enrolments" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.failed(new InternalServerException("Error")))
         val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(INTERNAL_SERVER_ERROR)
       }
 
-      "throw a RuntimeException when receiving a BAD_REQUEST from tax enrolments" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-          thenReturn(Future.failed(new BadRequestException("INVALID_JSON")))
+      "throw a RuntimeException when receiving a BAD_REQUEST from tax enrolments" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.failed(new BadRequestException("INVALID_JSON")))
         intercept[RuntimeException] {
           await(testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo))
         }
       }
 
-      "return status anything else, for bad data sent for enrol" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())))
+      "return status anything else, for bad data sent for enrol" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())))
         val result = testTaxEnrolmentsConnector.enrol(request, groupId, atedRefNo)
         val enrolResponse = await(result)
         enrolResponse.status must be(INTERNAL_SERVER_ERROR)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockHttpClient, times(1)).post(ArgumentMatchers.any())(ArgumentMatchers.any())
       }
     }
   }

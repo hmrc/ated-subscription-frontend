@@ -29,7 +29,6 @@ import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http._
 import utils.TestJson
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -38,92 +37,68 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
 
   override def beforeEach(): Unit = {
     reset(mockAppConfig)
-    reset(mockWSHttp)
   }
 
-  val testAtedSubscriptionConnector: AtedSubscriptionConnector = new AtedSubscriptionConnector(mockAppConfig, mockWSHttp) {
-    override lazy val serviceURL: String = "test"
+  class Test extends ConnectorMocks {
+    val testAtedSubscriptionConnector: AtedSubscriptionConnector = new AtedSubscriptionConnector(mockAppConfig, mockHttpClient) {
+      override lazy val serviceURL: String = "http://localhost:9020/test"
+    }
+
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+
+    val subscribeSuccessResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
+      atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
+    val subscribeFailureResponseJson: JsValue = Json.parse( """{"reason" : "Error happened"}""")
+    val subscribeSuccessResponseJson: JsValue = Json.toJson(subscribeSuccessResponse)
+    val subscribeData: AtedSubscriptionRequest = AtedSubscriptionRequest(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
+      address = List(EtmpCorrespondence(name1 = "Joe", name2 = "Bloggs",
+        addressDetails = EtmpAddressDetails("Correspondence", "line1", "line2", None, None, None, "GB"),
+        contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true,
+      businessType = "Corporate Body", utr = Some("1234567890"), isNonUKClientRegisteredByAgent = false, knownFactPostcode = Some("AA1 1AA"))
+    val subscribeDataJson: JsValue = Json.toJson(subscribeData)
   }
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
-
-  val subscribeSuccessResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
-    atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
-  val subscribeFailureResponseJson: JsValue = Json.parse( """{"reason" : "Error happened"}""")
-  val subscribeSuccessResponseJson: JsValue = Json.toJson(subscribeSuccessResponse)
-  val subscribeData: AtedSubscriptionRequest = AtedSubscriptionRequest(safeId = "EX0012345678909", acknowledgementReference = "1234567890",
-    address = List(EtmpCorrespondence(name1 = "Joe", name2 = "Bloggs",
-      addressDetails = EtmpAddressDetails("Correspondence", "line1", "line2", None, None, None, "GB"),
-      contactDetails = EtmpContactDetails(Some("01234567890"), None, None, Some("a@b.c")))), emailConsent = true,
-    businessType = "Corporate Body", utr = Some("1234567890"), isNonUKClientRegisteredByAgent = false, knownFactPostcode = Some("AA1 1AA"))
-  val subscribeDataJson: JsValue = Json.toJson(subscribeData)
 
   "AtedSubscriptionConnector" must {
     "subscribeAted" must {
 
-      "return status as OK, for successful subscription" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(OK, subscribeSuccessResponseJson.toString())))
+      "return status as OK, for successful subscription" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, subscribeSuccessResponseJson.toString())))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         await(result) must be(subscribeSuccessResponse)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockHttpClient, times(1)).post(ArgumentMatchers.any())(ArgumentMatchers.any())
       }
 
-      "return status as BAD_REQUEST, for bad data sent for subscription" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, subscribeFailureResponseJson.toString())))
+      "return status as BAD_REQUEST, for bad data sent for subscription" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, subscribeFailureResponseJson.toString())))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[BadRequestException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockHttpClient, times(1)).post(ArgumentMatchers.any())(ArgumentMatchers.any())
       }
 
-      "return status anything else, for bad data sent for subscription" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())))
+      "return status anything else, for bad data sent for subscription" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, subscribeFailureResponseJson.toString())))
         val result = testAtedSubscriptionConnector.subscribeAted(subscribeDataJson)
         val thrown = the[InternalServerException] thrownBy await(result)
         Json.parse(thrown.getMessage) must be(subscribeFailureResponseJson)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockHttpClient, times(1)).post(ArgumentMatchers.any())(ArgumentMatchers.any())
       }
     }
 
     "checkEtmpBusinessPartnerExists" must {
-      "return a self heal subscription when an OK has been received" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
-        )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.obj("regimeRefNumber" -> "test").toString())))
+      "return a self heal subscription when an OK has been received" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, Json.obj("regimeRefNumber" -> "test").toString())))
         val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
         await(result) must be(Some(SelfHealSubscriptionResponse("test")))
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockHttpClient, times(1)).post(ArgumentMatchers.any())(ArgumentMatchers.any())
       }
 
-      "return a None for any other status received" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()
-        )(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, Json.obj().toString())))
+      "return a None for any other status received" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Json.obj().toString())))
         val result = testAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(etmpCheckOrganisation)
         await(result) must be(None)
-        verify(mockWSHttp, times(1)).POST[JsValue, HttpResponse](ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(),
-          ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockHttpClient, times(1)).post(ArgumentMatchers.any())(ArgumentMatchers.any())
       }
     }
   }
