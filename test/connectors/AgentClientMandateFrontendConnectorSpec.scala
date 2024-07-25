@@ -18,7 +18,6 @@ package connectors
 
 import builders.AuthBuilder
 import models.{AgentEmail, AtedSubscriptionAuthData, ClientDisplayName, OldMandateReference}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -40,40 +39,40 @@ class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServ
   implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
   implicit val request: Request[_] = FakeRequest(GET, "")
 
-  override def beforeEach(): Unit = {
-    reset(mockAppConfig)
-    reset(mockWSHttp)
-  }
 
-  when(mockAppConfig.servicesConfig).thenReturn(mockServicesConfig)
+  class Test extends ConnectorMocks {
+    val testAgentClientMandateConnector: AgentClientMandateConnector = new AgentClientMandateConnector(mockAppConfig, mockHttpClient) {
+      override lazy val serviceURL: String = "http://localhost:9020/test"
+    }
 
-  val testAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = new AgentClientMandateFrontendConnector(
-    mockAppConfig,
-    mockWSHttp
-  ){
-    override val serviceUrl: String = "test"
+    when(mockAppConfig.servicesConfig).thenReturn(mockServicesConfig)
+    val testAgentClientMandateFrontendConnector: AgentClientMandateFrontendConnector = new AgentClientMandateFrontendConnector(
+      mockAppConfig,
+      mockHttpClient
+    ){
+      override val serviceUrl: String = "http://localhost:9020/test"
+    }
   }
 
   "AgentClientMandateFrontendConnector" must {
-    "get agent email" in {
+    "get agent email" in new Test {
       val agentEmail = AgentEmail("aaa@bbb.com")
-      when(mockWSHttp.GET[Option[AgentEmail]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(agentEmail)))
-
+      when(execute[Option[AgentEmail]]).thenReturn(Future.successful(Some(agentEmail)))
       val response = await(testAgentClientMandateFrontendConnector.getAgentEmail)
       response.get.email must be("aaa@bbb.com")
     }
 
-    "get client display name" in {
+    "get client display name" in new Test {
       val displayName = ClientDisplayName("client display name")
-      when(mockWSHttp.GET[Option[ClientDisplayName]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(displayName)))
+      when(execute[Option[ClientDisplayName]]).thenReturn(Future.successful(Some(displayName)))
 
       val response = await(testAgentClientMandateFrontendConnector.getClientDisplayName)
       response.get.name must be("client display name")
     }
 
-    "get old mandate details" in {
+    "get old mandate details" in new Test {
       val oldMandateDetails = OldMandateReference("mandateId", "atedRef")
-      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(oldMandateDetails).toString)))
+      when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, Json.toJson(oldMandateDetails).toString)))
 
       val response = await(testAgentClientMandateFrontendConnector.getOldMandateDetails)
       response.get.atedRefNumber must be("atedRef")

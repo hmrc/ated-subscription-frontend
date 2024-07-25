@@ -19,17 +19,14 @@ package connectors
 import builders.AuthBuilder
 import config.ApplicationConfig
 import models.{AtedSubscriptionAuthData, NonUKClientDto}
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -39,31 +36,25 @@ class AgentClientMandateConnectorSpec extends PlaySpec with GuiceOneServerPerSui
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
 
-  val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
-  val mockWSHttp: DefaultHttpClient = mock[DefaultHttpClient]
-  val testAgentClientMandateConnector: AgentClientMandateConnector = new AgentClientMandateConnector(mockAppConfig, mockWSHttp) {
-    override lazy val serviceURL: String = "test"
-  }
-
-  override def beforeEach(): Unit = {
-    reset(mockAppConfig)
-    reset(mockWSHttp)
+  class Test extends ConnectorMocks {
+    val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
+    val testAgentClientMandateConnector: AgentClientMandateConnector = new AgentClientMandateConnector(mockAppConfig, mockHttpClient) {
+      override lazy val serviceURL: String = "http://localhost:9020/test"
+    }
   }
 
   "AgentClientMandateConnector" must {
 
     "createMandateForNonUK" must {
 
-      "return response, if status is CREATED" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(CREATED, Some(Json.parse("""{ "reason": "wrong data" }""")).toString)))
+      "return response, if status is CREATED" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(CREATED, Some(Json.parse("""{ "reason": "wrong data" }""")).toString)))
         val result = await(testAgentClientMandateConnector.createMandateForNonUK(dto))
         result.status must be(CREATED)
       }
 
-      "throw exception, if response status is anything else" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, null)))
+      "throw exception, if response status is anything else" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, null)))
         val thrown = the[InternalServerException] thrownBy await(testAgentClientMandateConnector.createMandateForNonUK(dto))
         thrown.getMessage must be(null)
       }
@@ -72,16 +63,14 @@ class AgentClientMandateConnectorSpec extends PlaySpec with GuiceOneServerPerSui
 
     "updateMandateForNonUK" must {
 
-      "return response, if status is CREATED" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(CREATED, Some(Json.parse("""{ "reason": "wrong data" }""")).toString())))
+      "return response, if status is CREATED" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(CREATED, Some(Json.parse("""{ "reason": "wrong data" }""")).toString)))
         val result = await(testAgentClientMandateConnector.updateMandateForNonUK(dto))
         result.status must be(CREATED)
       }
 
-      "throw exception, if response status is anything else" in {
-        when(mockWSHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, null)))
+      "throw exception, if response status is anything else" in new Test {
+        when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(BAD_REQUEST, null)))
         val thrown = the[InternalServerException] thrownBy await(testAgentClientMandateConnector.updateMandateForNonUK(dto))
         thrown.getMessage must be(null)
       }

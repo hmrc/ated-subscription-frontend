@@ -17,18 +17,16 @@
 package connectors
 
 import config.ApplicationConfig
-
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, AtedUsers}
 import play.api.http.Status.OK
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.AuthUtils
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
-class AtedConnector @Inject()(appConfig: ApplicationConfig,
-                              http: DefaultHttpClient) extends RawResponseReads {
+class AtedConnector @Inject()(appConfig: ApplicationConfig, http: HttpClientV2) {
 
   val serviceURL: String = appConfig.serviceUrlAted
   val serviceUrlAtedSub: String = appConfig.serviceUrlAtedSub
@@ -39,7 +37,8 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
                 (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
-    http.GET[HttpResponse](s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType", Seq.empty, Seq.empty)
+    val getUrl = s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType"
+    http.get(url"$getUrl").execute[HttpResponse]
   }
 
   def retrieveSubscriptionData(atedRefNumber: String)
@@ -47,12 +46,12 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig,
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""
-    http.GET[HttpResponse](getUrl, Seq.empty, Seq.empty)
+    http.get(url"$getUrl").execute[HttpResponse]
   }
 
   def checkUsersEnrolments(safeID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AtedUsers]] = {
     val getURL = s"""$serviceUrlAtedSub/ated/status-info/users/$safeID"""
-    http.GET(getURL, Seq.empty, Seq.empty) map {
+    http.get(url"$getURL").execute[HttpResponse].map{
       response =>
         response.status match {
           case OK => Some(response.json.as[AtedUsers])

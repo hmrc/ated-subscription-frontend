@@ -18,7 +18,6 @@ package connectors
 
 import builders.AuthBuilder
 import models._
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -37,32 +36,26 @@ import scala.concurrent.Future
 
 class BusinessCustomerFrontendConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  override def beforeEach(): Unit = {
-    reset(mockAppConfig)
-    reset(mockWSHttp)
-  }
+  class Test extends ConnectorMocks {
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+    implicit val request: Request[_] = FakeRequest(GET, "")
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-  implicit val request: Request[_] = FakeRequest(GET, "")
-
-  val testBusinessCustomerFrontendConnector: BusinessCustomerFrontendConnector = new BusinessCustomerFrontendConnector(mockAppConfig, mockWSHttp) {
-    override val serviceUrl: String = "test"
+    val testBusinessCustomerFrontendConnector: BusinessCustomerFrontendConnector = new BusinessCustomerFrontendConnector(mockAppConfig, mockHttpClient) {
+      override val serviceUrl: String = "http://localhost:9020/test"
+    }
   }
 
   "BusinessCustomerFrontendConnector" must {
-    "getBusinessCustomerDetails" in {
+    "getBusinessCustomerDetails" in new Test {
       val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
         businessType = "Corporate Body",
         businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
         sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = Some("JARN1234567"))
-      when(mockWSHttp.GET[HttpResponse](any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(reviewDetails).toString())))
+      when(execute[HttpResponse]).thenReturn(Future.successful(HttpResponse(OK, Json.toJson(reviewDetails).toString())))
 
       val response = await(testBusinessCustomerFrontendConnector.getBusinessCustomerDetails)
       response.status must be(OK)
     }
   }
-
-
 }

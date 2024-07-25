@@ -22,17 +22,17 @@ import metrics.{Metrics, MetricsEnum}
 import models.RequestEMACPayload
 import play.api.Logging
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.model.EventTypes
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
-
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
                                        auditable: Auditable,
-                                       http: DefaultHttpClient,
+                                       http: HttpClientV2,
                                        metrics: Metrics
                                       ) extends  Logging {
   lazy val serviceURL: String = appConfig.serviceUrlTaxEnrol
@@ -48,7 +48,7 @@ class TaxEnrolmentsConnector @Inject()(appConfig: ApplicationConfig,
     val postUrl = s"""$enrolmentUrl/groups/$groupId/enrolments/$enrolmentKey"""
     val timerContext = metrics.startTimer(MetricsEnum.API4Enrolment)
 
-    http.POST[JsValue, HttpResponse](postUrl, jsonData, Seq.empty)(implicitly, HttpReads.Implicits.readRaw,implicitly,implicitly) map { response =>
+    http.post(url"$postUrl").withBody(jsonData).execute[HttpResponse].map { response =>
       timerContext.stop()
       auditEnrolUser(postUrl, requestPayload, response)
       logger.debug(s"PostUrl::$postUrl ---- requestBody:: $jsonData --- responseBody::${response.body} --- responseStatus:: ${response.status}")

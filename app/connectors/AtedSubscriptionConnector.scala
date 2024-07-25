@@ -23,13 +23,12 @@ import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.AuthUtils
-
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
-class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
-                                          http: DefaultHttpClient) extends RawResponseReads with Logging {
+class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig, http: HttpClientV2) extends Logging {
 
   lazy val serviceURL: String = appConfig.serviceUrlAtedSub
   val subscriptionURI: String = "subscribe"
@@ -38,7 +37,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
   def subscribeAted(data: JsValue)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
     val authLink = AuthUtils.getAuthLink
     val postURL = s"""$serviceURL$authLink/$subscriptionURI"""
-    http.POST[JsValue, HttpResponse](postURL, data, Seq.empty) map { response =>
+    http.post(url"$postURL").withBody(data).execute[HttpResponse].map{response =>
       response.status match {
         case OK =>
           response.json.as[SubscribeSuccessResponse]
@@ -55,8 +54,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig,
   def checkEtmpBusinessPartnerExists(data: JsValue)(implicit user: AtedSubscriptionAuthData,
                                                     hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
     val postURL = s"""$serviceURL/$checkEtmpUri"""
-
-    http.POST[JsValue, HttpResponse](postURL, data, Seq.empty) map { response: HttpResponse =>
+    http.post(url"$postURL").withBody(data).execute[HttpResponse].map{response =>
       response.status match {
         case OK => Some(response.json.as[SelfHealSubscriptionResponse])
         case _ => None

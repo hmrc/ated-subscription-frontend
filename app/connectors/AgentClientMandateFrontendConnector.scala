@@ -20,15 +20,16 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AgentEmail, ClientDisplayName, OldMandateReference}
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.StringContextOps
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
 class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig,
-                                                    http: DefaultHttpClient
-                                                   ) extends RawResponseReads with HeaderCarrierForPartialsConverter {
+                                                    http: HttpClientV2
+                                                   ) extends HeaderCarrierForPartialsConverter {
 
   val serviceUrl: String = appConfig.serviceUrlACMFrontend
   val emailUri = "mandate/agent/email-session"
@@ -38,15 +39,15 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
 
   def getAgentEmail(implicit request: Request[_], ec: ExecutionContext): Future[Option[AgentEmail]] = {
     val getUrl = s"$serviceUrl/$emailUri/"
-    http.GET[Option[AgentEmail]](getUrl, Seq.empty, Seq.empty)
+    http.get(url"$getUrl").execute[Option[AgentEmail]]
   }
   def getClientDisplayName(implicit request: Request[_], ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     val getUrl = s"$serviceUrl/$displayNameUri/"
-    http.GET[Option[ClientDisplayName]](getUrl, Seq.empty, Seq.empty)
+    http.get(url"$getUrl").execute[Option[ClientDisplayName]]
   }
   def getOldMandateDetails(implicit request: Request[_], ec: ExecutionContext): Future[Option[OldMandateReference]] = {
     val getUrl = s"$serviceUrl/$mandateDetails/"
-    http.GET(getUrl, Seq.empty, Seq.empty)(readRaw, implicitly, implicitly) map { _.json.asOpt[OldMandateReference]}
+    http.get(url"$getUrl").execute[HttpResponse].map(_.json.asOpt[OldMandateReference])
   }
 
 }

@@ -25,7 +25,7 @@
         hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
 )
 
-@(pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @content = {
     @contentBlock

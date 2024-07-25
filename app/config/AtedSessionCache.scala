@@ -18,13 +18,14 @@ package config
 
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 
 class AtedSessionCache @Inject()(val conf: ServicesConfig,
-                                 val http: DefaultHttpClient) extends SessionCache {
+                                 val http: HttpClientV2) extends SessionCache {
   lazy val defaultSource: String = conf.getConfString("appName", "ated-subscription-frontend")
   lazy val baseUri: String = conf.baseUrl("cachable.session-cache")
   lazy val domain: String = conf.getString("microservice.services.cachable.session-cache.domain")
+  def httpClientV2: HttpClientV2 = http
 }

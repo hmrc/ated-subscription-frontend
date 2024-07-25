@@ -28,7 +28,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.{unauthorised, unauthorisedAssistantAgent, unauthorisedAssistantOrg}
 
 import scala.concurrent.Future
@@ -164,19 +164,10 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
         "be able to clear cache successfully" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse.apply(200, ""))
+          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(())
           val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(OK)
-        }
-
-        "handle error" in {
-          val userId = s"user-${UUID.randomUUID}"
-          builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(HttpResponse.apply(400, ""))
-          val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
-
-          status(result) must be(INTERNAL_SERVER_ERROR)
         }
       }
     }

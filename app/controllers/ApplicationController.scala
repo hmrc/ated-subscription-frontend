@@ -70,15 +70,13 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
   }
   def clearCache: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { _ =>
-      dataCacheConnector.clearCache.map { x =>
-        x.status match {
-          case OK | NO_CONTENT =>
-            logger.info("session has been cleared")
-            Ok
-          case errorStatus =>
-            logger.error(s"session has not been cleared for ATED_SUBSCRIPTION. Status: $errorStatus, Error: ${x.body}")
-            InternalServerError
-        }
+      dataCacheConnector.clearCache.map { _ =>
+        logger.info("session has been cleared")
+        Ok
+      }.recover{
+        case t: Throwable =>
+          logger.error(s"session has not been cleared for ATED_SUBSCRIPTION, $t")
+          InternalServerError
       }
     }
   }
