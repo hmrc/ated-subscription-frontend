@@ -72,8 +72,12 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
 
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(_) => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
-      case _ => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
+      case Some(_) =>
+        Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case _ => {
+        Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url
+          .concat("?backLinkUrl=").concat(appConfig.backToSearchPreviousNrlUrl))
+      }
     }
   }
 }
