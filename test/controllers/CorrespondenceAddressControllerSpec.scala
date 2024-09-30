@@ -32,6 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
 import testHelpers.AtedTestHelper
+import utils.Constants.backToSearchPreviousNrlUrl
 import views.html.correspondenceAddress
 
 import scala.concurrent.Future
@@ -79,7 +80,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementsByAttributeValue("for", "country").text() must include("Country")
             document.getElementById("submit").text() must be("Continue")
             document.getElementsByClass("govuk-back-link").text() must be("Back")
-            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/registered-business-address")
+            document.getElementsByClass("govuk-back-link").attr("href") must be
+              "/ated-subscription/registered-business-address?backLinkUrl=".concat(backToSearchPreviousNrlUrl)
           }
         }
 
