@@ -87,7 +87,8 @@
             Input(
                 label = Label(
                     content = Text(Messages("ated.contact-details.firstName"))
-                )
+                ),
+                autocomplete = Some("given-name")
             ).withFormField(contactDetailsForm("firstName"))
         )
 
@@ -95,15 +96,18 @@
             Input(
                 label = Label(
                     content = Text(Messages("ated.contact-details.lastName"))
-                )
+                ),
+                autocomplete = Some("family-name")
             ).withFormField(contactDetailsForm("lastName"))
         )
 
         @govukInput(
             Input(
+                inputmode = Some("tel"),
                 label = Label(
                     content = Text(Messages("ated.contact-details.telephone"))
-                )
+                ),
+                autocomplete = Some("tel")
             ).withFormField(contactDetailsForm("telephone"))
         )
 

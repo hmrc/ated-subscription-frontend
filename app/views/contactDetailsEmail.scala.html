@@ -55,9 +55,11 @@
 @conditionalHtml = {
     @govukInput(
         Input(
+            inputmode = Some("email"),
             label = Label(
                 content = Text(Messages("ated.contact-details.email"))
-            )
+            ),
+            autocomplete = Some("email")
         ).withFormField(contactDetailsEmailForm("email"))
     )
 }

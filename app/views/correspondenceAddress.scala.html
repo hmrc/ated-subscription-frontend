@@ -113,7 +113,8 @@
               Input(
                   label = Label(
                       content = Text(Messages("ated.address.line-1"))
-                  )
+                  ),
+                  autocomplete = Some("address-line1")
               ).withFormField(correspondenceAddressForm("line_1"))
           )
 
@@ -121,7 +122,8 @@
               Input(
                   label = Label(
                       content = Text(Messages("ated.address.line-2"))
-                  )
+                  ),
+                  autocomplete = Some("address-line2")
               ).withFormField(correspondenceAddressForm("line_2"))
           )
 
@@ -129,7 +131,8 @@
               Input(
                   label = Label(
                       content = Text(Messages("ated.address.line-3"))
-                  )
+                  ),
+                  autocomplete = Some("address-line3")
               ).withFormField(correspondenceAddressForm("line_3"))
           )
 
@@ -137,7 +140,8 @@
               Input(
                   label = Label(
                       content = Text(Messages("ated.address.line-4"))
-                  )
+                  ),
+                  autocomplete = Some("address-line3")
               ).withFormField(correspondenceAddressForm("line_4"))
           )
 
@@ -146,7 +150,8 @@
                   classes = "govuk-input--width-10",
                   label = Label(
                       content = Text(Messages("ated.address.postcode"))
-                  )
+                  ),
+                  autocomplete = Some("postal-code")
               ).withFormField(correspondenceAddressForm("postcode"))
           )
 
