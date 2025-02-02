@@ -39,10 +39,9 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
   def view(mode: Option[String] = Some("skip")): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        val resolvedMode = mode.orElse(Some("view"))
         contactDetailsService.fetchContactDetailsEmail map {
-          case Some(formData) => Ok(template(contactDetailsEmailForm.fill(formData), mode, getBackLink(resolvedMode)))
-          case _ => Ok(template(contactDetailsEmailForm, mode, getBackLink(resolvedMode)))
+          case Some(formData) => Ok(template(contactDetailsEmailForm.fill(formData), mode, getBackLink(mode)))
+          case _ => Ok(template(contactDetailsEmailForm, mode, getBackLink(mode)))
         }
       }
   }
@@ -78,7 +77,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
 
   def getBackLink(mode: Option[String]): Some[String] =
     mode match {
-      case Some("edit") | Some("view") => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case Some("edit") => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
       case _ => Some(controllers.routes.ContactDetailsController.editDetails(mode).url)
     }
 }
