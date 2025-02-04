@@ -166,7 +166,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("contact-change").attr("href") must be("/ated-subscription/contact-details?mode=edit")
 
             document.getElementById("contact-pref").text() must be("abc@test.com")
-            document.getElementById("contact-pref-change").attr("href") must be("/ated-subscription/contact-details-email")
+            document.getElementById("contact-pref-change").attr("href") must be("/ated-subscription/contact-details-email?mode=edit")
 
             document.getElementById("name").text() must be("ABC DEF")
             document.getElementById("telephone").text() must be("1234567890")
