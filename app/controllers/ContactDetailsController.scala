@@ -69,8 +69,7 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
       case Some(modeType) if modeType == "edit" => Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
-      case Some(modeType) if modeType == "skip" => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url
-        .concat("?backLinkUrl=").concat(appConfig.backToSearchPreviousNrlUrl))
+      case Some(modeType) if modeType == "skip" => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
       case _ => Some(controllers.routes.CorrespondenceAddressController.editAddress().url)
     }
   }

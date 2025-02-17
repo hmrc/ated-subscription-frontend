@@ -75,8 +75,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
       case Some(_) =>
         Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
       case _ => {
-        Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url
-          .concat("?backLinkUrl=").concat(appConfig.backToSearchPreviousNrlUrl))
+        Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
       }
     }
   }

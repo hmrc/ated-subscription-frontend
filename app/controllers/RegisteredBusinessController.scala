@@ -82,9 +82,14 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
               businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToBusinessCustomerUrl))
             ))
             case _ =>
-              Future.successful(Ok(template(businessAddressForm.fill(
-                businessReg.getOrElse(BusinessAddress())), address, None)
-              ))
+              val referer = req.headers.get("Referer").getOrElse("")
+              if (isRefererValid(referer)) {
+                Future.successful(Ok(template(businessAddressForm.fill(
+                  businessReg.getOrElse(BusinessAddress())), address, Some(appConfig.backToSearchPreviousNrlUrl))
+                ))
+              } else {
+                Future.successful(Ok(template(businessAddressForm.fill(
+                  businessReg.getOrElse(BusinessAddress())), address, None)))}
           })
       }}
 
@@ -110,6 +115,9 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
         }
       case _ => standardView
     }
+  }
+  private def isRefererValid(referer: String) : Boolean = {
+    referer.contains("/ated-subscription/contact-details?mode=skip") || referer.contains("/ated-subscription/correspondence-address")
   }
 
   def continue: Action[AnyContent] = Action.async {

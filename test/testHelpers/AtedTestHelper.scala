@@ -28,7 +28,6 @@ import services.RegisterUserService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedSubscriptionUtilsImpl
-import utils.Constants.backToSearchPreviousNrlUrl
 
 trait AtedTestHelper extends MockitoSugar  with GuiceOneServerPerSuite { this: TestSuite =>
 
@@ -60,7 +59,6 @@ trait AtedTestHelper extends MockitoSugar  with GuiceOneServerPerSuite { this: T
   when(mockAppConfig.cancelRedirectUrl).thenReturn("https://www.gov.uk/")
   when(mockAppConfig.servicesConfig).thenReturn(mockServicesConfig)
   when(mockAppConfig.atedSubsUtils).thenReturn(new AtedSubscriptionUtilsImpl(app.environment))
-  when(mockAppConfig.backToSearchPreviousNrlUrl).thenReturn(backToSearchPreviousNrlUrl)
 
   lazy val mockMCC: DefaultMessagesControllerComponents = app.injector.instanceOf[DefaultMessagesControllerComponents]
 }

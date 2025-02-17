@@ -33,7 +33,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ContactDetailsService
 import testHelpers.AtedTestHelper
-import utils.Constants.backToSearchPreviousNrlUrl
 import views.html.contactDetails
 
 import scala.concurrent.Future
@@ -101,8 +100,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           val document = Jsoup.parse(contentAsString(result))
           document.title() must be("Who should we contact about ATED? - GOV.UK")
           document.getElementsByClass("govuk-back-link").text() must be("Back")
-          document.getElementsByClass("govuk-back-link").attr("href") must be(
-            "/ated-subscription/registered-business-address?backLinkUrl=".concat(backToSearchPreviousNrlUrl))
+          document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/registered-business-address")
           document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
           document.getElementById("subtitle").text() must be("This section is: Add a client")
           document.getElementById("text").text() must be("This could be your contact details as their authorised agent.")
