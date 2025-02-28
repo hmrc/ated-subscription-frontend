@@ -270,7 +270,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
       .thenReturn(Future.successful(Some(emailAddress)))
     when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(clientDisplayName)))
-    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testReviewDetailsController.reviewDetails().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -278,12 +278,12 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
   def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testReviewDetailsController.reviewDetails().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testReviewDetailsController.reviewDetails().apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -301,7 +301,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
       .thenReturn(Future.successful(Some(emailAddress)))
     when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(clientDisplayName)))
-    val result = testReviewDetailsController.reviewDetails.apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testReviewDetailsController.reviewDetails().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }

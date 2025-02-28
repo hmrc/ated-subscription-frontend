@@ -130,6 +130,8 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
             }
           },
           businessAddressData => {
+            val referer = request.headers.get("Referer").getOrElse("")
+            val mode = if (referer.contains("/mandate/agent/search-previous/nrl")) "link" else "skip"
             dataCacheConnector.saveRegisteredBusinessDetails(businessAddressData)
             val isCorrespondenceAddress = businessAddressData.isCorrespondenceAddress.getOrElse(false)
             if (isCorrespondenceAddress) {
@@ -137,10 +139,10 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                 address <- registeredBusinessService.getDefaultCorrespondenceAddress()
                 _ <- correspondenceAddressService.saveCorrespondenceAddress(address)
               } yield {
-                Redirect(controllers.routes.ContactDetailsController.editDetails(Some("skip")))
+                  Redirect(controllers.routes.ContactDetailsController.editDetails(Some(mode)))
               }
             } else {
-              Future.successful(Redirect(controllers.routes.CorrespondenceAddressController.editAddress()))
+              Future.successful(Redirect(controllers.routes.CorrespondenceAddressController.editAddress(Some(mode))))
             }
           }
         )

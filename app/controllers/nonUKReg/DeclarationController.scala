@@ -64,6 +64,6 @@ class DeclarationController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def getBackLink: Some[String] = {
-    Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+    Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
   }
 }
