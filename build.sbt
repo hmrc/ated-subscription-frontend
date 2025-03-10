@@ -8,7 +8,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 val appName = "ated-subscription-frontend"
 
 ThisBuild / majorVersion := 2
-ThisBuild / scalaVersion := "2.13.15"
+ThisBuild / scalaVersion := "2.13.16"
 
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val playSettings: Seq[Setting[?]] = Seq.empty
