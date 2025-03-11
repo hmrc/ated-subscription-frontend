@@ -61,7 +61,8 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
               _ <- correspondenceAddressService.saveCorrespondenceAddress(address = trimmedAddress)
             } yield {
               mode match {
-                case Some(edit) => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails)
+                case Some("edit") => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
+                case Some("link") => Redirect(controllers.routes.ContactDetailsController.editDetails(mode))
                 case _ => Redirect(controllers.routes.ContactDetailsController.editDetails())
               }
             }
@@ -72,8 +73,10 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
 
   def getBackLink(mode: Option[String]): Some[String] = {
     mode match {
-      case Some(_) =>
-        Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails.url)
+      case Some("link") => Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url
+        .concat("?backLinkUrl=").concat(appConfig.backToSearchPreviousNrlUrl))
+      case Some("edit") =>
+        Some(controllers.routes.ReviewBusinessDetailsController.reviewDetails().url)
       case _ => {
         Some(controllers.routes.RegisteredBusinessController.registeredBusinessAddress.url)
       }

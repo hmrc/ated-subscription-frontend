@@ -24,7 +24,7 @@ POST                /submit                                     controllers.Cont
 GET                 /contact-details-email                      controllers.ContactDetailsEmailController.view(mode: Option[String] ?= Some("skip"))
 POST                /email-submit                               controllers.ContactDetailsEmailController.submit(mode: Option[String] ?= None)
 
-GET                 /review-business-details                    controllers.ReviewBusinessDetailsController.reviewDetails
+GET                 /review-business-details                    controllers.ReviewBusinessDetailsController.reviewDetails(mode: Option[String] ?= None)
 
 GET                 /register-user                              controllers.RegisterUserController.subscribeAndEnrolForAted
 GET                 /user-confirmation                          controllers.RegisterUserController.confirmation

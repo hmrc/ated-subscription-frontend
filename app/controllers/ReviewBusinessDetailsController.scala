@@ -39,7 +39,7 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
   implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def reviewDetails: Action[AnyContent] = Action.async { implicit request =>
+  def reviewDetails(mode:Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit auth =>
       for {
         businessDetails <- registeredBusinessService.getBusinessCustomerDetails
@@ -55,7 +55,7 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
           contactDetailsEmail,
           agentEmail,
           clientDisplayName,
-          Some(controllers.routes.ContactDetailsEmailController.view().url)
+          Some(controllers.routes.ContactDetailsEmailController.view(mode).url)
         ))
       }
     }
