@@ -68,7 +68,10 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
             for {
               _ <- contactDetailsService.saveContactDetailsEmail(contactDetailsEmail)
             } yield {
-              Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails(mode))
+              mode match {
+                case Some("edit") => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails())
+                case _ => Redirect(controllers.routes.ReviewBusinessDetailsController.reviewDetails(mode))
+              }
             }
           }
         )
