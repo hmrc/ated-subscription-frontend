@@ -25,7 +25,11 @@
         hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
 )
 
-@(pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+@(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+
+@beforeContentBlock = {
+    @beforeContent
+}
 
 @content = {
     @contentBlock
@@ -52,6 +56,7 @@
             ),
         templateOverrides = TemplateOverrides(
             additionalHeadBlock = Some(head),
+            beforeContentBlock = Some(beforeContentBlock),
             additionalScriptsBlock = Some(allScripts)
             ),
     pageTitle = pageTitle

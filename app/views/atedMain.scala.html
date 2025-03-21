@@ -23,7 +23,8 @@
     supportLinkEnabled: Boolean = true,
     pageScripts: Option[Html] = None,
     sidebarLinks: Option[Html] = None,
-    sidebarClass: Option[String] = None
+    sidebarClass: Option[String] = None,
+    backlink: Option[Html] = None,
 )(mainContent: Html)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
 @linkElement = {
@@ -31,6 +32,7 @@
 }
 
 @layout(
+    beforeContent = backlink,
     pageTitle = Some(title),
     scripts = Some(linkElement)
 )(mainContent)

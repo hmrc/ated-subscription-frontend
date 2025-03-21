@@ -15,9 +15,10 @@
  *@
 
 @import views.html.helper.CSPNonce
+@import config.ApplicationConfig
 
 @this(layout: layout)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, lang: Lang)
+@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, lang: Lang, appConfig: ApplicationConfig)
 
 @contentHeader = {
     <h1 class="govuk-heading-xl">@heading</h1>
@@ -38,4 +39,4 @@
     <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/ated-subscription.css")'/>
 }
 
-@layout(Some(pageTitle), Some(scriptElement))(content)
+@layout(beforeContent=None, Some(pageTitle), Some(scriptElement))(content)
