@@ -16,51 +16,27 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
+
+import java.util.UUID
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
+import utils.MockFixture
 import views.html.reviewBusinessDetails
 
 import scala.concurrent.Future
 
-class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockFixture with BeforeAndAfterEach with AtedTestHelper {
 
-  val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
-  val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
-  val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
-  val mockMandateService: MandateService = mock[MandateService]
-
-  val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
-  val testAddress2: Address = Address("line_1", "line_2", Some("line_3"), Some("line_3"), Some("NE1 1AB"), "GB")
-  val testIdentification: Identification = Identification(idNumber = "ID123", issuingInstitution = "InstTest", issuingCountryCode = "FR")
-  val testReviewBusinessDetails: BusinessCustomerDetails = BusinessCustomerDetails(
-    businessName = "test Name",
-    businessType = "LLP",
-    businessAddress = testAddress,
-    sapNumber = "1234567890",
-    safeId = "EX0012345678909",
-    agentReferenceNumber = None,
-    identification = Some(testIdentification)
-  )
-  val testContact: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
-  val testContactEmail: ContactDetailsEmail = ContactDetailsEmail(Some(true), "abc@test.com")
-  val testContactNoEmail: ContactDetailsEmail = ContactDetailsEmail(Some(false), "")
-  val testContactLetter: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
-  val emailAddress: AgentEmail = AgentEmail("test@mail.com")
-  val clientDisplayName: ClientDisplayName = ClientDisplayName("client display name")
   val injectedViewInstance: reviewBusinessDetails = app.injector.instanceOf[views.html.reviewBusinessDetails]
-
   val testReviewDetailsController = new ReviewBusinessDetailsController(
     mockMCC,
     mockRegisteredBusinessService,
@@ -305,5 +281,7 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
 
     test(result)
   }
+
+
 
 }

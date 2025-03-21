@@ -51,9 +51,8 @@
     }
 }
 
-@atedMain(title = titleBuilder(pageTitle, Some(businessAddressForm))) {
+@atedMain(title = titleBuilder(pageTitle, Some(businessAddressForm)),  backlink=Some(backLinkHtml)) {
 
-    @backLinkHtml
 
     @if(businessAddressForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(businessAddressForm))

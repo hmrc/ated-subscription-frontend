@@ -68,9 +68,8 @@
     }
 }
 
-@atedMain(title = titleBuilder(pageTitle, Some(correspondenceAddressForm)), pageScripts = Some(pageScripts)) {
-
-  @backLinkHtml
+@atedMain(title = titleBuilder(pageTitle, Some(correspondenceAddressForm)), pageScripts = Some(pageScripts),
+    backlink=Some(backLinkHtml)) {
 
   @if(correspondenceAddressForm.hasErrors) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(correspondenceAddressForm))

@@ -77,9 +77,8 @@
     }
 }
 
-@atedMain(title = titleBuilder(messages("ated.contact-details-email-title"), Some(contactDetailsEmailForm)), pageScripts = Some(pageScripts)) {
-
-  @backLinkHtml
+@atedMain(title = titleBuilder(messages("ated.contact-details-email-title"), Some(contactDetailsEmailForm)),
+    pageScripts = Some(pageScripts), backlink=Some(backLinkHtml)) {
 
   @if(contactDetailsEmailForm.hasErrors) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(contactDetailsEmailForm))

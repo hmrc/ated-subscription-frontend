@@ -56,9 +56,9 @@
 
 @atedNoAuthMain(title = titleBuilder(messages("ated.client-startpage-appoint-title"), Some(appointAgentForm)),
                 userLoggedIn = true,
-                pageScripts = Some(pageScripts)) {
+                pageScripts = Some(pageScripts),
+                backlink=Some(backLinkHtml)) {
 
-    @backLinkHtml
 
     @if(appointAgentForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(appointAgentForm))

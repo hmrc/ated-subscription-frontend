@@ -59,9 +59,8 @@
     }
 }
 
-@atedMain(title = titleBuilder(messages("ated.contact-details.title"), Some(contactDetailsForm))) {
-
-    @backLinkHtml
+@atedMain(title = titleBuilder(messages("ated.contact-details.title"), Some(contactDetailsForm)),
+    backlink=Some(backLinkHtml)) {
 
     @if(contactDetailsForm.hasErrors) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(contactDetailsForm))

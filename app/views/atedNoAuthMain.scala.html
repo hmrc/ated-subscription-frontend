@@ -24,7 +24,8 @@
     supportLinkEnabled: Boolean = true,
     pageScripts: Option[Html] = None,
     sidebarLinks: Option[Html] = None,
-    sidebarClass: Option[String] = None
+    sidebarClass: Option[String] = None,
+    backlink: Option[Html] = None,
 )(mainContent: Html)(implicit request: Request[_], messages: Messages, appConfig: ApplicationConfig)
 
 @scriptElement = {
@@ -32,6 +33,7 @@
 }
 
 @layout(
+    beforeContent = backlink,
     pageTitle = Some(title),
     scripts = Some(scriptElement)
 )(mainContent)
