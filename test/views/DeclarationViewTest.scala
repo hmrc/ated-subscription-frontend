@@ -27,7 +27,7 @@ class DeclarationViewTest extends ViewTestFixture{
   override val htmlContent: HtmlFormat.Appendable =
     view.apply(backLinkUrl)(fakeRequest, authContextOrg, messages, mockAppConfig)
 
-  "Inform view" should {
+  "Declaration view" should {
     "render the correct content" in {
       heading mustBe "This section is: Add a client Declaration"
       buttonText mustBe "Confirm and register"

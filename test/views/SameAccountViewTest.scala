@@ -27,7 +27,7 @@ class SameAccountViewTest extends ViewTestFixture{
   override val htmlContent: HtmlFormat.Appendable =
     view.apply(backLinkUrl)(fakeRequest, authContextOrg, messages, mockAppConfig)
 
-  "Inform view" should {
+  "Same acoount view" should {
     "render the correct content" in {
       heading mustBe "This section is: ATED registration Your company may already have registered for an ATED account"
       buttonText mustBe "Sign out"
