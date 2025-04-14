@@ -34,9 +34,7 @@
     }
 }
 
-@atedMain(title = titleBuilder(messages("ated.inform.title"))) {
-
-    @backLinkHtml
+@atedMain(title = titleBuilder(messages("ated.inform.title")), backlink=Some(backLinkHtml)) {
 
     <header>
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">

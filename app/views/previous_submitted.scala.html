@@ -41,9 +41,8 @@
 }
 
 @atedNoAuthMain(title = titleBuilder(messages("ated.prev-submitted.title"), Some(previousSubmittedForm)),
-                userLoggedIn = true) {
+                userLoggedIn = true, backlink=Some(backLinkHtml)) {
 
-  @backLinkHtml
 
   @if(previousSubmittedForm.hasErrors) {
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(previousSubmittedForm))

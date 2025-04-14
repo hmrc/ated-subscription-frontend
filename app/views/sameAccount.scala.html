@@ -34,11 +34,9 @@
     }
 }
 
-@atedMain(title = titleBuilder(messages("ated.same-account.title"))) {
+@atedMain(title = titleBuilder(messages("ated.same-account.title")), backlink=Some(backLinkHtml)) {
 
-    @backLinkHtml
-
-    <header>
+ <header>
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">
           <span class="govuk-caption-xl">
               <span class="govuk-visually-hidden">

@@ -35,9 +35,7 @@
     }
 }
 
-@atedMain(title = titleBuilder(messages("ated.nonUKReg.declaration.title"))) {
-
-  @backLinkHtml
+@atedMain(title = titleBuilder(messages("ated.nonUKReg.declaration.title")), backlink=Some(backLinkHtml)) {
 
   <header>
      <h1 id="declaration-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
