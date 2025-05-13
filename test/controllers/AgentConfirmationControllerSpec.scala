@@ -32,7 +32,7 @@ import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.HttpResponse
 import utils.Dates
-import views.html.agentConfirmation
+import views.html.{agentConfirmation, global_error}
 
 import java.time.{ZoneId, ZonedDateTime}
 import java.util.UUID
@@ -42,7 +42,9 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
   val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
   val injectedViewInstance: agentConfirmation = app.injector.instanceOf[views.html.agentConfirmation]
-  val testAgentConfirmationController: AgentConfirmationController = new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injectedViewInstance, mockAppConfig)
+  val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
+  val testAgentConfirmationController: AgentConfirmationController =
+    new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injectedViewInstance,injectedViewInstanceError, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -78,6 +80,17 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
             document.title() must be("You have successfully set up this agency for ATED - GOV.UK")
             document.getElementById("banner").text() must be(s"You have successfully set up ACME LTD for ATED on ${Dates.formatDate(ZonedDateTime.now(ZoneId.of("UTC")))}")
             document.getElementById("submit").text() must be("Add my ATED clients")
+          }
+        }
+
+        "respond with generic error for view" in {
+          getWithAuthorisedUser("",INTERNAL_SERVER_ERROR){
+            result =>
+              status(result) must be(INTERNAL_SERVER_ERROR)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be("Sorry, there is a problem with the service")
+              document.getElementsByTag("h1").text must be("Sorry, there is a problem with the service")
+              document.getElementsByTag("p").text must be ("Try again later.")
           }
         }
       }
@@ -118,7 +131,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
   }
 
 
-  def getWithAuthorisedUser(businessName: String)(test: Future[Result] => Any): Unit = {
+  def getWithAuthorisedUser(businessName: String, mockStatus: Int=OK)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
@@ -128,12 +141,13 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = Some("JARN1234567"))
 
     when(mockBCConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(reviewDetails).toString())))
+      .thenReturn(Future.successful(HttpResponse.apply(mockStatus, Json.toJson(reviewDetails).toString())))
 
     val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
+
 
   def continueWithUnAuthorisedUser(test: Future[Result] => Any) : Unit ={
     val userId = s"user-${UUID.randomUUID}"
