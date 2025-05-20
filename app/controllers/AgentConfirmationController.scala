@@ -20,6 +20,7 @@ import config.ApplicationConfig
 import connectors.BusinessCustomerFrontendConnector
 import controllers.auth.AuthFunctionality
 import models.BusinessCustomerDetails
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -33,6 +34,7 @@ class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                             businessCustomerFEConnector: BusinessCustomerFrontendConnector,
                                             val authConnector: DefaultAuthConnector,
                                             template: views.html.agentConfirmation,
+                                            templateError: views.html.global_error,
                                             implicit val appConfig: ApplicationConfig
                                            ) extends FrontendController(mcc) with AuthFunctionality {
 
@@ -42,10 +44,14 @@ class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authoriseFor { implicit data =>
         businessCustomerFEConnector.getBusinessCustomerDetails.map(response =>
-          (response.status: @unchecked) match {
+          response.status match {
             case OK =>
               val reviewDetails = response.json.as[BusinessCustomerDetails]
               Ok(template(reviewDetails.businessName, Dates.formatDate(ZonedDateTime.now(ZoneId.of("UTC")))))
+            case status =>
+              logger.error(s"[AgentConfirmationController][GetBusinessCustomerDetails] - $status - ${Option(response.body).getOrElse("No response body")}")
+              InternalServerError(templateError(Messages("ated.business-registration.generic.error.title"),
+                Messages("ated.business-registration.generic.error.header"), Messages("ated.business-registration.generic.error.message")))
           }
         )
       }
