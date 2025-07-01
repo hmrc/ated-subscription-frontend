@@ -262,6 +262,22 @@ ated.client-startpage-appoint-header = Do you want to appoint an agent to act fo
 ated.client-startpage-register = Register
 ated.client-startpage-continue = Continue
 
+##### AGENT GUIDANCE
+
+ated.agent-guidance-title = Before registering your ATED agent
+ated.agent-guidance.p1 = Make sure your agent has set up their agency for ATED and given you their unique authorisation number.
+ated.agent-guidance.p2 = Register to use the ATED online service.
+ated.agent-guidance.p3 = Enter the unique authorisation number when asked.
+
+
+##### CLIENT BEFORE REGISTERING FOR ATED
+
+ated.before-registering-for-ated-title = Before registering for ATED
+ated.before-registering-for-ated.p1 = Register to use the ATED online service.
+ated.before-registering-for-ated.p2 = Select the correct relief for your property or tell us about a property that is liable for an ATED charge.
+ated.before-registering-for-ated.p3 = Confirm and Submit the relief declaration or ATED return.
+
+
 ##### SUBSCRIPTION START PAGE AGENT 
 
 ated.agent-startpage-title = Set up your agency for the new ATED online service
