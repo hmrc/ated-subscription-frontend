@@ -60,7 +60,8 @@ trait AtedSubscriptionUtils {
 
   def formatPostCode(postCode: Option[String]): Option[String] = {
     postCode.map { foundPostCode =>
-      val trimmedPostcode = foundPostCode.replaceAll(" ", "").toUpperCase()
+      val postcodeFormatPattern: String = "[\\s+.:_;=(){}\\[\\]\\-\\^\\*]"
+      val trimmedPostcode = foundPostCode.replaceAll(postcodeFormatPattern, "").toUpperCase()
       val postCodeSplit = trimmedPostcode splitAt (trimmedPostcode.length - 3)
       postCodeSplit._1 + " " + postCodeSplit._2
     }

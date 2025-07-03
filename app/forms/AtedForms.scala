@@ -40,7 +40,7 @@ object AtedForms {
   val nameLength = 35
   val phoneLength = 24
   val telephoneRegex: Regex = """^[A-Z0-9)\/(\-*#]+$""".r
-
+  private val postcodeFormatPattern: String = "[\\s, +, ., :, _, ,, ;, =, (, ), {, }, \\[, \\], \\-, \\^, \\*]"
 
 
   val areYouAnAgentFalseConstraint: Constraint[Option[Boolean]] = Constraint({ model =>
@@ -110,7 +110,7 @@ object AtedForms {
         .verifying("ated.error.length.ated.address.line-4",
           x => checkFieldLengthIfPopulated(x, addressLineLength)),
       "postcode" -> optional(text)
-        .verifying("ated.error.address.postalcode.format", x => x.fold(true)(v => v.isEmpty || v.matches(PostCodeRegex))),
+        .verifying("ated.error.address.postalcode.format", x => x.fold(true)(v => v.isEmpty || sanitisePostcode(v).matches(PostCodeRegex))),
       "country" -> text.
         verifying("ated.error.mandatory.ated.address.country", x => x.length > lengthZero)
 
@@ -121,6 +121,10 @@ object AtedForms {
       case Some(value) => value.isEmpty || (value.nonEmpty && value.length <= fieldLength)
       case None => true
     }
+  }
+
+  private def sanitisePostcode(postcode: String): String = {
+    postcode.toLowerCase().replaceAll(postcodeFormatPattern, "")
   }
 
   def checkForMissingSpace(optionPostcode: Option[String]): Boolean = {
