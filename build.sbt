@@ -55,6 +55,7 @@ lazy val microservice = Project(appName, file("."))
     )
   )
   .settings(
-    resolvers += Resolver.jcenterRepo
+    resolvers ++= Seq(
+    )
   )
   .disablePlugins(JUnitXmlReportPlugin)
