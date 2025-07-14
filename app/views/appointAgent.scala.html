@@ -32,19 +32,6 @@
 
 @implicitFormInstance = @{ Some(appointAgentForm) }
 
-@pageScripts = {
-  <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("../assets/javascript/show-hide-content.js")'></script>
-  <script @CSPNonce.attr>
-    $(document).ready(function() {
-        showHideAppointAgentSection();
-      // Where .multiple-choice uses the data-target attribute
-      // to toggle hidden content
-      var showHideContent = new GOVUK.ShowHideContent()
-      showHideContent.init()
-    });
-  </script>
-}
-
 @backLinkHtml = {
     @if(backLink.isDefined) {
         @govukBackLink(BackLink(
@@ -56,7 +43,6 @@
 
 @atedNoAuthMain(title = titleBuilder(messages("ated.client-startpage-appoint-title"), Some(appointAgentForm)),
                 userLoggedIn = true,
-                pageScripts = Some(pageScripts),
                 backlink=Some(backLinkHtml)) {
 
 
@@ -76,7 +62,7 @@
         </h1>
     </header>
 
-  @formHelper(action = controllers.routes.SubscriptionController.register) {
+  @formHelper(action = controllers.routes.SubscriptionController.beforeRegisterGuidance) {
 
       @govukRadios(
           Radios(
@@ -100,24 +86,9 @@
           ).withFormField(appointAgentForm("appointAgent"))
       )
 
-      <div id="hidden-appointAgent-true" class="js-hidden govuk-body">
-          <ul class="govuk-list govuk-list--bullet">
-              <li id="appoint-agent-text1">@messages("ated.appoint-agent.question.true.info1")</li>
-              <li id="appoint-agent-text2">@messages("ated.appoint-agent.question.true.info2")</li>
-              <li id="appoint-agent-text3">@messages("ated.appoint-agent.question.true.info3")</li>
-          </ul>
-      </div>
-
-      <div id="hidden-appointAgent-false" class="js-hidden govuk-body">
-          <ul class="govuk-list govuk-list--bullet">
-              <li id="appoint-agent-text5">@messages("ated.appoint-agent.question.false.info1")</li>
-              <li id="appoint-agent-text6">@messages("ated.appoint-agent.question.false.info2")</li>
-              <li id="appoint-agent-text7">@messages("ated.appoint-agent.question.false.info3")</li>
-          </ul>
-      </div>
 
     @govukButton(Button(
-        content = Text(messages("ated.client-startpage-register")),
+        content = Text(messages("ated.client-startpage-continue")),
         attributes = Map("id" -> "submit")
     ))
 

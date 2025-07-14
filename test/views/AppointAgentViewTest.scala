@@ -30,7 +30,7 @@ class AppointAgentViewTest extends ViewTestFixture{
   "registeredBusinessAddress page" should {
     "render the correct content" in {
       heading mustBe "This section is: ATED registration Do you want to appoint an agent to act for you?"
-      buttonText mustBe "Register"
+      buttonText mustBe "Continue"
       back_link mustBe "Back"
       back_link_href mustBe "test-url"
     }

@@ -27,7 +27,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testHelpers.AtedTestHelper
-import views.html.{agentSubscription, appointAgent, subscription}
+import views.html.{agentSubscription, appointAgent, beforeRegisterAgent, beforeRegisteringForATED, subscription}
 import scala.concurrent.Future
 
 class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
@@ -35,7 +35,16 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
   val injectedViewInstanceSubscription: subscription = app.injector.instanceOf[views.html.subscription]
   val injectedViewInstanceAppointAgent: appointAgent = app.injector.instanceOf[views.html.appointAgent]
   val injectedViewInstanceAgentSubscription: agentSubscription = app.injector.instanceOf[views.html.agentSubscription]
-  val testSubscriptionController = new SubscriptionController(mockMCC, mockAuthConnector, injectedViewInstanceSubscription, injectedViewInstanceAppointAgent, injectedViewInstanceAgentSubscription, mockAppConfig)
+  val injectedViewInstanceBeforeRegisterAgent: beforeRegisterAgent = app.injector.instanceOf[views.html.beforeRegisterAgent]
+  val injectedViewInstanceBeforeRegisteringForATED: beforeRegisteringForATED = app.injector.instanceOf[views.html.beforeRegisteringForATED]
+  val testSubscriptionController = new SubscriptionController(mockMCC,
+    mockAuthConnector,
+    injectedViewInstanceSubscription,
+    injectedViewInstanceAppointAgent,
+    injectedViewInstanceAgentSubscription,
+    injectedViewInstanceBeforeRegisterAgent,
+    injectedViewInstanceBeforeRegisteringForATED,
+    mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -178,13 +187,58 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             document.getElementById("client-startpage-header").text() must include("Do you want to appoint an agent to act for you?")
             document.getElementsByClass("govuk-back-link").text() must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/start-subscription")
-            document.getElementById("appoint-agent-text1").text() must be("Make sure your agent has set up their agency for ATED and given you their unique authorisation number.")
-            document.getElementById("appoint-agent-text2").text() must be("Register to use the new ATED online service.")
-            document.getElementById("appoint-agent-text3").text() must be("Enter the unique authorisation number when asked.")
-            document.getElementById("appoint-agent-text5").text() must be("Register to use the new ATED online service.")
-            document.getElementById("appoint-agent-text6").text() must be("Select the correct relief for your property or tell us about a property that is liable for an ATED charge.")
-            document.getElementById("appoint-agent-text7").text() must be("Confirm and submit the relief declaration or ATED return.")
+          }
+        }
+      }
 
+      "beforeRegisterGuidance" must {
+
+        "return BadRequest if no option selected" in {
+          val input = Seq("" -> "")
+          beforeRegisterGuidanceWithAuthorisedUser(input) { result =>
+            status(result) must be(BAD_REQUEST)
+          }
+        }
+
+        "render the agent guidance page when Yes selected" in {
+          val input = Seq("appointAgent" -> "true")
+          beforeRegisterGuidanceWithAuthorisedUser(input) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/before-registering-agent")
+          }
+        }
+
+        "render the client guidance page when No selected" in {
+          val input = Seq("appointAgent" -> "false")
+          beforeRegisterGuidanceWithAuthorisedUser(input) { result =>
+            status(result) must be(SEE_OTHER)
+            redirectLocation(result).get must include("/before-registering-ated")
+          }
+        }
+
+        "view the before registering agent page" in {
+          showBeforeRegisteringAgentPageWithAuthorisedUser() {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be("Before registering your ATED agent - GOV.UK")
+              document.getElementById("client-appoint-subheader").text() must be("This section is: ATED registration")
+              document.getElementById("before-register-agent-header").text() must be("This section is: ATED registration")
+              document.getElementById("submit").text() must be("Continue")
+              assert(document.select(".govuk-header__service-name").attr("href") === "/ated-subscription/start-subscription")
+          }
+        }
+
+        "view the before registering for ATED page" in {
+          showBeforeRegisteringATEDPageWithAuthorisedUser() {
+            result =>
+              status(result) must be(OK)
+              val document = Jsoup.parse(contentAsString(result))
+              document.title() must be("Before registering for ATED - GOV.UK")
+              document.getElementById("client-appoint-subheader").text() must be("This section is: ATED registration")
+              document.getElementById("client-startpage-header").text() must be("This section is: ATED registration")
+              document.getElementById("submit").text() must be("Continue")
+              assert(document.select(".govuk-header__service-name").attr("href") === "/ated-subscription/start-subscription")
           }
         }
       }
@@ -222,47 +276,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
         }
       }
 
-      "register" must {
 
-        "respond with BadRequest, if nothing was selected" in {
-          val inputForm = Seq(("", ""))
-          registerWithAuthorisedUser(inputForm) { result =>
-            val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("appointAgent-error").text() must be("Error: Select yes if you want to appoint an agent to act for you")
-            document.getElementsByClass("govuk-back-link").text() must be("Back")
-            document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/start-subscription")
-            status(result) must be(BAD_REQUEST)
-          }
-        }
-
-        "respond with redirect, if no is selected" in {
-          val inputForm = Seq(("appointAgent", "false"))
-          registerWithAuthorisedUser(inputForm) { result =>
-            status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include("/business-customer/ATED")
-          }
-        }
-      }
-
-      "register with Agent" must {
-        "respond with redirect" in {
-          registerWithAuthorisedAgent {
-            result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/business-customer/agent/ATED")
-          }
-        }
-      }
-
-      "register with Agent Assistant" must {
-        "respond with redirect to unauthorised" in {
-          registerWithAuthorisedAgentAssistant {
-            result =>
-              status(result) must be(SEE_OTHER)
-              redirectLocation(result).get must include("/ated-subscription/unauthorised-assistant")
-          }
-        }
-      }
     }
   }
 
@@ -358,27 +372,29 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     test(result)
   }
 
-  def registerWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
+  def beforeRegisterGuidanceWithAuthorisedUser(inputForm: Seq[(String, String)])
+                                              (test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = testSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
-
+    val result = testSubscriptionController.beforeRegisterGuidance
+      .apply(SessionBuilder.buildRequestWithSession(userId)
+        .withFormUrlEncodedBody(inputForm: _*))
     test(result)
   }
 
-  def registerWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
+  def showBeforeRegisteringAgentPageWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    val result = testSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId))
-
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val result = testSubscriptionController.showBeforeRegisteringAgentPage
+      .apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def registerWithAuthorisedAgentAssistant(test: Future[Result] => Any): Unit = {
+  def showBeforeRegisteringATEDPageWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedAgentAssistant(userId, mockAuthConnector)
-    val result = testSubscriptionController.register.apply(SessionBuilder.buildRequestWithSession(userId))
-
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    val result = testSubscriptionController.showBeforeRegisteringATEDPage
+      .apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 }

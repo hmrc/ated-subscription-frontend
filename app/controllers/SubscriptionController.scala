@@ -20,7 +20,7 @@ import config.ApplicationConfig
 import controllers.auth.{AtedSubscriptionAuthHelpers, AuthFunctionality}
 import forms.AtedForms._
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AuthUtils
@@ -32,6 +32,8 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        templateSubscription: views.html.subscription,
                                        templateAppointAgent: views.html.appointAgent,
                                        templateAgentSubscription: views.html.agentSubscription,
+                                       beforeRegisterAgentPage: views.html.beforeRegisterAgent,
+                                       beforeRegisteringForATEDPage: views.html.beforeRegisteringForATED,
                                        implicit val appConfig: ApplicationConfig
                                       )
   extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality with WithUnsafeDefaultFormBinding {
@@ -72,18 +74,31 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def register: Action[AnyContent] = Action.async { implicit req =>
+  def beforeRegisterGuidance: Action[AnyContent] = Action.async { implicit req =>
     clientAction { implicit user =>
       appointAgentForm.bindFromRequest().fold(
-        formWithErrors => Future.successful(BadRequest(templateAppointAgent(formWithErrors,
-          Some(controllers.routes.SubscriptionController.subscribe.url)))),
-        _ => redirectToSubscription("microservice.services.business-customer.serviceRedirectUrl")
+        formWithErrors =>
+          Future.successful(BadRequest(templateAppointAgent(formWithErrors,
+            Some(controllers.routes.SubscriptionController.subscribe.url)))),
+        agentStatus =>
+          agentStatus.isAgent match {
+            case Some(true)  => Future.successful(Redirect(controllers.routes.SubscriptionController.showBeforeRegisteringAgentPage))
+            case _ => Future.successful(Redirect(controllers.routes.SubscriptionController.showBeforeRegisteringATEDPage))
+          }
       )
     }
   }
 
-  private def redirectToSubscription(redirectName: String): Future[Result] = {
-    Future.successful(Redirect(appConfig.serviceRedirectUrl(redirectName)))
+  def showBeforeRegisteringAgentPage : Action[AnyContent] = Action.async { implicit request =>
+    clientAction { implicit user =>
+      Future.successful(Ok(beforeRegisterAgentPage(Some(controllers.routes.SubscriptionController.appoint.url))))
+    }
+  }
+
+  def showBeforeRegisteringATEDPage : Action[AnyContent] = Action.async { implicit request =>
+    clientAction { implicit user =>
+      Future.successful(Ok(beforeRegisteringForATEDPage(Some(controllers.routes.SubscriptionController.appoint.url))))
+    }
   }
 
 }
