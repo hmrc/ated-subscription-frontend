@@ -213,6 +213,16 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             }
           }
 
+          "Postcode is optional but if entered, it can contain the allowed special characters" in {
+            val postCode = "{[(ZZ1-1Z Z)]}."
+            val inputJson = Json.parse( s"""{ "line_1": "Line1", "line_2": "Line2", "line_3": "Line3", "line_4": "Line4", "postcode": "$postCode", "country": "GB"}""")
+            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+                result =>
+                  status(result) must be(SEE_OTHER)
+                  redirectLocation(result).get must include(s"/ated-subscription/contact-details")
+            }
+          }
+
           "Country Code must be selected" in {
             val inputJson = Json.parse( """{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "", "country": ""} """)
             submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
