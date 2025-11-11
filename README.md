@@ -38,7 +38,6 @@ In the context of this service we use the following acronyms:
 This is an sbt command alias specific to this project. It will run
 - unit tests
 - integration tests
-- integration tests (if any)
 - and produce a coverage report.
 
 You can view the coverage report in the browser by pasting the generated url.
