@@ -8,7 +8,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 val appName = "ated-subscription-frontend"
 
 ThisBuild / majorVersion := 2
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "2.13.17"
 
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val playSettings: Seq[Setting[?]] = Seq.empty
@@ -59,3 +59,6 @@ lazy val microservice = Project(appName, file("."))
     )
   )
   .disablePlugins(JUnitXmlReportPlugin)
+
+addCommandAlias("runAllChecks", ";clean;compile;coverage;test;it/test;coverageReport")
+
