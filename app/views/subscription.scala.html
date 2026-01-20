@@ -53,26 +53,25 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(areYouAnAgentForm))
     }
 
-    <header>
-      <h1 id="client-startpage-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
-        <span id="client-startpage-subheader" class="govuk-caption-xl">
-            <span class="govuk-visually-hidden">
-                @messages("ated.screen-reader.section")
-            </span>
-            @messages("ated.registration-subheader")
-        </span>
-        @messages("ated.client-startpage-header")
-      </h1>
-  </header>
-
   @formHelper(action = controllers.routes.SubscriptionController.continue) {
 
       @govukRadios(
           Radios(
               fieldset = Some(Fieldset(
                   legend = Some(Legend(
-                      classes = "govuk-visually-hidden",
-                      content = Text(Messages("ated.client-startpage-header"))
+                      content = HtmlContent(
+                        s"""
+                        <span id="client-startpage-subheader" class="govuk-caption-xl">
+                            <span class="govuk-visually-hidden">
+                                ${Messages("ated.screen-reader.section")}
+                            </span>
+                            ${Messages("ated.registration-subheader")}
+                        </span>
+                        ${Messages("ated.client-startpage-header")}
+                        """
+                      ),
+                      classes = "govuk-fieldset__legend--xl govuk-!-margin-bottom-5",
+                      isPageHeading = true
                   ))
               )),
               items = Seq(
