@@ -20,6 +20,8 @@ import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.AtedSubscriptionUtils
 
+import scala.concurrent.duration.Duration
+
 class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
                                   val atedSubsUtils: AtedSubscriptionUtils) {
 
@@ -89,5 +91,8 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val toBusinessAccountUrl: String = servicesConfig.getConfString("business-tax-account.serviceRedirectUrl", "/business-account")
 
   lazy val toSigninProblemsUrl: String = servicesConfig.getConfString("business-tax-account.signinProblemsUrl", "/business-account")
+
+  lazy val mongoDbExpireAfterMinutes: Duration = servicesConfig.getDuration("mongodb.session.expireAfter")
+  lazy val mongoUri: String = servicesConfig.getString("mongodb.uri")
 
 }
