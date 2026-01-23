@@ -81,7 +81,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getWithAuthorisedUser(None){ result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.title() must be("Who should we contact about ATED? - Register for ATED - GOV.UK")
           document.getElementsByClass("govuk-back-link").text() must be("Back")
           document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/correspondence-address")
           document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
@@ -98,7 +98,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getWithAuthorisedAgent(Some("skip")) { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.title() must be("Who should we contact about ATED? - Register for ATED - GOV.UK")
           document.getElementsByClass("govuk-back-link").text() must be("Back")
           document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/registered-business-address")
           document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
@@ -115,7 +115,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         getEditWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Who should we contact about ATED? - GOV.UK")
+          document.title() must be("Who should we contact about ATED? - Register for ATED - GOV.UK")
           document.getElementsByClass("govuk-back-link").text() must be("Back")
           document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/review-business-details")
           document.getElementById("contact-details.header").text() must include("Who should we contact about ATED?")
