@@ -97,7 +97,9 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               val document = Jsoup.parse(contentAsString(result))
 
               document.title() must be("Are you an agent acting for a client? - GOV.UK")
-              document.getElementById("client-startpage-header").text() must include("Are you an agent acting for a client?")
+              val h1s = document.select("h1")
+              h1s.size() mustBe 1
+              h1s.first().text() must include("Are you an agent acting for a client?")
               document.getElementById("submit").text() must be("Continue")
               assert(document.select(".govuk-header__service-name").attr("href") === "/ated-subscription/start-subscription")
 
@@ -184,7 +186,9 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
           appointWithAuthorisedUser { result =>
             status(result) must be(OK)
             val document = Jsoup.parse(contentAsString(result))
-            document.getElementById("client-startpage-header").text() must include("Do you want to appoint an agent to act for you?")
+            val h1s = document.select("h1");
+            h1s.size() mustBe 1
+            h1s.first().text() must include("Do you want to appoint an agent to act for you?")
             document.getElementsByClass("govuk-back-link").text() must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/start-subscription")
           }
