@@ -88,7 +88,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           when(mockAppConfig.backToBusinessCustomerUrl).thenReturn(backToBusinessCustomerUrl)
           withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
+            document.title() must be("Is this where you want us to send any letters about ATED? - Register for ATED - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
             document.getElementById("registered-business-address-header").text() must include("Is this where you want us to send any letters about ATED?")
             document.getElementsByClass("govuk-back-link").text() must be("Back")
@@ -100,7 +100,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           when(mockAppConfig.backToBusinessCustomerUrl).thenReturn(backToBusinessCustomerUrl)
           withAuthorisedUserAndNoBackLink { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
+            document.title() must be("Is this where you want us to send any letters about ATED? - Register for ATED - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
             document.getElementById("registered-business-address-header").text() must include("Is this where you want us to send any letters about ATED?")
             document.getElementsByClass("govuk-back-link").text() must be("")
@@ -112,7 +112,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           when(mockAppConfig.backToSearchPreviousNrlUrl).thenReturn(backToSearchPreviousNrlUrl)
           withAuthorisedUserWithRedirectNRLlink { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where you want us to send any letters about ATED? - GOV.UK")
+            document.title() must be("Is this where you want us to send any letters about ATED? - Register for ATED - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: ATED registration")
             document.getElementById("registered-business-address-header").text() must include("Is this where you want us to send any letters about ATED?")
             document.getElementsByClass("govuk-back-link").text() must be("Back")
@@ -123,7 +123,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         "contain title and header as Your correspondence address for agent registering non-uk client" in {
           withAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Is this where we should send your client’s letters about ATED? - GOV.UK")
+            document.title() must be("Is this where we should send your client’s letters about ATED? - Register for ATED - GOV.UK")
             document.getElementById("business-registered-text").text() must be("This section is: Add a client")
             document.getElementById("registered-business-address-header").text() must include("Is this where we should send your client’s letters about ATED?")
           }

@@ -96,7 +96,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Are you an agent acting for a client? - GOV.UK")
+              document.title() must be("Are you an agent acting for a client? - Register for ATED - GOV.UK")
               val h1s = document.select("h1")
               h1s.size() mustBe 1
               h1s.first().text() must include("Are you an agent acting for a client?")
@@ -113,7 +113,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
 
-              document.title() must be("Are you an agent acting for a client? - GOV.UK")
+              document.title() must be("Are you an agent acting for a client? - Register for ATED - GOV.UK")
           }
         }
       }
@@ -147,7 +147,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Set up your agency for the new ATED online service - GOV.UK")
+              document.title() must be("Set up your agency for the new ATED online service - Register for ATED - GOV.UK")
               document.getElementById("subtitle").text() must be("This section is: ATED agency set up")
               document.getElementById("agent-startpage-header").text() must include("Set up your agency for the new ATED online service")
               document.getElementById("lede-paragraph").text() must include("Before you can submit ATED returns on behalf of your clients you must set up your agency")
@@ -225,7 +225,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Before registering your ATED agent - GOV.UK")
+              document.title() must be("Before registering your ATED agent - Register for ATED - GOV.UK")
               document.getElementById("client-appoint-subheader").text() must be("This section is: ATED registration")
               document.getElementById("before-register-agent-header").text() must be("This section is: ATED registration")
               document.getElementById("submit").text() must be("Continue")
@@ -238,7 +238,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
             result =>
               status(result) must be(OK)
               val document = Jsoup.parse(contentAsString(result))
-              document.title() must be("Before registering for ATED - GOV.UK")
+              document.title() must be("Before registering for ATED - Register for ATED - GOV.UK")
               document.getElementById("client-appoint-subheader").text() must be("This section is: ATED registration")
               document.getElementById("client-startpage-header").text() must be("This section is: ATED registration")
               document.getElementById("submit").text() must be("Continue")

@@ -77,7 +77,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("You have successfully set up this agency for ATED - GOV.UK")
+            document.title() must be("You have successfully set up this agency for ATED - Register for ATED - GOV.UK")
             document.getElementById("banner").text() must be(s"You have successfully set up ACME LTD for ATED on ${Dates.formatDate(ZonedDateTime.now(ZoneId.of("UTC")))}")
             document.getElementById("submit").text() must be("Add my ATED clients")
           }
