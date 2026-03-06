@@ -31,6 +31,7 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
+import services.RegisteredBusinessService
 import testHelpers.AtedTestHelper
 import views.html.correspondenceAddress
 import scala.concurrent.Future
@@ -38,11 +39,13 @@ import scala.concurrent.Future
 
 class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
+  val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
   val mockCorrespondenceAddressService: CorrespondenceAddressService = mock[CorrespondenceAddressService]
   val testAddress: Address = Address("line_1", "line_2", None, None, None, "GB")
   val injectedViewInstance: correspondenceAddress = app.injector.instanceOf[views.html.correspondenceAddress]
 
-  val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(mockMCC, mockCorrespondenceAddressService, mockAuthConnector, injectedViewInstance, mockAppConfig)
+  val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(mockMCC, mockCorrespondenceAddressService,
+    mockRegisteredBusinessService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
