@@ -119,33 +119,26 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
   private def isRefererValid(referer: String) : Boolean = {
     referer.contains("/ated-subscription/contact-details?mode=skip") || referer.contains("/ated-subscription/correspondence-address")
   }
-
-  def continue: Action[AnyContent] = Action.async {
-    implicit request =>
-      authoriseFor { implicit data =>
-        businessAddressForm.bindFromRequest().fold(
-          formWithErrors => {
-            registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
-              BadRequest(template(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
-            }
-          },
-          businessAddressData => {
-            val referer = request.headers.get("Referer").getOrElse("")
-            val mode = if (referer.contains("/mandate/agent/search-previous/nrl")) "link" else "skip"
-            dataCacheConnector.saveRegisteredBusinessDetails(businessAddressData)
-            val isCorrespondenceAddress = businessAddressData.isCorrespondenceAddress.getOrElse(false)
-            if (isCorrespondenceAddress) {
-              for {
-                address <- registeredBusinessService.getDefaultCorrespondenceAddress()
-                _ <- correspondenceAddressService.saveCorrespondenceAddress(address)
-              } yield {
-                  Redirect(controllers.routes.ContactDetailsController.editDetails(Some(mode)))
-              }
-            } else {
-              Future.successful(Redirect(controllers.routes.CorrespondenceAddressController.editAddress(Some(mode))))
-            }
+  def continue: Action[AnyContent] = Action.async { implicit request =>
+    authoriseFor { implicit data =>
+      businessAddressForm.bindFromRequest().fold(
+        formWithErrors => {
+          registeredBusinessService.getDefaultCorrespondenceAddress().map { address =>
+            BadRequest(template(formWithErrors, address, Some(appConfig.backToBusinessCustomerUrl)))
           }
-        )
-      }
+        },
+        businessAddressData => {
+          val referer = request.headers.get("Referer").getOrElse("")
+          val mode = if (referer.contains("/mandate/agent/search-previous/nrl")) "link" else "skip"
+
+          val prefill = businessAddressData.isCorrespondenceAddress.contains(true)
+
+          dataCacheConnector.saveRegisteredBusinessDetails(businessAddressData).map { _ =>
+            Redirect(controllers.routes.CorrespondenceAddressController.editAddress(Some(mode)))
+              .addingToSession("prefillAddress" -> prefill.toString)
+          }
+        }
+      )
+    }
   }
 }

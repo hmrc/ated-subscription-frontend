@@ -212,12 +212,11 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
           }
         }
 
-        "redirected to the contact details page if correspondence address is true" in {
-          val inputJson = Json.parse( """{ "isCorrespondenceAddress": "true" }""")
+        "redirected to the correspondence page if correspondence address is true" in {
+          val inputJson = Json.parse("""{ "isCorrespondenceAddress": "true" }""")
           continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
-            redirectLocation(result).isDefined must be(true)
-            redirectLocation(result).get must include("/ated-subscription/contact-details")
-            verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(any())(any(), any())
+            redirectLocation(result).value must include("/ated-subscription/correspondence-address")
+            verify(mockCorrespondenceAddressService, never()).saveCorrespondenceAddress(any())(any(), any())
           }
         }
 
@@ -408,6 +407,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.saveRegisteredBusinessDetails(any[BusinessAddress])(any(), any())).thenReturn(Future.successful(None))
     when(mockCorrespondenceAddressService.saveCorrespondenceAddress(any())(any(), any())).thenReturn(Future.successful(Some(testAddress)))
     val result = testRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
 
