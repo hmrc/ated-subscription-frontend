@@ -21,14 +21,16 @@ import controllers.auth.AuthFunctionality
 import forms.AtedForms._
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.CorrespondenceAddressService
+import services.{CorrespondenceAddressService, RegisteredBusinessService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
+import utils.Constants
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
                                                 correspondenceAddressService: CorrespondenceAddressService,
+                                                registeredBusinessService: RegisteredBusinessService,
                                                 val authConnector: DefaultAuthConnector,
                                                 template: views.html.correspondenceAddress,
                                                 implicit val appConfig: ApplicationConfig
@@ -36,16 +38,27 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
-  def editAddress(mode: Option[String]): Action[AnyContent] = Action.async {
-    implicit request =>
-      authoriseFor { implicit data =>
-        correspondenceAddressService.fetchCorrespondenceAddress map {
-          case Some(formData) =>
-            Ok(template(correspondenceAddressForm.fill(formData), mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
-          case _ =>
+  def editAddress(mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    authoriseFor { implicit data =>
+      val shouldPrefill = request.session.get(Constants.prefillCorrespondenceAddress).contains("true")
+      correspondenceAddressService.fetchCorrespondenceAddress.flatMap {
+        case Some(formData) =>
+          Future.successful(
+            Ok(template(correspondenceAddressForm.fill(formData), mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)
+            )).removingFromSession(Constants.prefillCorrespondenceAddress)
+          )
+        case None if shouldPrefill =>
+          registeredBusinessService.getDefaultCorrespondenceAddress().map { regAddress =>
+            Ok(template(correspondenceAddressForm.fill(regAddress), mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)
+            )).removingFromSession(Constants.prefillCorrespondenceAddress)
+          }
+        case None =>
+          Future.successful(
             Ok(template(correspondenceAddressForm, mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))
-        }
+              .removingFromSession(Constants.prefillCorrespondenceAddress)
+          )
       }
+    }
   }
 
   def submit(mode: Option[String]): Action[AnyContent] = Action.async {
