@@ -67,7 +67,7 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Your company may already have registered for an ATED account - GOV.UK")
+            document.title() must be("Your company may already have registered for an ATED account - Register for ATED - GOV.UK")
 
             document.getElementsByClass("govuk-back-link").attr("href") must include("previous")
           }
@@ -98,7 +98,7 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Inform HMRC as soon as you create a new ATED account - GOV.UK")
+            document.title() must be("Inform HMRC as soon as you create a new ATED account - Register for ATED - GOV.UK")
 
             document.getElementsByClass("govuk-back-link").attr("href") must include("existing")
           }
