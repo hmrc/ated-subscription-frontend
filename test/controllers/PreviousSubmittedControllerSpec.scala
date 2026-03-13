@@ -74,7 +74,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Has this company submitted ATED returns before? - GOV.UK")
+            document.title() must be("Has this company submitted ATED returns before? - Register for ATED - GOV.UK")
           }
         }
 
@@ -83,7 +83,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
-            document.title() must be("Has this company submitted ATED returns before? - GOV.UK")
+            document.title() must be("Has this company submitted ATED returns before? - Register for ATED - GOV.UK")
           }
         }
       }

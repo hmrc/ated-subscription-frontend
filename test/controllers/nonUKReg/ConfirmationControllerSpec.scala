@@ -71,7 +71,7 @@ class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeA
         viewWithAuthorisedUser { result =>
           status(result) must be(OK)
           val document = Jsoup.parse(contentAsString(result))
-          document.title() must be("Your client has been successfully added to your ATED clients - GOV.UK")
+          document.title() must be("Your client has been successfully added to your ATED clients - Register for ATED - GOV.UK")
         }
       }
     }
