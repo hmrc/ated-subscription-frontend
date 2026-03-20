@@ -29,13 +29,10 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRep
 
   import sessionCache._
 
-  val bcSourceId: String = "BC_Business_Details"
   val bcRegDetailseId: String = "BC_BusinessReg_Details"
   val addressFormId: String = "Correspondence_Address"
   val contactFormId: String = "Contact_Details"
   val previousSubmittedFormId: String = "Previously_Submitted"
-  val mandateAgentEmailFormId: String = "agent-email"
-  val clientDisplayNameFormId = "client-display-name-form-id"
   val contactEmailFormId: String = "Contact_Email_Details"
 
   def fetchAndGetRegisteredBusinessDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessAddress]] =
@@ -43,12 +40,6 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRep
 
   def saveRegisteredBusinessDetails(businessAddress: BusinessAddress)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessAddress]] =
     putSession[BusinessAddress](DataKey(bcRegDetailseId), businessAddress).map(Some(_))
-
-  def fetchAndGetReviewDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] =
-    getFromSession[BusinessCustomerDetails](DataKey(bcSourceId))
-
-  def saveReviewDetails(reviewDetails: BusinessCustomerDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] =
-    putSession[BusinessCustomerDetails](DataKey(bcSourceId), reviewDetails).map(Some(_))
 
   def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] =
     putSession[Address](DataKey(addressFormId), address).map(Some(_))

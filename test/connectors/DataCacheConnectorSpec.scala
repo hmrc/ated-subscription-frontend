@@ -53,19 +53,6 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
 
   "DataCacheConnector" must {
 
-    "fetchAndGetBusinessDetailsForSession" must {
-
-      "fetch saved BusinessDetails from SessionCache" in {
-        val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
-          businessType = "Corporate Body",
-          businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
-          sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-        when(mockSessionCacheRepo.getFromSession[BusinessCustomerDetails](
-          DataKey(ArgumentMatchers.any()))(any(), any())).thenReturn(Future.successful(Some(reviewDetails)))
-        val result = testAtedSubscriptionDataCacheConnector.fetchAndGetReviewDetailsForSession
-        await(result) must be(Some(reviewDetails))
-      }
-    }
     "fetchAndGetRegisteredBusinessDetailsForSession" must {
 
       "fetch saved BusinessDetails address form from SessionCache" in {
@@ -83,21 +70,6 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
         val result = testAtedSubscriptionDataCacheConnector.saveRegisteredBusinessDetails(testAddressForm)
         await(result).get must be (testAddressForm)
       }
-    }
-
-    "saveAndReturnBusinessDetails" must {
-
-      "save the fetched business details" in {
-        val reviewDetails = BusinessCustomerDetails(businessName = "ACME",
-          businessType = "Corporate Body",
-          businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
-          sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
-        when(mockSessionCacheRepo.putSession[BusinessCustomerDetails](
-          DataKey(ArgumentMatchers.any()), ArgumentMatchers.eq(reviewDetails))(any(), any(), any())).thenReturn(Future.successful(reviewDetails))
-        val result = testAtedSubscriptionDataCacheConnector.saveReviewDetails(reviewDetails)
-        await(result).get must be (reviewDetails)
-      }
-
     }
 
     "saveCorrespondenceAddress" must {
