@@ -101,7 +101,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               h1s.size() mustBe 1
               h1s.first().text() must include("Are you an agent acting for a client?")
               document.getElementById("submit").text() must be("Continue")
-              assert(document.select(".govuk-header__service-name").attr("href") === "/ated-subscription/start-subscription")
+              assert(document.select(".govuk-service-navigation__link").attr("href") === "/ated-subscription/start-subscription")
 
 
           }
@@ -154,7 +154,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               document.getElementById("agent-startpage-text1").text() must be("You must enter your agency’s registered name and Unique Taxpayer Reference (UTR).")
               document.getElementById("agent-startpage-text2").text() must be("After setting up your details, you can add your clients.")
               document.getElementById("submit").text() must be("Set up your agency")
-              assert(document.select(".govuk-header__service-name").attr("href") === "/ated-subscription/start-subscription")
+              assert(document.select(".govuk-service-navigation__link").attr("href") === "/ated-subscription/start-subscription")
           }
         }
       }
@@ -229,7 +229,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               document.getElementById("client-appoint-subheader").text() must be("This section is: ATED registration")
               document.getElementById("before-register-agent-header").text() must be("This section is: ATED registration")
               document.getElementById("submit").text() must be("Continue")
-              assert(document.select(".govuk-header__service-name").attr("href") === "/ated-subscription/start-subscription")
+              assert(document.select(".govuk-service-navigation__link").attr("href") === "/ated-subscription/start-subscription")
           }
         }
 
@@ -242,7 +242,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
               document.getElementById("client-appoint-subheader").text() must be("This section is: ATED registration")
               document.getElementById("client-startpage-header").text() must be("This section is: ATED registration")
               document.getElementById("submit").text() must be("Continue")
-              assert(document.select(".govuk-header__service-name").attr("href") === "/ated-subscription/start-subscription")
+              assert(document.select(".govuk-service-navigation__link").attr("href") === "/ated-subscription/start-subscription")
           }
         }
       }
