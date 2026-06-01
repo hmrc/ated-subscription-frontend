@@ -235,6 +235,8 @@ ated.correspondence-address-error.general.line_3 = Enter address line 3
 ated.correspondence-address-error.general.line_4 = Enter address line 4
 ated.correspondence-address-error.general.postcode = Enter a postcode
 ated.correspondence-address-error.general.country = Enter a country
+ated.correspondence-address-error.uk.postCode = Enter a UK postcode if UK is selected in the country field.
+
 
 ated.review-details.correspondence-address = Where we will send letters about ATED
 ated.review-details.contact-details = Who we will contact about ATED
