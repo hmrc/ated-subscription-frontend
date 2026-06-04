@@ -64,8 +64,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
   def submit(mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-        correspondenceAddressForm.bindFromRequest().fold(
-          formWithErrors =>
+          verifyUKPostCode(correspondenceAddressForm.bindFromRequest()).fold(formWithErrors =>
             Future.successful(BadRequest(template(formWithErrors,mode,appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))),
           addressData => {
             val trimmedPostCode = appConfig.atedSubsUtils.formatPostCode(addressData.postcode)

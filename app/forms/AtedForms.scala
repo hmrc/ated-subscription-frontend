@@ -127,14 +127,6 @@ object AtedForms {
     postcode.toLowerCase().replaceAll(postcodeFormatPattern, "")
   }
 
-  def checkForMissingSpace(optionPostcode: Option[String]): Boolean = {
-    optionPostcode match {
-      case Some(value) => value.contains(" ")
-      case None => true
-    }
-  }
-
-
   val contactDetailsForm = Form(mapping(
     "firstName" -> text
       .verifying("ated.contact-details-first-name.error", x => x.trim.length > lengthZero)
@@ -189,6 +181,21 @@ object AtedForms {
       }
       addErrorsToForm(f, formErrors)
     } else f
+  }
+  def verifyUKPostCode(correspondenceForm: Form[Address]): Form[Address] = {
+    if (!correspondenceForm.hasErrors) {
+      val country = correspondenceForm.data.get("country")
+      val errors = country match {
+        case Some("GB") =>
+          correspondenceForm.data.get("postcode") match {
+            case Some(x) if x.trim.isEmpty => Seq(FormError("postcode", "ated.correspondence-address-error.uk.postCode"))
+            case Some(_) => Nil
+            case None =>  Seq(FormError("postcode", "ated.correspondence-address-error.uk.postCode"))
+          }
+        case _ => Nil
+      }
+      addErrorsToForm(correspondenceForm, errors)
+    } else correspondenceForm
   }
 
   private def addErrorsToForm[A](form: Form[A], formErrors: Seq[FormError]): Form[A] = {
