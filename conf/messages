@@ -180,7 +180,7 @@ ated.contact-details-error.general.telephone = Enter a telephone number
 
 ated.contact-details.email.error = Select yes if we can use an email address as a point of contact
 
-ated.contact-details-email.length = The email address cannot be more than 241 characters.
+ated.contact-details-email.length = The email address cannot be more than 132 characters.
 ated.contact-details-email.error = Enter an email address
 ated.contact-details-emailx.error = Enter a valid email address
 

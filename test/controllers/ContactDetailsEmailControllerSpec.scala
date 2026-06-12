@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.{AuthBuilder, SessionBuilder}
+import forms.AtedForms.emailLength
 import models.ContactDetailsEmail
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -127,13 +128,13 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
       }
 
 
-      "Email address must not be more 241 characters" in {
-        val emailTest = "a" * 240 + "@mail.com"
+      "Email addresses must not contain more than the allowed number of characters" in {
+        val emailTest = "a" * (emailLength - "@mail.com".length + 1) + "@mail.com"
         val inputJson = Json.parse( s"""{ "emailConsent": "true", "email": "$emailTest" }""")
 
         submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
           status(result) must be(BAD_REQUEST)
-          contentAsString(result) must include("The email address cannot be more than 241 characters.")
+          contentAsString(result) must include("The email address cannot be more than 132 characters.")
         }
       }
 
