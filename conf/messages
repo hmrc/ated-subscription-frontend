@@ -224,6 +224,9 @@ ated.review-details.service = Service
 ated.review-details.service.ated = ATED
 ated.review-details.business = Business name
 ated.review-details.registered-address = Registered address
+ated.review-details.has-overseas-tax-reference = Has overseas company registration number
+ated.review-details.has-overseas-tax-reference.yes = Yes
+ated.review-details.has-overseas-tax-reference.no = No
 ated.review-details.overseas-tax-reference = Overseas company registration number
 
 ated.review-details.issuing-institution = Institution that issued the number
