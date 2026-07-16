@@ -82,6 +82,9 @@ class ApplicationConfig @Inject()(val servicesConfig: ServicesConfig,
   lazy val overseasTaxReferenceEditUrl: String = servicesConfig.getConfString("business-customer.overseasTaxReferenceEditUrl",
     "/business-customer/register/non-uk-client/edit-overseas-company/ATED/true?redirectUrl=/ated-subscription/review-business-details")
 
+  lazy val overseasTaxReferenceDetailsEditUrl: String = servicesConfig.getConfString("business-customer.overseasTaxReferenceDetailsEditUrl",
+    "/business-customer/register/non-uk-client/edit-overseas-company-reg/ATED/true?redirectUrl=/ated-subscription/review-business-details")
+
   lazy val backToBusinessCustomerUrl: String = servicesConfig.getConfString("business-customer.backLinkUrl",
     "/business-customer/back-link/ATED")
 
