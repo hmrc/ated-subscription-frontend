@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
 import forms.AtedForms.emailLength
 import models.ContactDetailsEmail
@@ -29,7 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import services.ContactDetailsService
@@ -130,27 +129,24 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
       "Email addresses must not contain more than the allowed number of characters" in {
         val emailTest = "a" * (emailLength - "@mail.com".length + 1) + "@mail.com"
-        val inputJson = Json.parse( s"""{ "emailConsent": "true", "email": "$emailTest" }""")
-
-        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+        submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+          .withFormUrlEncodedBody("emailConsent" -> "true", "email" -> emailTest)) { result =>
           status(result) must be(BAD_REQUEST)
           contentAsString(result) must include("The email address cannot be more than 132 characters.")
         }
       }
 
       "Email address must be a valid email address" in {
-        val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "abcdef.com" }""")
-
-        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+        submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+          .withFormUrlEncodedBody("emailConsent" -> "true", "email" -> "abcdef.com")) { result =>
           status(result) must be(BAD_REQUEST)
           contentAsString(result) must include("Enter a valid email address")
         }
       }
 
       "Email address must be filled" in {
-        val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "" }""")
-
-        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+        submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+          .withFormUrlEncodedBody("emailConsent" -> "true", "email" -> "")) { result =>
           status(result) must be(BAD_REQUEST)
           contentAsString(result) must include("Enter an email address")
         }
@@ -166,8 +162,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
       }
 
       "for valid data, it should redirect to review business details page" in {
-        val inputJson = Json.parse( s"""{  "emailConsent": "true", "email": "abcdef@mail.com" }""")
-        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+        submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+          .withFormUrlEncodedBody("emailConsent" -> "true", "email" -> "abcdef@mail.com")) { result =>
           status(result) must be(SEE_OTHER)
           redirectLocation(result).get must include(s"/ated-subscription/review-business-details")
         }
@@ -225,6 +221,22 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
   }
 
   def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+    val sessionId = s"session-${UUID.randomUUID}"
+    val userId = s"user-${UUID.randomUUID}"
+
+    builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockContactDetailsService.saveContactDetailsEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(testContactEmail)))
+
+    val result = testContactDetailsEmailController.submit(None).apply(fakeRequest.withSession(
+      "sessionId" -> sessionId,
+      "token" -> "RANDOMTOKEN",
+      "userId" -> userId))
+
+    test(result)
+  }
+
+  def submitWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     val sessionId = s"session-${UUID.randomUUID}"
     val userId = s"user-${UUID.randomUUID}"
 

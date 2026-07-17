@@ -28,7 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
@@ -202,16 +202,14 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
       "Authorised users" must {
 
         "redirected to the correspondence page if correspondence address is false" in {
-          val inputJson = Json.parse( """{ "isCorrespondenceAddress": "false" }""")
-          continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+          continueWithAuthorisedFormUser(FakeRequest().withMethod("POST").withFormUrlEncodedBody("isCorrespondenceAddress" -> "false")) { result =>
             redirectLocation(result).isDefined must be(true)
             redirectLocation(result).get must include("/ated-subscription/correspondence-address")
           }
         }
 
         "redirected to the correspondence page if correspondence address is true" in {
-          val inputJson = Json.parse("""{ "isCorrespondenceAddress": "true" }""")
-          continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+          continueWithAuthorisedFormUser(FakeRequest().withMethod("POST").withFormUrlEncodedBody("isCorrespondenceAddress" -> "true")) { result =>
             redirectLocation(result).value must include("/ated-subscription/correspondence-address")
           }
         }
@@ -398,6 +396,14 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
+  def continueWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.saveRegisteredBusinessDetails(any[BusinessAddress])(any(), any())).thenReturn(Future.successful(None))
+    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    test(result)
+  }
 
   def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"

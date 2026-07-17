@@ -24,7 +24,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ContactDetailsService
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
@@ -32,7 +31,7 @@ class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
                                               val authConnector: DefaultAuthConnector,
                                               template: views.html.contactDetailsEmail,
                                               implicit val appConfig: ApplicationConfig
-                                             ) extends FrontendController(mcc) with AuthFunctionality with WithUnsafeDefaultFormBinding {
+                                             ) extends FrontendController(mcc) with AuthFunctionality {
 
  implicit val ec: ExecutionContext = mcc.executionContext
 

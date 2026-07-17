@@ -105,6 +105,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
           val inputForm = Seq(("previousSubmitted", "true"))
 
           continueWithAuthorisedUser(inputForm) { result =>
+            println(contentAsString(result))
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated-subscription/existing"))
           }

@@ -26,7 +26,6 @@ import play.api.mvc._
 import services.{EtmpCheckService, RegisteredBusinessService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{AtedSubscriptionUtils, Constants}
 
@@ -43,7 +42,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              template: views.html.registeredBusinessAddress,
                                              templateAlreadyRegistered: views.html.registeredWithDifferentGG,
                                              implicit val appConfig: ApplicationConfig
-                                            ) extends FrontendController(mcc) with AuthFunctionality with WithUnsafeDefaultFormBinding {
+                                            ) extends FrontendController(mcc) with AuthFunctionality {
 
   implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
   implicit val ec: ExecutionContext = mcc.executionContext

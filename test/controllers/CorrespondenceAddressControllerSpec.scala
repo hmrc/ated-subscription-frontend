@@ -26,15 +26,17 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.Play.materializer
+import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.CorrespondenceAddressService
 import services.RegisteredBusinessService
 import testHelpers.AtedTestHelper
 import views.html.correspondenceAddress
+
 import scala.concurrent.Future
+import play.api.test.Helpers.defaultAwaitTimeout
 
 
 class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
@@ -146,9 +148,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
         "validate form" must {
 
           "not be empty" in {
-            val inputJson = Json.parse( """{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "", "country": ""}""")
-
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+                .withFormUrlEncodedBody("line_1" -> "", "line_2"-> "", "line_3"-> "", "line_4"-> "", "postcode"-> "", "country"-> "")) { result =>
               status(result) must be(BAD_REQUEST)
               contentAsString(result) must include("Enter address line 1")
               contentAsString(result) must include("Enter address line 2")
@@ -158,9 +159,9 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
           "If entered, Address line 1 must be maximum of 35 characters" in {
             val line1 = "a" * 36
-            val inputJson = Json.parse( s"""{ "line_1": "$line1", "line_2": "", "line_3": "", "line_4": "", "postcode": "", "country": ""}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
-              result =>
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> line1, "line_2" -> "", "line_3" -> "", "line_4" -> "", "postcode" -> "", "country" -> "")
+            ) { result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Address line 1 must not be more than 35 characters")
             }
@@ -168,8 +169,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
           "If entered, Address line 2 must be maximum of 35 characters" in {
             val line2 = "a" * 36
-            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "$line2", "line_3": "", "line_4": "", "postcode": "", "country": ""}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "", "line_2" -> line2, "line_3" -> "", "line_4" -> "", "postcode" -> "", "country" -> "")) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Address line 2 must not be more than 35 characters")
@@ -178,8 +179,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
           "Address line 3 is optional but if entered, must be maximum of 35 characters" in {
             val line3 = "a" * 36
-            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "$line3", "line_4": "", "postcode": "", "country": ""}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "", "line_2" -> "", "line_3" -> line3, "line_4" -> "", "postcode" -> "", "country" -> "")) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Address line 3 (optional) must not be more than 35 characters")
@@ -188,8 +189,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
           "Address line 4 is optional but if entered, must be maximum of 35 characters" in {
             val line4 = "a" * 36
-            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "$line4", "postcode": "", "country": ""}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "", "line_2" -> "", "line_3" -> "", "line_4" -> line4, "postcode" -> "", "country" -> "")) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Address line 4 (optional) must not be more than 35 characters")
@@ -198,8 +199,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
           "Postcode is optional but if entered, must be maximum of 10 characters" in {
             val line = "a" * 12
-            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "$line", "country": ""}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "", "line_2" -> "", "line_3" -> "", "line_4" -> "", "postcode" -> line, "country" -> "")) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("You must enter a valid postcode")
@@ -208,8 +209,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
           "Postcode is optional but if entered, must be a valid string" in {
             val line = "gh*yuy,"
-            val inputJson = Json.parse( s"""{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "$line", "country": ""}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "", "line_2" -> "", "line_3" -> "", "line_4" -> "", "postcode" -> line, "country" -> "")) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("You must enter a valid postcode")
@@ -218,8 +219,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
 
           "Postcode is optional but if entered, it can contain the allowed special characters" in {
             val postCode = "{[(ZZ1-1Z Z)]}."
-            val inputJson = Json.parse( s"""{ "line_1": "Line1", "line_2": "Line2", "line_3": "Line3", "line_4": "Line4", "postcode": "$postCode", "country": "GB"}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "line1", "line_2" -> "line2", "line_3" -> "line3", "line_4" -> "line4", "postcode" -> postCode, "country" -> "GB")) {
                 result =>
                   status(result) must be(SEE_OTHER)
                   redirectLocation(result).get must include(s"/ated-subscription/contact-details")
@@ -227,8 +228,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "Country Code must be selected" in {
-            val inputJson = Json.parse( """{ "line_1": "", "line_2": "", "line_3": "", "line_4": "", "postcode": "", "country": ""} """)
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "", "line_2" -> "", "line_3" -> "", "line_4" -> "", "postcode" -> "", "country" -> "")) {
               result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Enter a country")
@@ -236,8 +237,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is not edit" in {
-            val inputJson = Json.parse( """{ "line_1": "sadsdf", "line_2": "sdfsdf", "line_3": "asd", "line_4": "asd", "postcode": "AA1 1AA", "country": "GB"}""")
-            submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "sadsdf", "line_2" -> "sdfsdf", "line_3" -> "asd", "line_4" -> "asd", "postcode" -> "AA1 1AA", "country" -> "GB")) {
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include(s"/ated-subscription/contact-details")
@@ -245,8 +246,8 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
             }
           }
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is edit" in {
-            val inputJson = Json.parse( """{ "line_1": "sadsdf", "line_2": "sdfsdf", "line_3": "asd", "line_4": "asd", "postcode": "AA1 1AA", "country": "GB"}""")
-            submitEditWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) {
+            submitEditWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+              .withFormUrlEncodedBody("line_1" -> "sadsdf", "line_2" -> "sdfsdf", "line_3" -> "asd", "line_4" -> "asd", "postcode" -> "AA1 1AA", "country" -> "GB")) {
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated-subscription/review-business-details")
@@ -312,6 +313,16 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
     test(result)
   }
 
+  def submitWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    println(fakeRequest.body)
+    val result = testCorrespondenceAddressController.submit(None).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+
+    test(result)
+  }
+
   def submitWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
@@ -334,6 +345,15 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   }
 
   def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
+    val userId = s"user-${UUID.randomUUID}"
+    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+    val result = testCorrespondenceAddressController.submit(mode = Some("edit")).apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+
+    test(result)
+  }
+
+  def submitEditWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
