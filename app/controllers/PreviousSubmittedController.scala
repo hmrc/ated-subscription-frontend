@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package controllers
 
 import config.ApplicationConfig
-import connectors.BusinessCustomerFrontendConnector
 import controllers.auth.AuthFunctionality
 import forms.AtedForms
 import javax.inject.Inject
@@ -28,12 +27,11 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
-                                            businessCustomerFEConnector: BusinessCustomerFrontendConnector,
                                             overseasCompanyService: OverseasCompanyService,
                                             val authConnector: DefaultAuthConnector,
                                             template: views.html.previous_submitted,
                                             implicit val appConfig: ApplicationConfig
-                                           ) extends FrontendController(mcc) with AuthFunctionality{
+                                           ) extends FrontendController(mcc) with AuthFunctionality {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

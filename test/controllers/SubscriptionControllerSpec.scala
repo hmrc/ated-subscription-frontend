@@ -16,11 +16,8 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import org.jsoup.Jsoup
-import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -30,7 +27,7 @@ import testHelpers.AtedTestHelper
 import views.html.{agentSubscription, appointAgent, beforeRegisterAgent, beforeRegisteringForATED, subscription}
 import scala.concurrent.Future
 
-class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with AtedTestHelper {
 
   val injectedViewInstanceSubscription: subscription = app.injector.instanceOf[views.html.subscription]
   val injectedViewInstanceAppointAgent: appointAgent = app.injector.instanceOf[views.html.appointAgent]
@@ -46,9 +43,7 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     injectedViewInstanceBeforeRegisteringForATED,
     mockAppConfig)
 
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-  }
+  val userId = "user-325bc713-7bd2-42c6-b0aa-9c00109d07d3"
 
   "SubscriptionController" must {
 
@@ -284,38 +279,33 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     }
   }
 
-  def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def getWithAuthorisedAgentThroughUserLink(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedAgentThroughUserLink(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthorisedAgent(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithUnAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -323,15 +313,13 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
   }
 
   def getWithAuthorisedAgentAssistant(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgentAssistant(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def getWithAuthorisedOrgAssistant(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedOrgAssistant(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedOrgAssistant(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -339,63 +327,62 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
   }
 
   def subscribeAgentWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def submitWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def submitWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
+    val result = testSubscriptionController.continue.apply(
+      SessionBuilder
+      .buildRequestWithSession(userId)
+        .withMethod("POST")
+      .withFormUrlEncodedBody(inputForm: _*))
 
     test(result)
   }
 
   def submitWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def submitWithUnAuthenticated(test: Future[Result] => Any): Unit = {
+  private def submitWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUserNotLogged(mockAuthConnector)
     val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
-  def appointWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def appointWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testSubscriptionController.appoint.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
-  def beforeRegisterGuidanceWithAuthorisedUser(inputForm: Seq[(String, String)])
-                                              (test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def beforeRegisterGuidanceWithAuthorisedUser(inputForm: Seq[(String, String)])
+                                                      (test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = testSubscriptionController.beforeRegisterGuidance
-      .apply(SessionBuilder.buildRequestWithSession(userId)
+    val result = testSubscriptionController.beforeRegisterGuidance.apply(
+      SessionBuilder
+        .buildRequestWithSession(userId)
+        .withMethod("POST")
         .withFormUrlEncodedBody(inputForm: _*))
     test(result)
   }
 
-  def showBeforeRegisteringAgentPageWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def showBeforeRegisteringAgentPageWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testSubscriptionController.showBeforeRegisteringAgentPage
       .apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def showBeforeRegisteringATEDPageWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def showBeforeRegisteringATEDPageWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testSubscriptionController.showBeforeRegisteringATEDPage
       .apply(SessionBuilder.buildRequestWithSession(userId))

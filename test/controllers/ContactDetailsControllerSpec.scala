@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.util.UUID
-
 import builders.{AuthBuilder, SessionBuilder}
 import models.ContactDetails
 import org.jsoup.Jsoup
@@ -27,8 +25,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.ContactDetailsService
@@ -45,8 +42,11 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
   val testContactDetailsController = new ContactDetailsController(mockMCC, mockContactDetailsService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
+  val sessionId = "session-5510719b-cdd1-44dc-ab1c-b0455be14f5b"
+  val userId    = "user-949d7f71-94f3-416b-b497-722f595e51be"
+  val token     = "RANDOMTOKEN"
+
   override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
     reset(mockContactDetailsService)
   }
 
@@ -138,7 +138,11 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
         "not be empty" in {
           submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> "", "lastName" -> "", "telephone" -> "")) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> "",
+              "lastName" -> "",
+              "telephone" -> "")
+          ) { result =>
             status(result) must be(BAD_REQUEST)
             contentAsString(result) must include("Enter a first name")
             contentAsString(result) must include("Enter a last name")
@@ -150,7 +154,11 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         "First name must be maximum of 35 characters" in {
           val firstName = "a" * 36
           submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> firstName, "lastName" -> "DEF", "telephone" -> "")) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> firstName,
+              "lastName" -> "DEF",
+              "telephone" -> "")
+          ) { result =>
             status(result) must be(BAD_REQUEST)
             contentAsString(result) must include("The first name cannot be more than 35 characters")
           }
@@ -159,16 +167,24 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
         "Last name must be maximum of 35 characters" in {
           val lastName = "a" * 36
           submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> "ABC", "lastName" -> lastName, "telephone" -> "")) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> "ABC",
+              "lastName" -> lastName,
+              "telephone" -> "")
+          ) { result =>
             status(result) must be(BAD_REQUEST)
             contentAsString(result) must include("The last name cannot be more than 35 characters")
           }
         }
 
         "Telephone number must not be more than 24 characters" in {
-          val tele = "a" * 25
+          val telephone = "a" * 25
           submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> "ABC", "lastName" -> "DEF", "telephone" -> tele)) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> "ABC",
+              "lastName" -> "DEF",
+              "telephone" -> telephone)
+          ) { result =>
             status(result) must be(BAD_REQUEST)
             contentAsString(result) must include("The telephone number cannot be more than 24 characters")
           }
@@ -176,7 +192,11 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
         "Telephone number must not have invalid characters" in {
           submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> "ABC", "lastName" -> "DEF", "telephone" -> "@@@@@@@@@@@@@@")) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> "ABC",
+              "lastName" -> "DEF",
+              "telephone" -> "@@@@@@@@@@@@@@")
+          ) { result =>
             status(result) must be(BAD_REQUEST)
             contentAsString(result) must include("The telephone number is not valid")
           }
@@ -184,7 +204,11 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
         "Telephone number must not have lower case letters" in {
           submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> "ABC", "lastName" -> "DEF", "telephone" -> "0191222x123")) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> "ABC",
+              "lastName" -> "DEF",
+              "telephone" -> "0191222x123")
+          ) { result =>
             status(result) must be(BAD_REQUEST)
             contentAsString(result) must include("The telephone number is not valid")
           }
@@ -193,28 +217,33 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
         "for valid data, it should redirect to review business details page" in {
           submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> "ABC", "lastName" -> "DEF", "telephone" -> "1234567890")) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> "ABC",
+              "lastName" -> "DEF",
+              "telephone" -> "1234567890")
+          ) { result =>
             status(result) must be(SEE_OTHER)
-            redirectLocation(result).get must include(s"/ated-subscription/contact-details-email")
+            redirectLocation(result).get must include("/ated-subscription/contact-details-email")
           }
         }
 
         "If registration details entered are valid, save and continue button must redirect to review details page, if mode is edit" in {
-          val inputJson = Json.parse( s"""{ "firstName": "ABC", "lastName": "DEF", "telephone": "1234567890"}""")
           submitEditWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
-            .withFormUrlEncodedBody("firstName" -> "ABC", "lastName" -> "DEF", "telephone" -> "1234567890")) { result =>
+            .withFormUrlEncodedBody(
+              "firstName" -> "ABC",
+              "lastName" -> "DEF",
+              "telephone" -> "1234567890")
+          ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/ated-subscription/review-business-details")
               verify(mockContactDetailsService, times(1)).saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
-
       }
     }
   }
 
-  def getWithAuthorisedUser(mode:Option[String])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedUser(mode:Option[String])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsController.editDetails(mode).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -222,8 +251,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     test(result)
   }
 
-  def getWithAuthorisedAgent(mode:Option[String])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedAgent(mode:Option[String])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsController.editDetails(mode).apply(SessionBuilder.buildRequestWithSession(userId))
@@ -231,81 +259,42 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testContactDetailsController.editDetails(None).apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testContactDetailsController.editDetails(None).apply(SessionBuilder.buildRequestWithSessionNoUser())
-    test(result)
-  }
-
-  def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    val userId = s"user-${UUID.randomUUID}"
+  private def submitWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
 
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(None).apply(fakeRequest.withSession(
       "sessionId" -> sessionId,
-      "token" -> "RANDOMTOKEN",
-      "userId" -> userId))
+      "token" -> token,
+      "userId" -> userId)
+    )
 
     test(result)
   }
 
-  def submitWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    val userId = s"user-${UUID.randomUUID}"
+  private def submitEditWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
 
-    builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
-
-    val result = testContactDetailsController.submit(None).apply(fakeRequest.withSession(
-      "sessionId" -> sessionId,
-      "token" -> "RANDOMTOKEN",
-      "userId" -> userId))
-
-    test(result)
-  }
-
-  def submitEditWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    val userId = s"user-${UUID.randomUUID}"
 
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(mode = Some("edit")).apply(fakeRequest.withSession(
       "sessionId" -> sessionId,
-      "token" -> "RANDOMTOKEN",
-      "userId" -> userId))
+      "token" -> token,
+      "userId" -> userId)
+    )
 
     test(result)
   }
 
-  def submitEditWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    val userId = s"user-${UUID.randomUUID}"
-
-    builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
-
-    val result = testContactDetailsController.submit(mode = Some("edit")).apply(fakeRequest.withSession(
-      "sessionId" -> sessionId,
-      "token" -> "RANDOMTOKEN",
-      "userId" -> userId))
-
-    test(result)
-  }
-
-
-  def getEditWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getEditWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
     val result = testContactDetailsController.editDetails(mode = Some("edit")).apply(SessionBuilder.buildRequestWithSession(userId))

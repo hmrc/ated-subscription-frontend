@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,19 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import connectors.AtedConnector
 import models.{Address, AtedUsers, BusinessAddress, BusinessCustomerDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
+import services.{EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.http.HttpResponse
@@ -39,7 +36,7 @@ import views.html.{registeredBusinessAddress, registeredWithDifferentGG}
 
 import scala.concurrent.Future
 
-class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with AtedTestHelper {
 
   val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
   val mockEtmpCheckService: EtmpCheckService = mock[EtmpCheckService]
@@ -64,10 +61,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     mockAppConfig
   )
 
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockRegisteredBusinessService)
-  }
+  val userId    = "user-8af01429-0927-42d8-b858-e105eb21e9b3"
 
   "RegisteredBusinessController" must {
 
@@ -127,6 +121,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "should contain address fetched from Keystore" in {
+          reset(mockRegisteredBusinessService)
           withAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
             val bizAddress = document.select("#businessAddress")
@@ -215,8 +210,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "return to this page if we have an error" in {
-          val inputJson = Json.parse( """{ "isCorrespondenceAddress": "1111" }""")
-          continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+          continueWithAuthorisedFormUser(FakeRequest().withMethod("POST").withFormUrlEncodedBody("isCorrespondenceAddress" -> "1111")) { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-back-link").text() must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must be(backToBusinessCustomerUrl)
@@ -225,8 +219,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
         }
 
         "return to this page if we have an error form validation" in {
-          val inputJson = Json.parse( """{ "isCorrespondenceAddress": "" }""")
-          continueWithAuthorisedUser(FakeRequest().withJsonBody(inputJson)) { result =>
+          continueWithAuthorisedFormUser(FakeRequest().withMethod("POST").withFormUrlEncodedBody("isCorrespondenceAddress" -> "")) { result =>
             val document = Jsoup.parse(contentAsString(result))
             document.getElementsByClass("govuk-back-link").text() must be("Back")
             document.getElementsByClass("govuk-back-link").attr("href") must be(backToBusinessCustomerUrl)
@@ -258,8 +251,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
   val testEmptyAtedUsers: AtedUsers = AtedUsers(List(), List())
   val testExistingAtedUsers: AtedUsers = AtedUsers(List("principalUserId1"), List("dlegatedUserId1"))
 
-  def withAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def withAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
@@ -278,9 +270,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withAuthorisedUserAndNoBackLink(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-
+  private def withAuthorisedUserAndNoBackLink(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
@@ -299,9 +289,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withAuthorisedUserWithRedirectNRLlink(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-
+  private def withAuthorisedUserWithRedirectNRLlink(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
@@ -318,8 +306,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withExistingAtedEnrolledUsers(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def withExistingAtedEnrolledUsers(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
@@ -336,8 +323,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withETMPRegistration(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def withETMPRegistration(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, Set(Enrolment("HMRC-ATED-ORG", Seq(EnrolmentIdentifier("AtedRefNumber", "test")), "Activated")))
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
@@ -352,8 +338,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withAuthorisedUserWithSavedData(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def withAuthorisedUserWithSavedData(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(Some(testAddressForm)))
@@ -368,8 +353,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withAuthorisedAgent(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def withAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
       .thenReturn(Future.successful(None))
@@ -384,20 +368,13 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def withUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def withUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def withUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSessionNoUser())
-    test(result)
-  }
-
-  def continueWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def continueWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
     when(mockDataCacheConnector.saveRegisteredBusinessDetails(any[BusinessAddress])(any(), any())).thenReturn(Future.successful(None))
@@ -405,26 +382,9 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     test(result)
   }
 
-  def continueWithAuthorisedUser(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
-    when(mockDataCacheConnector.saveRegisteredBusinessDetails(any[BusinessAddress])(any(), any())).thenReturn(Future.successful(None))
-    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
-
-    test(result)
-  }
-
-  def continueWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def continueWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
-
-  def continueWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSessionNoUser())
-    test(result)
-  }
-
 }

@@ -31,7 +31,7 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          val authConnector: DefaultAuthConnector,
                                          template: views.html.contactDetails,
                                          implicit val appConfig: ApplicationConfig
-                                        ) extends FrontendController(mcc) with AuthFunctionality{
+                                        ) extends FrontendController(mcc) with AuthFunctionality {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

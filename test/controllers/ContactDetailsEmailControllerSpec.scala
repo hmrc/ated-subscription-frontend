@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,16 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
 import forms.AtedForms.emailLength
 import models.ContactDetailsEmail
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, AnyContentAsJson, Result}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import services.ContactDetailsService
@@ -37,7 +34,7 @@ import views.html.contactDetailsEmail
 
 import scala.concurrent.Future
 
-class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with AtedTestHelper {
 
   val mockContactDetailsService: ContactDetailsService = mock[ContactDetailsService]
   val testContactEmail: ContactDetailsEmail = ContactDetailsEmail(Some(true), "abc@test.com")
@@ -46,10 +43,9 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
   val testContactDetailsEmailController: ContactDetailsEmailController = new ContactDetailsEmailController(
     mockMCC, mockContactDetailsService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockContactDetailsService)
-  }
+  val sessionId = "session-67828c32-775c-4483-8167-9b54b2ef8605"
+  val userId    = "user-fcd7129a-5cd4-4616-95d2-8d673d650fa8"
+  val token     = "RANDOMTOKEN"
 
   "ContactDetailsEmailController" must {
 
@@ -114,6 +110,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
           document.getElementById("submit").text must be("Continue")
         }
       }
+
       "email consent after edit with no data" in {
         getWithAuthorisedAgentEditNoData { result =>
           status(result) must be(OK)
@@ -125,7 +122,6 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
           document.getElementById("submit").text must be("Continue")
         }
       }
-
 
       "Email addresses must not contain more than the allowed number of characters" in {
         val emailTest = "a" * (emailLength - "@mail.com".length + 1) + "@mail.com"
@@ -153,9 +149,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
       }
 
       "Question must be answered" in {
-        val inputJson = Json.parse( s"""{  "emailConsent": "", "email": "" }""")
-
-        submitWithAuthorisedUserSuccess(FakeRequest().withJsonBody(inputJson)) { result =>
+        submitWithAuthorisedFormUserSuccess(FakeRequest().withMethod("POST")
+          .withFormUrlEncodedBody("emailConsent" -> "", "email" -> "")) { result =>
           status(result) must be(BAD_REQUEST)
           contentAsString(result) must include("Select yes if we can use an email address as a point of contact")
         }
@@ -172,17 +167,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
     }
 
-  def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
-    val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-
-  def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -190,8 +175,7 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
     test(result)
   }
 
-  def getWithAuthorisedAgentEdit(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedAgentEdit(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(testContactEmail)))
@@ -199,8 +183,8 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
 
     test(result)
   }
-  def getWithAuthorisedAgentEditNoData(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+
+  private def getWithAuthorisedAgentEditNoData(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
     when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsEmailController.editDetailsEmail().apply(SessionBuilder.buildRequestWithSession(userId))
@@ -208,58 +192,24 @@ class ContactDetailsEmailControllerSpec extends PlaySpec with GuiceOneServerPerS
     test(result)
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSessionNoUser())
-    test(result)
-  }
-
-  def submitWithAuthorisedUserSuccess(fakeRequest: FakeRequest[AnyContentAsJson])(test: Future[Result] => Any): Unit = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    val userId = s"user-${UUID.randomUUID}"
-
+  private def submitWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     when(mockContactDetailsService.saveContactDetailsEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(testContactEmail)))
 
     val result = testContactDetailsEmailController.submit(None).apply(fakeRequest.withSession(
       "sessionId" -> sessionId,
-      "token" -> "RANDOMTOKEN",
-      "userId" -> userId))
+      "token" -> token,
+      "userId" -> userId)
+    )
 
     test(result)
   }
-
-  def submitWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
-    val sessionId = s"session-${UUID.randomUUID}"
-    val userId = s"user-${UUID.randomUUID}"
-
-    builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetailsEmail(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(Some(testContactEmail)))
-
-    val result = testContactDetailsEmailController.submit(None).apply(fakeRequest.withSession(
-      "sessionId" -> sessionId,
-      "token" -> "RANDOMTOKEN",
-      "userId" -> userId))
-
-    test(result)
-  }
-
-  def getEditWithAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
-    AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(Some(testContactEmail)))
-    val result = testContactDetailsEmailController.view().apply(SessionBuilder.buildRequestWithSession(userId))
-
-    test(result)
-  }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        beforeRegisteringForATEDPage: views.html.beforeRegisteringForATED,
                                        implicit val appConfig: ApplicationConfig
                                       )
-  extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality{
+  extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

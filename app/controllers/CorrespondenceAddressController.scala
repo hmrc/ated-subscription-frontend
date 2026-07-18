@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ package controllers
 import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
 import forms.AtedForms._
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{CorrespondenceAddressService, RegisteredBusinessService}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.Constants
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -33,7 +35,7 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 val authConnector: DefaultAuthConnector,
                                                 template: views.html.correspondenceAddress,
                                                 implicit val appConfig: ApplicationConfig
-                                               ) extends FrontendController(mcc)  with AuthFunctionality{
+                                               ) extends FrontendController(mcc)  with AuthFunctionality {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 
@@ -63,8 +65,9 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
   def submit(mode: Option[String]): Action[AnyContent] = Action.async {
     implicit request =>
       authoriseFor { implicit data =>
-          verifyUKPostCode(correspondenceAddressForm.bindFromRequest()).fold(formWithErrors =>
-            Future.successful(BadRequest(template(formWithErrors,mode,appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode)))),
+          verifyUKPostCode(correspondenceAddressForm.bindFromRequest()).fold(formWithErrors => {
+            Future.successful(BadRequest(template(formWithErrors, mode, appConfig.atedSubsUtils.getIsoCodeTupleList, getBackLink(mode))))
+          },
           addressData => {
             val trimmedPostCode = appConfig.atedSubsUtils.formatPostCode(addressData.postcode)
             val trimmedAddress = addressData.copy(postcode = trimmedPostCode)

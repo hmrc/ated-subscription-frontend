@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package controllers
 
-import java.util.UUID
 import builders.{AuthBuilder, SessionBuilder}
-import connectors.BusinessCustomerFrontendConnector
 import models.PreviousSubmittedForm
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -32,22 +29,16 @@ import play.api.test.Helpers._
 import services.OverseasCompanyService
 import testHelpers.AtedTestHelper
 import views.html.previous_submitted
-
 import scala.concurrent.Future
 
-class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
+class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with AtedTestHelper {
 
-  val mockBCConnector: BusinessCustomerFrontendConnector = mock[BusinessCustomerFrontendConnector]
   val mockOverseasService: OverseasCompanyService = mock[OverseasCompanyService]
   val injectedViewInstance: previous_submitted = app.injector.instanceOf[views.html.previous_submitted]
-  val testPreviousSubmittedController: PreviousSubmittedController = new PreviousSubmittedController(mockMCC, mockBCConnector, mockOverseasService, mockAuthConnector, injectedViewInstance, mockAppConfig)
+  val testPreviousSubmittedController: PreviousSubmittedController = new PreviousSubmittedController(
+    mockMCC, mockOverseasService, mockAuthConnector, injectedViewInstance, mockAppConfig)
 
-  override def beforeEach(): Unit = {
-    reset(mockAuthConnector)
-    reset(mockRegisterUserService)
-    reset(mockBCConnector)
-    reset(mockOverseasService)
-  }
+  val userId    = "user-ec5ab87e-3193-4c68-aeff-3ad97e7842ab"
 
   "PreviousSubmittedController" must {
 
@@ -70,7 +61,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
       "Authorised users" must {
 
         "respond with OK" in {
-          getWithAuthorisedUser("ACME LTD") { result =>
+          getWithAuthorisedUser() { result =>
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
@@ -79,7 +70,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
         }
 
         "respond with OK with prepopped data" in {
-          getWithAuthorisedUser("ACME LTD", Some(PreviousSubmittedForm(Some(true)))) { result =>
+          getWithAuthorisedUser(Some(PreviousSubmittedForm(Some(true)))) { result =>
             status(result) must be(OK)
 
             val document = Jsoup.parse(contentAsString(result))
@@ -105,7 +96,6 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
           val inputForm = Seq(("previousSubmitted", "true"))
 
           continueWithAuthorisedUser(inputForm) { result =>
-            println(contentAsString(result))
             status(result) must be(SEE_OTHER)
             redirectLocation(result) must be(Some("/ated-subscription/existing"))
           }
@@ -133,20 +123,13 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
     }
   }
 
-  def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testPreviousSubmittedController.view().apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testPreviousSubmittedController.view().apply(SessionBuilder.buildRequestWithSessionNoUser())
-    test(result)
-  }
-
-  def getWithAuthorisedUser(businessName: String, data: Option[PreviousSubmittedForm] = None)(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def getWithAuthorisedUser(data: Option[PreviousSubmittedForm] = None)(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
     when(mockOverseasService.fetchPreviouslySubmitted(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -157,26 +140,20 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
     test(result)
   }
 
-  def continueWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def continueWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
     val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
-  def continueWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
-    test(result)
-  }
-
-  def continueWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
-    val userId = s"user-${UUID.randomUUID}"
+  private def continueWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
     when(mockOverseasService.savePreviouslySubmitted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(None))
 
-    val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(inputForm: _*))
+    val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSession(userId).withMethod("POST")
+      .withFormUrlEncodedBody(inputForm: _*))
 
     test(result)
   }
