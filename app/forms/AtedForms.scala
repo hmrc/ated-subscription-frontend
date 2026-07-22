@@ -183,7 +183,6 @@ object AtedForms {
   def verifyUKPostCode(correspondenceForm: Form[Address]): Form[Address] = {
     if (!correspondenceForm.hasErrors) {
       val country = correspondenceForm.data.get("country")
-      println("*****************************************" + country)
       val errors = country match {
         case Some("GB") =>
           correspondenceForm.data.get("postcode") match {
