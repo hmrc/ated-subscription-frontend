@@ -31,7 +31,8 @@ class ContactDetailsViewTest extends ViewTestFixture{
 
   "registeredBusinessAddress page" should {
     "render the correct content" in {
-      heading mustBe "This section is: Add a client Who should we contact about ATED?"
+      heading mustBe "Who should we contact about ATED?"
+      subHeading mustBe "This section is: Add a client"
       buttonText mustBe "Continue"
       back_link mustBe "Back"
       back_link_href mustBe "test-url"

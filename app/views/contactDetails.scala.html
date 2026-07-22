@@ -21,13 +21,15 @@
 @import config.ApplicationConfig
 @import uk.gov.hmrc.govukfrontend.views.Implicits.RichInput
 @import views.ViewUtils.titleBuilder
+@import play.twirl.api.HtmlFormat
 
 @this(atedMain: atedMain,
         formHelper: FormWithCSRF,
         govukInput: GovukInput,
         govukErrorSummary : GovukErrorSummary,
         govukBackLink : GovukBackLink,
-        govukButton : GovukButton)
+        govukButton : GovukButton,
+        govukFieldset: GovukFieldset)
 
 @(contactDetailsForm: Form[ContactDetails],
     mode: Option[String],
@@ -66,54 +68,67 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(contactDetailsForm))
     }
 
-    <header>
-        <h1 id="contact-details.header" class="govuk-heading-xl govuk-!-margin-bottom-5">
-             <span id="subtitle" class="govuk-caption-xl">
-                 <span class="govuk-visually-hidden">
-                     @messages("ated.screen-reader.section")
-                 </span>
-                 @subTitleText
-            </span>
-            @messages("ated.contact-details.header")
-        </h1>
-    </header>
-
-    <div id="text" class="govuk-body">@ledeText</div>
+    <h2 class="govuk-caption-l hmrc-caption-l">
+        <span class="govuk-caption-xl">
+            <span class="govuk-visually-hidden">@messages("ated.screen-reader.section")</span>
+            @subTitleText
+        </span>
+    </h2>
 
     @formHelper(action = controllers.routes.ContactDetailsController.submit(mode)) {
 
-        @govukInput(
-            Input(
-                label = Label(
-                    content = Text(Messages("ated.contact-details.firstName"))
+        @govukFieldset(
+            Fieldset(
+                describedBy = Some("contact-details-hint"),
+                legend = Some(
+                    Legend(
+                        content = Text(messages("ated.contact-details.header")),
+                        classes = "govuk-fieldset__legend--xl",
+                        isPageHeading = true
+                    )
                 ),
-                autocomplete = Some("given-name")
-            ).withFormField(contactDetailsForm("firstName"))
+                html = HtmlFormat.fill(Seq(
+                    Html(
+                        s"""<div id="contact-details-hint" class="govuk-hint govuk-!-margin-bottom-6">$ledeText</div>"""
+                    ),
+                    govukInput(
+                        Input(
+                            label = Label(
+                                content = Text(Messages("ated.contact-details.firstName"))
+                            ),
+                            autocomplete = Some("given-name")
+                        ).withFormField(contactDetailsForm("firstName"))
+                    ),
+                    govukInput(
+                        Input(
+                            label = Label(
+                                content = Text(Messages("ated.contact-details.lastName"))
+                            ),
+                            autocomplete = Some("family-name")
+                        ).withFormField(contactDetailsForm("lastName"))
+                    ),
+                    govukInput(
+                        Input(
+                            inputmode = Some("numeric"),
+                            pattern = Some("[0-9]*"),
+                            label = Label(
+                                content = Text(Messages("ated.contact-details.telephone"))
+                            ),
+                            autocomplete = Some("tel")
+                        ).withFormField(contactDetailsForm("telephone"))
+                    )
+                ))
+            )
         )
 
-        @govukInput(
-            Input(
-                label = Label(
-                    content = Text(Messages("ated.contact-details.lastName"))
-                ),
-                autocomplete = Some("family-name")
-            ).withFormField(contactDetailsForm("lastName"))
+        @govukButton(
+            Button(
+                content = Text(messages("ated.contact-details.continue")),
+                attributes = Map("id" -> "submit")
+            )
         )
 
-        @govukInput(
-            Input(
-                inputmode = Some("numeric"),
-                pattern = Some("[0-9]*"),
-                label = Label(
-                    content = Text(Messages("ated.contact-details.telephone"))
-                ),
-                autocomplete = Some("tel")
-            ).withFormField(contactDetailsForm("telephone"))
-        )
-
-        @govukButton(Button(
-            content = Text(messages("ated.contact-details.continue")),
-            attributes = Map("id" -> "submit")
-        ))
     }
-}
+
+
+    }
