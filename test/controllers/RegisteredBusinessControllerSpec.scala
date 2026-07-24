@@ -31,7 +31,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{CorrespondenceAddressService, EtmpCheckService, RegisteredBusinessService}
+import services.{EtmpCheckService, RegisteredBusinessService}
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.http.HttpResponse
