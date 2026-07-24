@@ -16,12 +16,12 @@
 
 package builders
 
-import java.util.UUID
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 
 object SessionBuilder {
-  val sessionId = s"session-${UUID.randomUUID}"
+  val sessionId = "session-d0389b01-34bd-4303-9e30-7d27b7511aea"
+
   def updateRequestWithSession[T](fakeRequest: FakeRequest[T], userId: String): FakeRequest[T] = {
     fakeRequest.withSession(
       "sessionId" -> sessionId,

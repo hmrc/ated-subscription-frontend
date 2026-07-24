@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AuthUtils
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
@@ -36,7 +35,7 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        beforeRegisteringForATEDPage: views.html.beforeRegisteringForATED,
                                        implicit val appConfig: ApplicationConfig
                                       )
-  extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality with WithUnsafeDefaultFormBinding {
+  extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality {
 
   implicit val ec: ExecutionContext = mcc.executionContext
 

@@ -16,7 +16,7 @@
 
 package utils
 
-import org.apache.commons.lang3.RandomStringUtils
+import org.apache.commons.lang3.RandomStringUtils.secure
 
 object SessionUtils {
 
@@ -24,7 +24,7 @@ object SessionUtils {
     val length = 32
     val nanoTime = System.nanoTime()
     val restChars = length - nanoTime.toString.length
-    val randomChars = RandomStringUtils.randomAlphanumeric(restChars)
+    val randomChars = secure().nextAlphanumeric(restChars)
     randomChars + nanoTime
   }
 
