@@ -46,6 +46,8 @@ trait ViewTestFixture extends PlaySpec
 
   lazy val heading = document.select("h1").text()
 
+  lazy val subHeading = document.select("h2.govuk-caption-l >span").text()
+
   lazy val bodyText = document.select("p").text()
 
   lazy val sign_in_btn = document.select("a.govuk-button").text()

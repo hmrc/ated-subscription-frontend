@@ -159,6 +159,12 @@
                   label = Label(
                       content = Text(messages("ated.address.country"))
                   ),
+                  attributes = Map(
+                      "data-show-all-values" -> "false",
+                      "data-auto-select" -> "false",
+                      "data-default-value" -> "",
+                      "data-module" -> "hmrc-accessible-autocomplete"
+                  ),
                   items = Seq(SelectItem(Some(""), "Select a country")) ++ isoCodeList.map {
                       case (code, country) => SelectItem(
                           value = Some(code),
