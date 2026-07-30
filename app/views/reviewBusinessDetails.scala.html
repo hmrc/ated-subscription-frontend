@@ -156,30 +156,47 @@
         </dd>
       </div>
 
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          <span id="overseas-tax-reference-label" class="heading-small">@messages("ated.review-details.overseas-tax-reference")</span>
-        </dt>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">
+        <span id="has-overseas-tax-reference" class="heading-small">@messages("ated.review-details.has-overseas-tax-reference")</span>
+      </dt>
 
-        <dd class="govuk-summary-list__value">
-          @if(businessDetails.identification.isEmpty) {
-            <div id="overseas-not-provided">@messages("ated.review-details.contact-preference-not-provided")</div>
-          } else {
+      <dd class="govuk-summary-list__value">
+            @if(businessDetails.identification.isDefined) {
+              @messages("ated.review-details.has-overseas-tax-reference.yes")
+            } else {
+              @messages("ated.review-details.has-overseas-tax-reference.no")
+            }
+      </dd>
+
+      <dd class="govuk-summary-list__actions">
+        <a class="govuk-link" href='@appConfig.overseasTaxReferenceEditUrl' id="has-overseas-company-registration-number">
+          @messages("ated.review-details.change")
+          <span class="govuk-visually-hidden">@messages("ated.review-details.has-overseas-tax-reference")</span>
+        </a>
+      </dd>
+    </div>
+
+    @if(!businessDetails.identification.isEmpty) {
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">
+            <span id="overseas-tax-reference-label" class="heading-small">@messages("ated.review-details.overseas-tax-reference")</span>
+          </dt>
+
+          <dd class="govuk-summary-list__value">
             @businessDetails.identification.map { identification =>
               <div id="overseas-id-number">@identification.idNumber</div>
-
             }
-          }
-        </dd>
+          </dd>
 
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-tax-reference-change">
-            @messages("ated.review-details.change")
-            <span class="govuk-visually-hidden">@messages("ated.review-details.overseas-tax-reference")</span>
-          </a>
-        </dd>
-      </div>
-      @if(!businessDetails.identification.isEmpty) {
+          <dd class="govuk-summary-list__actions">
+            <a class="govuk-link" href='@appConfig.overseasTaxReferenceDetailsEditUrl' id="overseas-tax-reference-change">
+              @messages("ated.review-details.change")
+              <span class="govuk-visually-hidden">@messages("ated.review-details.overseas-tax-reference")</span>
+            </a>
+          </dd>
+        </div>
+
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">
             <span id="overseas-issuing-country-label" class="heading-small">@messages("ated.review-details.issuing-country")</span>
@@ -191,7 +208,7 @@
           </dd>
 
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-country-change">
+            <a class="govuk-link" href='@appConfig.overseasTaxReferenceDetailsEditUrl' id="overseas-issuing-country-change">
               @messages("ated.review-details.change")
               <span class="govuk-visually-hidden">@messages("ated.review-details.issuing-country")</span>
             </a>
@@ -209,7 +226,7 @@
           </dd>
 
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" href='@appConfig.overseasTaxReferenceEditUrl' id="overseas-issuing-institution-change">
+            <a class="govuk-link" href='@appConfig.overseasTaxReferenceDetailsEditUrl' id="overseas-issuing-institution-change">
               @messages("ated.review-details.change")
               <span class="govuk-visually-hidden">@messages("ated.review-details.issuing-institution")</span>
             </a>
