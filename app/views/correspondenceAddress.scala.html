@@ -36,17 +36,6 @@
 
 @implicitFormInstance = @{ Some(correspondenceAddressForm) }
 
-@pageScripts = {
-    <script @CSPNonce.attr type="text/javascript" src='@routes.Assets.versioned("../assets/javascript/location-autocomplete.min.js")'></script>
-    <script @CSPNonce.attr type="text/javascript">
-      openregisterLocationPicker({
-        defaultValue: '',
-        selectElement: document.getElementById('country'),
-        url: '@controllers.routes.Assets.versioned("location-autocomplete-graph.json")'
-      })
-    </script>
-}
-
 @pageTitle = @{
     if(isAgent) {messages("ated.correspondence-address.agent.title")} else {messages("ated.correspondence-address.title")}
 }
@@ -68,7 +57,7 @@
     }
 }
 
-@atedMain(title = titleBuilder(pageTitle, Some(correspondenceAddressForm)), pageScripts = Some(pageScripts),
+@atedMain(title = titleBuilder(pageTitle, Some(correspondenceAddressForm)),
     backlink=Some(backLinkHtml)) {
 
   @if(correspondenceAddressForm.hasErrors) {

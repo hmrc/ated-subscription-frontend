@@ -18,11 +18,16 @@
 @import views.html.helper.CSPNonce
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteCss
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteJavascript
+@import play.twirl.api.HtmlFormat
 
 @this(
         hmrcStandardPage: HmrcStandardPage,
         problemLinkHelper: HmrcReportTechnicalIssueHelper,
         hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
+        autocompleteCss: HmrcAccessibleAutocompleteCss,
+        autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
 )
 
 @(beforeContent: Option[Html] = None, pageTitle: Option[String] = None, scripts: Option[Html])(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
@@ -39,13 +44,17 @@
 @head = {
     @hmrcTimeoutDialogHelper(signOutUrl = routes.ApplicationController.logout.url)
     <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/ated-subscription.css")'/>
-    <link rel="stylesheet" href='@routes.Assets.versioned("../assets/stylesheets/location-autocomplete.min.css")'/>
 }
 
 @allScripts = {
     <script @CSPNonce.attr src='@routes.Assets.versioned("../assets/jquery/jquery-3.6.0.min.js")'></script>
     <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("../assets/javascript/subscription.js")'></script>
     @scripts
+     <script @CSPNonce.attr>
+            if (window.HMRCFrontend) {
+                window.HMRCFrontend.initAll()
+            }
+    </script>
 }
 
 @hmrcStandardPage(
@@ -55,9 +64,15 @@
             serviceUrl = Some(routes.SubscriptionController.subscribe.url)
             ),
         templateOverrides = TemplateOverrides(
-            additionalHeadBlock = Some(head),
+            additionalHeadBlock =  Some(HtmlFormat.fill(Seq(
+                head,
+                autocompleteCss()
+            ))),
             beforeContentBlock = Some(beforeContentBlock),
-            additionalScriptsBlock = Some(allScripts)
+            additionalScriptsBlock = Some(HtmlFormat.fill(Seq(
+                allScripts,
+                autocompleteJavascript()
+            ))),
             ),
     pageTitle = pageTitle
     )
