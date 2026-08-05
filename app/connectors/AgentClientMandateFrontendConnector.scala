@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import scala.concurrent.{ExecutionContext, Future}
 
 class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig,
@@ -37,15 +37,15 @@ class AgentClientMandateFrontendConnector @Inject()(appConfig: ApplicationConfig
   val mandateDetails = "mandate/agent/old-nonuk-mandate-from-session"
   val service = "ATED"
 
-  def getAgentEmail(implicit request: Request[_], ec: ExecutionContext): Future[Option[AgentEmail]] = {
+  def getAgentEmail(using request: Request[_], ec: ExecutionContext): Future[Option[AgentEmail]] = {
     val getUrl = s"$serviceUrl/$emailUri/"
     http.get(url"$getUrl").execute[Option[AgentEmail]]
   }
-  def getClientDisplayName(implicit request: Request[_], ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
+  def getClientDisplayName(using request: Request[_], ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     val getUrl = s"$serviceUrl/$displayNameUri/"
     http.get(url"$getUrl").execute[Option[ClientDisplayName]]
   }
-  def getOldMandateDetails(implicit request: Request[_], ec: ExecutionContext): Future[Option[OldMandateReference]] = {
+  def getOldMandateDetails(using request: Request[_], ec: ExecutionContext): Future[Option[OldMandateReference]] = {
     val getUrl = s"$serviceUrl/$mandateDetails/"
     http.get(url"$getUrl").execute[HttpResponse].map(_.json.asOpt[OldMandateReference])
   }

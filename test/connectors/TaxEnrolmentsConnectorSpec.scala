@@ -18,17 +18,17 @@ package connectors
 
 import audit.Auditable
 import metrics.Metrics
-import models._
+import models.*
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,8 +36,8 @@ class TaxEnrolmentsConnectorSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   class Test extends ConnectorMocks {
     val mockAuditable: Auditable = mock[Auditable]
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+    given hc: HeaderCarrier = HeaderCarrier()
+    given ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
     when(mockAppConfig.serviceUrlTaxEnrol).thenReturn("http://localhost:9020/")
     val testTaxEnrolmentsConnector = new TaxEnrolmentsConnector(mockAppConfig, mockAuditable, mockHttpClient, new Metrics)
   }

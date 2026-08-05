@@ -17,23 +17,23 @@
 package connectors
 
 import builders.AuthBuilder
-import models._
+import models.*
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import testHelpers.AtedTestHelper
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 import utils.TestJson
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with
-  BeforeAndAfterEach with AtedTestHelper with TestJson {
+class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar
+  with BeforeAndAfterEach with AtedTestHelper with TestJson {
 
   override def beforeEach(): Unit = {
     reset(mockAppConfig)
@@ -44,8 +44,8 @@ class AtedSubscriptionConnectorSpec extends PlaySpec with GuiceOneServerPerSuite
       override lazy val serviceURL: String = "http://localhost:9020/test"
     }
 
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+    given hc: HeaderCarrier = HeaderCarrier()
+    given user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
 
     val subscribeSuccessResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
       atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))

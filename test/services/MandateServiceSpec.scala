@@ -18,16 +18,16 @@ package services
 
 import builders.AuthBuilder
 import connectors.{AgentClientMandateConnector, AgentClientMandateFrontendConnector, AtedSubscriptionDataCacheConnector}
-import models._
+import models.*
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -40,8 +40,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
   val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
   val mockMandateFrontendConnector: AgentClientMandateFrontendConnector = mock[AgentClientMandateFrontendConnector]
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val request: Request[_] = FakeRequest(GET, "")
+  given hc: HeaderCarrier = HeaderCarrier()
+  given request: Request[_] = FakeRequest(GET, "")
 
   val testContact = ContactDetails("ABC", "DEF", "1234567890")
   val testContactEmail = ContactDetailsEmail(Some(true), "abc@test.com")
@@ -60,36 +60,36 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
     "createMandateForNonUK" must {
 
       "return response, if mandate is created and status is CREATED" in {
-        when(mockDataCacheConnector.fetchContactDetailsForSession(any(), any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(any(), any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
-        when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
-        when(mockMandateConnector.createMandateForNonUK(any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockDataCacheConnector.fetchContactDetailsForSession(using any(), any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(using any(), any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockMandateConnector.createMandateForNonUK(any())(using any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.createMandateForNonUK("atedRefNum"))
         result.status must be(CREATED)
 
       }
 
       "return response, if mandate is created and status is CREATED but agent email and client display are are None" in {
-        when(mockDataCacheConnector.fetchContactDetailsForSession(any(), any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(None))
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(None))
-        when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateConnector.createMandateForNonUK(any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockDataCacheConnector.fetchContactDetailsForSession(using any(), any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(None))
+        when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockMandateConnector.createMandateForNonUK(any())(using any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.createMandateForNonUK("atedRefNum"))
         result.status must be(CREATED)
       }
 
       "throw exception, if status is anything other than CREATED" in {
-        when(mockDataCacheConnector.fetchContactDetailsForSession(any(), any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
-        when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateConnector.createMandateForNonUK(any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockDataCacheConnector.fetchContactDetailsForSession(using any(), any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockMandateConnector.createMandateForNonUK(any())(using any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val thrown = the[RuntimeException] thrownBy await(testMandateService.createMandateForNonUK("atedRefNum"))
         thrown.getMessage must be("Mandate creation failed.")
       }
@@ -98,35 +98,35 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
     "updateMandateForNonUK" must {
 
       "return response, if mandate is updated and status is CREATED" in {
-        when(mockDataCacheConnector.fetchContactDetailsForSession(any(), any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(any(), any())).thenReturn(Future.successful(Some(testContactEmail)))
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
-        when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
-        when(mockMandateConnector.updateMandateForNonUK(any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockDataCacheConnector.fetchContactDetailsForSession(using any(), any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockDataCacheConnector.fetchContactDetailsEmailForSession(using any(), any())).thenReturn(Future.successful(Some(testContactEmail)))
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockMandateConnector.updateMandateForNonUK(any())(using any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.updateMandateForNonUK("atedRefNum", "mandateId"))
         result.status must be(CREATED)
       }
 
       "return response, if mandate is created and status is CREATED but agent email and client display are are None" in {
-        when(mockDataCacheConnector.fetchContactDetailsForSession(any(), any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(None))
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(None))
-        when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateConnector.updateMandateForNonUK(any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockDataCacheConnector.fetchContactDetailsForSession(using any(), any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(None))
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(None))
+        when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockMandateConnector.updateMandateForNonUK(any())(using any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.updateMandateForNonUK("atedRefNum", "mandateId"))
         result.status must be(CREATED)
       }
 
       "throw exception, if status is anything other than CREATED" in {
-        when(mockDataCacheConnector.fetchContactDetailsForSession(any(), any())).thenReturn(Future.successful(Some(testContact)))
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
-        when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
-        when(mockMandateConnector.updateMandateForNonUK(any())(any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockDataCacheConnector.fetchContactDetailsForSession(using any(), any())).thenReturn(Future.successful(Some(testContact)))
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any())).thenReturn(Future.successful(testReviewBusinessDetails))
+        when(mockMandateConnector.updateMandateForNonUK(any())(using any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val thrown = the[RuntimeException] thrownBy await(testMandateService.updateMandateForNonUK("atedRefNum", "mandateId"))
         thrown.getMessage must be("Non-UK Mandate update failed.")
       }
@@ -134,8 +134,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
     "fetch email address from mandate for agent" must {
       "return the cached emailed address" in {
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(Some(testAgentEmail)))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.fetchEmailAddress)
         result must be (Some(testAgentEmail))
       }
@@ -143,8 +143,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
     "don't fetch email address from mandate for client" must {
       "return the cached emailed address" in {
-        when(mockMandateFrontendConnector.getAgentEmail(any(), any())).thenReturn(Future.successful(None))
-        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        when(mockMandateFrontendConnector.getAgentEmail(using any(), any())).thenReturn(Future.successful(None))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.fetchEmailAddress)
         result must be (None)
       }
@@ -152,8 +152,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
     "fetch client display name from mandate for agent" must {
       "return the cached client display name" in {
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
-        implicit val user = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(Some(testClientDisplayName)))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.fetchClientDisplayName)
         result must be (Some(testClientDisplayName))
       }
@@ -161,8 +161,8 @@ class MandateServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mocki
 
     "don't fetch client display name from mandate for client" must {
       "return the cached client display name" in {
-        when(mockMandateFrontendConnector.getClientDisplayName(any(), any())).thenReturn(Future.successful(None))
-        implicit val user = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+        when(mockMandateFrontendConnector.getClientDisplayName(using any(), any())).thenReturn(Future.successful(None))
+        given user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
         val result = await(testMandateService.fetchClientDisplayName)
         result must be (None)
       }

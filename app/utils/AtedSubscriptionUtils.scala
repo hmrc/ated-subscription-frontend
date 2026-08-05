@@ -21,7 +21,7 @@ import javax.inject.Inject
 import play.api.Environment
 
 import scala.io.Source
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 class AtedSubscriptionUtilsImpl @Inject()(val environment: Environment) extends AtedSubscriptionUtils
 

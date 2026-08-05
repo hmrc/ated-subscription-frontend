@@ -16,7 +16,7 @@
 
 package utils
 
-import models._
+import models.*
 import org.scalatestplus.mockito.MockitoSugar
 import services.{ContactDetailsService, CorrespondenceAddressService, MandateService, RegisteredBusinessService}
 import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolments, User}
@@ -40,7 +40,7 @@ trait MockFixture extends MockitoSugar {
     identification = Some(testIdentification)
   )
 
-  implicit lazy val authContextAgent: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
+  given authContextAgent: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
     Some(User),
     Some(AffinityGroup.Agent),
     None,
@@ -50,7 +50,7 @@ trait MockFixture extends MockitoSugar {
     Enrolments(Set())
   )
 
-  implicit lazy val authContextOrg: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
+  given authContextOrg: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
     Some(User),
     Some(AffinityGroup.Organisation),
     None,

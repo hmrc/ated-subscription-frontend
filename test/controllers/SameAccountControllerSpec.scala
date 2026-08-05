@@ -35,7 +35,7 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
 
   val injectedViewInstanceSameAccount: sameAccount = app.injector.instanceOf[views.html.sameAccount]
   val injectedViewInstanceInform: inform = app.injector.instanceOf[views.html.inform]
-  val testSameAccountController: SameAccountController = new SameAccountController(mockMCC, mockAuthConnector, injectedViewInstanceSameAccount, injectedViewInstanceInform, mockAppConfig)
+  val testSameAccountController: SameAccountController = new SameAccountController(mockMCC, mockAuthConnector, injectedViewInstanceSameAccount, injectedViewInstanceInform)(using mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -139,12 +139,12 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testSameAccountController.viewSameAccount().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSameAccountController.viewSameAccount.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testSameAccountController.viewSameAccount().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testSameAccountController.viewSameAccount.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -152,7 +152,7 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
-    val result = testSameAccountController.viewSameAccount().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSameAccountController.viewSameAccount.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -160,12 +160,12 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   def getWithUnAuthorisedUserInform(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testSameAccountController.viewInform().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSameAccountController.viewInform.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticatedInform(test: Future[Result] => Any): Unit = {
-    val result = testSameAccountController.viewInform().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testSameAccountController.viewInform.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -173,7 +173,7 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
-    val result = testSameAccountController.viewInform().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSameAccountController.viewInform.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -181,12 +181,12 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   def getWithUnAuthorisedUserNRL(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testSameAccountController.toNRLQuestionPage().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSameAccountController.toNRLQuestionPage.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticatedNRL(test: Future[Result] => Any): Unit = {
-    val result = testSameAccountController.toNRLQuestionPage().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testSameAccountController.toNRLQuestionPage.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -194,7 +194,7 @@ class SameAccountControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
-    val result = testSameAccountController.toNRLQuestionPage().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testSameAccountController.toNRLQuestionPage.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }

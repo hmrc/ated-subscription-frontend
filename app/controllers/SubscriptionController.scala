@@ -18,7 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import controllers.auth.{AtedSubscriptionAuthHelpers, AuthFunctionality}
-import forms.AtedForms._
+import forms.AtedForms.*
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -32,12 +32,11 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        templateAppointAgent: views.html.appointAgent,
                                        templateAgentSubscription: views.html.agentSubscription,
                                        beforeRegisterAgentPage: views.html.beforeRegisterAgent,
-                                       beforeRegisteringForATEDPage: views.html.beforeRegisteringForATED,
-                                       implicit val appConfig: ApplicationConfig
-                                      )
+                                       beforeRegisteringForATEDPage: views.html.beforeRegisteringForATED)
+                                       (using val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def subscribe: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit data =>

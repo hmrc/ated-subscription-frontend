@@ -21,7 +21,7 @@ import connectors.BusinessCustomerFrontendConnector
 import models.{Address, BusinessCustomerDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -44,7 +44,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val injectedViewInstance: agentConfirmation = app.injector.instanceOf[views.html.agentConfirmation]
   val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
   val testAgentConfirmationController: AgentConfirmationController =
-    new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injectedViewInstance,injectedViewInstanceError, mockAppConfig)
+    new AgentConfirmationController(mockMCC, mockBCConnector, mockAuthConnector, injectedViewInstance,injectedViewInstanceError)(using mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -121,12 +121,12 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
   def getWithUnAuthorisedUser(test: Future[Result] => Any) : Unit ={
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testAgentConfirmationController.view.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def getWithUnAuthenticated(test: Future[Result] => Any): Unit = {
-    val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSessionNoUser())
+    val result = testAgentConfirmationController.view.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
@@ -140,10 +140,10 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
       businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
       sapNumber = "1234567890", safeId = "XW0001234567890", agentReferenceNumber = Some("JARN1234567"))
 
-    when(mockBCConnector.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockBCConnector.getBusinessCustomerDetails(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse.apply(mockStatus, Json.toJson(reviewDetails).toString())))
 
-    val result = testAgentConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testAgentConfirmationController.view.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -162,7 +162,7 @@ class AgentConfirmationControllerSpec extends PlaySpec with GuiceOneServerPerSui
   }
 
 
-  def continueWithAuthorisedUser(refreshStatus: Int)(test: Future[Result] => Any): Unit = {
+  def continueWithAuthorisedUser(@annotation.unused refreshStatus: Int)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
     val result = testAgentConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))

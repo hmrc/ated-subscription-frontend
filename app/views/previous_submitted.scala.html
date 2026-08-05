@@ -29,7 +29,7 @@
     govukButton : GovukButton)
 @(previousSubmittedForm: Form[models.PreviousSubmittedForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(previousSubmittedForm) }
+@implicitFormInstance: Some[Form[models.PreviousSubmittedForm]] = @{ Some(previousSubmittedForm) }
 
 @backLinkHtml = {
     @if(backLink.isDefined) {

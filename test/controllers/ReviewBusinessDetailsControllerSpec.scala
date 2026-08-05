@@ -44,9 +44,8 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
     mockContactDetailsService,
     mockMandateService,
     mockAuthConnector,
-    injectedViewInstance,
-    mockAppConfig
-  )
+    injectedViewInstance
+  )(using mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -161,13 +160,13 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("register-address-change").attr("href") must be("http://localhost:9923/business-customer/register/non-uk-client/ATED/edit?redirectUrl=http://localhost:9933/ated-subscription/review-business-details")
 
             verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(
-              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+              using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
             verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(
-              ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchClientDisplayName(
+              using ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockMandateService, times(1)).fetchClientDisplayName(using 
               ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchEmailAddress(
+            verify(mockMandateService, times(1)).fetchEmailAddress(using 
               ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
@@ -183,13 +182,13 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementsByClass("govuk-back-link").attr("href") must be("/ated-subscription/contact-details-email")
 
             verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(
+              using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetailsEmail(using ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockMandateService, times(1)).fetchClientDisplayName(using 
               ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchClientDisplayName(
-              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockMandateService, times(1)).fetchEmailAddress(
+            verify(mockMandateService, times(1)).fetchEmailAddress(using 
               ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
@@ -210,9 +209,9 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
             document.getElementById("contact-pref").text() must be("Not provided")
 
             verify(mockRegisteredBusinessService, times(1)).getBusinessCustomerDetails(
-              ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())
-            verify(mockContactDetailsService, times(1)).fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())
+              using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockCorrespondenceAddressService, times(1)).fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any())
+            verify(mockContactDetailsService, times(1)).fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
         "not contain correspondence address" in {
@@ -237,14 +236,14 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
                             testAddress: Option[Address])(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testAddress))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(
-      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(reviewDetails))
-    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetails))
-    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetailsEmail))
-    when(mockMandateService.fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(reviewDetails))
+    when(mockContactDetailsService.fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetails))
+    when(mockContactDetailsService.fetchContactDetailsEmail(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(contactDetailsEmail))
+    when(mockMandateService.fetchEmailAddress(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(emailAddress)))
-    when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMandateService.fetchClientDisplayName(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(clientDisplayName)))
     val result = testReviewDetailsController.reviewDetails().apply(SessionBuilder.buildRequestWithSession(userId))
 
@@ -266,16 +265,16 @@ class ReviewBusinessDetailsControllerSpec extends PlaySpec with GuiceOneServerPe
   def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(testAddress)))
     when(mockRegisteredBusinessService.getBusinessCustomerDetails(
-      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
-    when(mockContactDetailsService.fetchContactDetailsEmail(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(testReviewBusinessDetails))
+    when(mockContactDetailsService.fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.fetchContactDetailsEmail(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(testContactEmail)))
-    when(mockMandateService.fetchEmailAddress(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMandateService.fetchEmailAddress(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(emailAddress)))
-    when(mockMandateService.fetchClientDisplayName(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockMandateService.fetchClientDisplayName(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(clientDisplayName)))
     val result = testReviewDetailsController.reviewDetails().apply(SessionBuilder.buildRequestWithSession(userId))
 

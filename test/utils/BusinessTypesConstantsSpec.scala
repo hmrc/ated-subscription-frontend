@@ -17,7 +17,7 @@
 package utils
 
 import org.scalatestplus.play.PlaySpec
-import utils.BusinessTypeConstants._
+import utils.BusinessTypeConstants.*
 
 class BusinessTypesConstantsSpec extends PlaySpec {
 

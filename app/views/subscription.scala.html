@@ -29,7 +29,7 @@
 
 @(areYouAnAgentForm: Form[models.AreYouAnAgent])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(areYouAnAgentForm) }
+@implicitFormInstance: Some[Form[models.AreYouAnAgent]] = @{ Some(areYouAnAgentForm) }
 
 @pageScripts = {
   <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("../assets/javascript/show-hide-content.js")'></script>

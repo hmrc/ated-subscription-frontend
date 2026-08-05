@@ -44,7 +44,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
   val injectedViewInstance: correspondenceAddress = app.injector.instanceOf[views.html.correspondenceAddress]
 
   val testCorrespondenceAddressController: CorrespondenceAddressController = new CorrespondenceAddressController(mockMCC, mockCorrespondenceAddressService,
-    mockRegisteredBusinessService, mockAuthConnector, injectedViewInstance, mockAppConfig)
+    mockRegisteredBusinessService, mockAuthConnector, injectedViewInstance)(using mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockCorrespondenceAddressService)
@@ -77,7 +77,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
       "Authorised users" must {
 
         "respond with OK" in {
-          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
           getWithAuthorisedUser { result =>
             status(result) must be(OK)
@@ -85,7 +85,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
         }
 
         "show the correspondence address view" in {
-          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
           getWithAuthorisedUser { result =>
             val document = Jsoup.parse(contentAsString(result))
@@ -109,7 +109,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
         }
 
         "show the correspondence address view for agent registering non-uk client" in {
-          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
 
           getWithAuthorisedAgent { result =>
             val document = Jsoup.parse(contentAsString(result))
@@ -131,7 +131,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
         }
 
         "if data exists in keystore, fill the form with that data in the page" in {
-          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockCorrespondenceAddressService.fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Some(testAddress)))
 
           editWithAuthorisedUser { result =>
@@ -180,8 +180,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
                 "line_4"->   emptyAddressLine,
                 "postcode"-> aPostcode,
                 "country"->  emptyCountryCode)
-            )
-            { result =>
+            ) { result =>
                 status(result) must be(BAD_REQUEST)
                 contentAsString(result) must include("Enter address line 1")
                 contentAsString(result) must include("Enter address line 2")
@@ -286,7 +285,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           "Postcode is optional but if entered, it can contain the allowed special characters" in {
             val validPostcode = "{[(ZZ1-1Z Z)]}."
 
-            when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+            when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
             submitWithAuthorisedFormUserSuccess(FakeRequest(POST, "/").withFormUrlEncodedBody(
               "line_1" ->   anAddressLine_1,
               "line_2" ->   anAddressLine_2,
@@ -317,7 +316,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
           }
 
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is not edit" in {
-            when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+            when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
 
             submitWithAuthorisedFormUserSuccess(FakeRequest(POST, "/").withFormUrlEncodedBody(
               "line_1" ->   anAddressLine_1,
@@ -330,12 +329,12 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated-subscription/contact-details")
-                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
             }
           }
 
           "If registration details entered are valid, save and continue button must redirect to contact details page, if mode is edit" in {
-            when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
+            when(mockCorrespondenceAddressService.saveCorrespondenceAddress(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testAddress)))
 
             submitEditWithAuthorisedFormUserSuccess(FakeRequest(POST, "/").withFormUrlEncodedBody(
               "line_1" ->   anAddressLine_1,
@@ -347,7 +346,7 @@ class CorrespondenceAddressControllerSpec extends PlaySpec with GuiceOneServerPe
               result =>
                 status(result) must be(SEE_OTHER)
                 redirectLocation(result).get must include("/ated-subscription/review-business-details")
-                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+                verify(mockCorrespondenceAddressService, times(1)).saveCorrespondenceAddress(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
             }
           }
         }

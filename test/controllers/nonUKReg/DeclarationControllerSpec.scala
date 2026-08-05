@@ -50,8 +50,8 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
                                                                                            mockMandateService,
                                                                                            mockAgentClientFrontendMandateConnector,
                                                                                            mockAuthConnector,
-                                                                                           injectedViewInstance,
-                                                                                           mockAppConfig)
+                                                                                           injectedViewInstance)
+                                                                                           (using mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -63,7 +63,7 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   def viewWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = testDeclarationControllerWithEMAC.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testDeclarationControllerWithEMAC.view.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
@@ -74,14 +74,14 @@ class DeclarationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
                                       oldMandateRef: Option[OldMandateReference] = None)(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(any(), any()))
+    when(mockAgentClientFrontendMandateConnector.getOldMandateDetails(using any(), any()))
       .thenReturn(Future.successful(oldMandateRef))
-    when(mockRegisterUserService.subscribeAted(eqTo(true))(any(), any(), any(), any()))
+    when(mockRegisterUserService.subscribeAted(eqTo(true))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(succResp(ated)))
-    when(mockMandateService.createMandateForNonUK(eqTo("atedRefNum"))(any(), any(), any(), any()))
+    when(mockMandateService.createMandateForNonUK(eqTo("atedRefNum"))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
     when(mockMandateService.updateMandateForNonUK(eqTo("atedRefNum"), eqTo("mandateId"))
-    (any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
+    (using any(), any(), any(), any())).thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
     val result = testDeclarationControllerWithEMAC.submit.apply(SessionBuilder.updateRequestWithSession(request, userId))
     test(result)
   }

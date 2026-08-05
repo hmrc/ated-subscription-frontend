@@ -20,10 +20,10 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, AtedUsers}
 import play.api.http.Status.OK
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import utils.AuthUtils
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import scala.concurrent.{ExecutionContext, Future}
 
 class AtedConnector @Inject()(appConfig: ApplicationConfig, http: HttpClientV2) {
@@ -34,7 +34,7 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig, http: HttpClientV2) 
   val retrieveSubscriptionData = "subscription-data"
 
   def getDetails(identifier: String, identifierType: String)
-                (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+                (using user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     val getUrl = s"$serviceURL$authLink/$baseURI/$getDetailsURI/$identifier/$identifierType"
@@ -42,20 +42,20 @@ class AtedConnector @Inject()(appConfig: ApplicationConfig, http: HttpClientV2) 
   }
 
   def retrieveSubscriptionData(atedRefNumber: String)
-                              (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+                              (using user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val baseURI = "ated"
     val authLink = AuthUtils.getAuthLink
     val getUrl = s"""$serviceURL$authLink/$baseURI/$retrieveSubscriptionData/$atedRefNumber"""
     http.get(url"$getUrl").execute[HttpResponse]
   }
 
-  def checkUsersEnrolments(safeID: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AtedUsers]] = {
+  def checkUsersEnrolments(safeID: String)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AtedUsers]] = {
     val getURL = s"""$serviceUrlAtedSub/ated/status-info/users/$safeID"""
     http.get(url"$getURL").execute[HttpResponse].map{
       response =>
         response.status match {
           case OK => Some(response.json.as[AtedUsers])
-          case status => None
+          case _  => None
         }
     }
   }

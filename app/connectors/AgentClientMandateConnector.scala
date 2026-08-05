@@ -20,12 +20,13 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, NonUKClientDto}
 import play.api.Logging
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.Json
-import uk.gov.hmrc.http._
+import play.api.libs.ws.writeableOf_JsValue
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import utils.AuthUtils
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import scala.concurrent.{ExecutionContext, Future}
 
 class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
@@ -37,7 +38,7 @@ class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
   val updateMandateURI = "mandate/non-uk/update"
 
   def createMandateForNonUK(dto: NonUKClientDto)
-                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+                           (using user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$createMandateURI"""
@@ -52,7 +53,7 @@ class AgentClientMandateConnector @Inject()(appConfig: ApplicationConfig,
   }
 
   def updateMandateForNonUK(dto: NonUKClientDto)
-                           (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+                           (using user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val data = Json.toJson(dto)
     val authLink = AuthUtils.agentLink
     val postURL = s"""$serviceURL$authLink/$updateMandateURI"""
