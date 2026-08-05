@@ -25,16 +25,17 @@ import play.api.i18n.Messages
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AuthFunctionality extends AuthorisedFunctions with Logging {
 
-  val appConfig: ApplicationConfig
+  given appConfig: ApplicationConfig
 
   val agentEnrolment = "HMRC-AGENT-AGENT"
   val atedEnrolment = "HMRC-ATED-ORG"
@@ -48,7 +49,7 @@ trait AuthFunctionality extends AuthorisedFunctions with Logging {
   )
 
   def authoriseFor[A](body: AtedSubscriptionAuthData => Future[Result])
-                     (implicit hc: HeaderCarrier, ec: ExecutionContext, req: Request[_], messages: Messages): Future[Result] = {
+                     (using hc: HeaderCarrier, ec: ExecutionContext, @unused req: Request[_], @unused messages: Messages): Future[Result] = {
     authorised(
       (Enrolment(agentEnrolment) or
         Enrolment(atedEnrolment) or

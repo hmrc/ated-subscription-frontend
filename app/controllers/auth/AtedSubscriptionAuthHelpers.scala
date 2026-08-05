@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.AuthUtils._
+import utils.AuthUtils.*
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,7 +30,7 @@ trait AtedSubscriptionAuthHelpers {
   self: AuthFunctionality =>
 
   def agentAction(f: AtedSubscriptionAuthData => Future[Result])
-                 (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Result] = {
+                 (using req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Result] = {
     authoriseFor {
       implicit authContext =>
         if (isAgentUser) {
@@ -49,7 +49,7 @@ trait AtedSubscriptionAuthHelpers {
   }
 
   def clientAction(f: AtedSubscriptionAuthData => Future[Result])
-                  (implicit req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
+                  (using req: Request[_], hc: HeaderCarrier, ec: ExecutionContext, messages: Messages, appConfig: ApplicationConfig): Future[Result] = {
     def redirectToSubscription(redirectName: String): Result = {
       val serviceRedirectUrl: String = appConfig.serviceRedirectUrl(redirectName)
       Redirect(serviceRedirectUrl)

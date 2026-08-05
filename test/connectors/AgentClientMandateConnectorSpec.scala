@@ -19,7 +19,7 @@ package connectors
 import builders.AuthBuilder
 import config.ApplicationConfig
 import models.{AtedSubscriptionAuthData, NonUKClientDto}
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -33,8 +33,8 @@ import scala.concurrent.Future
 class AgentClientMandateConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach {
 
   val dto: NonUKClientDto = NonUKClientDto("safeid", "atedRefNum", "ated", "aa@mail.com", "arn", "bb@mail.com", "client display name")
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+  given hc: HeaderCarrier = HeaderCarrier()
+  given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
 
   class Test extends ConnectorMocks {
     val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]

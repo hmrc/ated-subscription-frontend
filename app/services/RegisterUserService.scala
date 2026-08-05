@@ -17,7 +17,7 @@
 package services
 
 import config.ApplicationConfig
-import connectors._
+import connectors.*
 
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, SubscribeSuccessResponse, _}
@@ -25,15 +25,16 @@ import play.api.Logging
 import play.api.http.Status.OK
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.*
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import utils.SessionUtils
 import utils.BusinessTypeConstants.saBusinessTypes
-import utils.GovernmentGatewayConstants._
+import utils.GovernmentGatewayConstants.*
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterUserService @Inject()(appConfig: ApplicationConfig,
@@ -48,7 +49,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
 
 
   def subscribeAted(isNonUKClientRegisteredByAgent: Boolean = false)
-                   (implicit user: AtedSubscriptionAuthData,
+                   (using user: AtedSubscriptionAuthData,
                     hc: HeaderCarrier, request: Request[_],
                     ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
 
@@ -67,7 +68,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
   }
 
   def enrolAted(registrationResponse: SubscribeSuccessResponse, isNonUKClientRegisteredByAgent: Boolean = false)
-               (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier,
+               (using user: AtedSubscriptionAuthData, hc: HeaderCarrier,
                 request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     if (isNonUKClientRegisteredByAgent) {
       val enrolResp = Json.toJson(EnrolResponse(serviceName = "ated", state = "NotEnroled", Nil))
@@ -112,7 +113,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
   }
 
   def createEnrolmentRequest(businessType: String, gGCredId: String, utr: Option[String],
-                             postcode: Option[String], safeId: String): RequestEMACPayload = {
+                             postcode: Option[String], @unused safeId: String): RequestEMACPayload = {
 
     val trimPostcode = postcode.getOrElse("").trim
 
@@ -152,7 +153,7 @@ class RegisterUserService @Inject()(appConfig: ApplicationConfig,
   private def prepareSubscriptionForAted(bcd: BusinessCustomerDetails, contactDetails: Option[ContactDetails],
                                          contactDetailsEmail: Option[ContactDetailsEmail],
                                          address: Option[Address], nonUKAgent: Boolean)
-                                        (implicit auth: AtedSubscriptionAuthData, hc: HeaderCarrier): JsValue = {
+                                        (using @unused auth: AtedSubscriptionAuthData, @unused hc: HeaderCarrier): JsValue = {
     val contact = contactDetails.getOrElse(throw new RuntimeException("contact details not found"))
     val contactEmail = contactDetailsEmail.getOrElse(throw new RuntimeException("contact email not found"))
     val etmpAddress: EtmpAddressDetails = toEtmpAddress(address.getOrElse(throw new RuntimeException("address not found")))

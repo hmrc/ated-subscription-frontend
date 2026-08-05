@@ -34,11 +34,11 @@ class AgentConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                             businessCustomerFEConnector: BusinessCustomerFrontendConnector,
                                             val authConnector: DefaultAuthConnector,
                                             template: views.html.agentConfirmation,
-                                            templateError: views.html.global_error,
-                                            implicit val appConfig: ApplicationConfig
-                                           ) extends FrontendController(mcc) with AuthFunctionality {
+                                            templateError: views.html.global_error)
+                                           (using val appConfig: ApplicationConfig)
+  extends FrontendController(mcc) with AuthFunctionality {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def view: Action[AnyContent] = Action.async {
     implicit request =>

@@ -21,7 +21,7 @@ import connectors.{AtedSubscriptionConnector, TaxEnrolmentsConnector}
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, BusinessCustomerDetails}
 import play.api.Logging
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -33,7 +33,7 @@ class EtmpCheckService @Inject()(atedSubscriptionConnector: AtedSubscriptionConn
                                  appConfig: ApplicationConfig) extends Logging {
 
   def validateBusinessDetails(busCusDetails: BusinessCustomerDetails)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext, authData: AtedSubscriptionAuthData): Future[Boolean] = {
+                             (using hc: HeaderCarrier, ec: ExecutionContext, authData: AtedSubscriptionAuthData): Future[Boolean] = {
 
     logger.info("[CheckEtmpService][validateBusinessDetails] Validating business details for self-heal")
 

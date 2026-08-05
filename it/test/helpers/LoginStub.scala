@@ -24,7 +24,7 @@ import uk.gov.hmrc.auth.core.retrieve.{LegacyCredentials, SimpleRetrieval}
 
 trait LoginStub {
 
-  val app: Application
+  lazy val app: Application
   lazy val signerSession: DefaultSessionCookieBaker = app.injector.instanceOf[DefaultSessionCookieBaker]
   lazy val cookieHeader: DefaultCookieHeaderEncoding = app.injector.instanceOf[DefaultCookieHeaderEncoding]
 

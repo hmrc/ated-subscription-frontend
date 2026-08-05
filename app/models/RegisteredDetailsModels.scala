@@ -26,7 +26,7 @@ case class RegisteredAddressDetails(addressLine1: String,
                                     countryCode: String)
 
 object RegisteredAddressDetails {
-  implicit val formats: OFormat[RegisteredAddressDetails] = Json.format[RegisteredAddressDetails]
+  given formats: OFormat[RegisteredAddressDetails] = Json.format[RegisteredAddressDetails]
 }
 
 case class EtmpRegistrationDetails(sapNumber: String,
@@ -36,5 +36,5 @@ case class EtmpRegistrationDetails(sapNumber: String,
 }
 
 object EtmpRegistrationDetails {
-  implicit val formats: OFormat[EtmpRegistrationDetails] = Json.format[EtmpRegistrationDetails]
+  given formats: OFormat[EtmpRegistrationDetails] = Json.format[EtmpRegistrationDetails]
 }

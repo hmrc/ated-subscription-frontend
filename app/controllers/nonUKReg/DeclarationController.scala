@@ -32,10 +32,10 @@ class DeclarationController @Inject()(mcc: MessagesControllerComponents,
                                       mandateService: MandateService,
                                       agentClientFrontendMandateConnector: AgentClientMandateFrontendConnector,
                                       val authConnector: DefaultAuthConnector,
-                                      template: views.html.nonUKReg.declaration,
-                                      implicit val appConfig: ApplicationConfig
-                                     ) extends FrontendController(mcc)  with AuthFunctionality {
-  implicit val ec: ExecutionContext = mcc.executionContext
+                                      template: views.html.nonUKReg.declaration)
+                                     (using val appConfig: ApplicationConfig)
+                                      extends FrontendController(mcc)  with AuthFunctionality {
+  given ec: ExecutionContext = mcc.executionContext
 
   def view: Action[AnyContent] = Action.async {
     implicit request =>

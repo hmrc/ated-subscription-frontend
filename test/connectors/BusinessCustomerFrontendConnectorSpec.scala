@@ -17,8 +17,8 @@
 package connectors
 
 import builders.AuthBuilder
-import models._
-import org.mockito.Mockito._
+import models.*
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -26,7 +26,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
@@ -37,9 +37,9 @@ import scala.concurrent.Future
 class BusinessCustomerFrontendConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
   class Test extends ConnectorMocks {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
-    implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-    implicit val request: Request[_] = FakeRequest(GET, "")
+    given hc: HeaderCarrier = HeaderCarrier()
+    given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+    given request: Request[_] = FakeRequest(GET, "")
 
     val testBusinessCustomerFrontendConnector: BusinessCustomerFrontendConnector = new BusinessCustomerFrontendConnector(mockAppConfig, mockHttpClient) {
       override val serviceUrl: String = "http://localhost:9020/test"

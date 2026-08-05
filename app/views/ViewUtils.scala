@@ -19,9 +19,11 @@ package views
 import play.api.data.Form
 import play.api.i18n.Messages
 
+import scala.annotation.unused
+
 object ViewUtils {
 
-  def titleBuilder(title: String, form: Option[Form[_]] = None, service: Option[String] = None)(implicit messages: Messages): String = 
+  def titleBuilder(title: String, form: Option[Form[_]] = None, @unused service: Option[String] = None)(using messages: Messages): String =
     form match {
       case Some(f) if f.hasErrors || f.hasGlobalErrors =>s"${messages("error.title.prefix")} $title - ${messages("service.name")} - GOV.UK"
       case _ => title + " - " + messages("service.name") + " - GOV.UK"

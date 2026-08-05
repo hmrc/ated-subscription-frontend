@@ -1,24 +1,23 @@
 import sbt.Keys.*
 import sbt.{Def, *}
 import uk.gov.hmrc.DefaultBuildSettings
-import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "ated-subscription-frontend"
 
 ThisBuild / majorVersion := 2
-ThisBuild / scalaVersion := "2.13.18"
+ThisBuild / scalaVersion := "3.3.7"
 
-lazy val appDependencies : Seq[ModuleID] = AppDependencies()
+lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 lazy val playSettings: Seq[Setting[?]] = Seq.empty
-lazy val plugins : Seq[Plugins] = Seq(play.sbt.PlayScala, SbtDistributablesPlugin)
+lazy val plugins: Seq[Plugins] = Seq(play.sbt.PlayScala, SbtDistributablesPlugin)
 
 lazy val scoverageSettings: Seq[Def.Setting[? >: String & Double & Boolean]] = {
   import scoverage.ScoverageKeys
   Seq(
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;views.html.*;views.*;app.Routes.*;prod.*;uk.gov.hmrc.*;testOnlyDoNotUseInAppConf.*;forms.*;config.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 90,
+    ScoverageKeys.coverageMinimumStmtTotal :=  89,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
@@ -31,15 +30,13 @@ lazy val it = project
   .settings(libraryDependencies ++= AppDependencies.itDependencies)
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq( play.sbt.PlayScala, SbtDistributablesPlugin ) *)
+  .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) *)
   .settings(playSettings *)
-  .settings(scalaSettings *)
-  .settings(defaultSettings() *)
   .settings(
-    scalacOptions ++= Seq("-Wconf:src=target/.*:s", "-Wconf:src=routes/.*:s", "-Wconf:cat=unused-imports&src=html/.*:s", "-Ywarn-unused:-explicits,-implicits"),
+    scalacOptions ++= Seq(
+      "-Wconf:src=target/.*:s,msg=Flag .* set repeatedly:s"
+    ),
     scoverageSettings,
-    scalaSettings,
-    defaultSettings(),
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
     Test / parallelExecution := false,

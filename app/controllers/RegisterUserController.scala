@@ -27,7 +27,7 @@ import services.RegisterUserService
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.AuthUtils._
+import utils.AuthUtils.*
 import utils.Dates
 
 import java.time.{ZoneId, ZonedDateTime}
@@ -38,12 +38,12 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
                                        val authConnector: DefaultAuthConnector,
                                        templateAlreadyRegistered: views.html.alreadyRegistered,
                                        templateRegisterUserConfirmation: views.html.registerUserConfirmation,
-                                       templateError: views.html.global_error,
-                                       implicit val appConfig: ApplicationConfig
-                                      ) extends FrontendController(mcc) with AuthFunctionality with Logging {
+                                       templateError: views.html.global_error)
+                                       (using val appConfig: ApplicationConfig)
+                                       extends FrontendController(mcc) with AuthFunctionality with Logging {
 
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
   private val WrongRoleUserError = "-error.wrong.role"
   private val GenericError = ".generic.error"
 
@@ -63,7 +63,7 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def handleEnrolResponse(enrolAtedResponse: HttpResponse)(implicit request: MessagesRequest[AnyContent]): Future[Result] = {
+  def handleEnrolResponse(enrolAtedResponse: HttpResponse)(using request: MessagesRequest[AnyContent]): Future[Result] = {
     enrolAtedResponse.status match {
       case CREATED => Future.successful(Redirect(controllers.routes.RegisterUserController.confirmation))
       case CONFLICT =>
@@ -94,7 +94,7 @@ class RegisterUserController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-  private def formatEmacErrorMessage(key: String)(implicit messagesProvider: MessagesProvider): (String, String, String) =
+  private def formatEmacErrorMessage(key: String)(using messagesProvider: MessagesProvider): (String, String, String) =
     (Messages(s"ated.business-registration$key.header"),
       Messages(s"ated.business-registration$key.title"),
       Messages(s"ated.business-registration$key.message"))

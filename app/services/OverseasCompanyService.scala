@@ -26,11 +26,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class OverseasCompanyService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConnector) {
 
   def savePreviouslySubmitted(previousSubmittedForm: PreviousSubmittedForm)
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] = {
+                        (using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] = {
     dataCacheConnector.savePreviouslySubmitted(previousSubmittedForm)
   }
 
-  def fetchPreviouslySubmitted(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] = {
+  def fetchPreviouslySubmitted(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] = {
     dataCacheConnector.fetchPreviouslySubmittedForSession
   }
 }

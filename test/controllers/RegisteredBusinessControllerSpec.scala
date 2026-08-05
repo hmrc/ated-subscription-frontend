@@ -57,9 +57,8 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
     mockAtedConnector,
     mockAuthConnector,
     injectedViewInstance,
-    injectedViewInstanceAlreadyRegistered,
-    mockAppConfig
-  )
+    injectedViewInstanceAlreadyRegistered
+  )(using mockAppConfig)
 
   val userId    = "user-8af01429-0927-42d8-b858-e105eb21e9b3"
 
@@ -130,7 +129,7 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
             bizAddress.text() must include("line_2")
             bizAddress.text() must include("United Kingdom")
 
-            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())
+            verify(mockRegisteredBusinessService, times(1)).getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any())
           }
         }
 
@@ -253,138 +252,138 @@ class RegisteredBusinessControllerSpec extends PlaySpec with GuiceOneServerPerSu
 
   private def withAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(using any(), any()))
       .thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockBusinessCustomerFrontendConnector.getBackLinkStatus(any(), any()))
+    when(mockBusinessCustomerFrontendConnector.getBackLinkStatus(using any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(OK, "")))
-    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+    when(mockAtedConnector.checkUsersEnrolments(any())(using any(), any()))
       .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
-    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(using any(), any(), any()))
       .thenReturn(Future.successful(false))
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
   private def withAuthorisedUserAndNoBackLink(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(using any(), any()))
       .thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockBusinessCustomerFrontendConnector.getBackLinkStatus(any(), any()))
+    when(mockBusinessCustomerFrontendConnector.getBackLinkStatus(using any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
-    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+    when(mockAtedConnector.checkUsersEnrolments(any())(using any(), any()))
       .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
-    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(using any(), any(), any()))
       .thenReturn(Future.successful(false))
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
   private def withAuthorisedUserWithRedirectNRLlink(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(using any(), any()))
       .thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+    when(mockAtedConnector.checkUsersEnrolments(any())(using any(), any()))
       .thenReturn(Future.successful(Some(testEmptyAtedUsers)))
-    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(using any(), any(), any()))
       .thenReturn(Future.successful(false))
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSessionAndACMUrl(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSessionAndACMUrl(userId))
 
     test(result)
   }
 
   private def withExistingAtedEnrolledUsers(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(using any(), any()))
       .thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockAtedConnector.checkUsersEnrolments(any())(any(), any()))
+    when(mockAtedConnector.checkUsersEnrolments(any())(using any(), any()))
       .thenReturn(Future.successful(Some(testExistingAtedUsers)))
-    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(using any(), any(), any()))
       .thenReturn(Future.successful(false))
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
   private def withETMPRegistration(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector, Set(Enrolment("HMRC-ATED-ORG", Seq(EnrolmentIdentifier("AtedRefNumber", "test")), "Activated")))
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(using any(), any()))
       .thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(using any(), any(), any()))
       .thenReturn(Future.successful(true))
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
   private def withAuthorisedUserWithSavedData(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(using any(), any()))
       .thenReturn(Future.successful(Some(testAddressForm)))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(using any(), any(), any()))
       .thenReturn(Future.successful(false))
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
   private def withAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(any(), any()))
+    when(mockDataCacheConnector.fetchAndGetRegisteredBusinessDetailsForSession(using any(), any()))
       .thenReturn(Future.successful(None))
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testAddress))
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(any(), any(), any(), any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using any(), any(), any(), any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    when(mockEtmpCheckService.validateBusinessDetails(any())(any(), any(), any()))
+    when(mockEtmpCheckService.validateBusinessDetails(any())(using any(), any(), any()))
       .thenReturn(Future.successful(false))
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
 
   private def withUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testRegisteredBusinessController.registeredBusinessAddress().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.registeredBusinessAddress.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def continueWithAuthorisedFormUser(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
-    when(mockDataCacheConnector.saveRegisteredBusinessDetails(any[BusinessAddress])(any(), any())).thenReturn(Future.successful(None))
-    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
+    when(mockRegisteredBusinessService.getDefaultCorrespondenceAddress(any())(using any(), any(), any(), any())).thenReturn(Future.successful(testAddress))
+    when(mockDataCacheConnector.saveRegisteredBusinessDetails(any[BusinessAddress])(using any(), any())).thenReturn(Future.successful(None))
+    val result = testRegisteredBusinessController.continue.apply(SessionBuilder.updateRequestWithSession(fakeRequest, userId))
     test(result)
   }
 
   private def continueWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testRegisteredBusinessController.continue().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testRegisteredBusinessController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 }

@@ -36,7 +36,7 @@
     backLink: Option[String] = None
 )(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(contactDetailsForm) }
+@implicitFormInstance: Some[Form[ContactDetails]] = @{ Some(contactDetailsForm) }
 
 @subTitleText = @{
     isAgent match {

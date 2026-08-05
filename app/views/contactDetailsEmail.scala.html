@@ -33,7 +33,7 @@
 
 @(contactDetailsEmailForm: Form[ContactDetailsEmail], mode: Option[String], backLink: Option[String])(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(contactDetailsEmailForm) }
+@implicitFormInstance: Some[Form[ContactDetailsEmail]] = @{ Some(contactDetailsEmailForm) }
 
 @pageScripts = {
   <script @CSPNonce.attr>

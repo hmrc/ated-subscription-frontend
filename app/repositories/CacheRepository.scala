@@ -26,10 +26,10 @@ trait CacheRepository {
   def putSession[T: Writes](
       dataKey: DataKey[T],
       data: T
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[T]
+  )(using hc: HeaderCarrier, ec: ExecutionContext): Future[T]
 
-  def getFromSession[T: Reads](dataKey: DataKey[T])(implicit hc: HeaderCarrier): Future[Option[T]]
+  def getFromSession[T: Reads](dataKey: DataKey[T])(using hc: HeaderCarrier): Future[Option[T]]
 
-  def deleteFromSession(implicit hc: HeaderCarrier): Future[Unit]
+  def deleteFromSession(using hc: HeaderCarrier): Future[Unit]
 
 }

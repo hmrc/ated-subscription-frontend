@@ -16,10 +16,10 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import helpers.IntegrationSpec
 import models.{Address, BusinessCustomerDetails, RequestEMACPayload, Verifier}
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.http.{HeaderNames => HN}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse

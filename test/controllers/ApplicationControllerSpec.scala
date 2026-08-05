@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
   val injectedViewInstanceUnauthorised: unauthorised = app.injector.instanceOf[views.html.unauthorised]
   val injectedViewInstanceUnauthorisedAssistantOrg: unauthorisedAssistantOrg = app.injector.instanceOf[views.html.unauthorisedAssistantOrg]
   val injectedViewInstanceUnauthorisedAssistantAgent: unauthorisedAssistantAgent = app.injector.instanceOf[views.html.unauthorisedAssistantAgent]
@@ -45,7 +45,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     reset(mockAuthConnector)
   }
 
-  val testApplicationController = new ApplicationController(mockMCC, mockDataCacheConnector, mockAuthConnector, injectedViewInstanceUnauthorised, injectedViewInstanceUnauthorisedAssistantOrg, injectedViewInstanceUnauthorisedAssistantAgent, mockAppConfig)
+  val testApplicationController = new ApplicationController(mockMCC, mockDataCacheConnector, mockAuthConnector, injectedViewInstanceUnauthorised, injectedViewInstanceUnauthorisedAssistantOrg, injectedViewInstanceUnauthorisedAssistantAgent)(using mockAppConfig)
 
   private def fakeRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] = {
     val sessionId = s"session-${UUID.randomUUID}"
@@ -60,7 +60,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
   "ApplicationController" must {
 
     "unauthorised respond with an OK and load unauthorised page" in {
-      val result = testApplicationController.unauthorised().apply(FakeRequest())
+      val result = testApplicationController.unauthorised.apply(FakeRequest())
       status(result) must equal(OK)
       contentAsString(result) must include("You are not authorised to use this service")
     }
@@ -68,12 +68,12 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     "Cancel" must {
 
       "respond with a redirect" in {
-        val result = testApplicationController.cancel().apply(FakeRequest())
+        val result = testApplicationController.cancel.apply(FakeRequest())
         status(result) must be(SEE_OTHER)
       }
 
       "be redirected to the login page" in {
-        val result = testApplicationController.cancel().apply(FakeRequest())
+        val result = testApplicationController.cancel.apply(FakeRequest())
         redirectLocation(result).get must include("https://www.gov.uk/")
       }
     }
@@ -81,12 +81,12 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     "Cancel redirect to start page" must {
 
       "respond with a redirect" in {
-        val result = testApplicationController.redirectToAtedStart().apply(FakeRequest())
+        val result = testApplicationController.redirectToAtedStart.apply(FakeRequest())
         status(result) must be(SEE_OTHER)
       }
 
       "be redirected to the ated start page " in {
-        val result = testApplicationController.redirectToAtedStart().apply(FakeRequest())
+        val result = testApplicationController.redirectToAtedStart.apply(FakeRequest())
         redirectLocation(result).get must include("/ated/home")
       }
     }
@@ -94,12 +94,12 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     "Logout" must {
 
       "respond with a redirect" in {
-        val result = testApplicationController.logout().apply(FakeRequest())
+        val result = testApplicationController.logout.apply(FakeRequest())
         status(result) must be(SEE_OTHER)
       }
 
       "be redirected to the logout page" in {
-        val result = testApplicationController.logout().apply(FakeRequest())
+        val result = testApplicationController.logout.apply(FakeRequest())
         redirectLocation(result).get must include("/ated/logout")
       }
 
@@ -135,14 +135,14 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
     }
 
     "unauthorisedAssistantOrg returns OK and unauthorised organisation page" in {
-      val result = testApplicationController.unauthorisedAssistantOrg().apply(FakeRequest())
+      val result = testApplicationController.unauthorisedAssistantOrg.apply(FakeRequest())
       status(result) must equal(OK)
       contentAsString(result) must include("You may not register your organisation for ATED")
       contentAsString(result) must include("This is because your account is for an added team member (standard account) and not an administrator.")
     }
 
     "unauthorisedAssistantAgent returns OK and unauthorised agent page" in {
-      val result = testApplicationController.unauthorisedAssistantAgent().apply(FakeRequest())
+      val result = testApplicationController.unauthorisedAssistantAgent.apply(FakeRequest())
       status(result) must equal(OK)
       contentAsString(result) must include("You may not register your agency for ATED")
       contentAsString(result) must include("This is because your account is for an added team member (standard account) and not an administrator.")
@@ -164,7 +164,7 @@ class ApplicationControllerSpec extends PlaySpec with GuiceOneServerPerSuite wit
         "be able to clear cache successfully" in {
           val userId = s"user-${UUID.randomUUID}"
           builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-          when(mockDataCacheConnector.clearCache(ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(())
+          when(mockDataCacheConnector.clearCache(using ArgumentMatchers.any(), ArgumentMatchers.any())) thenReturn Future.successful(())
           val result = testApplicationController.clearCache.apply(fakeRequestWithSession(userId))
 
           status(result) must be(OK)

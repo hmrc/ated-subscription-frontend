@@ -30,7 +30,7 @@
 
 @(appointAgentForm: Form[models.AppointAgentForm], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(appointAgentForm) }
+@implicitFormInstance: Some[Form[models.AppointAgentForm]] = @{ Some(appointAgentForm) }
 
 @backLinkHtml = {
     @if(backLink.isDefined) {

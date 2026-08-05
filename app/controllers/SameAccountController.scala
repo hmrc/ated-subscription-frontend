@@ -28,11 +28,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class SameAccountController @Inject()(mcc: MessagesControllerComponents,
                                       val authConnector: DefaultAuthConnector,
                                       templateSameAccount: views.html.sameAccount,
-                                      templateInform: views.html.inform,
-                                      implicit val appConfig: ApplicationConfig
-                                     ) extends FrontendController(mcc) with AuthFunctionality {
+                                      templateInform: views.html.inform)
+                                      (using val appConfig: ApplicationConfig)
+                                      extends FrontendController(mcc) with AuthFunctionality {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def viewSameAccount: Action[AnyContent] = Action.async {
     implicit request =>

@@ -25,11 +25,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CorrespondenceAddressService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConnector) {
 
-  def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
+  def saveCorrespondenceAddress(address: Address)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
     dataCacheConnector.saveCorrespondenceAddress(address)
   }
 
-  def fetchCorrespondenceAddress(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
+  def fetchCorrespondenceAddress(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
     dataCacheConnector.fetchCorrespondenceAddress
   }
 

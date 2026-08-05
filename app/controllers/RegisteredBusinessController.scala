@@ -19,10 +19,10 @@ package controllers
 import config.ApplicationConfig
 import connectors.{AtedConnector, AtedSubscriptionDataCacheConnector, BusinessCustomerFrontendConnector}
 import controllers.auth.AuthFunctionality
-import forms.AtedForms._
-import models._
+import forms.AtedForms.*
+import models.*
 import play.api.i18n.Messages
-import play.api.mvc._
+import play.api.mvc.*
 import services.{EtmpCheckService, RegisteredBusinessService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
@@ -40,12 +40,12 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
                                              atedConnector: AtedConnector,
                                              val authConnector: DefaultAuthConnector,
                                              template: views.html.registeredBusinessAddress,
-                                             templateAlreadyRegistered: views.html.registeredWithDifferentGG,
-                                             implicit val appConfig: ApplicationConfig
-                                            ) extends FrontendController(mcc) with AuthFunctionality {
+                                             templateAlreadyRegistered: views.html.registeredWithDifferentGG)
+                                             (using val appConfig: ApplicationConfig)
+                                             extends FrontendController(mcc) with AuthFunctionality {
 
-  implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
+  given ec: ExecutionContext = mcc.executionContext
 
   def registeredBusinessAddress: Action[AnyContent] = Action.async {
     implicit request =>
@@ -63,7 +63,7 @@ class RegisteredBusinessController @Inject()(mcc: MessagesControllerComponents,
   }
 
    private def validateAndRedirect(bcDetails: BusinessCustomerDetails, businessReg: Option[BusinessAddress], address: Address, atedUsers: Option[AtedUsers])
-                                  (implicit hc: HeaderCarrier, ec: ExecutionContext,
+                                  (using hc: HeaderCarrier, ec: ExecutionContext,
                                   auth: AtedSubscriptionAuthData,
                                   req: Request[AnyContent], messages: Messages): Future[Result] = {
     val backLinkUrlFromAcm: Option[String] = req.queryString.get("backLinkUrl").map(s => s.headOption.getOrElse(""))

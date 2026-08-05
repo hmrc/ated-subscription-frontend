@@ -16,26 +16,26 @@
 
 package models
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import utils.BusinessTypeConstants
-import play.api.libs.functional.syntax._
+import play.api.libs.functional.syntax.*
 
 case class AreYouAnAgent(isAgent: Option[Boolean] = None)
 
 object AreYouAnAgent {
-  implicit val formats: OFormat[AreYouAnAgent] = Json.format[AreYouAnAgent]
+  given formats: OFormat[AreYouAnAgent] = Json.format[AreYouAnAgent]
 }
 
 case class AppointAgentForm(isAgent: Option[Boolean] = None)
 
 object AppointAgentForm {
-  implicit val formats: OFormat[AppointAgentForm] = Json.format[AppointAgentForm]
+  given formats: OFormat[AppointAgentForm] = Json.format[AppointAgentForm]
 }
 
 case class PreviousSubmittedForm(isPreviousSubmitted: Option[Boolean] = None)
 
 object PreviousSubmittedForm {
-  implicit val formats: OFormat[PreviousSubmittedForm] = Json.format[PreviousSubmittedForm]
+  given formats: OFormat[PreviousSubmittedForm] = Json.format[PreviousSubmittedForm]
 }
 
 case class Address(
@@ -56,13 +56,13 @@ case class Address(
 
 
 object Address {
-  implicit val formats: OFormat[Address] = Json.format[Address]
+  given formats: OFormat[Address] = Json.format[Address]
 }
 
 case class Identification(idNumber: String, issuingInstitution: String, issuingCountryCode: String)
 
 object Identification {
-  implicit val formats: OFormat[Identification] = Json.format[Identification]
+  given formats: OFormat[Identification] = Json.format[Identification]
 }
 
 case class BusinessCustomerDetails(businessName: String,
@@ -77,9 +77,9 @@ case class BusinessCustomerDetails(businessName: String,
                                    isBusinessDetailsEditable: Boolean = false)
 
 object BusinessCustomerDetails {
-  implicit val bcdWrites: Writes[BusinessCustomerDetails] = Json.writes[BusinessCustomerDetails]
+  given bcdWrites: Writes[BusinessCustomerDetails] = Json.writes[BusinessCustomerDetails]
 
-  implicit val bcdReads: Reads[BusinessCustomerDetails] = (
+  given bcdReads: Reads[BusinessCustomerDetails] = (
     (JsPath \ "businessName").read[String] and
     (JsPath \ "businessType").read[String].map { bType =>
       if (BusinessTypeConstants.allBusinessTypes.contains(bType)) {
@@ -102,7 +102,7 @@ object BusinessCustomerDetails {
 case class BusinessAddress(isCorrespondenceAddress: Option[Boolean] = None)
 
 object BusinessAddress {
-  implicit val formats: OFormat[BusinessAddress] = Json.format[BusinessAddress]
+  given formats: OFormat[BusinessAddress] = Json.format[BusinessAddress]
 }
 
 case class ContactDetails(firstName: String,
@@ -110,7 +110,7 @@ case class ContactDetails(firstName: String,
                           telephone: String)
 
 object ContactDetails {
-  implicit val formats: OFormat[ContactDetails] = Json.format[ContactDetails]
+  given formats: OFormat[ContactDetails] = Json.format[ContactDetails]
 }
 
 case class ContactDetailsEmail(emailConsent: Option[Boolean] = None,
@@ -118,7 +118,7 @@ case class ContactDetailsEmail(emailConsent: Option[Boolean] = None,
                           )
 
 object ContactDetailsEmail {
-  implicit val formats: OFormat[ContactDetailsEmail] = Json.format[ContactDetailsEmail]
+  given formats: OFormat[ContactDetailsEmail] = Json.format[ContactDetailsEmail]
 }
 
 case class NonUKClientDto(
@@ -133,17 +133,17 @@ case class NonUKClientDto(
                          )
 
 object NonUKClientDto {
-  implicit val formats: OFormat[NonUKClientDto] = Json.format[NonUKClientDto]
+  given formats: OFormat[NonUKClientDto] = Json.format[NonUKClientDto]
 }
 
 case class AgentEmail(email: String)
 
 object AgentEmail {
-  implicit val formats: OFormat[AgentEmail] = Json.format[AgentEmail]
+  given formats: OFormat[AgentEmail] = Json.format[AgentEmail]
 }
 
 case class ClientDisplayName(name: String)
 
 object ClientDisplayName {
-  implicit val formats: OFormat[ClientDisplayName] = Json.format[ClientDisplayName]
+  given formats: OFormat[ClientDisplayName] = Json.format[ClientDisplayName]
 }

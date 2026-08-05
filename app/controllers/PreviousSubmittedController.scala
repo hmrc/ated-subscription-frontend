@@ -29,11 +29,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
                                             overseasCompanyService: OverseasCompanyService,
                                             val authConnector: DefaultAuthConnector,
-                                            template: views.html.previous_submitted,
-                                            implicit val appConfig: ApplicationConfig
-                                           ) extends FrontendController(mcc) with AuthFunctionality {
+                                            template: views.html.previous_submitted)
+                                            (using val appConfig: ApplicationConfig)
+                                            extends FrontendController(mcc) with AuthFunctionality {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def view: Action[AnyContent] = Action.async {
     implicit request =>

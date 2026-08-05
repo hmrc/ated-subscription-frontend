@@ -16,8 +16,8 @@
 
 package forms
 
-import models._
-import play.api.data.Forms._
+import models.*
+import play.api.data.Forms.*
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError}
 
@@ -73,23 +73,23 @@ object AtedForms {
 
   val areYouAnAgentForm = Form(mapping(
     "isAgent" -> optional(boolean).verifying(areYouAnAgentFalseConstraint)
-  )(AreYouAnAgent.apply)(AreYouAnAgent.unapply)
+  )(AreYouAnAgent.apply)(x => Some(x.isAgent))
   )
 
   val appointAgentForm = Form(mapping(
     "appointAgent" -> optional(boolean).verifying(appointAgentConstraint)
-  )(AppointAgentForm.apply)(AppointAgentForm.unapply)
+  )(AppointAgentForm.apply)(x => Some(x.isAgent))
   )
 
   val previousSubmittedForm = Form(mapping(
     "previousSubmitted" -> optional(boolean).verifying(previousSubmittedConstraint)
-  )(PreviousSubmittedForm.apply)(PreviousSubmittedForm.unapply)
+  )(PreviousSubmittedForm.apply)(x => Some(x.isPreviousSubmitted))
   )
 
   val businessAddressForm = Form(mapping(
     "isCorrespondenceAddress" -> optional(boolean).verifying(businessAddressConstraint)
-  )(BusinessAddress.apply)(BusinessAddress.unapply)
-  )
+  )(BusinessAddress.apply)(x => Some(x.isCorrespondenceAddress)
+  ))
 
   val correspondenceAddressForm = Form(
     mapping(
@@ -112,7 +112,7 @@ object AtedForms {
       "country" -> text.
         verifying("ated.error.mandatory.ated.address.country", x => x.length > lengthZero)
 
-    )(Address.apply)(Address.unapply))
+    )(Address.apply)(x => Some(Tuple.fromProductTyped(x))))
 
   def checkFieldLengthIfPopulated(optionValue: Option[String], fieldLength: Int): Boolean = {
     optionValue match {
@@ -140,7 +140,7 @@ object AtedForms {
         val z = x.length > phoneLength
         p || z})
 
-  )(ContactDetails.apply)(ContactDetails.unapply))
+  )(ContactDetails.apply)((x => Some(Tuple.fromProductTyped(x)))))
 
   val emailConstraint: Constraint[Option[Boolean]] = Constraint({ model =>
     model match {
@@ -152,8 +152,8 @@ object AtedForms {
   val contactDetailsEmailForm = Form(mapping(
     "emailConsent" -> optional(boolean).verifying(emailConstraint),
     "email" -> text
-  )(ContactDetailsEmail.apply)(ContactDetailsEmail.unapply)
-  )
+  )(ContactDetailsEmail.apply)(x => Some(Tuple.fromProductTyped(x))))
+  
 
   def validateEmail(f: Form[ContactDetailsEmail]): Form[ContactDetailsEmail] = {
     if (!f.hasErrors) {

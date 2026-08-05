@@ -18,9 +18,9 @@ package builders
 
 import models.AtedSubscriptionAuthData
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 
 import scala.concurrent.Future
 
@@ -34,11 +34,11 @@ object AuthBuilder {
     Option[String]
 
   def buildRetrieval(atedSubscriptionAuthData: AtedSubscriptionAuthData): RetrievalType = {
-    new ~(
-      new ~(
-        new ~(
-          new ~(
-            new ~(
+    new~(
+      new~(
+        new~(
+          new~(
+            new~(
               atedSubscriptionAuthData.credentialRole,
               atedSubscriptionAuthData.affinityGroup
             ),
@@ -56,7 +56,7 @@ object AuthBuilder {
     Enrolment("HMRC-AGENT-AGENT", Seq(EnrolmentIdentifier("AgentRefNumber", agentRef)), "Activated")
   }
 
-  def createUserAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+  def createUserAuthContext(@annotation.unused userId: String, @annotation.unused userName: String): AtedSubscriptionAuthData = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
       None,
       Some(AffinityGroup.Organisation),
@@ -70,7 +70,7 @@ object AuthBuilder {
     atedSubscriptionAuthData
   }
 
-  def createUserAuthContextWithoutOrg(userId: String, userName: String): AtedSubscriptionAuthData = {
+  def createUserAuthContextWithoutOrg(@annotation.unused userId: String, @annotation.unused userName: String): AtedSubscriptionAuthData = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
       None,
       None,
@@ -84,23 +84,23 @@ object AuthBuilder {
     atedSubscriptionAuthData
   }
 
-  def createAgentAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+  def createAgentAuthContext(@annotation.unused userId: String, @annotation.unused userName: String): AtedSubscriptionAuthData = {
     createAgentAuthority(agentRefNo = Some("JARN1234567"))
   }
 
-  def createAgentUserAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+  def createAgentUserAuthContext(@annotation.unused userId: String, @annotation.unused userName: String): AtedSubscriptionAuthData = {
     createAgentAuthority(agentRole = User, agentRefNo = Some("JARN1234567"))
   }
 
-  def createNotRegisteredAgentAuthContext(userId: String, userName: String): AtedSubscriptionAuthData = {
+  def createNotRegisteredAgentAuthContext(@annotation.unused userId: String, @annotation.unused userName: String): AtedSubscriptionAuthData = {
     createAgentAuthority(agentRefNo = None)
   }
 
-  def createAgentAssistantAuthContext(userId: String, userName: String, agentRefNo: Option[String] = None): AtedSubscriptionAuthData = {
+  def createAgentAssistantAuthContext(@annotation.unused userId: String, @annotation.unused userName: String, agentRefNo: Option[String] = None): AtedSubscriptionAuthData = {
     createAgentAuthority(Assistant, agentRefNo)
   }
 
-  def mockAuthorisedUser(userId: String, mockAuthConnector: AuthConnector, secondExtraEnrolments: Set[Enrolment] = Set.empty): Unit = {
+  def mockAuthorisedUser(@annotation.unused userId: String, mockAuthConnector: AuthConnector, secondExtraEnrolments: Set[Enrolment] = Set.empty): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = AtedSubscriptionAuthData(
       None,
       Some(AffinityGroup.Organisation),
@@ -119,14 +119,14 @@ object AuthBuilder {
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)), Future.successful(buildRetrieval(secondData)))
   }
 
-  def mockAuthorisedAgent(userId: String, mockAuthConnector: AuthConnector): Unit = {
+  def mockAuthorisedAgent(@annotation.unused userId: String, mockAuthConnector: AuthConnector): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(agentRefNo = Some("JARN1234567"))
 
     when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
-  def mockAuthorisedOrgAssistant(userId: String, mockAuthConnector: AuthConnector): Unit = {
+  def mockAuthorisedOrgAssistant(@annotation.unused userId: String, mockAuthConnector: AuthConnector): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createOrganisationAuthority(
       credRole = Assistant
     )
@@ -135,7 +135,7 @@ object AuthBuilder {
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
-  def mockAuthorisedAgentAssistant(userId: String, mockAuthConnector: AuthConnector): Unit = {
+  def mockAuthorisedAgentAssistant(@annotation.unused userId: String, mockAuthConnector: AuthConnector): Unit = {
     val atedSubscriptionAuthData: AtedSubscriptionAuthData = createAgentAuthority(
       agentRole = Assistant,
       agentRefNo = Some("JARN1234567")
@@ -145,7 +145,7 @@ object AuthBuilder {
       .thenReturn(Future.successful(buildRetrieval(atedSubscriptionAuthData)))
   }
 
-  def mockUnAuthorisedUser(userId: String, mockAuthConnector: AuthConnector): Unit = {
+  def mockUnAuthorisedUser(@annotation.unused userId: String, mockAuthConnector: AuthConnector): Unit = {
     when(mockAuthConnector.authorise[RetrievalType](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.failed(InvalidBearerToken("message")))
   }

@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SessionCacheRepository @Inject() (
     timestampSupport: TimestampSupport
-)(implicit
+)(using
     ec: ExecutionContext,
     appConfig: ApplicationConfig
 ) extends CacheRepository {
@@ -44,15 +44,15 @@ class SessionCacheRepository @Inject() (
   def putSession[T: Writes](
       dataKey: DataKey[T],
       data: T
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[T] =
+  )(using hc: HeaderCarrier, ec: ExecutionContext): Future[T] =
     cacheRepo
       .put[T](hc)(dataKey, data)
       .map(_ => data)
 
-  def getFromSession[T: Reads](dataKey: DataKey[T])(implicit hc: HeaderCarrier): Future[Option[T]] =
+  def getFromSession[T: Reads](dataKey: DataKey[T])(using hc: HeaderCarrier): Future[Option[T]] =
     cacheRepo.get[T](hc)(dataKey)
 
-  def deleteFromSession(implicit hc: HeaderCarrier): Future[Unit] =
+  def deleteFromSession(using hc: HeaderCarrier): Future[Unit] =
     cacheRepo.deleteEntity(hc)
 
 }
