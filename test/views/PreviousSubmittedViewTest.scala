@@ -30,7 +30,8 @@ class PreviouSubmittedViewTest extends ViewTestFixture{
 
   "previous_submitted  view" should {
     "render the correct content" in {
-      heading mustBe "This section is: ATED registration Has this company submitted ATED returns before?"
+      heading mustBe "Has this company submitted ATED returns before?"
+      subHeading mustBe "This section is: ATED registration"
       buttonText mustBe "Continue"
       back_link mustBe "Back"
       back_link_href mustBe "test-url"

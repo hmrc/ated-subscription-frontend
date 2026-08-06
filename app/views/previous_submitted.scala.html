@@ -48,30 +48,38 @@
     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(previousSubmittedForm))
   }
 
-  <header>
-      <h1 id="client-startpage-header" class="govuk-heading-xl govuk-!-margin-bottom-5">
+
+      <h2 id="client-startpage-header" class="govuk-caption-l hmrc-caption-l">
           <span id="client-appoint-subheader" class="govuk-caption-xl">
               <span class="govuk-visually-hidden">
                   @messages("ated.screen-reader.section")
               </span>
               @messages("ated.registration-subheader")
           </span>
-          @messages("ated.prev-submitted.title")
-      </h1>
-  </header>
+      </h2>
 
-  <div class="govuk-body">@messages("ated.prev-submitted.p1")</div>
+
 
   @formHelper(action = controllers.routes.PreviousSubmittedController.continue) {
 
       @govukRadios(
           Radios(
-              fieldset = Some(Fieldset(
-                  legend = Some(Legend(
-                      classes = "govuk-visually-hidden",
-                      content = Text(Messages("ated.prev-submitted.title"))
-                  ))
-              )),
+              fieldset = Some(
+                  Fieldset(
+                      legend = Some(
+                          Legend(
+                              content = Text(Messages("ated.prev-submitted.title")),
+                              isPageHeading = true,
+                              classes = "govuk-fieldset__legend--xl"
+                          )
+                      )
+                  )
+              ),
+              hint = Some(
+                  Hint(
+                      content = Text(Messages("ated.prev-submitted.p1"))
+                  )
+              ),
               items = Seq(
                   RadioItem(
                       content = Text(Messages("ated.radio.yes.label")),
