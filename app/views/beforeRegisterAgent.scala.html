@@ -67,7 +67,7 @@
 
         <div class="govuk-form-group">
             @govukButton(Button(
-            href       = Some(appConfig.serviceRedirectUrl("microservice.services.business-customer.serviceRedirectUrl")),
+            href       = Some(appConfig.serviceRedirectUrl("microservice.services.business-customer.serviceRedirectAgentUrl")),
             content    = Text(messages("ated.continue")),
             attributes = Map("id" -> "submit")
             ))
