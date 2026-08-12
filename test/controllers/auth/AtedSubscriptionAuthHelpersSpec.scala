@@ -21,7 +21,7 @@ import models.AtedSubscriptionAuthData
 import play.api.test.Helpers._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -35,19 +35,19 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AtedSubscriptionAuthHelpersSpec extends PlaySpec with AtedSubscriptionAuthHelpers with AuthFunctionality with
-  MockitoSugar with GuiceOneAppPerSuite {
+class AtedSubscriptionAuthHelpersSpec extends PlaySpec with AtedSubscriptionAuthHelpers with AuthFunctionality
+  with MockitoSugar with GuiceOneAppPerSuite {
 
   override val authConnector: AuthConnector = mock[AuthConnector]
-  override implicit val appConfig: ApplicationConfig = mock[ApplicationConfig]
+  override given appConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
   val func: AtedSubscriptionAuthData => Future[Result] = (_: AtedSubscriptionAuthData) => myFuture
 
-  implicit val fq: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  implicit val messages: Messages = mock[Messages]
+  given fq: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  given messages: Messages = mock[Messages]
 
   def buildCreds(credRole: Option[CredentialRole], affinityGroup: Option[AffinityGroup],
                  enrolments: Set[Enrolment]): AtedSubscriptionAuthData = AtedSubscriptionAuthData(

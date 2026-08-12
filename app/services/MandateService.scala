@@ -16,14 +16,15 @@
 
 package services
 
-import connectors._
+import connectors.*
 import javax.inject.Inject
-import models._
-import play.api.http.Status._
+import models.*
+import play.api.http.Status.*
 import play.api.mvc.Request
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.AuthUtils
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConnector,
@@ -33,7 +34,7 @@ class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConn
 
 
   def createMandateForNonUK(atedRefNum: String)
-                           (implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+                           (using hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val contactDetailsFuture = dataCacheConnector.fetchContactDetailsForSession
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
@@ -64,13 +65,13 @@ class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConn
     } yield {
       mandateResponse.status match {
         case CREATED => mandateResponse
-        case status => throw new RuntimeException("Mandate creation failed.")
+        case _       => throw new RuntimeException("Mandate creation failed.")
       }
     }
   }
 
   def updateMandateForNonUK(atedRefNum: String, mandateId: String)
-                           (implicit hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+                           (using hc: HeaderCarrier, user: AtedSubscriptionAuthData, request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val contactDetailsFuture = dataCacheConnector.fetchContactDetailsForSession
     val contactDetailsEmailFuture = dataCacheConnector.fetchContactDetailsEmailForSession
     val mandateDataFuture = fetchEmailAddress
@@ -107,12 +108,12 @@ class MandateService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConn
     }
   }
 
-  def fetchEmailAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AgentEmail]] = {
+  def fetchEmailAddress(using request: Request[_], user: AtedSubscriptionAuthData, @unused hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AgentEmail]] = {
     if (AuthUtils.isAgent) mandateFrontendConnector.getAgentEmail else Future.successful(None)
   }
 
-  def fetchClientDisplayName(implicit request: Request[_], user: AtedSubscriptionAuthData,
-                             hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
+  def fetchClientDisplayName(using request: Request[_], user: AtedSubscriptionAuthData,
+                             @unused hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ClientDisplayName]] = {
     if (AuthUtils.isAgent) mandateFrontendConnector.getClientDisplayName else Future.successful(None)
   }
 

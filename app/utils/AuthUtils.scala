@@ -22,22 +22,22 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Assistant, User}
 
 object AuthUtils extends Logging {
 
-  def isAgent(implicit user: AtedSubscriptionAuthData): Boolean =
+  def isAgent(using user: AtedSubscriptionAuthData): Boolean =
     user.enrolments.getEnrolment("HMRC-AGENT-AGENT").isDefined || user.affinityGroup.contains(AffinityGroup.Agent)
 
-  def isAssistant(implicit user: AtedSubscriptionAuthData): Boolean = user.credentialRole.contains(Assistant)
+  def isAssistant(using user: AtedSubscriptionAuthData): Boolean = user.credentialRole.contains(Assistant)
 
-  def isAgentUser(implicit user: AtedSubscriptionAuthData): Boolean =
+  def isAgentUser(using user: AtedSubscriptionAuthData): Boolean =
     isAgent && user.credentialRole.contains(User)
 
-  def agentLink(implicit user: AtedSubscriptionAuthData): String = {
+  def agentLink(using user: AtedSubscriptionAuthData): String = {
     user.agentCode.map(str => s"/agent/$str").getOrElse {
       logger.warn(s"[AuthUtils][getAgentLink] Exception - User does not have the correct authorisation ")
       throw new RuntimeException("User is not agent")
     }
   }
 
-  def getAuthLink(implicit user: AtedSubscriptionAuthData): String = {
+  def getAuthLink(using user: AtedSubscriptionAuthData): String = {
     if (isAgent) {
       agentLink
     } else {
@@ -46,7 +46,7 @@ object AuthUtils extends Logging {
     }
   }
 
-  def getArn(implicit user: AtedSubscriptionAuthData): String = {
+  def getArn(using user: AtedSubscriptionAuthData): String = {
     user.enrolments.getEnrolment("HMRC-AGENT-AGENT").flatMap(_.getIdentifier("AgentRefNumber").map(_.value))
       .getOrElse(throw new RuntimeException("[getArn] No ARN found"))
   }

@@ -20,13 +20,15 @@ import config.ApplicationConfig
 import javax.inject.Inject
 import models.{AtedSubscriptionAuthData, SelfHealSubscriptionResponse, SubscribeSuccessResponse}
 import play.api.Logging
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http._
+import play.api.libs.ws.writeableOf_JsValue
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import utils.AuthUtils
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 
 class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig, http: HttpClientV2) extends Logging {
 
@@ -34,7 +36,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig, http: Ht
   val subscriptionURI: String = "subscribe"
   val checkEtmpUri: String = "regime-etmp-check"
 
-  def subscribeAted(data: JsValue)(implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
+  def subscribeAted(data: JsValue)(using user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[SubscribeSuccessResponse] = {
     val authLink = AuthUtils.getAuthLink
     val postURL = s"""$serviceURL$authLink/$subscriptionURI"""
     http.post(url"$postURL").withBody(data).execute[HttpResponse].map{response =>
@@ -51,7 +53,7 @@ class AtedSubscriptionConnector @Inject()(appConfig: ApplicationConfig, http: Ht
     }
   }
 
-  def checkEtmpBusinessPartnerExists(data: JsValue)(implicit user: AtedSubscriptionAuthData,
+  def checkEtmpBusinessPartnerExists(data: JsValue)(using @unused user: AtedSubscriptionAuthData,
                                                     hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SelfHealSubscriptionResponse]] = {
     val postURL = s"""$serviceURL/$checkEtmpUri"""
     http.post(url"$postURL").withBody(data).execute[HttpResponse].map{response =>

@@ -21,5 +21,5 @@ import play.api.libs.json.{Json, OFormat}
 case class OldMandateReference(mandateId: String, atedRefNumber: String)
 
 object OldMandateReference {
-  implicit val formats: OFormat[OldMandateReference] = Json.format[OldMandateReference]
+  given formats: OFormat[OldMandateReference] = Json.format[OldMandateReference]
 }

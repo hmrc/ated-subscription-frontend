@@ -32,11 +32,11 @@ class ApplicationController @Inject()(mcc: MessagesControllerComponents,
                                       val authConnector: DefaultAuthConnector,
                                       templateUnauthorised: views.html.unauthorised,
                                       templateUnauthorisedAssistantOrg: views.html.unauthorisedAssistantOrg,
-                                      templateUnauthorisedAssistantAgent: views.html.unauthorisedAssistantAgent,
-                                      implicit val appConfig: ApplicationConfig
-                                     ) extends FrontendController(mcc) with AuthFunctionality with Logging {
+                                      templateUnauthorisedAssistantAgent: views.html.unauthorisedAssistantAgent)
+                                      (using val appConfig: ApplicationConfig)
+                                      extends FrontendController(mcc) with AuthFunctionality with Logging {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def unauthorised: Action[AnyContent] = Action { implicit request =>
     Ok(templateUnauthorised())

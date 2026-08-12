@@ -18,7 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
-import forms.AtedForms._
+import forms.AtedForms.*
 
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,11 +33,11 @@ class CorrespondenceAddressController @Inject()(mcc: MessagesControllerComponent
                                                 correspondenceAddressService: CorrespondenceAddressService,
                                                 registeredBusinessService: RegisteredBusinessService,
                                                 val authConnector: DefaultAuthConnector,
-                                                template: views.html.correspondenceAddress,
-                                                implicit val appConfig: ApplicationConfig
-                                               ) extends FrontendController(mcc)  with AuthFunctionality {
+                                                template: views.html.correspondenceAddress)
+                                               (using val appConfig: ApplicationConfig)
+                                                extends FrontendController(mcc)  with AuthFunctionality {
 
-  implicit val ec: ExecutionContext = mcc.executionContext
+  given ec: ExecutionContext = mcc.executionContext
 
   def editAddress(mode: Option[String]): Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit data =>

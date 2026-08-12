@@ -32,10 +32,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class ConfirmationController @Inject()(mcc: MessagesControllerComponents,
                                        registeredBusinessService: RegisteredBusinessService,
                                        val authConnector: DefaultAuthConnector,
-                                       template: views.html.nonUKReg.confirmation,
-                                       implicit val appConfig: ApplicationConfig
-                                      ) extends FrontendController(mcc) with AuthFunctionality with I18nSupport {
-  implicit val ec: ExecutionContext = mcc.executionContext
+                                       template: views.html.nonUKReg.confirmation)
+                                      (using val appConfig: ApplicationConfig)
+                                      extends FrontendController(mcc) with AuthFunctionality with I18nSupport {
+  given ec: ExecutionContext = mcc.executionContext
 
   def view: Action[AnyContent] = Action.async {
     implicit request =>

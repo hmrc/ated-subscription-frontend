@@ -16,7 +16,7 @@
 
 package helpers
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import helpers.application.IntegrationApplication
 import helpers.wiremock.WireMockSetup
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}

@@ -40,8 +40,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     injectedViewInstanceAppointAgent,
     injectedViewInstanceAgentSubscription,
     injectedViewInstanceBeforeRegisterAgent,
-    injectedViewInstanceBeforeRegisteringForATED,
-    mockAppConfig)
+    injectedViewInstanceBeforeRegisteringForATED)
+    (using mockAppConfig)
 
   val userId = "user-325bc713-7bd2-42c6-b0aa-9c00109d07d3"
 

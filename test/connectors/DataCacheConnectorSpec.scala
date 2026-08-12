@@ -16,10 +16,10 @@
 
 package connectors
 
-import models._
+import models.*
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -44,7 +44,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
   val clientDisplayName = ClientDisplayName("client display name")
   val testAddressForm = BusinessAddress(Some(true))
   val previouslySubmitted = PreviousSubmittedForm(Some(true))
-  implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
+  given hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
   val testAtedSubscriptionDataCacheConnector = new AtedSubscriptionDataCacheConnector(mockSessionCacheRepo)
 
   override def beforeEach(): Unit = {
@@ -172,7 +172,7 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
 
     "clearCache" must {
       "clear the local session cache" in {
-        when(mockSessionCacheRepo.deleteFromSession(any())).thenReturn(Future.successful(()))
+        when(mockSessionCacheRepo.deleteFromSession(using any())).thenReturn(Future.successful(()))
         await(testAtedSubscriptionDataCacheConnector.clearCache) must be(())
       }
     }

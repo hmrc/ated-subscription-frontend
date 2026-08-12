@@ -35,9 +35,9 @@ import scala.concurrent.Future
 
 class AgentClientMandateFrontendConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
-  implicit val request: Request[_] = FakeRequest(GET, "")
+  given hc: HeaderCarrier = HeaderCarrier()
+  given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "joe bloggs")
+  given request: Request[_] = FakeRequest(GET, "")
 
 
   class Test extends ConnectorMocks {

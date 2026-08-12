@@ -17,11 +17,11 @@
 package services
 
 import builders.AuthBuilder
-import connectors._
-import models._
+import connectors.*
+import models.*
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,7 +30,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import testHelpers.AtedTestHelper
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -39,10 +39,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with BeforeAndAfterEach with AtedTestHelper {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val request: Request[_] = FakeRequest(GET, "")
-  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
+  given hc: HeaderCarrier = HeaderCarrier()
+  given ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  given request: Request[_] = FakeRequest(GET, "")
+  given user: AtedSubscriptionAuthData = AuthBuilder.createUserAuthContext("userId", "joe bloggs")
 
   val subscribeSuccessResponse: SubscribeSuccessResponse = SubscribeSuccessResponse(processingDate = Some("2001-12-17T09:30:47Z"),
     atedRefNumber = Some("ABCDEabcde12345"), formBundleNumber = Some("123456789012345"))
@@ -81,17 +81,17 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
                      contactDetails: Option[ContactDetails] = Some(testContact),
                      contactEmail: Option[ContactDetailsEmail] = Some(testContactEmail),
                      subscribeAtedResponse: Future[SubscribeSuccessResponse] = Future.successful(subscribeSuccessResponse)): OngoingStubbing[Future[SubscribeSuccessResponse]] = {
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using
       ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(businessCustomerDetails))
-    when(mockDataCacheConnector.fetchCorrespondenceAddress(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockDataCacheConnector.fetchCorrespondenceAddress(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(correspondenceAddress))
-    when(mockDataCacheConnector.fetchContactDetailsForSession(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockDataCacheConnector.fetchContactDetailsForSession(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(contactDetails))
-    when(mockDataCacheConnector.fetchContactDetailsEmailForSession(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockDataCacheConnector.fetchContactDetailsEmailForSession(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(contactEmail))
     when(mockAtedSubscriptionConnector.subscribeAted(
-      ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(subscribeAtedResponse)
   }
 
@@ -104,11 +104,11 @@ class RegisterUserServiceSpec extends PlaySpec with GuiceOneServerPerSuite with 
       when(mockAuthConnector.authorise[Any](any(), any())(any(), any()))
         .thenReturn(Future.successful(new ~ (Some(Credentials("ggcredId", "ggCredType")), Some("42424200-0000-0000-0000-000000000000"))))
     }
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using
       ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(businessCustomerDetails))
     when(mockTaxEnrolmentConnector.enrol(
-      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), any()))
+      ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(using ArgumentMatchers.any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(CREATED, enrolSuccessResponse.toString())))
   }
 

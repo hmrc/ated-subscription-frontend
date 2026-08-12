@@ -26,21 +26,20 @@ import scala.concurrent.{Future, ExecutionContext}
 
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
                              val configuration: Configuration,
-                             implicit val appConfig: ApplicationConfig,
                              val templateError: views.html.global_error,
                              val ec: ExecutionContext
-                            ) extends FrontendErrorHandler with I18nSupport {
+                            )(using val appConfig: ApplicationConfig) extends FrontendErrorHandler with I18nSupport {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
-    (implicit request: RequestHeader): Future[Html] = {
-      Future.successful(templateError(pageTitle, heading, message))
-    }
+                                    (implicit request: RequestHeader): Future[Html] = {
+    Future.successful(templateError(pageTitle, heading, message))
+  }
 
   override def internalServerErrorTemplate(implicit request: RequestHeader): Future[Html] =
-   Future.successful(templateError(
+    Future.successful(templateError(
       Messages("ated.business-registration.generic.error.header"),
       Messages("ated.business-registration.generic.error.title"),
       Messages("ated.business-registration.generic.error.message")
-   ))
+    ))
 
 }

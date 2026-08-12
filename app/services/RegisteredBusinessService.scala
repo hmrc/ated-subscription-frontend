@@ -22,16 +22,17 @@ import javax.inject.Inject
 import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, EtmpRegistrationDetails, SubscriptionData}
 import play.api.Logging
 import play.api.mvc.Request
-import play.mvc.Http.Status._
+import play.mvc.Http.Status.*
 import uk.gov.hmrc.http.HeaderCarrier
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: BusinessCustomerFrontendConnector,
                                           atedConnector: AtedConnector,
                                           agentClientMandateFrontendConnector: AgentClientMandateFrontendConnector) extends Logging {
 
-  def getBusinessCustomerDetails(implicit request: Request[_], user: AtedSubscriptionAuthData,
+  def getBusinessCustomerDetails(using request: Request[_], user: AtedSubscriptionAuthData,
                                  hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessCustomerDetails] = {
     businessCustomerFrontendConnector.getBusinessCustomerDetails flatMap { response =>
       response.status match {
@@ -69,7 +70,7 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
     }
   }
 
-  def getDefaultCorrespondenceAddress(businessAddress: Option[Address] = None)(implicit request: Request[_],
+  def getDefaultCorrespondenceAddress(businessAddress: Option[Address] = None)(using request: Request[_],
                                       user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
     getAgentCorrespondenceAddress flatMap {
       case Some(address) => Future.successful(address)
@@ -77,15 +78,15 @@ class RegisteredBusinessService @Inject()(businessCustomerFrontendConnector: Bus
     }
   }
 
-  def getBusinessAddress(implicit request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
+  def getBusinessAddress(using request: Request[_], user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Address] = {
     getBusinessCustomerDetails.map(_.businessAddress)
   }
 
-  private def getAgentCorrespondenceAddress(implicit request: Request[_],
+  private def getAgentCorrespondenceAddress(using @unused request: Request[_],
                                             user: AtedSubscriptionAuthData, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] = {
 
     def getDetails(identifier: String, identifierType: String)
-                  (implicit user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
+                  (using user: AtedSubscriptionAuthData, hc: HeaderCarrier): Future[Option[EtmpRegistrationDetails]] = {
       atedConnector.getDetails(identifier = identifier, identifierType = identifierType) map { response =>
           response.status match {
             case OK => response.json.asOpt[EtmpRegistrationDetails]

@@ -25,20 +25,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ContactDetailsService @Inject()(dataCacheConnector: AtedSubscriptionDataCacheConnector) {
 
-  def saveContactDetails(contactDetails: ContactDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
+  def saveContactDetails(contactDetails: ContactDetails)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
     dataCacheConnector.saveContactDetails(contactDetails)
   }
 
-  def fetchContactDetails(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
+  def fetchContactDetails(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] = {
     dataCacheConnector.fetchContactDetailsForSession
   }
 
-  def fetchContactDetailsEmail(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
+  def fetchContactDetailsEmail(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
     dataCacheConnector.fetchContactDetailsEmailForSession
   }
 
   def saveContactDetailsEmail(contactDetailsEmail: ContactDetailsEmail)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
+                             (using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] = {
     dataCacheConnector.saveContactDetailsEmail(contactDetailsEmail)
   }
 

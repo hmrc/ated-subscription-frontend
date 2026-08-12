@@ -24,7 +24,7 @@ case class SubscriptionContactDetails(phoneNumber: Option[String] = None,
                           emailAddress: Option[String] = None)
 
 object SubscriptionContactDetails {
-  implicit val formats: OFormat[SubscriptionContactDetails] = Json.format[SubscriptionContactDetails]
+  given formats: OFormat[SubscriptionContactDetails] = Json.format[SubscriptionContactDetails]
 }
 
 case class AddressDetails(addressType: String,
@@ -36,7 +36,7 @@ case class AddressDetails(addressType: String,
                           countryCode: String)
 
 object AddressDetails {
-  implicit val formats: OFormat[AddressDetails] = Json.format[AddressDetails]
+  given formats: OFormat[AddressDetails] = Json.format[AddressDetails]
 }
 
 case class SubscriptionAddress(name1: Option[String] = None,
@@ -45,11 +45,11 @@ case class SubscriptionAddress(name1: Option[String] = None,
                    contactDetails: Option[SubscriptionContactDetails] = None)
 
 object SubscriptionAddress {
-  implicit val formats: OFormat[SubscriptionAddress] = Json.format[SubscriptionAddress]
+  given formats: OFormat[SubscriptionAddress] = Json.format[SubscriptionAddress]
 }
 
 case class SubscriptionData(safeId: String, organisationName: String, emailConsent: Option[Boolean], address : Seq[SubscriptionAddress])
 
 object SubscriptionData {
-  implicit val formats: OFormat[SubscriptionData] = Json.format[SubscriptionData]
+  given formats: OFormat[SubscriptionData] = Json.format[SubscriptionData]
 }

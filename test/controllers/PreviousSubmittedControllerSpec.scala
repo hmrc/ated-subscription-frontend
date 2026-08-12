@@ -20,7 +20,8 @@ import builders.{AuthBuilder, SessionBuilder}
 import models.PreviousSubmittedForm
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
+
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -36,7 +37,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
   val mockOverseasService: OverseasCompanyService = mock[OverseasCompanyService]
   val injectedViewInstance: previous_submitted = app.injector.instanceOf[views.html.previous_submitted]
   val testPreviousSubmittedController: PreviousSubmittedController = new PreviousSubmittedController(
-    mockMCC, mockOverseasService, mockAuthConnector, injectedViewInstance, mockAppConfig)
+    mockMCC, mockOverseasService, mockAuthConnector, injectedViewInstance)(using mockAppConfig)
 
   val userId    = "user-ec5ab87e-3193-4c68-aeff-3ad97e7842ab"
 
@@ -125,17 +126,17 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
 
   private def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
-    val result = testPreviousSubmittedController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testPreviousSubmittedController.view.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getWithAuthorisedUser(data: Option[PreviousSubmittedForm] = None)(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
-    when(mockOverseasService.fetchPreviouslySubmitted(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockOverseasService.fetchPreviouslySubmitted(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(data))
 
-    val result = testPreviousSubmittedController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testPreviousSubmittedController.view.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
   }
@@ -149,7 +150,7 @@ class PreviousSubmittedControllerSpec extends PlaySpec with GuiceOneServerPerSui
   private def continueWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
 
-    when(mockOverseasService.savePreviouslySubmitted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockOverseasService.savePreviouslySubmitted(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(None))
 
     val result = testPreviousSubmittedController.continue.apply(SessionBuilder.buildRequestWithSession(userId).withMethod("POST")

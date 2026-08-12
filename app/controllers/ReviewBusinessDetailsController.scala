@@ -33,11 +33,11 @@ class ReviewBusinessDetailsController @Inject()(mcc: MessagesControllerComponent
                                                 contactDetailsService: ContactDetailsService,
                                                 mandateService: MandateService,
                                                 val authConnector: DefaultAuthConnector,
-                                                template: views.html.reviewBusinessDetails,
-                                                implicit val appConfig: ApplicationConfig
-                                               ) extends FrontendController(mcc) with AuthFunctionality {
-  implicit val atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
-  implicit val ec: ExecutionContext = mcc.executionContext
+                                                template: views.html.reviewBusinessDetails)
+                                                (using val appConfig: ApplicationConfig)
+                                                extends FrontendController(mcc) with AuthFunctionality {
+  given atedSubUtils: AtedSubscriptionUtils = appConfig.atedSubsUtils
+  given ec: ExecutionContext = mcc.executionContext
 
   def reviewDetails(mode:Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit auth =>

@@ -19,8 +19,8 @@ package controllers.auth
 import config.ApplicationConfig
 import models.AtedSubscriptionAuthData
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.mockito.Mockito.*
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -29,7 +29,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{defaultAwaitTimeout, status}
 import uk.gov.hmrc.auth.core.retrieve.{Credentials, ~}
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -40,7 +40,7 @@ class AuthFunctionalitySpec extends PlaySpec with MockitoSugar with GuiceOneAppP
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
   val mockAppConfig: ApplicationConfig = mock[ApplicationConfig]
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   class Setup {
     val controllerHarness: AuthFunctionality = new AuthFunctionality {
@@ -94,8 +94,8 @@ class AuthFunctionalitySpec extends PlaySpec with MockitoSugar with GuiceOneAppP
         val myFuture: Future[Result] = Future.successful(Results.Ok("test"))
         val func: AtedSubscriptionAuthData => Future[Result] = (_: AtedSubscriptionAuthData) => myFuture
 
-        implicit val fq: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-        implicit val messages: Messages = mock[Messages]
+        given fq: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+        given messages: Messages = mock[Messages]
 
         val res: Future[Result] = controllerHarness.authoriseFor(func)
         status(res) shouldBe 200

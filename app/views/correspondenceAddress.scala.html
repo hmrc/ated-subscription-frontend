@@ -34,7 +34,7 @@
 
 @(correspondenceAddressForm: Form[models.Address], mode: Option[String], isoCodeList: List[(String, String)], backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(correspondenceAddressForm) }
+@implicitFormInstance: Some[Form[models.Address]] = @{ Some(correspondenceAddressForm) }
 
 @pageTitle = @{
     if(isAgent) {messages("ated.correspondence-address.agent.title")} else {messages("ated.correspondence-address.title")}

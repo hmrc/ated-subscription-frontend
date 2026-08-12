@@ -16,18 +16,18 @@
 
 package models
 
-import play.api.libs.json._
+import play.api.libs.json.*
 
 case class SubscribeSuccessResponse(processingDate: Option[String], atedRefNumber: Option[String], formBundleNumber: Option[String])
 
 object SubscribeSuccessResponse {
-  implicit val formats: OFormat[SubscribeSuccessResponse] = Json.format[SubscribeSuccessResponse]
+  given formats: OFormat[SubscribeSuccessResponse] = Json.format[SubscribeSuccessResponse]
 }
 
 case class SelfHealSubscriptionResponse(regimeRefNumber: String)
 
 object SelfHealSubscriptionResponse {
-  implicit val formats: OFormat[SelfHealSubscriptionResponse] = Json.format[SelfHealSubscriptionResponse]
+  given formats: OFormat[SelfHealSubscriptionResponse] = Json.format[SelfHealSubscriptionResponse]
 }
 
 case class EtmpAddressDetails(addressType: String,
@@ -41,19 +41,17 @@ case class EtmpAddressDetails(addressType: String,
 
 object EtmpAddressDetails {
 
-  implicit class FormatOps[T] (f: OFormat[T]) {
-
-    def strictNull[V:Format](key: String, get: T => Option[V]): OFormat[T] = new OFormat[T] {
+  extension [T](f: OFormat[T])
+    def strictNull[V: Format](key: String, get: T => Option[V]): OFormat[T] = new OFormat[T] {
       def reads(j: JsValue): JsResult[T] = f.reads(j)
 
       def writes(u: T): JsObject =
         (f.writes(u) - key) ++ Json.obj(
-          key -> (get(u).map(implicitly[Format[V]].writes _).getOrElse(JsNull): JsValue)
+          key -> (get(u).map(summon[Format[V]].writes _).getOrElse(JsNull): JsValue)
         )
     }
-  }
 
-  implicit val formats: Format[EtmpAddressDetails] = Json.format[EtmpAddressDetails]
+  given formats: Format[EtmpAddressDetails] = Json.format[EtmpAddressDetails]
     .strictNull("postalCode", _.postalCode)
 }
 
@@ -63,7 +61,7 @@ case class EtmpContactDetails(phoneNumber: Option[String],
                               emailAddress: Option[String])
 
 object EtmpContactDetails {
-  implicit val formats: OFormat[EtmpContactDetails] = Json.format[EtmpContactDetails]
+  given formats: OFormat[EtmpContactDetails] = Json.format[EtmpContactDetails]
 }
 
 case class EtmpCorrespondence(name1: String,
@@ -72,7 +70,7 @@ case class EtmpCorrespondence(name1: String,
                               contactDetails: EtmpContactDetails)
 
 object EtmpCorrespondence {
-  implicit val formats: OFormat[EtmpCorrespondence] = Json.format[EtmpCorrespondence]
+  given formats: OFormat[EtmpCorrespondence] = Json.format[EtmpCorrespondence]
 }
 
 case class AtedSubscriptionRequest(acknowledgementReference: String,
@@ -85,5 +83,5 @@ case class AtedSubscriptionRequest(acknowledgementReference: String,
                                    knownFactPostcode: Option[String])
 
 object AtedSubscriptionRequest {
-  implicit val formats: OFormat[AtedSubscriptionRequest] = Json.format[AtedSubscriptionRequest]
+  given formats: OFormat[AtedSubscriptionRequest] = Json.format[AtedSubscriptionRequest]
 }

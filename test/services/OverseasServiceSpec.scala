@@ -44,27 +44,27 @@ class OverseasServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Mock
   "OverseasService" must {
     "savePreviouslySubmitted" must {
       "save previously submitted into keystore" in {
-        implicit val hc: HeaderCarrier = HeaderCarrier()
-        when(mockDataCacheConnector.savePreviouslySubmitted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testPreviouslySubmitted)))
+        given hc: HeaderCarrier = HeaderCarrier()
+        when(mockDataCacheConnector.savePreviouslySubmitted(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testPreviouslySubmitted)))
         val result = testOverseasCompanyService.savePreviouslySubmitted(testPreviouslySubmitted)
         await(result).get.toString must be(testPreviouslySubmitted.toString)
-        verify(mockDataCacheConnector, times(1)).savePreviouslySubmitted(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockDataCacheConnector, times(1)).savePreviouslySubmitted(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "fetchPreviouslySubmitted" must {
       "return previously submitted, if found in keystore" in {
-        implicit val hc: HeaderCarrier = HeaderCarrier()
+        given hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchPreviouslySubmittedForSession).thenReturn(Future.successful(Some(testPreviouslySubmitted)))
         val result = testOverseasCompanyService.fetchPreviouslySubmitted
         await(result) must be(Some(testPreviouslySubmitted))
-        verify(mockDataCacheConnector, times(1)).fetchPreviouslySubmittedForSession(ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchPreviouslySubmittedForSession(using ArgumentMatchers.any(), ArgumentMatchers.any())
       }
       "return None, if not found in keystore" in {
-        implicit val hc: HeaderCarrier = HeaderCarrier()
+        given hc: HeaderCarrier = HeaderCarrier()
         when(mockDataCacheConnector.fetchPreviouslySubmittedForSession).thenReturn(Future.successful(None))
         val result = testOverseasCompanyService.fetchPreviouslySubmitted
         await(result) must be(None)
-        verify(mockDataCacheConnector, times(1)).fetchPreviouslySubmittedForSession(ArgumentMatchers.any(), ArgumentMatchers.any())
+        verify(mockDataCacheConnector, times(1)).fetchPreviouslySubmittedForSession(using ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
   }

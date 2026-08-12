@@ -39,8 +39,8 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
   val injectedViewInstanceAlreadyRegistered: alreadyRegistered = app.injector.instanceOf[views.html.alreadyRegistered]
   val injectedViewInstanceRegisterUserConfirmation: registerUserConfirmation = app.injector.instanceOf[views.html.registerUserConfirmation]
   val injectedViewInstanceError: global_error = app.injector.instanceOf[views.html.global_error]
-  val testRegisterUserWithEMACController = new RegisterUserController(mockMCC, mockRegisterUserService, mockAuthConnector,injectedViewInstanceAlreadyRegistered, injectedViewInstanceRegisterUserConfirmation, injectedViewInstanceError, mockAppConfig)
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  val testRegisterUserWithEMACController = new RegisterUserController(mockMCC, mockRegisterUserService, mockAuthConnector,injectedViewInstanceAlreadyRegistered, injectedViewInstanceRegisterUserConfirmation, injectedViewInstanceError)(using mockAppConfig)
+  given hc: HeaderCarrier = HeaderCarrier()
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -164,9 +164,9 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   def registerWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
-    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(CREATED, enrolResp.toString())))
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -174,9 +174,9 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   def registerWithBadRequest(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
-    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -184,9 +184,9 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   def registerWithDuplicateUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
-    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(CONFLICT, "")))
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -194,9 +194,9 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   def registerWithWrongRoleUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
-    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(FORBIDDEN, "")))
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
@@ -204,9 +204,9 @@ class RegisterUserControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   def registerWithInvalidUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisterUserService.subscribeAted(eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.subscribeAted(eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(successResponse))
-    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(any(), any(), any(), any()))
+    when(mockRegisterUserService.enrolAted(eqTo(successResponse), eqTo(false))(using any(), any(), any(), any()))
       .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, "")))
     val result = testRegisterUserWithEMACController.subscribeAndEnrolForAted.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)

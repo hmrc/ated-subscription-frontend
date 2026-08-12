@@ -22,7 +22,7 @@ import play.api.mvc.Request
 import uk.gov.hmrc.http.{StringContextOps, HttpResponse}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig, http: HttpClientV2)
@@ -34,12 +34,12 @@ class BusinessCustomerFrontendConnector  @Inject()(appConfig: ApplicationConfig,
   private val backLinkUri = "back-link"
   val service = "ATED"
 
-  def getBusinessCustomerDetails(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+  def getBusinessCustomerDetails(using request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$reviewDetailsUri/$service"
     http.get(url"$getUrl").execute[HttpResponse]
   }
 
-  def getBackLinkStatus(implicit request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
+  def getBackLinkStatus(using request: Request[_], ec: ExecutionContext): Future[HttpResponse] = {
     val getUrl = s"$serviceUrl/$businessCustomerUri/$backLinkUri/$service"
     http.get(url"$getUrl").execute[HttpResponse]
   }

@@ -21,12 +21,12 @@ import builders.{AuthBuilder, SessionBuilder}
 import models.{Address, BusinessCustomerDetails}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.RegisteredBusinessService
 import testHelpers.AtedTestHelper
 import views.html.nonUKReg.confirmation
@@ -37,7 +37,7 @@ class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeA
 
   val mockRegisteredBusinessService: RegisteredBusinessService = mock[RegisteredBusinessService]
   val injectedViewInstance: confirmation = app.injector.instanceOf[views.html.nonUKReg.confirmation]
-  val testConfirmationController = new ConfirmationController(mockMCC, mockRegisteredBusinessService, mockAuthConnector,injectedViewInstance, mockAppConfig)
+  val testConfirmationController = new ConfirmationController(mockMCC, mockRegisteredBusinessService, mockAuthConnector, injectedViewInstance)(using mockAppConfig)
 
   override def beforeEach(): Unit = {
     reset(mockAuthConnector)
@@ -51,16 +51,16 @@ class ConfirmationControllerSpec extends PlaySpec with MockitoSugar with BeforeA
   def viewWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockRegisteredBusinessService.getBusinessCustomerDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockRegisteredBusinessService.getBusinessCustomerDetails(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(testReviewBusinessDetails))
-    val result = testConfirmationController.view().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testConfirmationController.view.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   def continueWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     val userId = s"user-${UUID.randomUUID}"
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    val result = testConfirmationController.continue().apply(SessionBuilder.buildRequestWithSession(userId))
+    val result = testConfirmationController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 

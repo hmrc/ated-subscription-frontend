@@ -34,7 +34,7 @@
 
 @(businessAddressForm: Form[BusinessAddress], businessAddress: Address, backLink: Option[String] = None)(implicit request: Request[_], authContext: AtedSubscriptionAuthData, messages: Messages, atedSubUtils: AtedSubscriptionUtils, appConfig: ApplicationConfig)
 
-@implicitFormInstance = @{ Some(businessAddressForm) }
+@implicitFormInstance: Some[Form[BusinessAddress]] = @{ Some(businessAddressForm) }
 
 @header = @{if(isAgent) {messages("ated.registered-business-address.agent.header")} else {messages("ated.registered-business-address.header")}}
 

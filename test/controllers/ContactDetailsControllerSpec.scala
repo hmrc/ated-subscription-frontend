@@ -40,7 +40,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   val testContact: ContactDetails = ContactDetails("ABC", "DEF", "1234567890")
   val injectedViewInstance: contactDetails = app.injector.instanceOf[views.html.contactDetails]
 
-  val testContactDetailsController = new ContactDetailsController(mockMCC, mockContactDetailsService, mockAuthConnector, injectedViewInstance, mockAppConfig)
+  val testContactDetailsController = new ContactDetailsController(mockMCC, mockContactDetailsService, mockAuthConnector, injectedViewInstance)(using mockAppConfig)
 
   val sessionId = "session-5510719b-cdd1-44dc-ab1c-b0455be14f5b"
   val userId    = "user-949d7f71-94f3-416b-b497-722f595e51be"
@@ -236,7 +236,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
           ) { result =>
               status(result) must be(SEE_OTHER)
               redirectLocation(result).get must include("/ated-subscription/review-business-details")
-              verify(mockContactDetailsService, times(1)).saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+              verify(mockContactDetailsService, times(1)).saveContactDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())
           }
         }
       }
@@ -245,7 +245,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
   private def getWithAuthorisedUser(mode:Option[String])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockContactDetailsService.fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsController.editDetails(mode).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -253,7 +253,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
   private def getWithAuthorisedAgent(mode:Option[String])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
+    when(mockContactDetailsService.fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(None))
     val result = testContactDetailsController.editDetails(mode).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -268,7 +268,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
   private def submitWithAuthorisedFormUserSuccess(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any): Unit = {
 
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(None).apply(fakeRequest.withSession(
       "sessionId" -> sessionId,
@@ -283,7 +283,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
 
     builders.AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.saveContactDetails(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
 
     val result = testContactDetailsController.submit(mode = Some("edit")).apply(fakeRequest.withSession(
       "sessionId" -> sessionId,
@@ -296,7 +296,7 @@ class ContactDetailsControllerSpec extends PlaySpec with GuiceOneServerPerSuite 
 
   private def getEditWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-    when(mockContactDetailsService.fetchContactDetails(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
+    when(mockContactDetailsService.fetchContactDetails(using ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(Some(testContact)))
     val result = testContactDetailsController.editDetails(mode = Some("edit")).apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)

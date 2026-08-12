@@ -18,7 +18,7 @@ package controllers
 
 import config.ApplicationConfig
 import controllers.auth.AuthFunctionality
-import forms.AtedForms._
+import forms.AtedForms.*
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.ContactDetailsService
@@ -29,11 +29,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class ContactDetailsEmailController @Inject()(mcc: MessagesControllerComponents,
                                               contactDetailsService: ContactDetailsService,
                                               val authConnector: DefaultAuthConnector,
-                                              template: views.html.contactDetailsEmail,
-                                              implicit val appConfig: ApplicationConfig
-                                             ) extends FrontendController(mcc) with AuthFunctionality {
+                                              template: views.html.contactDetailsEmail)
+                                              (using val appConfig: ApplicationConfig)
+                                              extends FrontendController(mcc) with AuthFunctionality {
 
- implicit val ec: ExecutionContext = mcc.executionContext
+ given ec: ExecutionContext = mcc.executionContext
 
   def view(mode: Option[String] = Some("skip")): Action[AnyContent] = Action.async {
     implicit request =>

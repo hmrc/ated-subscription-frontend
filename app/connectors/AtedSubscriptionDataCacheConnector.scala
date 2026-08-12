@@ -17,17 +17,18 @@
 package connectors
 
 import javax.inject.Inject
-import models._
+import models.*
 import repositories.SessionCacheRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.cache.DataKey
 
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 
 class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRepository) {
 
-  import sessionCache._
+  import sessionCache.*
 
   val bcSourceId: String = "BC_Business_Details"
   val bcRegDetailseId: String = "BC_BusinessReg_Details"
@@ -38,45 +39,45 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRep
   val clientDisplayNameFormId = "client-display-name-form-id"
   val contactEmailFormId: String = "Contact_Email_Details"
 
-  def fetchAndGetRegisteredBusinessDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessAddress]] =
+  def fetchAndGetRegisteredBusinessDetailsForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[BusinessAddress]] =
     getFromSession[BusinessAddress](DataKey(bcRegDetailseId))
 
-  def saveRegisteredBusinessDetails(businessAddress: BusinessAddress)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessAddress]] =
+  def saveRegisteredBusinessDetails(businessAddress: BusinessAddress)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessAddress]] =
     putSession[BusinessAddress](DataKey(bcRegDetailseId), businessAddress).map(Some(_))
 
-  def fetchAndGetReviewDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] =
+  def fetchAndGetReviewDetailsForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] =
     getFromSession[BusinessCustomerDetails](DataKey(bcSourceId))
 
-  def saveReviewDetails(reviewDetails: BusinessCustomerDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] =
+  def saveReviewDetails(reviewDetails: BusinessCustomerDetails)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[BusinessCustomerDetails]] =
     putSession[BusinessCustomerDetails](DataKey(bcSourceId), reviewDetails).map(Some(_))
 
-  def saveCorrespondenceAddress(address: Address)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] =
+  def saveCorrespondenceAddress(address: Address)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] =
     putSession[Address](DataKey(addressFormId), address).map(Some(_))
 
-  def fetchCorrespondenceAddress(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Address]] =
+  def fetchCorrespondenceAddress(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[Address]] =
     getFromSession[Address](DataKey(addressFormId))
 
-  def saveContactDetails(contactDetails: ContactDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] =
+  def saveContactDetails(contactDetails: ContactDetails)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] =
     putSession[ContactDetails](DataKey(contactFormId), contactDetails).map(Some(_))
 
-  def fetchContactDetailsForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetails]] =
+  def fetchContactDetailsForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[ContactDetails]] =
     getFromSession[ContactDetails](DataKey(contactFormId))
 
-  def fetchContactDetailsEmailForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] =
+  def fetchContactDetailsEmailForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[ContactDetailsEmail]] =
     getFromSession[ContactDetailsEmail](DataKey(contactEmailFormId))
 
-  def clearCache(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
+  def clearCache(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Unit] =
     deleteFromSession
 
   def saveContactDetailsEmail(contactDetailsEmail: ContactDetailsEmail)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] =
+                             (using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[ContactDetailsEmail]] =
     putSession[ContactDetailsEmail](DataKey(contactEmailFormId), contactDetailsEmail).map(Some(_))
 
   def savePreviouslySubmitted(previousSubmittedForm: PreviousSubmittedForm)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] =
+                             (using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] =
     putSession[PreviousSubmittedForm](DataKey(previousSubmittedFormId), previousSubmittedForm).map(Some(_))
 
-  def fetchPreviouslySubmittedForSession(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] =
+  def fetchPreviouslySubmittedForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] =
     getFromSession[PreviousSubmittedForm](DataKey(previousSubmittedFormId))
 
 }

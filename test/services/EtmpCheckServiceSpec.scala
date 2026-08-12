@@ -21,12 +21,12 @@ import config.ApplicationConfig
 import connectors.{AtedSubscriptionConnector, TaxEnrolmentsConnector}
 import models.{Address, AtedSubscriptionAuthData, BusinessCustomerDetails, SelfHealSubscriptionResponse}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,9 +37,9 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
   val mockAtedSubscriptionConnector: AtedSubscriptionConnector = mock[AtedSubscriptionConnector]
   val mockRegisterUserService: RegisterUserService = mock[RegisterUserService]
   lazy val mockAppConfig: ApplicationConfig = app.injector.instanceOf[ApplicationConfig]
-  implicit val user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "user name")
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  given user: AtedSubscriptionAuthData = AuthBuilder.createAgentAuthContext("userId", "user name")
+  given hc: HeaderCarrier = HeaderCarrier()
+  given ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   val etmpCheckService = new EtmpCheckService(mockAtedSubscriptionConnector, mockTaxEnrolmentsConnector, mockRegisterUserService, mockAppConfig)
 
@@ -54,9 +54,9 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
 
-        when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+        when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(using any(), any(), any()))
             .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("test"))))
-        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any(), any()))
+        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(using any(), any()))
             .thenReturn(Future.successful(HttpResponse.apply(CREATED, "")))
 
         await(etmpCheckService.validateBusinessDetails(reviewDetails)) mustBe true
@@ -72,9 +72,9 @@ class EtmpCheckServiceSpec extends PlaySpec with GuiceOneServerPerSuite with Moc
           businessAddress = Address(line_1 = "line1", line_2 = "line2", line_3 = None, line_4 = None, postcode = None, country = "GB"),
           sapNumber = "1234567890", safeId = "XW0001234567890",false, agentReferenceNumber = Some("JARN1234567"))
 
-        when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(any(), any(), any()))
+        when(mockAtedSubscriptionConnector.checkEtmpBusinessPartnerExists(any())(using any(), any(), any()))
             .thenReturn(Future.successful(Some(SelfHealSubscriptionResponse("test"))))
-        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(any(), any()))
+        when(mockTaxEnrolmentsConnector.enrol(any(), any(), any())(using any(), any()))
             .thenReturn(Future.successful(HttpResponse.apply(BAD_REQUEST, "")))
 
         await(etmpCheckService.validateBusinessDetails(reviewDetails)) mustBe false
