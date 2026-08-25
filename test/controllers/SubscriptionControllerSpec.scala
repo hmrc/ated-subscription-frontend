@@ -18,13 +18,16 @@ package controllers
 
 import builders.{AuthBuilder, SessionBuilder}
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers.any
 import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import testHelpers.AtedTestHelper
 import views.html.{agentSubscription, appointAgent, beforeRegisterAgent, beforeRegisteringForATED, subscription}
+
 import scala.concurrent.Future
 
 class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite with MockitoSugar with AtedTestHelper {
@@ -40,7 +43,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
     injectedViewInstanceAppointAgent,
     injectedViewInstanceAgentSubscription,
     injectedViewInstanceBeforeRegisterAgent,
-    injectedViewInstanceBeforeRegisteringForATED)
+    injectedViewInstanceBeforeRegisteringForATED,
+    mockDataCacheConnector)
     (using mockAppConfig)
 
   val userId = "user-325bc713-7bd2-42c6-b0aa-9c00109d07d3"
@@ -281,6 +285,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   private def getWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAreYouAnAgent(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -288,6 +294,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   private def getWithAuthorisedAgentThroughUserLink(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAreYouAnAgent(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -295,18 +303,25 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   private def getWithUnAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAreYouAnAgent(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getWithUnAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAreYouAnAgent(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
   }
 
   private def getWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAreYouAnAgent(using any(), any()))
+      .thenReturn(Future.successful(None))
+
     val result = testSubscriptionController.subscribeAgent.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -321,6 +336,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   private def getWithAuthorisedOrgAssistant(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedOrgAssistant(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAreYouAnAgent(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.subscribe.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -335,6 +352,9 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   private def submitWithAuthorisedUser(inputForm: Seq[(String, String)])(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.saveAreYouAnAgent(any())(using any(), any()))
+      .thenReturn(Future.successful(None))
+
     val result = testSubscriptionController.continue.apply(
       SessionBuilder
       .buildRequestWithSession(userId)
@@ -346,6 +366,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   def submitWithAuthorisedAgent(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedAgent(userId, mockAuthConnector)
+    when(mockDataCacheConnector.saveAreYouAnAgent(any())(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -353,12 +375,17 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   private def submitWithUnAuthenticated(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockUnAuthorisedUserNotLogged(mockAuthConnector)
+    when(mockDataCacheConnector.saveAreYouAnAgent(any())(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.continue.apply(SessionBuilder.buildRequestWithSessionNoUser())
     test(result)
   }
 
   private def appointWithAuthorisedUser(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.fetchAppointAgent(using any(), any()))
+      .thenReturn(Future.successful(None))
+
     val result = testSubscriptionController.appoint.apply(SessionBuilder.buildRequestWithSession(userId))
 
     test(result)
@@ -367,6 +394,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
   private def beforeRegisterGuidanceWithAuthorisedUser(inputForm: Seq[(String, String)])
                                                       (test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.saveAppointAgent(any())(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.beforeRegisterGuidance.apply(
       SessionBuilder
         .buildRequestWithSession(userId)
@@ -384,6 +413,8 @@ class SubscriptionControllerSpec extends PlaySpec with GuiceOneServerPerSuite wi
 
   private def showBeforeRegisteringATEDPageWithAuthorisedUser()(test: Future[Result] => Any): Unit = {
     AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
+    when(mockDataCacheConnector.saveAppointAgent(any())(using any(), any()))
+      .thenReturn(Future.successful(None))
     val result = testSubscriptionController.showBeforeRegisteringATEDPage
       .apply(SessionBuilder.buildRequestWithSession(userId))
     test(result)
