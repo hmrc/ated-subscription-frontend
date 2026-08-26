@@ -52,6 +52,8 @@ trait AtedTestHelper extends MockitoSugar  with GuiceOneServerPerSuite { this: T
     .thenReturn("http://localhost:9923/business-customer/agent/ATED?backLinkUrl=http://localhost:9933/ated-subscription/start-agent-subscription")
   when(mockAppConfig.serviceRedirectUrl(ArgumentMatchers.eq("microservice.services.business-customer.serviceRedirectAgentUrl")))
     .thenReturn("http://localhost:9923/business-customer/ATED?backLinkUrl=http://localhost:9933/ated-subscription/before-registering-agent")
+  when(mockAppConfig.serviceRedirectUrl(ArgumentMatchers.eq("microservice.services.business-customer.serviceRedirectPreviousUrl")))
+    .thenReturn("test")
 
   when(mockAppConfig.signIn).thenReturn("http://localhost:9025/gg/sign-in?continue=http://localhost:9933/ated-subscription/start-subscription")
   when(mockAppConfig.agentAtedSummaryPath).thenReturn("http://localhost:9959/mandate/agent/summary")

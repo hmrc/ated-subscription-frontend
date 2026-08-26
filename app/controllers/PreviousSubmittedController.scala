@@ -63,7 +63,7 @@ class PreviousSubmittedController @Inject()(mcc: MessagesControllerComponents,
                   if (prevSubmitted) {
                     Redirect(routes.SameAccountController.viewSameAccount)
                   } else {
-                    Redirect(appConfig.nrlPath)
+                    Redirect(appConfig.serviceRedirectUrl("microservice.services.business-customer.serviceRedirectPreviousUrl"))
                   }
                 }
               case _ => Future.successful(Redirect(routes.PreviousSubmittedController.view))
