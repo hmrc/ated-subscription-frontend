@@ -38,6 +38,8 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRep
   val mandateAgentEmailFormId: String = "agent-email"
   val clientDisplayNameFormId = "client-display-name-form-id"
   val contactEmailFormId: String = "Contact_Email_Details"
+  val areYouAnAgentFormId: String = "AreYouAgent_details"
+  val apointAgentFormId: String = "apointAgent_details"
 
   def fetchAndGetRegisteredBusinessDetailsForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[BusinessAddress]] =
     getFromSession[BusinessAddress](DataKey(bcRegDetailseId))
@@ -79,5 +81,29 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRep
 
   def fetchPreviouslySubmittedForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] =
     getFromSession[PreviousSubmittedForm](DataKey(previousSubmittedFormId))
+
+  def fetchAreYouAnAgent(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AreYouAnAgent]] =
+    getFromSession[AreYouAnAgent](
+      DataKey(areYouAnAgentFormId)
+    )
+
+  def saveAreYouAnAgent(data: AreYouAnAgent)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AreYouAnAgent]] =
+    putSession[AreYouAnAgent](
+      DataKey(areYouAnAgentFormId),
+      data
+    ).map(Some(_))
+
+
+  def fetchAppointAgent(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppointAgentForm]] =
+    getFromSession[AppointAgentForm](
+      DataKey(apointAgentFormId)
+    )
+
+  def saveAppointAgent(data: AppointAgentForm)
+                       (using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppointAgentForm]] =
+    putSession[AppointAgentForm](
+      DataKey(apointAgentFormId),
+      data
+    ).map(Some(_))
 
 }

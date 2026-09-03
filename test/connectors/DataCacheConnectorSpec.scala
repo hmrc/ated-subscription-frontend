@@ -44,6 +44,8 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
   val clientDisplayName = ClientDisplayName("client display name")
   val testAddressForm = BusinessAddress(Some(true))
   val previouslySubmitted = PreviousSubmittedForm(Some(true))
+  val areYouAnAgent = AreYouAnAgent(Some(false))
+  val appointAgentForm = AppointAgentForm(Some(true))
   given hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(s"session-${UUID.randomUUID}")))
   val testAtedSubscriptionDataCacheConnector = new AtedSubscriptionDataCacheConnector(mockSessionCacheRepo)
 
@@ -174,6 +176,63 @@ class DataCacheConnectorSpec extends PlaySpec with GuiceOneServerPerSuite with M
       "clear the local session cache" in {
         when(mockSessionCacheRepo.deleteFromSession(using any())).thenReturn(Future.successful(()))
         await(testAtedSubscriptionDataCacheConnector.clearCache) must be(())
+      }
+    }
+    "fetchAreYouAnAgent" must {
+      "fetch the saved AreYouAnAgent value from mongo" in {
+        when(
+          mockSessionCacheRepo.getFromSession[AreYouAnAgent](
+            DataKey(ArgumentMatchers.any())
+          )(any(), any())
+        ).thenReturn(Future.successful(Some(areYouAnAgent)))
+
+        val result = testAtedSubscriptionDataCacheConnector.fetchAreYouAnAgent
+
+        await(result).get must be(areYouAnAgent)
+      }
+    }
+
+    "saveAreYouAnAgent" must {
+      "save the AreYouAnAgent value in mongo" in {
+        when(
+          mockSessionCacheRepo.putSession[AreYouAnAgent](
+            DataKey(ArgumentMatchers.any()),
+            ArgumentMatchers.eq(areYouAnAgent)
+          )(any(), any(), any())
+        ).thenReturn(Future.successful(areYouAnAgent))
+
+        val result = testAtedSubscriptionDataCacheConnector.saveAreYouAnAgent(areYouAnAgent)
+
+        await(result).get must be(areYouAnAgent)
+      }
+    }
+
+    "fetchAppointAgent" must {
+      "fetch the saved AppointAgentForm value from mongo" in {
+        when(
+          mockSessionCacheRepo.getFromSession[AppointAgentForm](
+            DataKey(ArgumentMatchers.any())
+          )(any(), any())
+        ).thenReturn(Future.successful(Some(appointAgentForm)))
+
+        val result = testAtedSubscriptionDataCacheConnector.fetchAppointAgent
+
+        await(result).get must be(appointAgentForm)
+      }
+    }
+
+    "saveAppointAgent" must {
+      "save the AppointAgentForm value in mongo" in {
+        when(
+          mockSessionCacheRepo.putSession[AppointAgentForm](
+            DataKey(ArgumentMatchers.any()),
+            ArgumentMatchers.eq(appointAgentForm)
+          )(any(), any(), any())
+        ).thenReturn(Future.successful(appointAgentForm))
+
+        val result = testAtedSubscriptionDataCacheConnector.saveAppointAgent(appointAgentForm)
+
+        await(result).get must be(appointAgentForm)
       }
     }
   }

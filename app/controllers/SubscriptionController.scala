@@ -17,13 +17,16 @@
 package controllers
 
 import config.ApplicationConfig
+import connectors.AtedSubscriptionDataCacheConnector
 import controllers.auth.{AtedSubscriptionAuthHelpers, AuthFunctionality}
 import forms.AtedForms.*
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.AuthUtils
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
@@ -32,7 +35,8 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
                                        templateAppointAgent: views.html.appointAgent,
                                        templateAgentSubscription: views.html.agentSubscription,
                                        beforeRegisterAgentPage: views.html.beforeRegisterAgent,
-                                       beforeRegisteringForATEDPage: views.html.beforeRegisteringForATED)
+                                       beforeRegisteringForATEDPage: views.html.beforeRegisteringForATED,
+                                       dataCacheConnector: AtedSubscriptionDataCacheConnector)
                                        (using val appConfig: ApplicationConfig)
   extends FrontendController(mcc) with AtedSubscriptionAuthHelpers with AuthFunctionality {
 
@@ -41,20 +45,32 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
   def subscribe: Action[AnyContent] = Action.async { implicit request =>
     authoriseFor { implicit data =>
       if (AuthUtils.isAgent) {
-        Future.successful(Redirect(controllers.routes.SubscriptionController.subscribeAgent))
+        Future.successful(
+          Redirect(controllers.routes.SubscriptionController.subscribeAgent)
+        )
       } else {
-        Future.successful(Ok(templateSubscription(areYouAnAgentForm)))
+        dataCacheConnector.fetchAreYouAnAgent.map { cachedData =>
+          val form = cachedData.fold(areYouAnAgentForm)(areYouAnAgentForm.fill)
+
+          Ok(templateSubscription(form))
+        }
       }
     }
   }
 
-  def appoint: Action[AnyContent] = Action.async {
-    implicit request =>
-      authoriseFor { implicit data =>
-        Future.successful(
-          Ok(templateAppointAgent(appointAgentForm, Some(controllers.routes.SubscriptionController.subscribe.url)))
+  def appoint: Action[AnyContent] = Action.async { implicit request =>
+    authoriseFor { implicit data =>
+      dataCacheConnector.fetchAppointAgent.map { cachedData =>
+        val form = cachedData.fold(appointAgentForm)(appointAgentForm.fill)
+
+        Ok(
+          templateAppointAgent(
+            form,
+            Some(controllers.routes.SubscriptionController.subscribe.url)
+          )
         )
       }
+    }
   }
 
   def subscribeAgent: Action[AnyContent] = Action.async { implicit req =>
@@ -67,21 +83,40 @@ class SubscriptionController @Inject()(mcc: MessagesControllerComponents,
     clientAction { implicit user =>
       areYouAnAgentForm.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(templateSubscription(formWithErrors))),
-        _ => Future.successful(Redirect(controllers.routes.SubscriptionController.appoint))
+        answers => {
+          dataCacheConnector.saveAreYouAnAgent(answers).map{
+            _ => Redirect(controllers.routes.SubscriptionController.appoint)
+          }
+        }
       )
     }
   }
-
+  
   def beforeRegisterGuidance: Action[AnyContent] = Action.async { implicit req =>
     clientAction { implicit user =>
       appointAgentForm.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(templateAppointAgent(formWithErrors,
-            Some(controllers.routes.SubscriptionController.subscribe.url)))),
+          Future.successful(
+            BadRequest(
+              templateAppointAgent(
+                formWithErrors,
+                Some(controllers.routes.SubscriptionController.subscribe.url)
+              )
+            )
+          ),
         agentStatus =>
-          agentStatus.isAgent match {
-            case Some(true)  => Future.successful(Redirect(controllers.routes.SubscriptionController.showBeforeRegisteringAgentPage))
-            case _ => Future.successful(Redirect(controllers.routes.SubscriptionController.showBeforeRegisteringATEDPage))
+          dataCacheConnector.saveAppointAgent(agentStatus).map { _ =>
+            agentStatus.isAgent match {
+              case Some(true) =>
+                Redirect(
+                  controllers.routes.SubscriptionController.showBeforeRegisteringAgentPage
+                )
+
+              case _ =>
+                Redirect(
+                  controllers.routes.SubscriptionController.showBeforeRegisteringATEDPage
+                )
+            }
           }
       )
     }
