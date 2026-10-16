@@ -17,7 +17,7 @@ lazy val scoverageSettings: Seq[Def.Setting[? >: String & Double & Boolean]] = {
   import scoverage.ScoverageKeys
   Seq(
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;views.html.*;views.*;app.Routes.*;prod.*;uk.gov.hmrc.*;testOnlyDoNotUseInAppConf.*;forms.*;config.*;",
-    ScoverageKeys.coverageMinimumStmtTotal :=  89,
+    ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
@@ -34,7 +34,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(playSettings *)
   .settings(
     scalacOptions ++= Seq(
-      "-Wconf:src=target/.*:s,msg=Flag .* set repeatedly:s"
+      "-Wconf:src=target/.*:s,msg=Flag .* set repeatedly:s",
+      "-Wunused:params"
     ),
     scoverageSettings,
     libraryDependencies ++= appDependencies,

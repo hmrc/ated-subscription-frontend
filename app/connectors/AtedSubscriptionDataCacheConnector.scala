@@ -82,7 +82,7 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRep
   def fetchPreviouslySubmittedForSession(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[PreviousSubmittedForm]] =
     getFromSession[PreviousSubmittedForm](DataKey(previousSubmittedFormId))
 
-  def fetchAreYouAnAgent(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AreYouAnAgent]] =
+  def fetchAreYouAnAgent(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[AreYouAnAgent]] =
     getFromSession[AreYouAnAgent](
       DataKey(areYouAnAgentFormId)
     )
@@ -94,7 +94,7 @@ class AtedSubscriptionDataCacheConnector @Inject()(sessionCache: SessionCacheRep
     ).map(Some(_))
 
 
-  def fetchAppointAgent(using hc: HeaderCarrier, ec: ExecutionContext): Future[Option[AppointAgentForm]] =
+  def fetchAppointAgent(using hc: HeaderCarrier, @unused ec: ExecutionContext): Future[Option[AppointAgentForm]] =
     getFromSession[AppointAgentForm](
       DataKey(apointAgentFormId)
     )
